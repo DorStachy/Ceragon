@@ -1,0 +1,84 @@
+﻿Correlation ID: legit-test-1774030540439-uzam4m
+Testing 3 legitimate packages...
+
+Submitting check-packages request...
+Initial response:
+  fastify@5.8.2 Γזע HOLD (analysisId: 20a64e80-ebaa-4ec6-958c-892bd9225de9, cacheHit: false)
+  axios@1.13.6 Γזע HOLD (analysisId: 6107066b-7a49-40f6-8bb3-39b1634e98d0, cacheHit: false)
+  yargs-parser@22.0.0 Γזע HOLD (analysisId: 0a6546c4-cd63-4638-8983-368d2eb238a4, cacheHit: false)
+
+Polling 3 HOLD analyses (up to 5 min)...
+  Γאª fastify@5.8.2 still PENDING after 60s
+  Γאª fastify@5.8.2 still PENDING after 120s
+  Γאª fastify@5.8.2 still PENDING after 180s
+  Γאª fastify@5.8.2 still PENDING after 240s
+  Γאª fastify@5.8.2 still PENDING after 300s
+  Γ£ק fastify@5.8.2 Γזע TIMEOUT after 5 min
+  Γאª axios@1.13.6 still PENDING after 60s
+  Γאª axios@1.13.6 still PENDING after 120s
+  Γאª axios@1.13.6 still PENDING after 180s
+  Γאª axios@1.13.6 still PENDING after 240s
+  Γאª axios@1.13.6 still PENDING after 300s
+  Γ£ק axios@1.13.6 Γזע TIMEOUT after 5 min
+  Γאª yargs-parser@22.0.0 still PENDING after 60s
+  Γאª yargs-parser@22.0.0 still PENDING after 120s
+  Γאª yargs-parser@22.0.0 still PENDING after 180s
+  Γאª yargs-parser@22.0.0 still PENDING after 240s
+  Γאª yargs-parser@22.0.0 still PENDING after 300s
+  Γ£ק yargs-parser@22.0.0 Γזע TIMEOUT after 5 min
+
+Fetching CloudWatch logs...
+
+{
+  "correlationId": "legit-test-1774030540439-uzam4m",
+  "packages": [
+    {
+      "name": "fastify",
+      "version": "5.8.2",
+      "expectedVerdict": "ALLOW",
+      "status": "TIMEOUT",
+      "analysisId": "20a64e80-ebaa-4ec6-958c-892bd9225de9"
+    },
+    {
+      "name": "axios",
+      "version": "1.13.6",
+      "expectedVerdict": "ALLOW",
+      "status": "TIMEOUT",
+      "analysisId": "6107066b-7a49-40f6-8bb3-39b1634e98d0"
+    },
+    {
+      "name": "yargs-parser",
+      "version": "22.0.0",
+      "expectedVerdict": "ALLOW",
+      "status": "TIMEOUT",
+      "analysisId": "0a6546c4-cd63-4638-8983-368d2eb238a4"
+    }
+  ],
+  "providerStats": {
+    "nemotronSuccessCount": 5,
+    "geminiSuccessCount": 0,
+    "geminiFallbackCount": 0,
+    "reasoningRecoveryCount": 0,
+    "exhaustedRetryCount": 0
+  },
+  "nemotronLatencies": [
+    39357,
+    99778,
+    118741,
+    65317,
+    95615
+  ],
+  "falsePositives": [
+    "fastify@5.8.2: expected ALLOW, got undefined",
+    "axios@1.13.6: expected ALLOW, got undefined",
+    "yargs-parser@22.0.0: expected ALLOW, got undefined"
+  ]
+}
+node : 
+At line:1 char:1
++ node scripts/verify-legit-packages.cjs 2>&1 | Out-File -Encoding utf8 ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Γ¥ל 3 FALSE POSITIVE(S) DETECTED

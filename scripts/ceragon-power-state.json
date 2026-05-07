@@ -1,0 +1,109 @@
+{
+    "savedAt":  "2026-04-12 21:49:38 UTC",
+    "savedBy":  "ceragon-power-off.ps1",
+    "region":  "eu-north-1",
+    "services":  [
+                     {
+                         "cluster":  "ceragon-intelligence-production",
+                         "service":  "ceragon-intelligence-artifact-fetcher-production",
+                         "desiredCount":  2,
+                         "taskDef":  "arn:aws:ecs:eu-north-1:113627991972:task-definition/ceragon-intelligence-artifact-fetcher-production:25"
+                     },
+                     {
+                         "cluster":  "ceragon-intelligence-production",
+                         "service":  "ceragon-multi-follower-production",
+                         "desiredCount":  0,
+                         "taskDef":  "arn:aws:ecs:eu-north-1:113627991972:task-definition/ceragon-multi-follower-production:27"
+                     },
+                     {
+                         "cluster":  "ceragon-intelligence-production",
+                         "service":  "ceragon-intel-static-worker-production",
+                         "desiredCount":  3,
+                         "taskDef":  "arn:aws:ecs:eu-north-1:113627991972:task-definition/ceragon-intel-static-worker-production:19"
+                     },
+                     {
+                         "cluster":  "ceragon-intelligence-production",
+                         "service":  "ceragon-intel-sandbox-worker-production",
+                         "desiredCount":  2,
+                         "taskDef":  "arn:aws:ecs:eu-north-1:113627991972:task-definition/ceragon-intel-sandbox-worker-production:15"
+                     },
+                     {
+                         "cluster":  "backend",
+                         "service":  "backend-service",
+                         "desiredCount":  1,
+                         "taskDef":  "arn:aws:ecs:eu-north-1:113627991972:task-definition/backend:42"
+                     },
+                     {
+                         "cluster":  "frontend",
+                         "service":  "frontend",
+                         "desiredCount":  1,
+                         "taskDef":  "arn:aws:ecs:eu-north-1:113627991972:task-definition/frontend:173"
+                     }
+                 ],
+    "autoScaling":  [
+                        {
+                            "resourceId":  "service/ceragon-intelligence-production/ceragon-intel-static-worker-production",
+                            "minCapacity":  1,
+                            "maxCapacity":  3
+                        },
+                        {
+                            "resourceId":  "service/ceragon-intelligence-production/ceragon-intel-sandbox-worker-production",
+                            "minCapacity":  1,
+                            "maxCapacity":  3
+                        },
+                        {
+                            "resourceId":  "service/cera-workers-staging/cera-sandbox-worker-staging",
+                            "minCapacity":  0,
+                            "maxCapacity":  1
+                        },
+                        {
+                            "resourceId":  "service/ceragon-intelligence-production/ceragon-intelligence-artifact-fetcher-production",
+                            "minCapacity":  1,
+                            "maxCapacity":  2
+                        }
+                    ],
+    "esms":  [
+                 {
+                     "functionName":  "ceragon-intel-router-production",
+                     "uuid":  "baf760f9-977c-40bf-96c5-180e10d22d9f",
+                     "wasEnabled":  true,
+                     "source":  "arn:aws:sqs:eu-north-1:113627991972:ceragon-production-release-observation"
+                 },
+                 {
+                     "functionName":  "ceragon-intel-dispatcher-production",
+                     "uuid":  "ea9bda9e-5e5b-40f2-bf9b-51e4f58bcc01",
+                     "wasEnabled":  true,
+                     "source":  "arn:aws:sqs:eu-north-1:113627991972:ceragon-production-analysis-static-background"
+                 },
+                 {
+                     "functionName":  "ceragon-intel-dispatcher-production",
+                     "uuid":  "602a90f8-bdf0-4fd1-bff6-bac508e4e742",
+                     "wasEnabled":  true,
+                     "source":  "arn:aws:sqs:eu-north-1:113627991972:ceragon-production-analysis-dynamic-urgent"
+                 },
+                 {
+                     "functionName":  "ceragon-intel-dispatcher-production",
+                     "uuid":  "b7ec0536-0337-49b5-8326-ba9ccecba9dc",
+                     "wasEnabled":  true,
+                     "source":  "arn:aws:sqs:eu-north-1:113627991972:ceragon-production-analysis-dynamic-background"
+                 },
+                 {
+                     "functionName":  "ceragon-intel-result-aggregator-production",
+                     "uuid":  "d0814d5d-5579-4804-8e88-990410d93f26",
+                     "wasEnabled":  true,
+                     "source":  "arn:aws:sqs:eu-north-1:113627991972:ceragon-production-intel-result-write"
+                 },
+                 {
+                     "functionName":  "ceragon-intel-hotset-production",
+                     "uuid":  "b8e53b3d-2896-490b-b870-febeb0d7f2e7",
+                     "wasEnabled":  true,
+                     "source":  "arn:aws:sqs:eu-north-1:113627991972:ceragon-production-hotset-events"
+                 },
+                 {
+                     "functionName":  "ceragon-intel-verdict-writer-production",
+                     "uuid":  "b314620a-dc66-4e33-8de7-44cfb5c513ed",
+                     "wasEnabled":  true,
+                     "source":  "arn:aws:sqs:eu-north-1:113627991972:ceragon-production-verdict-write"
+                 }
+             ]
+}

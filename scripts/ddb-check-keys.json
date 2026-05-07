@@ -1,0 +1,10 @@
+{
+  "cera-artifact_analysis_cache-staging": {
+    "Keys": [
+      { "pk": { "S": "NV#npm#fastify" }, "sk": { "S": "5.8.2" } },
+      { "pk": { "S": "NV#npm#axios" }, "sk": { "S": "1.13.6" } },
+      { "pk": { "S": "NV#npm#yargs-parser" }, "sk": { "S": "22.0.0" } }
+    ],
+    "ProjectionExpression": "pk, sk, verdict, riskScore, analyzedAt, cacheVersion"
+  }
+}
