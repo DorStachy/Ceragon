@@ -1,262 +1,676 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-    Power off all Ceragon payable AWS assets overnight to save costs.
-    
+    Powers off Ceragon runtime AWS resources for an overnight cost pause.
+
 .DESCRIPTION
-    Scales all ECS services to 0, suspends auto-scaling, and disables
-    Lambda event-source mappings. Safe to run repeatedly.
-    
-    Estimated overnight savings: ~$2.50-4.00/night (Fargate tasks).
-    NAT Gateway + VPC Endpoints remain active (~$2/day) because they
-    are required infrastructure that is expensive to recreate.
-    
+    Saves the current runtime shape, then stops or disables the resources that
+    keep compute running:
+
+    - ECS service desired counts across the Ceragon runtime clusters
+    - ECS Application Auto Scaling scalable targets
+    - sandbox Auto Scaling Groups and their EC2 capacity
+    - RDS DB instances
+    - Lambda SQS event-source mappings
+    - EventBridge scheduled rules that launch runtime work
+    - standalone Ceragon-tagged EC2 instances, if any exist
+
+    The script intentionally does not delete always-on infrastructure such as
+    ALBs, NAT gateways, VPC endpoints, S3, DynamoDB, SQS, ECR, CloudWatch logs,
+    Route 53, or ACM certificates. Those still have baseline/storage costs.
+
 .EXAMPLE
-    .\scripts\ceragon-power-off.ps1
-    .\scripts\ceragon-power-off.ps1 -WhatIf   # dry-run, show what would happen
+    ./scripts/ceragon-power-off.ps1
+
+.EXAMPLE
+    ./scripts/ceragon-power-off.ps1 -WhatIf
+
+.EXAMPLE
+    ./scripts/ceragon-power-off.ps1 -SkipRds
 #>
 
-[CmdletBinding(SupportsShouldProcess)]
+[CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
 param(
-    [string]$Region = 'eu-north-1'
+    [string]$Region = 'eu-north-1',
+    [string]$ExpectedAccountId = '113627991972',
+    [string[]]$EcsClusters = @(
+        'backend',
+        'frontend',
+        'cera-workers-staging',
+        'ceragon-intelligence-production'
+    ),
+    [string[]]$RdsInstances = @('codefense-postgressdb'),
+    [string[]]$LambdaFunctions = @(
+        'ceragon-intel-router-production',
+        'ceragon-intel-dispatcher-production',
+        'ceragon-intel-result-aggregator-production',
+        'ceragon-intel-hotset-production',
+        'ceragon-intel-verdict-writer-production',
+        'ceragon-intel-metadata-only-production',
+        'cera-sandbox-staging-wake-up'
+    ),
+    [string]$StatePath = '',
+    [switch]$SkipRds,
+    [switch]$SkipWait,
+    [switch]$OverwriteState,
+    [int]$WaitTimeoutSeconds = 900
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+$script:AwsExecutable = $null
+$script:AwsPrefixArgs = @()
 
-$banner = @"
-╔═══════════════════════════════════════════════════╗
-║        CERAGON PIPELINE — POWER OFF               ║
-║        Scaling down all payable assets            ║
-╚═══════════════════════════════════════════════════╝
-"@
-Write-Host $banner -ForegroundColor Yellow
-
-$timestamp = (Get-Date).ToUniversalTime().ToString('yyyy-MM-dd HH:mm:ss UTC')
-
-# ─────────────────────────────────────────────────────
-# 1. Save current state so power-on knows what to restore
-# ─────────────────────────────────────────────────────
-Write-Host "`n[1/5] Saving current state..." -ForegroundColor Cyan
-
-$stateFile = Join-Path $PSScriptRoot 'ceragon-power-state.json'
-
-$state = [ordered]@{
-    savedAt      = $timestamp
-    savedBy      = 'ceragon-power-off.ps1'
-    region       = $Region
-    services     = @()
-    autoScaling  = @()
-    asgs         = @()
-    esms         = @()
-}
-
-$ecsTargets = @(
-    @{ cluster = 'ceragon-intelligence-production'; service = 'ceragon-intelligence-artifact-fetcher-production' },
-    @{ cluster = 'ceragon-intelligence-production'; service = 'ceragon-multi-follower-production' },
-    @{ cluster = 'ceragon-intelligence-production'; service = 'ceragon-intel-static-worker-production' },
-    @{ cluster = 'ceragon-intelligence-production'; service = 'ceragon-intel-sandbox-worker-production' },
-    @{ cluster = 'backend';                         service = 'backend-service' },
-    @{ cluster = 'frontend';                        service = 'frontend' }
-)
-
-$lambdas = @(
-    'ceragon-intel-router-production',
-    'ceragon-intel-dispatcher-production',
-    'ceragon-intel-result-aggregator-production',
-    'ceragon-intel-hotset-production',
-    'ceragon-intel-verdict-writer-production',
-    'ceragon-intel-metadata-only-production'
-)
-
-$asgTargets = @(
-    'cera-sandbox-intel-asg'
-)
-
-foreach ($target in $ecsTargets) {
-    $current = aws ecs describe-services `
-        --cluster $target.cluster --services $target.service `
-        --region $Region `
-        --query "services[0].{desired:desiredCount,running:runningCount,taskDef:taskDefinition}" `
-        --output json | ConvertFrom-Json
-
-    if (-not $current) {
-        continue
+function Initialize-AwsCli {
+    if (Get-Command aws -ErrorAction SilentlyContinue) {
+        $script:AwsExecutable = 'aws'
+        $script:AwsPrefixArgs = @()
+        return
     }
 
-    $state.services += [ordered]@{
-        cluster      = $target.cluster
-        service      = $target.service
-        desiredCount = $current.desired
-        taskDef      = $current.taskDef
+    if (Get-Command wsl.exe -ErrorAction SilentlyContinue) {
+        $script:AwsExecutable = 'wsl.exe'
+        $script:AwsPrefixArgs = @('aws')
+        return
     }
+
+    throw 'AWS CLI was not found. Install aws.exe for Windows or make aws available inside WSL.'
 }
 
-$scalableTargets = aws application-autoscaling describe-scalable-targets `
-    --service-namespace ecs --region $Region `
-    --query "ScalableTargets[].{id:ResourceId,min:MinCapacity,max:MaxCapacity,suspended:SuspendedState}" `
-    --output json | ConvertFrom-Json
+function Get-DefaultStatePath {
+    if ($env:CERAGON_POWER_STATE_PATH) {
+        return $env:CERAGON_POWER_STATE_PATH
+    }
 
-foreach ($target in $scalableTargets) {
-    $state.autoScaling += [ordered]@{
-        resourceId  = $target.id
-        minCapacity = $target.min
-        maxCapacity = $target.max
+    $homePath = if ($env:USERPROFILE) {
+        $env:USERPROFILE
+    } elseif ($HOME) {
+        $HOME
+    } else {
+        $PSScriptRoot
+    }
+
+    return Join-Path (Join-Path $homePath '.ceragon') 'aws-power-state.json'
+}
+
+function Invoke-AwsJson {
+    param([Parameter(Mandatory = $true)][string[]]$Arguments)
+
+    $awsArgs = @($script:AwsPrefixArgs) + @($Arguments)
+    $output = & $script:AwsExecutable @awsArgs
+    $success = $?
+    $exitCodeVariable = Get-Variable -Name LASTEXITCODE -Scope Global -ErrorAction SilentlyContinue
+    $exitCode = if ($exitCodeVariable) { [int]$exitCodeVariable.Value } elseif ($success) { 0 } else { 1 }
+    if (-not $success -or $exitCode -ne 0) {
+        throw "aws $($Arguments -join ' ') failed with exit code $exitCode"
+    }
+
+    $text = ($output | Out-String).Trim()
+    if ([string]::IsNullOrWhiteSpace($text) -or $text -eq 'null') {
+        return $null
+    }
+
+    return $text | ConvertFrom-Json
+}
+
+function Invoke-AwsText {
+    param([Parameter(Mandatory = $true)][string[]]$Arguments)
+
+    $awsArgs = @($script:AwsPrefixArgs) + @($Arguments)
+    & $script:AwsExecutable @awsArgs
+    $success = $?
+    $exitCodeVariable = Get-Variable -Name LASTEXITCODE -Scope Global -ErrorAction SilentlyContinue
+    $exitCode = if ($exitCodeVariable) { [int]$exitCodeVariable.Value } elseif ($success) { 0 } else { 1 }
+    if (-not $success -or $exitCode -ne 0) {
+        throw "aws $($Arguments -join ' ') failed with exit code $exitCode"
     }
 }
 
-foreach ($asgName in $asgTargets) {
-    $asg = aws autoscaling describe-auto-scaling-groups `
-        --auto-scaling-group-names $asgName --region $Region `
-        --query "AutoScalingGroups[0].{name:AutoScalingGroupName,min:MinSize,desired:DesiredCapacity,max:MaxSize}" `
-        --output json | ConvertFrom-Json
+function Ensure-ParentDirectory {
+    param([Parameter(Mandatory = $true)][string]$Path)
 
-    if (-not $asg -or -not $asg.name) {
-        continue
-    }
-
-    $state.asgs += [ordered]@{
-        name            = $asg.name
-        minSize         = $asg.min
-        desiredCapacity = $asg.desired
-        maxSize         = $asg.max
+    $parent = Split-Path -Parent $Path
+    if ($parent -and -not (Test-Path $parent)) {
+        New-Item -ItemType Directory -Path $parent -Force | Out-Null
     }
 }
 
-foreach ($fn in $lambdas) {
-    $esms = aws lambda list-event-source-mappings `
-        --function-name $fn --region $Region `
-        --query "EventSourceMappings[].{uuid:UUID,state:State,source:EventSourceArn}" `
-        --output json | ConvertFrom-Json
-
-    foreach ($esm in $esms) {
-        $state.esms += [ordered]@{
-            functionName = $fn
-            uuid         = $esm.uuid
-            wasEnabled   = ($esm.state -eq 'Enabled')
-            source       = $esm.source
-        }
+function Assert-AwsAccount {
+    $identity = Invoke-AwsJson -Arguments @('sts', 'get-caller-identity', '--output', 'json')
+    if (-not $identity -or -not ($identity.PSObject.Properties.Name -contains 'Account')) {
+        throw 'AWS CLI returned no caller identity. Check that aws is authenticated in this shell.'
     }
+    if ($identity.Account -ne $ExpectedAccountId) {
+        throw "Refusing to run in AWS account $($identity.Account). Expected $ExpectedAccountId."
+    }
+
+    return $identity.Account
 }
 
-$stateJson = $state | ConvertTo-Json -Depth 6
-[System.IO.File]::WriteAllText($stateFile, $stateJson)
-Write-Host "  State saved to: $stateFile" -ForegroundColor Green
-
-# ─────────────────────────────────────────────────────
-# 2. Scale down all ECS services to 0
-# ─────────────────────────────────────────────────────
-Write-Host "`n[2/5] Scaling down ECS services..." -ForegroundColor Cyan
-foreach ($target in $state.services) {
-    $cluster = $target.cluster
-    $svc     = $target.service
-    $desired = $target.desiredCount
-
-    if ($desired -eq 0) {
-        Write-Host "  OK    $svc (already at 0)" -ForegroundColor DarkGray
-        continue
-    }
-
-    if ($PSCmdlet.ShouldProcess("$cluster/$svc", "Scale to 0 (was $desired)")) {
-        aws ecs update-service `
-            --cluster $cluster --service $svc `
-            --desired-count 0 `
-            --region $Region `
-            --output text --query "service.serviceName" | Out-Null
-        Write-Host "  DOWN  $svc  ($desired -> 0)" -ForegroundColor Green
-    }
+function Test-CeragonText {
+    param([AllowNull()][string]$Text)
+    return ($Text -match '(?i)cera|ceragon|codefence')
 }
 
-# ─────────────────────────────────────────────────────
-# 3. Zero and suspend ECS auto-scaling so it doesn't scale services back up
-# ─────────────────────────────────────────────────────
-Write-Host "`n[3/6] Suspending ECS auto-scaling..." -ForegroundColor Cyan
+function Get-CeragonEcsServices {
+    $services = @()
 
-foreach ($target in $scalableTargets) {
-    if ($PSCmdlet.ShouldProcess($target.id, "Suspend auto-scaling")) {
-        aws application-autoscaling register-scalable-target `
-            --service-namespace ecs `
-            --resource-id $target.id `
-            --scalable-dimension "ecs:service:DesiredCount" `
-            --min-capacity 0 `
-            --max-capacity 0 `
-            --suspended-state "DynamicScalingInSuspended=true,DynamicScalingOutSuspended=true,ScheduledScalingSuspended=true" `
-            --region $Region --output text | Out-Null
-        Write-Host "  SUSPENDED  $($target.id) (min=0, max=0)" -ForegroundColor Green
-    }
-}
-
-# ─────────────────────────────────────────────────────
-# 4. Scale down EC2-backed cluster capacity
-# ─────────────────────────────────────────────────────
-Write-Host "`n[4/6] Scaling down EC2 auto-scaling groups..." -ForegroundColor Cyan
-
-foreach ($asg in $state.asgs) {
-    if ($PSCmdlet.ShouldProcess($asg.name, "Scale ASG to 0")) {
-        aws autoscaling update-auto-scaling-group `
-            --auto-scaling-group-name $asg.name `
-            --min-size 0 --desired-capacity 0 --max-size 0 `
-            --region $Region --output text | Out-Null
-
-        aws autoscaling suspend-processes `
-            --auto-scaling-group-name $asg.name `
-            --scaling-processes "Launch" "AlarmNotification" "AZRebalance" "HealthCheck" "InstanceRefresh" "ReplaceUnhealthy" "ScheduledActions" "AddToLoadBalancer" `
-            --region $Region --output text | Out-Null
-
-        $instances = aws autoscaling describe-auto-scaling-groups `
-            --auto-scaling-group-names $asg.name --region $Region `
-            --query "AutoScalingGroups[0].Instances[].InstanceId" `
-            --output text
-
-        foreach ($instanceId in ($instances -split '\s+' | Where-Object { $_ })) {
-            aws autoscaling terminate-instance-in-auto-scaling-group `
-                --instance-id $instanceId `
-                --no-should-decrement-desired-capacity `
-                --region $Region --output text | Out-Null
-            Write-Host "  TERMINATING  $instanceId ($($asg.name))" -ForegroundColor Green
-        }
-
-        Write-Host "  DOWN  $($asg.name) (min=0, desired=0, max=0)" -ForegroundColor Green
-    }
-}
-
-# ─────────────────────────────────────────────────────
-# 5. Disable Lambda event-source mappings (prevent invocations)
-# ─────────────────────────────────────────────────────
-Write-Host "`n[5/6] Disabling Lambda ESMs..." -ForegroundColor Cyan
-
-foreach ($esm in $state.esms) {
-    if (-not $esm.wasEnabled) {
-        Write-Host "  SKIP  $($esm.functionName)/$($esm.uuid) (already disabled)" -ForegroundColor DarkGray
+    foreach ($cluster in $EcsClusters) {
+        try {
+            $serviceArns = @(Invoke-AwsJson -Arguments @(
+                    'ecs', 'list-services',
+                    '--cluster', $cluster,
+                    '--region', $Region,
+                    '--query', 'serviceArns[]',
+                    '--output', 'json'
+                ))
+        } catch {
+            Write-Warning "Could not list ECS services for cluster ${cluster}: $($_.Exception.Message)"
             continue
+        }
+
+        if ($serviceArns.Count -eq 0) {
+            continue
+        }
+
+        $describeArgs = @(
+            'ecs', 'describe-services',
+            '--cluster', $cluster,
+            '--services'
+        ) + $serviceArns + @('--region', $Region, '--output', 'json')
+
+        $description = Invoke-AwsJson -Arguments $describeArgs
+        foreach ($service in @($description.services)) {
+            if ($service.status -eq 'INACTIVE') {
+                continue
+            }
+
+            $services += [ordered]@{
+                cluster      = $cluster
+                service      = $service.serviceName
+                desiredCount = [int]$service.desiredCount
+                runningCount = [int]$service.runningCount
+                pendingCount = [int]$service.pendingCount
+                taskDef      = $service.taskDefinition
+            }
+        }
     }
 
-    if ($PSCmdlet.ShouldProcess("$($esm.functionName) ESM $($esm.uuid)", "Disable")) {
-        aws lambda update-event-source-mapping `
-            --uuid $esm.uuid --no-enabled `
-            --region $Region --output text --query "State" | Out-Null
-        $queueName = ($esm.source -split ':')[-1]
-        Write-Host "  DISABLED  $($esm.functionName) <- $queueName" -ForegroundColor Green
+    return @($services)
+}
+
+function Get-CeragonScalableTargets {
+    $serviceIds = @{}
+    foreach ($service in $State.ecsServices) {
+        $serviceIds["service/$($service.cluster)/$($service.service)"] = $true
+    }
+
+    $targets = @()
+    $response = Invoke-AwsJson -Arguments @(
+        'application-autoscaling', 'describe-scalable-targets',
+        '--service-namespace', 'ecs',
+        '--region', $Region,
+        '--output', 'json'
+    )
+
+    foreach ($target in @($response.ScalableTargets)) {
+        if (-not $serviceIds.ContainsKey($target.ResourceId)) {
+            continue
+        }
+
+        $targets += [ordered]@{
+            resourceId     = $target.ResourceId
+            minCapacity    = [int]$target.MinCapacity
+            maxCapacity    = [int]$target.MaxCapacity
+            suspendedState = $target.SuspendedState
+        }
+    }
+
+    return @($targets)
+}
+
+function Get-CeragonAsgs {
+    $asgs = @()
+    $response = Invoke-AwsJson -Arguments @(
+        'autoscaling', 'describe-auto-scaling-groups',
+        '--region', $Region,
+        '--output', 'json'
+    )
+
+    foreach ($asg in @($response.AutoScalingGroups)) {
+        $tagText = (@($asg.Tags) | ForEach-Object { "$($_.Key)=$($_.Value)" }) -join ' '
+        if (-not (Test-CeragonText -Text $asg.AutoScalingGroupName) -and -not (Test-CeragonText -Text $tagText)) {
+            continue
+        }
+
+        $asgs += [ordered]@{
+            name               = $asg.AutoScalingGroupName
+            minSize            = [int]$asg.MinSize
+            desiredCapacity    = [int]$asg.DesiredCapacity
+            maxSize            = [int]$asg.MaxSize
+            suspendedProcesses = @($asg.SuspendedProcesses | ForEach-Object { $_.ProcessName })
+            instanceIds        = @($asg.Instances | ForEach-Object { $_.InstanceId })
+        }
+    }
+
+    return @($asgs)
+}
+
+function Get-CeragonRdsInstances {
+    if ($SkipRds) {
+        return @()
+    }
+
+    $instances = @()
+    foreach ($dbId in $RdsInstances) {
+        try {
+            $response = Invoke-AwsJson -Arguments @(
+                'rds', 'describe-db-instances',
+                '--db-instance-identifier', $dbId,
+                '--region', $Region,
+                '--output', 'json'
+            )
+        } catch {
+            Write-Warning "Could not describe RDS instance ${dbId}: $($_.Exception.Message)"
+            continue
+        }
+
+        foreach ($db in @($response.DBInstances)) {
+            $instances += [ordered]@{
+                id                 = $db.DBInstanceIdentifier
+                arn                = $db.DBInstanceArn
+                status             = $db.DBInstanceStatus
+                engine             = $db.Engine
+                class              = $db.DBInstanceClass
+                shouldStartOnPowerOn = ($db.DBInstanceStatus -in @('available', 'backing-up'))
+            }
+        }
+    }
+
+    return @($instances)
+}
+
+function Get-CeragonLambdaMappings {
+    $mappings = @()
+
+    foreach ($functionName in $LambdaFunctions) {
+        try {
+            $response = Invoke-AwsJson -Arguments @(
+                'lambda', 'list-event-source-mappings',
+                '--function-name', $functionName,
+                '--region', $Region,
+                '--output', 'json'
+            )
+        } catch {
+            Write-Warning "Could not list Lambda event-source mappings for ${functionName}: $($_.Exception.Message)"
+            continue
+        }
+
+        foreach ($mapping in @($response.EventSourceMappings)) {
+            $mappings += [ordered]@{
+                functionName = $functionName
+                uuid         = $mapping.UUID
+                state        = $mapping.State
+                wasEnabled   = ($mapping.State -eq 'Enabled' -or $mapping.State -eq 'Enabling')
+                source       = $mapping.EventSourceArn
+            }
+        }
+    }
+
+    return @($mappings)
+}
+
+function Get-CeragonEventRules {
+    $rules = @()
+    $response = Invoke-AwsJson -Arguments @(
+        'events', 'list-rules',
+        '--region', $Region,
+        '--output', 'json'
+    )
+
+    foreach ($rule in @($response.Rules)) {
+        if (-not (Test-CeragonText -Text $rule.Name)) {
+            continue
+        }
+
+        $rules += [ordered]@{
+            name       = $rule.Name
+            state      = $rule.State
+            wasEnabled = ($rule.State -eq 'ENABLED')
+            schedule   = $rule.ScheduleExpression
+        }
+    }
+
+    return @($rules)
+}
+
+function Get-CeragonStandaloneEc2Instances {
+    $instances = @()
+    $response = Invoke-AwsJson -Arguments @(
+        'ec2', 'describe-instances',
+        '--region', $Region,
+        '--filters', 'Name=instance-state-name,Values=pending,running,stopping,stopped',
+        '--output', 'json'
+    )
+
+    foreach ($reservation in @($response.Reservations)) {
+        foreach ($instance in @($reservation.Instances)) {
+            $tagText = (@($instance.Tags) | ForEach-Object { "$($_.Key)=$($_.Value)" }) -join ' '
+            $asgTag = @($instance.Tags | Where-Object { $_.Key -eq 'aws:autoscaling:groupName' })
+            if ($asgTag.Count -gt 0) {
+                continue
+            }
+
+            if (-not (Test-CeragonText -Text $tagText)) {
+                continue
+            }
+
+            $instances += [ordered]@{
+                id         = $instance.InstanceId
+                state      = $instance.State.Name
+                type       = $instance.InstanceType
+                wasRunning = ($instance.State.Name -eq 'running' -or $instance.State.Name -eq 'pending')
+            }
+        }
+    }
+
+    return @($instances)
+}
+
+function Test-StateHasRunningRuntime {
+    return (
+        (@($State.ecsServices | Where-Object { [int]$_.desiredCount -gt 0 }).Count -gt 0) -or
+        (@($State.asgs | Where-Object { [int]$_.desiredCapacity -gt 0 }).Count -gt 0) -or
+        (@($State.rdsInstances | Where-Object { $_.status -in @('available', 'backing-up', 'starting') }).Count -gt 0) -or
+        (@($State.lambdaEventSourceMappings | Where-Object { $_.wasEnabled }).Count -gt 0) -or
+        (@($State.eventBridgeRules | Where-Object { $_.wasEnabled }).Count -gt 0) -or
+        (@($State.standaloneEc2Instances | Where-Object { $_.wasRunning }).Count -gt 0)
+    )
+}
+
+function Wait-ForEcsZero {
+    $targets = @($State.ecsServices)
+    if ($targets.Count -eq 0) {
+        return
+    }
+
+    $deadline = (Get-Date).AddSeconds($WaitTimeoutSeconds)
+    while ((Get-Date) -lt $deadline) {
+        $pending = @()
+        foreach ($target in $targets) {
+            $description = Invoke-AwsJson -Arguments @(
+                'ecs', 'describe-services',
+                '--cluster', $target.cluster,
+                '--services', $target.service,
+                '--region', $Region,
+                '--query', 'services[0].{desired:desiredCount,running:runningCount,pending:pendingCount}',
+                '--output', 'json'
+            )
+
+            if ([int]$description.desired -ne 0 -or [int]$description.running -ne 0 -or [int]$description.pending -ne 0) {
+                $pending += "$($target.cluster)/$($target.service)=$($description.running)/$($description.desired)"
+            }
+        }
+
+        if ($pending.Count -eq 0) {
+            Write-Host '  ECS services are at 0 desired/running.' -ForegroundColor Green
+            return
+        }
+
+        Write-Host "  Waiting for ECS to drain: $($pending -join ', ')" -ForegroundColor DarkGray
+        Start-Sleep -Seconds 15
+    }
+
+    Write-Warning "Timed out waiting for ECS services to drain after $WaitTimeoutSeconds seconds."
+}
+
+function Wait-ForAsgZero {
+    $targets = @($State.asgs)
+    if ($targets.Count -eq 0) {
+        return
+    }
+
+    $deadline = (Get-Date).AddSeconds($WaitTimeoutSeconds)
+    while ((Get-Date) -lt $deadline) {
+        $pending = @()
+        foreach ($target in $targets) {
+            $asg = Invoke-AwsJson -Arguments @(
+                'autoscaling', 'describe-auto-scaling-groups',
+                '--auto-scaling-group-names', $target.name,
+                '--region', $Region,
+                '--query', 'AutoScalingGroups[0].{desired:DesiredCapacity,instances:Instances[].InstanceId}',
+                '--output', 'json'
+            )
+
+            if ($asg -and ([int]$asg.desired -ne 0 -or @($asg.instances).Count -ne 0)) {
+                $pending += "$($target.name)=desired:$($asg.desired),instances:$(@($asg.instances).Count)"
+            }
+        }
+
+        if ($pending.Count -eq 0) {
+            Write-Host '  ASG capacity is at 0.' -ForegroundColor Green
+            return
+        }
+
+        Write-Host "  Waiting for ASGs to drain: $($pending -join ', ')" -ForegroundColor DarkGray
+        Start-Sleep -Seconds 15
+    }
+
+    Write-Warning "Timed out waiting for ASGs to drain after $WaitTimeoutSeconds seconds."
+}
+
+if (-not $StatePath) {
+    $StatePath = Get-DefaultStatePath
+}
+
+Write-Host '=====================================================' -ForegroundColor Yellow
+Write-Host ' CERAGON AWS POWER OFF' -ForegroundColor Yellow
+Write-Host ' Saving runtime state, then stopping paid compute' -ForegroundColor Yellow
+Write-Host '=====================================================' -ForegroundColor Yellow
+
+Initialize-AwsCli
+$accountId = Assert-AwsAccount
+Write-Host "Account: $accountId  Region: $Region" -ForegroundColor DarkGray
+Write-Host "AWS CLI: $script:AwsExecutable $($script:AwsPrefixArgs -join ' ')" -ForegroundColor DarkGray
+Write-Host "State:   $StatePath" -ForegroundColor DarkGray
+
+$script:State = [ordered]@{
+    schemaVersion             = 2
+    savedAtUtc               = (Get-Date).ToUniversalTime().ToString('o')
+    savedBy                  = 'ceragon-power-off.ps1'
+    accountId                = $accountId
+    region                   = $Region
+    ecsClusters              = $EcsClusters
+    ecsServices              = @()
+    scalableTargets          = @()
+    asgs                     = @()
+    rdsInstances             = @()
+    lambdaEventSourceMappings = @()
+    eventBridgeRules         = @()
+    standaloneEc2Instances   = @()
+}
+
+Write-Host "`n[1/8] Discovering current runtime state..." -ForegroundColor Cyan
+$State.ecsServices = @(Get-CeragonEcsServices)
+$State.scalableTargets = @(Get-CeragonScalableTargets)
+$State.asgs = @(Get-CeragonAsgs)
+$State.rdsInstances = @(Get-CeragonRdsInstances)
+$State.lambdaEventSourceMappings = @(Get-CeragonLambdaMappings)
+$State.eventBridgeRules = @(Get-CeragonEventRules)
+$State.standaloneEc2Instances = @(Get-CeragonStandaloneEc2Instances)
+
+Write-Host "  ECS services:          $(@($State.ecsServices).Count)" -ForegroundColor DarkGray
+Write-Host "  ECS scalable targets:  $(@($State.scalableTargets).Count)" -ForegroundColor DarkGray
+Write-Host "  ASGs:                  $(@($State.asgs).Count)" -ForegroundColor DarkGray
+Write-Host "  RDS instances:         $(@($State.rdsInstances).Count)" -ForegroundColor DarkGray
+Write-Host "  Lambda mappings:       $(@($State.lambdaEventSourceMappings).Count)" -ForegroundColor DarkGray
+Write-Host "  EventBridge rules:     $(@($State.eventBridgeRules).Count)" -ForegroundColor DarkGray
+Write-Host "  Standalone EC2:        $(@($State.standaloneEc2Instances).Count)" -ForegroundColor DarkGray
+
+$stateHasRuntime = Test-StateHasRunningRuntime
+$stateExists = Test-Path $StatePath
+$shouldWriteState = $true
+if ($stateExists -and -not $OverwriteState -and -not $stateHasRuntime) {
+    $shouldWriteState = $false
+    Write-Host "`n[2/8] Existing state preserved because runtime already looks powered off." -ForegroundColor Yellow
+    Write-Host '      Use -OverwriteState to replace it anyway.' -ForegroundColor Yellow
+} else {
+    Write-Host "`n[2/8] Saving power state..." -ForegroundColor Cyan
+    if ($PSCmdlet.ShouldProcess($StatePath, 'Write current runtime state')) {
+        Ensure-ParentDirectory -Path $StatePath
+        $State | ConvertTo-Json -Depth 10 | Set-Content -Path $StatePath -Encoding UTF8
+        Write-Host "  Saved $StatePath" -ForegroundColor Green
     }
 }
 
-# ─────────────────────────────────────────────────────
-# 6. Save state file
-# ─────────────────────────────────────────────────────
-Write-Host "`n[6/6] Saving state file..." -ForegroundColor Cyan
+Write-Host "`n[3/8] Suspending ECS Application Auto Scaling..." -ForegroundColor Cyan
+foreach ($target in @($State.scalableTargets)) {
+    if ($PSCmdlet.ShouldProcess($target.resourceId, 'Set min=0 max=0 and suspend scaling')) {
+        Invoke-AwsText -Arguments @(
+            'application-autoscaling', 'register-scalable-target',
+            '--service-namespace', 'ecs',
+            '--resource-id', $target.resourceId,
+            '--scalable-dimension', 'ecs:service:DesiredCount',
+            '--min-capacity', '0',
+            '--max-capacity', '0',
+            '--suspended-state', 'DynamicScalingInSuspended=true,DynamicScalingOutSuspended=true,ScheduledScalingSuspended=true',
+            '--region', $Region,
+            '--output', 'text'
+        ) | Out-Null
+        Write-Host "  SUSPENDED  $($target.resourceId)" -ForegroundColor Green
+    }
+}
 
-$stateJson = $state | ConvertTo-Json -Depth 6
-[System.IO.File]::WriteAllText($stateFile, $stateJson)
-Write-Host "  State saved to: $stateFile" -ForegroundColor Green
+Write-Host "`n[4/8] Disabling Lambda event-source mappings..." -ForegroundColor Cyan
+foreach ($mapping in @($State.lambdaEventSourceMappings | Where-Object { $_.wasEnabled })) {
+    if ($PSCmdlet.ShouldProcess("$($mapping.functionName) $($mapping.uuid)", 'Disable Lambda event-source mapping')) {
+        Invoke-AwsText -Arguments @(
+            'lambda', 'update-event-source-mapping',
+            '--uuid', $mapping.uuid,
+            '--no-enabled',
+            '--region', $Region,
+            '--output', 'text',
+            '--query', 'State'
+        ) | Out-Null
+        $queueName = ($mapping.source -split ':')[-1]
+        Write-Host "  DISABLED  $($mapping.functionName) <- $queueName" -ForegroundColor Green
+    }
+}
 
-# ─────────────────────────────────────────────────────
-# Summary
-# ─────────────────────────────────────────────────────
-Write-Host "" -ForegroundColor Yellow
-Write-Host "POWER OFF COMPLETE" -ForegroundColor Yellow
-Write-Host "  ECS services scaled to 0" -ForegroundColor Yellow
-Write-Host "  ECS auto-scaling suspended and zeroed" -ForegroundColor Yellow
-Write-Host "  EC2 ASGs scaled to 0" -ForegroundColor Yellow
-Write-Host "  Lambda ESMs disabled" -ForegroundColor Yellow
-Write-Host "  Still running: NAT Gateway, VPC endpoints, SQS, DynamoDB" -ForegroundColor Yellow
-Write-Host "  Run ceragon-power-on.ps1 to restore everything" -ForegroundColor Yellow
+Write-Host "`n[5/8] Disabling EventBridge scheduled rules..." -ForegroundColor Cyan
+foreach ($rule in @($State.eventBridgeRules | Where-Object { $_.wasEnabled })) {
+    if ($PSCmdlet.ShouldProcess($rule.name, 'Disable EventBridge rule')) {
+        Invoke-AwsText -Arguments @(
+            'events', 'disable-rule',
+            '--name', $rule.name,
+            '--region', $Region,
+            '--output', 'text'
+        ) | Out-Null
+        Write-Host "  DISABLED  $($rule.name)" -ForegroundColor Green
+    }
+}
+
+Write-Host "`n[6/8] Scaling ECS services to 0..." -ForegroundColor Cyan
+foreach ($service in @($State.ecsServices)) {
+    if ([int]$service.desiredCount -eq 0) {
+        Write-Host "  OK        $($service.cluster)/$($service.service) already desired=0" -ForegroundColor DarkGray
+        continue
+    }
+
+    if ($PSCmdlet.ShouldProcess("$($service.cluster)/$($service.service)", "Scale desired count $($service.desiredCount) -> 0")) {
+        Invoke-AwsText -Arguments @(
+            'ecs', 'update-service',
+            '--cluster', $service.cluster,
+            '--service', $service.service,
+            '--desired-count', '0',
+            '--region', $Region,
+            '--output', 'text',
+            '--query', 'service.serviceName'
+        ) | Out-Null
+        Write-Host "  DOWN      $($service.cluster)/$($service.service) ($($service.desiredCount) -> 0)" -ForegroundColor Green
+    }
+}
+
+Write-Host "`n[7/8] Scaling sandbox Auto Scaling Groups to 0..." -ForegroundColor Cyan
+foreach ($asg in @($State.asgs)) {
+    if ([int]$asg.desiredCapacity -eq 0 -and [int]$asg.minSize -eq 0 -and [int]$asg.maxSize -eq 0) {
+        Write-Host "  OK        $($asg.name) already min/desired/max=0/0/0" -ForegroundColor DarkGray
+    } else {
+        if ($PSCmdlet.ShouldProcess($asg.name, "Set ASG min/desired/max $($asg.minSize)/$($asg.desiredCapacity)/$($asg.maxSize) -> 0/0/0")) {
+            Invoke-AwsText -Arguments @(
+                'autoscaling', 'update-auto-scaling-group',
+                '--auto-scaling-group-name', $asg.name,
+                '--min-size', '0',
+                '--desired-capacity', '0',
+                '--max-size', '0',
+                '--region', $Region,
+                '--output', 'text'
+            ) | Out-Null
+            Write-Host "  DOWN      $($asg.name)" -ForegroundColor Green
+        }
+    }
+
+    if ($PSCmdlet.ShouldProcess($asg.name, 'Suspend launch/scaling processes')) {
+        Invoke-AwsText -Arguments @(
+            'autoscaling', 'suspend-processes',
+            '--auto-scaling-group-name', $asg.name,
+            '--scaling-processes',
+            'Launch',
+            'AlarmNotification',
+            'AZRebalance',
+            'InstanceRefresh',
+            'ReplaceUnhealthy',
+            'ScheduledActions',
+            'AddToLoadBalancer',
+            '--region', $Region,
+            '--output', 'text'
+        ) | Out-Null
+        Write-Host "  SUSPENDED $($asg.name) launch/scaling processes" -ForegroundColor Green
+    }
+}
+
+Write-Host "`n[8/8] Stopping RDS and standalone EC2..." -ForegroundColor Cyan
+foreach ($db in @($State.rdsInstances)) {
+    if ($db.status -eq 'available' -or $db.status -eq 'backing-up') {
+        if ($PSCmdlet.ShouldProcess($db.id, 'Stop RDS DB instance')) {
+            Invoke-AwsText -Arguments @(
+                'rds', 'stop-db-instance',
+                '--db-instance-identifier', $db.id,
+                '--region', $Region,
+                '--output', 'text',
+                '--query', 'DBInstance.DBInstanceStatus'
+            ) | Out-Null
+            Write-Host "  STOPPING   RDS $($db.id)" -ForegroundColor Green
+        }
+    } else {
+        Write-Host "  OK         RDS $($db.id) status=$($db.status)" -ForegroundColor DarkGray
+    }
+}
+
+$ec2ToStop = @($State.standaloneEc2Instances | Where-Object { $_.wasRunning } | ForEach-Object { $_.id })
+if ($ec2ToStop.Count -gt 0 -and $PSCmdlet.ShouldProcess(($ec2ToStop -join ', '), 'Stop standalone EC2 instances')) {
+    Invoke-AwsText -Arguments (@(
+            'ec2', 'stop-instances',
+            '--instance-ids'
+        ) + $ec2ToStop + @(
+            '--region', $Region,
+            '--output', 'text'
+        )) | Out-Null
+    Write-Host "  STOPPING   EC2 $($ec2ToStop -join ', ')" -ForegroundColor Green
+}
+
+if (-not $SkipWait) {
+    Write-Host "`n[wait] Waiting for ECS/ASG compute to drain..." -ForegroundColor Cyan
+    Wait-ForEcsZero
+    Wait-ForAsgZero
+} else {
+    Write-Host "`n[wait] Skipped by -SkipWait." -ForegroundColor DarkGray
+}
+
+Write-Host "`nPOWER OFF COMPLETE" -ForegroundColor Yellow
+if ($shouldWriteState) {
+    Write-Host "  Restore file: $StatePath" -ForegroundColor Yellow
+}
+Write-Host '  Stopped/scaled: ECS services, ECS autoscaling, sandbox ASGs, RDS, runtime Lambda triggers, scheduled rules.' -ForegroundColor Yellow
+Write-Host '  Still billable: ALBs, NAT gateway, VPC endpoints, S3, DynamoDB, SQS, ECR, CloudWatch logs, Route 53, ACM.' -ForegroundColor Yellow
+Write-Host '  RDS note: AWS can auto-start a stopped RDS instance after 7 days.' -ForegroundColor Yellow
