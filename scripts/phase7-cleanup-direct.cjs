@@ -10,6 +10,7 @@
 // Usage:
 //   node scripts/phase7-cleanup-direct.cjs                  # dry-run all
 //   node scripts/phase7-cleanup-direct.cjs --apply          # APPLY all
+//   node scripts/phase7-cleanup-direct.cjs --env staging    # target staging
 //   node scripts/phase7-cleanup-direct.cjs --apply --keep-shared
 //                                                           # preserve package_forensics
 //
@@ -26,6 +27,17 @@ const { Client } = require(require('path').join(__dirname, '..', 'Backend', 'nod
 
 const APPLY = process.argv.includes('--apply');
 const KEEP_SHARED = process.argv.includes('--keep-shared');
+const ENV_ARG = (() => {
+  const inline = process.argv.find((arg) => arg.startsWith('--env='));
+  if (inline) return inline.split('=')[1];
+  const idx = process.argv.indexOf('--env');
+  if (idx >= 0 && process.argv[idx + 1]) return process.argv[idx + 1];
+  return process.env.CERAGON_ENV || process.env.CERA_ENV || 'production';
+})();
+const TARGET_ENV = String(ENV_ARG).trim().toLowerCase();
+if (!['production', 'staging'].includes(TARGET_ENV)) {
+  throw new Error(`Invalid --env "${ENV_ARG}". Expected production or staging.`);
+}
 
 // Tables to clean, in DELETE dependency order (children before parents).
 // Curated against the actual production schema (see phase7-schema-survey.cjs).
@@ -45,7 +57,15 @@ const TENANT_TABLES = [
   // dependency sync chain
   'repo_dependency_sync_runs',
   'repo_dependencies',
-  // analysis-side
+  // analysis-side / UI-visible tables. Some names are historical aliases;
+  // tableExists() makes them safe across schema revisions.
+  'alerts',
+  'alert',
+  'findings',
+  'finding',
+  'script_forensics',
+  'script_records',
+  'script_record',
   'license_issues',
   'inventory_events',
   'policy_exceptions',
@@ -66,7 +86,7 @@ async function getDatabaseUrl() {
   // Read from SSM via aws CLI. Node spawns the AWS CLI in the native shell
   // (cmd.exe on Windows, /bin/sh on POSIX) so the SSM path /cera/... is
   // not mangled by Git Bash MSYS path conversion.
-  const cmd = 'aws ssm get-parameter --name "/cera/staging/backend/DATABASE_URL" --with-decryption --region eu-north-1 --query "Parameter.Value" --output text';
+  const cmd = `aws ssm get-parameter --name "/cera/${TARGET_ENV}/backend/DATABASE_URL" --with-decryption --region eu-north-1 --query "Parameter.Value" --output text`;
   const out = execSync(cmd, { encoding: 'utf8', shell: true }).trim();
   if (!out || !out.startsWith('postgres')) {
     throw new Error('DATABASE_URL not retrievable from SSM');
@@ -103,7 +123,7 @@ async function main() {
   // "password authentication failed" on the URL-parsed form.
   let password = decodeURIComponent(u.password);
   try {
-    const cmd = 'aws ssm get-parameter --name "/cera/staging/backend/DATABASE_PASSWORD" --with-decryption --region eu-north-1 --query "Parameter.Value" --output text';
+    const cmd = `aws ssm get-parameter --name "/cera/${TARGET_ENV}/backend/DATABASE_PASSWORD" --with-decryption --region eu-north-1 --query "Parameter.Value" --output text`;
     const fromSsm = execSync(cmd, { encoding: 'utf8', shell: true }).trim();
     if (fromSsm) password = fromSsm;
   } catch (_) {
@@ -120,11 +140,13 @@ async function main() {
   });
   await client.connect();
   console.log(`[phase7] Connected to RDS as user ${url.match(/^postgres(?:ql)?:\/\/([^:]+):/)[1]}`);
+  console.log(`[phase7] Target environment: ${TARGET_ENV}`);
   console.log(`[phase7] Mode: ${APPLY ? 'APPLY (will DELETE)' : 'DRY-RUN (no writes)'}`);
   console.log(`[phase7] keep-shared: ${KEEP_SHARED}`);
 
   const report = {
     capturedAt: new Date().toISOString(),
+    environment: TARGET_ENV,
     mode: APPLY ? 'APPLY' : 'DRY-RUN',
     keepShared: KEEP_SHARED,
     tenantTables: {},
