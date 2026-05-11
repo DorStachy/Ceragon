@@ -38,6 +38,11 @@ const TARGET_ENV = String(ENV_ARG).trim().toLowerCase();
 if (!['production', 'staging'].includes(TARGET_ENV)) {
   throw new Error(`Invalid --env "${ENV_ARG}". Expected production or staging.`);
 }
+// Live production Backend/RDS still uses the historical `/cera/staging/backend/*`
+// SSM namespace (see AWS source of truth: staging-named worker/backend resources
+// are production). Keep the operator-facing target as "production" while reading
+// the actual parameter path that exists today.
+const BACKEND_SSM_ENV = TARGET_ENV === 'production' ? 'staging' : TARGET_ENV;
 
 // Tables to clean, in DELETE dependency order (children before parents).
 // Curated against the actual production schema (see phase7-schema-survey.cjs).
@@ -86,7 +91,7 @@ async function getDatabaseUrl() {
   // Read from SSM via aws CLI. Node spawns the AWS CLI in the native shell
   // (cmd.exe on Windows, /bin/sh on POSIX) so the SSM path /cera/... is
   // not mangled by Git Bash MSYS path conversion.
-  const cmd = `aws ssm get-parameter --name "/cera/${TARGET_ENV}/backend/DATABASE_URL" --with-decryption --region eu-north-1 --query "Parameter.Value" --output text`;
+  const cmd = `aws ssm get-parameter --name "/cera/${BACKEND_SSM_ENV}/backend/DATABASE_URL" --with-decryption --region eu-north-1 --query "Parameter.Value" --output text`;
   const out = execSync(cmd, { encoding: 'utf8', shell: true }).trim();
   if (!out || !out.startsWith('postgres')) {
     throw new Error('DATABASE_URL not retrievable from SSM');
@@ -123,7 +128,7 @@ async function main() {
   // "password authentication failed" on the URL-parsed form.
   let password = decodeURIComponent(u.password);
   try {
-    const cmd = `aws ssm get-parameter --name "/cera/${TARGET_ENV}/backend/DATABASE_PASSWORD" --with-decryption --region eu-north-1 --query "Parameter.Value" --output text`;
+    const cmd = `aws ssm get-parameter --name "/cera/${BACKEND_SSM_ENV}/backend/DATABASE_PASSWORD" --with-decryption --region eu-north-1 --query "Parameter.Value" --output text`;
     const fromSsm = execSync(cmd, { encoding: 'utf8', shell: true }).trim();
     if (fromSsm) password = fromSsm;
   } catch (_) {
@@ -141,12 +146,14 @@ async function main() {
   await client.connect();
   console.log(`[phase7] Connected to RDS as user ${url.match(/^postgres(?:ql)?:\/\/([^:]+):/)[1]}`);
   console.log(`[phase7] Target environment: ${TARGET_ENV}`);
+  console.log(`[phase7] Backend SSM namespace: ${BACKEND_SSM_ENV}`);
   console.log(`[phase7] Mode: ${APPLY ? 'APPLY (will DELETE)' : 'DRY-RUN (no writes)'}`);
   console.log(`[phase7] keep-shared: ${KEEP_SHARED}`);
 
   const report = {
     capturedAt: new Date().toISOString(),
     environment: TARGET_ENV,
+    backendSsmNamespace: BACKEND_SSM_ENV,
     mode: APPLY ? 'APPLY' : 'DRY-RUN',
     keepShared: KEEP_SHARED,
     tenantTables: {},
