@@ -134,7 +134,7 @@ function Get-DefaultState {
             @{ cluster = 'frontend'; service = 'frontend'; desiredCount = 1; taskDef = $null },
             @{ cluster = 'cera-workers-staging'; service = 'cera-fetch-worker-staging'; desiredCount = 1; taskDef = $null },
             @{ cluster = 'cera-workers-staging'; service = 'codefence-scanner-worker'; desiredCount = 1; taskDef = $null },
-            @{ cluster = 'cera-workers-staging'; service = 'cera-sandbox-worker-staging'; desiredCount = 1; taskDef = $null },
+            @{ cluster = 'cera-workers-staging'; service = 'cera-sandbox-worker-staging'; desiredCount = 3; taskDef = $null },
             @{ cluster = 'ceragon-intelligence-production'; service = 'ceragon-intelligence-artifact-fetcher-production'; desiredCount = 0; taskDef = $null },
             @{ cluster = 'ceragon-intelligence-production'; service = 'ceragon-multi-follower-production'; desiredCount = 0; taskDef = $null },
             @{ cluster = 'ceragon-intelligence-production'; service = 'ceragon-intel-static-worker-production'; desiredCount = 0; taskDef = $null },
@@ -144,7 +144,7 @@ function Get-DefaultState {
             @{
                 resourceId = 'service/cera-workers-staging/cera-sandbox-worker-staging'
                 minCapacity = 1
-                maxCapacity = 1
+                maxCapacity = 3
                 suspendedState = @{
                     DynamicScalingInSuspended = $false
                     DynamicScalingOutSuspended = $false
@@ -186,8 +186,8 @@ function Get-DefaultState {
             @{
                 name = 'cera-sandbox-staging-asg-20260408111912007200000004'
                 minSize = 0
-                desiredCapacity = 1
-                maxSize = 1
+                desiredCapacity = 3
+                maxSize = 3
                 suspendedProcesses = @()
             },
             @{
@@ -206,6 +206,20 @@ function Get-DefaultState {
                     'InstanceRefresh',
                     'AddToLoadBalancer'
                 )
+            }
+        )
+        sqsQueues                 = @(
+            @{
+                queueUrl = 'https://sqs.eu-north-1.amazonaws.com/113627991972/cera-sandbox_jobs-staging'
+                dlqArn = 'arn:aws:sqs:eu-north-1:113627991972:cera-sandbox_jobs_dlq-staging'
+                visibilityTimeoutSeconds = 900
+                maxReceiveCount = 10
+            },
+            @{
+                queueUrl = 'https://sqs.eu-north-1.amazonaws.com/113627991972/cera-sandbox_jobs_exec_now-staging'
+                dlqArn = 'arn:aws:sqs:eu-north-1:113627991972:cera-sandbox_jobs_dlq-staging'
+                visibilityTimeoutSeconds = 900
+                maxReceiveCount = 10
             }
         )
         rdsInstances              = @(
@@ -310,6 +324,56 @@ function Get-DefaultLambdaMappingsToEnable {
     return @($mappings)
 }
 
+function Set-SqsRuntimeAttributes {
+    param([object[]]$Queues)
+
+    foreach ($queue in @($Queues)) {
+        if (-not $queue.queueUrl) {
+            continue
+        }
+
+        $visibilityTimeout = if ($queue.PSObject.Properties.Name -contains 'visibilityTimeoutSeconds') {
+            [int]$queue.visibilityTimeoutSeconds
+        } else {
+            900
+        }
+        $maxReceiveCount = if ($queue.PSObject.Properties.Name -contains 'maxReceiveCount') {
+            [int]$queue.maxReceiveCount
+        } else {
+            10
+        }
+        $dlqArn = if ($queue.PSObject.Properties.Name -contains 'dlqArn') {
+            [string]$queue.dlqArn
+        } else {
+            ''
+        }
+
+        $attributes = @{
+            VisibilityTimeout = "$visibilityTimeout"
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($dlqArn)) {
+            $redrivePolicy = @{
+                deadLetterTargetArn = $dlqArn
+                maxReceiveCount = "$maxReceiveCount"
+            } | ConvertTo-Json -Compress
+            $attributes.RedrivePolicy = $redrivePolicy
+        }
+
+        $attributesJson = $attributes | ConvertTo-Json -Compress
+        if ($PSCmdlet.ShouldProcess($queue.queueUrl, "Set SQS visibility=$visibilityTimeout maxReceiveCount=$maxReceiveCount")) {
+            Invoke-AwsText -Arguments @(
+                'sqs', 'set-queue-attributes',
+                '--queue-url', $queue.queueUrl,
+                '--attributes', $attributesJson,
+                '--region', $Region,
+                '--output', 'text'
+            ) | Out-Null
+            Write-Host "  CONFIGURED $($queue.queueUrl) visibility=$visibilityTimeout maxReceiveCount=$maxReceiveCount" -ForegroundColor Green
+        }
+    }
+}
+
 function Wait-ForRdsAvailable {
     param([string[]]$DbIds)
 
@@ -377,22 +441,51 @@ Write-Host "Account: $accountId  Region: $Region" -ForegroundColor DarkGray
 Write-Host "AWS CLI: $script:AwsExecutable $($script:AwsPrefixArgs -join ' ')" -ForegroundColor DarkGray
 Write-Host "State:   $StatePath" -ForegroundColor DarkGray
 
-Write-Host "`n[1/8] Loading desired runtime state..." -ForegroundColor Cyan
+Write-Host "`n[1/9] Loading desired runtime state..." -ForegroundColor Cyan
 $state = Read-PowerState
 
 $ecsServices = @(Get-StateArray -Object $state -PropertyName 'ecsServices')
 $scalableTargets = @(Get-StateArray -Object $state -PropertyName 'scalableTargets')
 $asgs = @(Get-StateArray -Object $state -PropertyName 'asgs')
+$sqsQueues = @(Get-StateArray -Object $state -PropertyName 'sqsQueues')
 $rdsInstances = @(Get-StateArray -Object $state -PropertyName 'rdsInstances')
 $lambdaMappings = @(Get-StateArray -Object $state -PropertyName 'lambdaEventSourceMappings')
 $eventRules = @(Get-StateArray -Object $state -PropertyName 'eventBridgeRules')
 $standaloneEc2Instances = @(Get-StateArray -Object $state -PropertyName 'standaloneEc2Instances')
 
+if ($sqsQueues.Count -eq 0) {
+    $sqsQueues = @((Get-DefaultState).sqsQueues)
+}
+
 if ($lambdaMappings.Count -eq 0) {
     $lambdaMappings = @(Get-DefaultLambdaMappingsToEnable)
 }
 
-Write-Host "`n[2/8] Starting RDS..." -ForegroundColor Cyan
+foreach ($service in @($ecsServices | Where-Object { $_.cluster -eq 'cera-workers-staging' -and $_.service -eq 'cera-sandbox-worker-staging' })) {
+    if ([int]$service.desiredCount -lt 3) {
+        $service.desiredCount = 3
+    }
+}
+
+foreach ($target in @($scalableTargets | Where-Object { $_.resourceId -eq 'service/cera-workers-staging/cera-sandbox-worker-staging' })) {
+    if ([int]$target.minCapacity -lt 1) {
+        $target.minCapacity = 1
+    }
+    if ([int]$target.maxCapacity -lt 3) {
+        $target.maxCapacity = 3
+    }
+}
+
+foreach ($asg in @($asgs | Where-Object { $_.name -eq 'cera-sandbox-staging-asg-20260408111912007200000004' })) {
+    if ([int]$asg.desiredCapacity -lt 3) {
+        $asg.desiredCapacity = 3
+    }
+    if ([int]$asg.maxSize -lt 3) {
+        $asg.maxSize = 3
+    }
+}
+
+Write-Host "`n[2/9] Starting RDS..." -ForegroundColor Cyan
 $rdsStarted = @()
 if ($SkipRds) {
     Write-Host '  Skipped by -SkipRds.' -ForegroundColor DarkGray
@@ -438,7 +531,7 @@ if ($SkipRds) {
     }
 }
 
-Write-Host "`n[3/8] Restoring sandbox Auto Scaling Groups..." -ForegroundColor Cyan
+Write-Host "`n[3/9] Restoring sandbox Auto Scaling Groups..." -ForegroundColor Cyan
 foreach ($asg in @($asgs)) {
     if (-not $asg.name) {
         continue
@@ -482,7 +575,7 @@ foreach ($asg in @($asgs)) {
     }
 }
 
-Write-Host "`n[4/8] Restoring ECS Application Auto Scaling..." -ForegroundColor Cyan
+Write-Host "`n[4/9] Restoring ECS Application Auto Scaling..." -ForegroundColor Cyan
 foreach ($target in @($scalableTargets)) {
     if (-not $target.resourceId) {
         continue
@@ -508,7 +601,10 @@ foreach ($target in @($scalableTargets)) {
     }
 }
 
-Write-Host "`n[5/8] Enabling Lambda event-source mappings..." -ForegroundColor Cyan
+Write-Host "`n[5/9] Configuring sandbox SQS runtime attributes..." -ForegroundColor Cyan
+Set-SqsRuntimeAttributes -Queues $sqsQueues
+
+Write-Host "`n[6/9] Enabling Lambda event-source mappings..." -ForegroundColor Cyan
 foreach ($mapping in @($lambdaMappings | Where-Object { $_.wasEnabled -ne $false })) {
     if (-not $mapping.uuid) {
         continue
@@ -528,7 +624,7 @@ foreach ($mapping in @($lambdaMappings | Where-Object { $_.wasEnabled -ne $false
     }
 }
 
-Write-Host "`n[6/8] Enabling EventBridge scheduled rules..." -ForegroundColor Cyan
+Write-Host "`n[7/9] Enabling EventBridge scheduled rules..." -ForegroundColor Cyan
 foreach ($rule in @($eventRules | Where-Object { $_.wasEnabled -ne $false })) {
     if (-not $rule.name) {
         continue
@@ -545,7 +641,7 @@ foreach ($rule in @($eventRules | Where-Object { $_.wasEnabled -ne $false })) {
     }
 }
 
-Write-Host "`n[7/8] Restoring ECS service desired counts..." -ForegroundColor Cyan
+Write-Host "`n[8/9] Restoring ECS service desired counts..." -ForegroundColor Cyan
 foreach ($service in @($ecsServices)) {
     if (-not $service.cluster -or -not $service.service) {
         continue
@@ -584,7 +680,7 @@ foreach ($service in @($ecsServices)) {
     }
 }
 
-Write-Host "`n[8/8] Starting standalone EC2 instances..." -ForegroundColor Cyan
+Write-Host "`n[9/9] Starting standalone EC2 instances..." -ForegroundColor Cyan
 $ec2ToStart = @($standaloneEc2Instances | Where-Object { $_.wasRunning } | ForEach-Object { $_.id })
 if ($ec2ToStart.Count -eq 0) {
     Write-Host '  None.' -ForegroundColor DarkGray
