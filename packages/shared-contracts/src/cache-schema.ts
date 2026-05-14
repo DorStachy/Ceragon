@@ -39,8 +39,11 @@
  *        to be at 4). A single bump above max(4, 5) = 5 + 1 = 6 makes
  *        every pre-Phase-0 cached row a guaranteed miss across BOTH paths,
  *        which is the only correct behavior.
+ *   v7 — P0-1 canonical vulnerability evidence parity. Cache rows must
+ *        carry direct and transitive evidence completeness metadata so a
+ *        low historical riskScore cannot mask critical/high CVE evidence.
  */
-export const SCANNER_CACHE_SCHEMA_VERSION = 6 as const;
+export const SCANNER_CACHE_SCHEMA_VERSION = 7 as const;
 
 /**
  * Type-safe alias for cache rows that carry a `cacheVersion` integer.
