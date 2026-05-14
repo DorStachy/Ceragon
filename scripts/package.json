@@ -1,0 +1,16 @@
+{
+  "name": "ceragon-readiness-scripts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Operational + release-readiness scripts for the Ceragon workspace. These are not part of any deployable component; they run from operator machines / CI runners. P1-3 / P1-6 / P1-7 hardening.",
+  "scripts": {
+    "verify-ecs-image-shas": "node verify-ecs-image-shas.cjs",
+    "verify-queues-empty": "node verify-queues-empty.cjs",
+    "production-readiness-gate": "node production-readiness-gate.cjs"
+  },
+  "dependencies": {
+    "@aws-sdk/client-ecs": "^3.450.0",
+    "@aws-sdk/client-ecr": "^3.450.0",
+    "@aws-sdk/client-sqs": "^3.450.0"
+  }
+}

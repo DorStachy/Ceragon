@@ -42,8 +42,17 @@
  *   v7 — P0-1 canonical vulnerability evidence parity. Cache rows must
  *        carry direct and transitive evidence completeness metadata so a
  *        low historical riskScore cannot mask critical/high CVE evidence.
+ *   v8 — 2026-05-14 stabilization plan (P0-5). WorkerResult finding-evidence
+ *        canonicalization (finding.evidence as the open extension point),
+ *        failure-classification persistence (workerFailure.contractRejected
+ *        on Analysis.metadata), and the executable worker-result contract
+ *        gate. Old rows may carry top-level analyzer evidence keys
+ *        (evidenceTier/confirmedSourceToSink/fileContext/scriptName/phase),
+ *        may carry FAILED/BLOCK analyses produced by DTO rejection rather
+ *        than real package risk, and may lack workerFailure metadata.
+ *        Bumping invalidates all pre-fix rows as miss.
  */
-export const SCANNER_CACHE_SCHEMA_VERSION = 7 as const;
+export const SCANNER_CACHE_SCHEMA_VERSION = 8 as const;
 
 /**
  * Type-safe alias for cache rows that carry a `cacheVersion` integer.
