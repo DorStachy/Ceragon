@@ -37,7 +37,10 @@
  *        `worker_top_level_evidence_alias` CloudWatch counter has been
  *        zero for one release cycle.
  */
-export const WORKER_RESULT_CONTRACT_VERSION = 1 as const;
+// v2 (2026-05-18, plan P0-2): added top-level `metadata` envelope
+// (`metadata.suppressedAdvisories` — withdrawn/disputed advisories excluded
+// from active findings). Future audit buckets extend the same envelope.
+export const WORKER_RESULT_CONTRACT_VERSION = 2 as const;
 
 export type WorkerResultProducer = 'static-worker' | 'sandbox-worker';
 
@@ -172,6 +175,9 @@ export const ALLOWED_TOP_LEVEL_RESULT_KEYS = [
 
   // Misc operational
   'processingTimeMs',
+
+  // v2 (P0-2): additive metadata envelope (suppressedAdvisories, …)
+  'metadata',
 ] as const;
 
 /** Convenience set for lookups. */
