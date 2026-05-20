@@ -113,6 +113,32 @@ export interface VulnerabilityEvidence {
   directness?: 'direct' | 'transitive' | 'unknown';
   dependencyPath?: string[];
   references?: string[];
+  // P0-4 (2026-05-18): reviewer fields so an advisory renders as a
+  // proper advisory card (id/aliases/installed version/matched range/
+  // fix/source DB/refs/severity/policy) instead of a fake `package.json:0`
+  // source row. All optional/additive — backward-compatible.
+  /** Scanned package name. */
+  packageName?: string;
+  /** Package ecosystem (npm/pypi/cargo/go). */
+  ecosystem?: string;
+  /** The concrete scanned/installed version the advisory was matched against. */
+  installedVersion?: string;
+  /** Advisory database the row came from. */
+  source?: 'osv' | 'ghsa' | 'npm';
+  /** Advisory severity. */
+  severity?: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  cvssScore?: number;
+  cvssVector?: string;
+  /** Range that actually matched the scanned version (P0-2). */
+  matchedAffectedRange?: string;
+  /** Fix of the matched range (range-specific, not the global MAX). */
+  matchedFixedIn?: string;
+  /** OSV `withdrawn` / GHSA withdrawn timestamp, when retracted. */
+  withdrawn?: string;
+  /** Why this advisory was excluded from active findings (P0-2 audit). */
+  suppressedReason?: 'withdrawn' | 'disputed';
+  /** Backend-computed policy action, when known. */
+  policyAction?: string;
 }
 
 export interface ReputationEvidence {
