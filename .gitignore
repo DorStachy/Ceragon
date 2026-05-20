@@ -67,3 +67,6 @@ packages/shared-contracts/package-lock.json
 # Codex adversarial-review prompt scratch files (per-batch / per-iteration).
 # Working-directory artifacts captured during the iterative review cycle.
 .codex-*-prompt*.txt
+
+# Local codesec e2e Docker stack (credentials, env, binaries) — never commit/review
+.codesec-e2e/
