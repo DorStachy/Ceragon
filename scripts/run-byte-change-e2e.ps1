@@ -74,14 +74,22 @@ if (-not (Test-Path $driver)) {
 }
 
 Write-Host "==> running Node driver"
-& node $driver `
-  --aliasKey $AliasKey `
-  --intelEndpoint $IntelEndpoint `
-  --sqsEndpoint $SqsEndpoint `
-  --tablePrefix $TablePrefix
-if ($LASTEXITCODE -ne 0) {
-  Write-Error "byte-change E2E driver failed (exit $LASTEXITCODE)"
-  exit $LASTEXITCODE
+# Invoke from Ceragon-Intelligence so Node resolves @aws-sdk/* from its node_modules.
+$intelRoot = Join-Path $RepoRoot 'Ceragon-Intelligence'
+Push-Location $intelRoot
+try {
+  & node $driver `
+    --aliasKey $AliasKey `
+    --intelEndpoint $IntelEndpoint `
+    --sqsEndpoint $SqsEndpoint `
+    --tablePrefix $TablePrefix
+  $driverExit = $LASTEXITCODE
+} finally {
+  Pop-Location
+}
+if ($driverExit -ne 0) {
+  Write-Error "byte-change E2E driver failed (exit $driverExit)"
+  exit $driverExit
 }
 
 Write-Host ""

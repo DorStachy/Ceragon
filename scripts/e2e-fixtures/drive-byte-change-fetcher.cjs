@@ -31,10 +31,16 @@
 // Exit codes: 0 on full pass, 1 on any assertion failure or infra error.
 
 const path = require('node:path');
-const { DynamoDBClient, CreateTableCommand, DescribeTableCommand, GetItemCommand, PutItemCommand, DeleteItemCommand } = require('@aws-sdk/client-dynamodb');
-const { SQSClient } = require('@aws-sdk/client-sqs');
-const { S3Client } = require('@aws-sdk/client-s3');
-const { marshall, unmarshall } = require('@aws-sdk/util-dynamodb');
+const { createRequire } = require('node:module');
+
+// Resolve AWS SDK modules from Ceragon-Intelligence/node_modules. We live at
+// scripts/e2e-fixtures/ which has no node_modules of its own.
+const intelRoot = path.resolve(__dirname, '..', '..', 'Ceragon-Intelligence');
+const intelRequire = createRequire(path.join(intelRoot, 'package.json'));
+const { DynamoDBClient, CreateTableCommand, DescribeTableCommand, GetItemCommand, PutItemCommand, DeleteItemCommand } = intelRequire('@aws-sdk/client-dynamodb');
+const { SQSClient } = intelRequire('@aws-sdk/client-sqs');
+const { S3Client } = intelRequire('@aws-sdk/client-s3');
+const { marshall, unmarshall } = intelRequire('@aws-sdk/util-dynamodb');
 
 const args = parseArgs(process.argv.slice(2));
 const aliasKey = required(args, 'aliasKey');
@@ -45,7 +51,6 @@ const tablePrefix = args.tablePrefix ?? 'ceragon-staging';
 const ALIAS_TABLE = `${tablePrefix}-artifact-alias`;
 const CATALOG_TABLE = `${tablePrefix}-artifact-catalog`;
 
-const intelRoot = path.resolve(__dirname, '..', '..', 'Ceragon-Intelligence');
 process.env.CERAGON_ENV = tablePrefix.replace(/^ceragon-/, '');
 process.env.AWS_REGION = 'us-east-1';
 process.env.AWS_ACCESS_KEY_ID = 'dummy';
@@ -60,8 +65,23 @@ process.env.OPERATOR_REVIEW_QUEUE_URL = process.env.STATIC_BG_QUEUE_URL;
 const { ArtifactFetcher } = require(path.join(intelRoot, 'dist', 'workers', 'artifact-fetcher.js'));
 
 const ddb = new DynamoDBClient({ region: 'us-east-1', endpoint: intelEndpoint });
-const sqs = new SQSClient({ region: 'us-east-1', endpoint: sqsEndpoint });
-const s3 = new S3Client({ region: 'us-east-1', endpoint: intelEndpoint, forcePathStyle: true });
+
+// SQS and S3 are mocked so the fetcher can run without minio + provisioned
+// queues. The byte-change pipeline assertion is purely about what gets written
+// to ARTIFACT_ALIAS in DDB; S3/SQS plumbing is covered by the fetcher's unit
+// tests. This driver focuses on the real DDB round-trip.
+const sqs = {
+  send: async (cmd) => {
+    // ChangeMessageVisibility/Delete/Send all no-op cleanly in the test driver.
+    if (cmd && cmd.constructor && cmd.constructor.name === 'SendMessageCommand') {
+      return { MessageId: 'driver-mock-msg-id' };
+    }
+    return {};
+  },
+};
+const s3 = {
+  send: async () => ({ ETag: '"driver-mock-etag"' }),
+};
 
 async function main() {
   const parts = aliasKey.split('#');
@@ -275,6 +295,12 @@ async function clearAlias(aliasKey) {
 
 async function seedOldAlias(ecosystem, packageName, version, filename, oldSha) {
   const aliasKey = `${ecosystem}#${packageName}#${version}#${filename}`;
+  // Seed the row WITHOUT the integrity-threat fields. The fetcher's clean
+  // branch uses `if_not_exists(immutabilityViolation, :false)` which sets it
+  // to false on first write; `immutabilityViolationFirstDetectedAt` and
+  // `lastIntegrityThreatAt` are never written by the clean branch, so they
+  // must not exist on the row when a violation is later detected. This
+  // mirrors how a brand-new alias row looks in production.
   await ddb.send(new PutItemCommand({
     TableName: ALIAS_TABLE,
     Item: marshall({
@@ -285,20 +311,15 @@ async function seedOldAlias(ecosystem, packageName, version, filename, oldSha) {
       registryCursor: 'seed-cursor',
       registryLastSeenAt: new Date().toISOString(),
       upstreamUrl: 'https://example.invalid/old.tgz',
-      upstreamDigest: null,
       yanked: false,
       retracted: false,
       deleted: false,
       immutabilityViolation: false,
-      immutabilityViolationFirstDetectedAt: null,
-      lastIntegrityThreatAt: null,
-      integrityThreat: { kind: 'none', detectedAt: null, previousArtifactSha256: null, currentArtifactSha256: oldSha, previousContentHash: null, currentContentHash: 'old-tree', reason: null },
       recentPreviousArtifactSha256s: [],
       aliasHistoryCount: 0,
-      aliasHistoryPointer: null,
     }, { removeUndefinedValues: true }),
   }));
-  console.log(`[setup] seeded alias row with oldSha=${oldSha}`);
+  console.log(`[setup] seeded alias row with oldSha=${oldSha} (no integrity-threat attrs)`);
 }
 
 async function readAlias(aliasKey) {
