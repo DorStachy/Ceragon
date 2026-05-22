@@ -70,3 +70,4 @@ packages/shared-contracts/package-lock.json
 
 # Local codesec e2e Docker stack (credentials, env, binaries) — never commit/review
 .codesec-e2e/
+tmp-llm-comparison/
