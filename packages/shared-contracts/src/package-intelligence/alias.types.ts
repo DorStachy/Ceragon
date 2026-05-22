@@ -5,6 +5,21 @@
 
 export type Ecosystem = 'npm' | 'pypi' | 'cargo' | 'go';
 
+export type IntegrityThreatKind =
+  | 'none'
+  | 'upstream_checksum_mismatch'
+  | 'same_version_byte_change';
+
+export interface IntegrityThreatState {
+  kind: IntegrityThreatKind;
+  detectedAt: string | null;
+  previousArtifactSha256: string | null;
+  currentArtifactSha256: string | null;
+  previousContentHash: string | null;
+  currentContentHash: string | null;
+  reason: string | null;
+}
+
 export interface ArtifactCatalogRow {
   artifactSha256: string;
   contentHash: string;
@@ -27,6 +42,7 @@ export interface ArtifactCatalogRow {
 
 export interface ArtifactAliasRow {
   aliasKey: string; // ecosystem#package#version#filename
+  ecosystemPackage: string;
   currentArtifactSha256: string;
   currentContentHash: string;
   registryCursor: string;
@@ -37,6 +53,9 @@ export interface ArtifactAliasRow {
   retracted: boolean;
   deleted: boolean;
   immutabilityViolation: boolean;
+  immutabilityViolationFirstDetectedAt: string | null;
+  lastIntegrityThreatAt: string | null;
+  integrityThreat: IntegrityThreatState;
   recentPreviousArtifactSha256s: string[]; // capped at 8
   aliasHistoryCount: number;
   aliasHistoryPointer: string | null;
