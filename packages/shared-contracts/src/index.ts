@@ -8,4 +8,7 @@ export * from './scanner-findings';
 export * from './worker-result-contract';
 export * from './worker-result-fixtures';
 export * from './sqs-job-contract';
+export * from './source-identity';
 export * from './decision-contract';
+export * from './security-taxonomy';
+export * from './policy-drift';
