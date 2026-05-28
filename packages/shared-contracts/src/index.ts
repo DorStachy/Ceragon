@@ -12,3 +12,4 @@ export * from './source-identity';
 export * from './decision-contract';
 export * from './security-taxonomy';
 export * from './policy-drift';
+export * from './endpoint-inventory-contract';
