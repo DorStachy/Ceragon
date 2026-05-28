@@ -132,7 +132,7 @@ function Get-DefaultState {
         ecsServices               = @(
             @{ cluster = 'backend'; service = 'backend-service'; desiredCount = 1; taskDef = $null },
             @{ cluster = 'frontend'; service = 'frontend'; desiredCount = 1; taskDef = $null },
-            @{ cluster = 'cera-workers-staging'; service = 'cera-fetch-worker-staging'; desiredCount = 1; taskDef = $null },
+            @{ cluster = 'cera-workers-staging'; service = 'cera-fetch-worker-staging'; desiredCount = 3; taskDef = $null },
             @{ cluster = 'cera-workers-staging'; service = 'codefence-scanner-worker'; desiredCount = 1; taskDef = $null },
             @{ cluster = 'cera-workers-staging'; service = 'cera-sandbox-worker-staging'; desiredCount = 3; taskDef = $null },
             @{ cluster = 'ceragon-intelligence-production'; service = 'ceragon-intelligence-artifact-fetcher-production'; desiredCount = 0; taskDef = $null },
@@ -141,6 +141,16 @@ function Get-DefaultState {
             @{ cluster = 'ceragon-intelligence-production'; service = 'ceragon-intel-sandbox-worker-production'; desiredCount = 0; taskDef = $null }
         )
         scalableTargets           = @(
+            @{
+                resourceId = 'service/cera-workers-staging/cera-fetch-worker-staging'
+                minCapacity = 1
+                maxCapacity = 6
+                suspendedState = @{
+                    DynamicScalingInSuspended = $false
+                    DynamicScalingOutSuspended = $false
+                    ScheduledScalingSuspended = $false
+                }
+            },
             @{
                 resourceId = 'service/cera-workers-staging/cera-sandbox-worker-staging'
                 minCapacity = 1
@@ -239,6 +249,8 @@ function Read-PowerState {
         Write-Host "  Loaded state from $StatePath" -ForegroundColor Green
         if ($loaded.savedAtUtc) {
             Write-Host "  Saved at $($loaded.savedAtUtc) by $($loaded.savedBy)" -ForegroundColor DarkGray
+        } elseif ($loaded.savedAt) {
+            Write-Host "  Saved at $($loaded.savedAt) by $($loaded.savedBy)" -ForegroundColor DarkGray
         }
         return $loaded
     }
@@ -253,11 +265,142 @@ function Get-StateArray {
         [Parameter(Mandatory = $true)][string]$PropertyName
     )
 
+    if ($Object -is [System.Collections.IDictionary] -and $Object.Contains($PropertyName) -and $null -ne $Object[$PropertyName]) {
+        return @($Object[$PropertyName])
+    }
+
     if ($Object.PSObject.Properties.Name -contains $PropertyName -and $null -ne $Object.$PropertyName) {
         return @($Object.$PropertyName)
     }
 
+    $legacyAliases = @{
+        ecsServices               = @('services')
+        scalableTargets           = @('autoScaling')
+        lambdaEventSourceMappings = @('esms')
+    }
+    if ($legacyAliases.ContainsKey($PropertyName)) {
+        foreach ($alias in @($legacyAliases[$PropertyName])) {
+            if ($Object -is [System.Collections.IDictionary] -and $Object.Contains($alias) -and $null -ne $Object[$alias]) {
+                Write-Warning "Loaded legacy power-state property '$alias'; treating it as '$PropertyName'."
+                return @($Object[$alias])
+            }
+            if ($Object.PSObject.Properties.Name -contains $alias -and $null -ne $Object.$alias) {
+                Write-Warning "Loaded legacy power-state property '$alias'; treating it as '$PropertyName'."
+                return @($Object.$alias)
+            }
+        }
+    }
+
     return @()
+}
+
+function Set-ObjectProperty {
+    param(
+        [Parameter(Mandatory = $true)][object]$Object,
+        [Parameter(Mandatory = $true)][string]$Name,
+        [AllowNull()][object]$Value
+    )
+
+    if ($Object -is [System.Collections.IDictionary]) {
+        $Object[$Name] = $Value
+        return
+    }
+
+    if ($Object.PSObject.Properties.Name -contains $Name) {
+        $Object.$Name = $Value
+    } else {
+        $Object | Add-Member -NotePropertyName $Name -NotePropertyValue $Value -Force
+    }
+}
+
+function Ensure-EcsServiceMinimumDesired {
+    param(
+        [Parameter(Mandatory = $true)][object[]]$Services,
+        [Parameter(Mandatory = $true)][string]$Cluster,
+        [Parameter(Mandatory = $true)][string]$ServiceName,
+        [Parameter(Mandatory = $true)][int]$MinimumDesiredCount
+    )
+
+    $found = $false
+    foreach ($service in @($Services)) {
+        if ($service.cluster -eq $Cluster -and $service.service -eq $ServiceName) {
+            $found = $true
+            $currentDesired = if ($service.PSObject.Properties.Name -contains 'desiredCount' -and $null -ne $service.desiredCount) {
+                [int]$service.desiredCount
+            } else {
+                0
+            }
+            if ($currentDesired -lt $MinimumDesiredCount) {
+                Set-ObjectProperty -Object $service -Name 'desiredCount' -Value $MinimumDesiredCount
+                Write-Warning "Raised $Cluster/$ServiceName desiredCount from $currentDesired to $MinimumDesiredCount for normal-lane dependency throughput."
+            }
+            break
+        }
+    }
+
+    if (-not $found) {
+        Write-Warning "Power state did not include $Cluster/$ServiceName; adding desiredCount=$MinimumDesiredCount so full-repo dependency scans have a consumer."
+        $Services += [pscustomobject][ordered]@{
+            cluster      = $Cluster
+            service      = $ServiceName
+            desiredCount = $MinimumDesiredCount
+            taskDef      = $null
+        }
+    }
+
+    return @($Services)
+}
+
+function Ensure-ScalableTargetBounds {
+    param(
+        [Parameter(Mandatory = $true)][object[]]$Targets,
+        [Parameter(Mandatory = $true)][string]$ResourceId,
+        [Parameter(Mandatory = $true)][int]$MinimumCapacity,
+        [Parameter(Mandatory = $true)][int]$MinimumMaxCapacity
+    )
+
+    $found = $false
+    foreach ($target in @($Targets)) {
+        if ($target.resourceId -ne $ResourceId) {
+            continue
+        }
+
+        $found = $true
+        $currentMin = if ($target.PSObject.Properties.Name -contains 'minCapacity' -and $null -ne $target.minCapacity) { [int]$target.minCapacity } else { 0 }
+        $currentMax = if ($target.PSObject.Properties.Name -contains 'maxCapacity' -and $null -ne $target.maxCapacity) { [int]$target.maxCapacity } else { 0 }
+        if ($currentMin -lt $MinimumCapacity) {
+            Set-ObjectProperty -Object $target -Name 'minCapacity' -Value $MinimumCapacity
+            Write-Warning "Raised $ResourceId minCapacity from $currentMin to $MinimumCapacity."
+        }
+        if ($currentMax -lt $MinimumMaxCapacity) {
+            Set-ObjectProperty -Object $target -Name 'maxCapacity' -Value $MinimumMaxCapacity
+            Write-Warning "Raised $ResourceId maxCapacity from $currentMax to $MinimumMaxCapacity."
+        }
+        if (-not ($target.PSObject.Properties.Name -contains 'suspendedState') -or $null -eq $target.suspendedState) {
+            Set-ObjectProperty -Object $target -Name 'suspendedState' -Value ([pscustomobject][ordered]@{
+                DynamicScalingInSuspended = $false
+                DynamicScalingOutSuspended = $false
+                ScheduledScalingSuspended = $false
+            })
+        }
+        break
+    }
+
+    if (-not $found) {
+        Write-Warning "Power state did not include scalable target $ResourceId; adding min=$MinimumCapacity max=$MinimumMaxCapacity."
+        $Targets += [pscustomobject][ordered]@{
+            resourceId = $ResourceId
+            minCapacity = $MinimumCapacity
+            maxCapacity = $MinimumMaxCapacity
+            suspendedState = [pscustomobject][ordered]@{
+                DynamicScalingInSuspended = $false
+                DynamicScalingOutSuspended = $false
+                ScheduledScalingSuspended = $false
+            }
+        }
+    }
+
+    return @($Targets)
 }
 
 function Convert-SuspendedStateToCliValue {
@@ -268,13 +411,19 @@ function Convert-SuspendedStateToCliValue {
     $scheduledSuspended = $false
 
     if ($SuspendedState) {
-        if ($SuspendedState.PSObject.Properties.Name -contains 'DynamicScalingInSuspended') {
+        if ($SuspendedState -is [System.Collections.IDictionary] -and $SuspendedState.Contains('DynamicScalingInSuspended')) {
+            $inSuspended = [bool]$SuspendedState['DynamicScalingInSuspended']
+        } elseif ($SuspendedState.PSObject.Properties.Name -contains 'DynamicScalingInSuspended') {
             $inSuspended = [bool]$SuspendedState.DynamicScalingInSuspended
         }
-        if ($SuspendedState.PSObject.Properties.Name -contains 'DynamicScalingOutSuspended') {
+        if ($SuspendedState -is [System.Collections.IDictionary] -and $SuspendedState.Contains('DynamicScalingOutSuspended')) {
+            $outSuspended = [bool]$SuspendedState['DynamicScalingOutSuspended']
+        } elseif ($SuspendedState.PSObject.Properties.Name -contains 'DynamicScalingOutSuspended') {
             $outSuspended = [bool]$SuspendedState.DynamicScalingOutSuspended
         }
-        if ($SuspendedState.PSObject.Properties.Name -contains 'ScheduledScalingSuspended') {
+        if ($SuspendedState -is [System.Collections.IDictionary] -and $SuspendedState.Contains('ScheduledScalingSuspended')) {
+            $scheduledSuspended = [bool]$SuspendedState['ScheduledScalingSuspended']
+        } elseif ($SuspendedState.PSObject.Properties.Name -contains 'ScheduledScalingSuspended') {
             $scheduledSuspended = [bool]$SuspendedState.ScheduledScalingSuspended
         }
     }
@@ -361,14 +510,21 @@ function Set-SqsRuntimeAttributes {
         }
 
         $attributesJson = $attributes | ConvertTo-Json -Compress
+        $attributesPath = Join-Path ([System.IO.Path]::GetTempPath()) "ceragon-sqs-attrs-$([guid]::NewGuid().ToString('n')).json"
+        $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
         if ($PSCmdlet.ShouldProcess($queue.queueUrl, "Set SQS visibility=$visibilityTimeout maxReceiveCount=$maxReceiveCount")) {
-            Invoke-AwsText -Arguments @(
-                'sqs', 'set-queue-attributes',
-                '--queue-url', $queue.queueUrl,
-                '--attributes', $attributesJson,
-                '--region', $Region,
-                '--output', 'text'
-            ) | Out-Null
+            try {
+                [System.IO.File]::WriteAllText($attributesPath, $attributesJson, $utf8NoBom)
+                Invoke-AwsText -Arguments @(
+                    'sqs', 'set-queue-attributes',
+                    '--queue-url', $queue.queueUrl,
+                    '--attributes', "file://$attributesPath",
+                    '--region', $Region,
+                    '--output', 'text'
+                ) | Out-Null
+            } finally {
+                Remove-Item -LiteralPath $attributesPath -Force -ErrorAction SilentlyContinue
+            }
             Write-Host "  CONFIGURED $($queue.queueUrl) visibility=$visibilityTimeout maxReceiveCount=$maxReceiveCount" -ForegroundColor Green
         }
     }
@@ -460,6 +616,18 @@ if ($sqsQueues.Count -eq 0) {
 if ($lambdaMappings.Count -eq 0) {
     $lambdaMappings = @(Get-DefaultLambdaMappingsToEnable)
 }
+
+$ecsServices = @(Ensure-EcsServiceMinimumDesired `
+    -Services $ecsServices `
+    -Cluster 'cera-workers-staging' `
+    -ServiceName 'cera-fetch-worker-staging' `
+    -MinimumDesiredCount 3)
+
+$scalableTargets = @(Ensure-ScalableTargetBounds `
+    -Targets $scalableTargets `
+    -ResourceId 'service/cera-workers-staging/cera-fetch-worker-staging' `
+    -MinimumCapacity 1 `
+    -MinimumMaxCapacity 6)
 
 foreach ($service in @($ecsServices | Where-Object { $_.cluster -eq 'cera-workers-staging' -and $_.service -eq 'cera-sandbox-worker-staging' })) {
     if ([int]$service.desiredCount -lt 3) {

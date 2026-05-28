@@ -4,6 +4,13 @@
 # Claude Code worktrees (transient agent workspaces)
 .claude/worktrees/
 
+# Codex/CodeGraph local workspaces and caches
+.worktrees/
+.cursor/
+.codegraph/
+.superpowers/
+tmp/
+
 # Playwright CLI debug artifacts
 .playwright-cli/
 

@@ -152,6 +152,31 @@ function Test-CeragonText {
     return ($Text -match '(?i)cera|ceragon|codefence')
 }
 
+function Add-StateWarning {
+    param([Parameter(Mandatory = $true)][string]$Message)
+
+    Write-Warning $Message
+    if ($script:State -and ($script:State.Keys -contains 'validationWarnings')) {
+        $script:State.validationWarnings += $Message
+    }
+}
+
+function Test-FetchWorkerAutoscalingSnapshot {
+    $fetchService = @($State.ecsServices | Where-Object {
+        $_.cluster -eq 'cera-workers-staging' -and $_.service -eq 'cera-fetch-worker-staging'
+    })
+    if ($fetchService.Count -eq 0) {
+        Add-StateWarning 'Discovery did not include cera-workers-staging/cera-fetch-worker-staging; power-on will use the safe default desired count.'
+    }
+
+    $fetchTarget = @($State.scalableTargets | Where-Object {
+        $_.resourceId -eq 'service/cera-workers-staging/cera-fetch-worker-staging'
+    })
+    if ($fetchTarget.Count -eq 0) {
+        Add-StateWarning 'Discovery did not include the cera-fetch-worker-staging scalable target; run scripts/validate-fetch-worker-autoscaling.ps1 before the next production stress run.'
+    }
+}
+
 function Get-CeragonEcsServices {
     $services = @()
 
@@ -173,11 +198,23 @@ function Get-CeragonEcsServices {
             continue
         }
 
+        $serviceNames = @($serviceArns | ForEach-Object { ($_ -split '/')[-1] })
+        $knownServicesByCluster = @{
+            'cera-workers-staging' = @(
+                'cera-fetch-worker-staging',
+                'codefence-scanner-worker',
+                'cera-sandbox-worker-staging'
+            )
+        }
+        if ($knownServicesByCluster.ContainsKey($cluster)) {
+            $serviceNames = @($serviceNames + $knownServicesByCluster[$cluster] | Select-Object -Unique)
+        }
+
         $describeArgs = @(
             'ecs', 'describe-services',
             '--cluster', $cluster,
             '--services'
-        ) + $serviceArns + @('--region', $Region, '--output', 'json')
+        ) + $serviceNames + @('--region', $Region, '--output', 'json')
 
         $description = Invoke-AwsJson -Arguments $describeArgs
         foreach ($service in @($description.services)) {
@@ -488,6 +525,7 @@ $script:State = [ordered]@{
     lambdaEventSourceMappings = @()
     eventBridgeRules         = @()
     standaloneEc2Instances   = @()
+    validationWarnings       = @()
 }
 
 Write-Host "`n[1/8] Discovering current runtime state..." -ForegroundColor Cyan
@@ -498,6 +536,7 @@ $State.rdsInstances = @(Get-CeragonRdsInstances)
 $State.lambdaEventSourceMappings = @(Get-CeragonLambdaMappings)
 $State.eventBridgeRules = @(Get-CeragonEventRules)
 $State.standaloneEc2Instances = @(Get-CeragonStandaloneEc2Instances)
+Test-FetchWorkerAutoscalingSnapshot
 
 Write-Host "  ECS services:          $(@($State.ecsServices).Count)" -ForegroundColor DarkGray
 Write-Host "  ECS scalable targets:  $(@($State.scalableTargets).Count)" -ForegroundColor DarkGray
