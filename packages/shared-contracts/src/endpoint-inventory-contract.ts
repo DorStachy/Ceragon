@@ -239,3 +239,101 @@ export interface EndpointExtensionCheckResponse {
    */
   findingId?: string;
 }
+
+// ════════════════════════════════════════════════════════════════════
+// READ-SIDE (console UI) contract — Inventory list, triage, stats.
+// Added 2026-05-28 (Endpoint Supply-Chain Inventory & Analysis UI plan).
+// Backend persists ONE row per (org, endpoint, ecosystem, canonicalName,
+// version) — safe items included — and the console reads them via
+// GET /api/v1/endpoint/inventory.
+// ════════════════════════════════════════════════════════════════════
+
+/** Operational state of an inventoried item on its endpoint. */
+export const ENDPOINT_INVENTORY_STATES = ['active', 'quarantined', 'restored'] as const;
+export type EndpointInventoryState = (typeof ENDPOINT_INVENTORY_STATES)[number];
+
+/** Human triage status (SOC workflow). Mirrors the repo-finding status model. */
+export const ENDPOINT_TRIAGE_STATUSES = ['open', 'acknowledged', 'resolved', 'allowlisted'] as const;
+export type EndpointTriageStatus = (typeof ENDPOINT_TRIAGE_STATUSES)[number];
+
+/** A persisted inventory record as the console reads it (one per install). */
+export interface EndpointInventoryRecord {
+  id: string;
+  endpointId: string;
+  hostname: string;
+  os: EndpointOs;
+  ecosystem: EndpointInventoryEcosystem;
+  /** Canonical identity (lowercased publisher.name / server id / pkg name). */
+  name: string;
+  publisher?: string;            // editor-extension only
+  editorHost?: EditorHost;       // editor-extension only
+  mcpClient?: McpClient;         // mcp only
+  version: string;
+  verdict: EndpointFindingAction;       // ALLOW | ALERT | BLOCK
+  state: EndpointInventoryState;        // active | quarantined | restored
+  triageStatus: EndpointTriageStatus;
+  riskScore?: number;
+  severity?: SecuritySeverity;
+  advisoryIds?: string[];
+  /** Latest finding id (links to Analysis detail + evidence chain). */
+  findingId?: string;
+  source: EndpointFindingSource;
+  confidence: InventoryConfidence;
+  firstSeen: string;             // ISO 8601
+  lastSeen: string;              // ISO 8601
+}
+
+/** Query params for GET /api/v1/endpoint/inventory. */
+export interface EndpointInventoryListQuery {
+  type?: EndpointInventoryEcosystem | 'all';
+  ecosystem?: EndpointInventoryEcosystem;
+  endpointId?: string;
+  verdict?: EndpointFindingAction;
+  state?: EndpointInventoryState;
+  triageStatus?: EndpointTriageStatus;
+  search?: string;
+  page?: number;        // 1-based
+  pageSize?: number;    // default 50, max 200
+  sort?: 'lastSeen' | 'riskScore' | 'name';
+  order?: 'asc' | 'desc';
+}
+
+/** Facet counts for the filter chips. */
+export interface EndpointInventoryFacets {
+  byType: Record<string, number>;
+  byVerdict: Partial<Record<EndpointFindingAction, number>>;
+  byState: Partial<Record<EndpointInventoryState, number>>;
+  byTriage: Partial<Record<EndpointTriageStatus, number>>;
+  byEndpoint: Array<{ endpointId: string; hostname: string; count: number }>;
+}
+
+/** Response for GET /api/v1/endpoint/inventory. */
+export interface EndpointInventoryListResponse {
+  items: EndpointInventoryRecord[];
+  total: number;
+  page: number;
+  pageSize: number;
+  facets: EndpointInventoryFacets;
+}
+
+/** Response for GET /api/v1/endpoint/inventory/stats (Overview card). */
+export interface EndpointInventoryStats {
+  totalItems: number;
+  byType: Record<string, number>;
+  flagged: number;       // verdict !== 'ALLOW'
+  quarantined: number;
+  restored: number;
+  openTriage: number;
+  trend: Array<{ date: string; flagged: number }>;  // last 14 days
+}
+
+/** POST /api/v1/endpoint/inventory/:id/triage. */
+export interface EndpointTriageUpdateRequest {
+  triageStatus: EndpointTriageStatus;
+  note?: string;
+}
+export interface EndpointTriageUpdateResponse {
+  id: string;
+  triageStatus: EndpointTriageStatus;
+  updatedAt: string;
+}
