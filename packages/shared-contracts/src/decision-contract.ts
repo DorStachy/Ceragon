@@ -11,8 +11,9 @@
 // ════════════════════════════════════════════════════════════════════════
 
 /**
- * User-visible verdicts surfaced through Backend's package-decision and
- * analysis APIs.
+ * User-visible install-enforcement verdicts surfaced through Backend's
+ * package-decision and analysis APIs. Do not use these values as full-repo
+ * dependency report severity or disposition labels.
  *
  *   - ALLOW: pass policy gates, install proceeds
  *   - ALLOW_FAST: pass via FastGate hardcoded-trust path (no policy eval)

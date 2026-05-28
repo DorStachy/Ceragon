@@ -20,7 +20,6 @@ const https = require('https');
 const CANDIDATES = [
   { ecosystem: 'npm', name: 'is-arrayish', version: '0.3.2' },
   { ecosystem: 'npm', name: 'is-number', version: '7.0.0' },
-  { ecosystem: 'npm', name: 'kind-of', version: '6.0.3' },
   // Add more low-risk leaf packages as needed.
 ];
 

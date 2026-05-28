@@ -48,8 +48,11 @@ for (const f of resolvedFixtures) {
 
 async function main() {
   const c = new Client({
-    host: 'localhost', port: 5433,
-    user: 'codefense', password: 'localtest123', database: 'codefense_db',
+    host: process.env.DATABASE_HOST || '127.0.0.1',
+    port: Number(process.env.DATABASE_PORT || 5433),
+    user: process.env.DATABASE_USER || 'codefense',
+    password: process.env.DATABASE_PASSWORD || 'localtest123',
+    database: process.env.DATABASE_NAME || 'codefense_db',
   });
   await c.connect();
   const snapshot = {};

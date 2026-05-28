@@ -25,7 +25,32 @@ export interface ReleaseObservationMessage {
     yanked?: boolean;
     retracted?: boolean;
     deleted?: boolean;
+    packageCreatedAt?: string;
+    previousVersionPublishedAt?: string;
+    currentVersionPublishedAt?: string;
+    versionCount?: number;
+    newlyAddedDepsCount?: number;
+    newlyAddedDepNames?: string[];
+    maintainerSetChanged?: boolean;
+    publisherChanged?: boolean;
+    currentPublisher?: string;
+    currentMaintainerCount?: number;
+    distTagChanged?: boolean;
   };
+}
+
+export interface EnrichmentHints {
+  packageCreatedAt?: string;
+  previousVersionPublishedAt?: string;
+  currentVersionPublishedAt?: string;
+  versionCount?: number;
+  newlyAddedDepsCount?: number;
+  newlyAddedDepNames?: string[];
+  maintainerSetChanged?: boolean;
+  publisherChanged?: boolean;
+  currentPublisher?: string;
+  currentMaintainerCount?: number;
+  distTagChanged?: boolean;
 }
 
 export interface ArtifactFetchMessage {
@@ -41,6 +66,7 @@ export interface ArtifactFetchMessage {
   sourceCursor: string;
   priorityClass: 'interactive' | 'background-high' | 'background-normal';
   preFetchScore: number;
+  enrichmentHints?: EnrichmentHints;
 }
 
 export interface AnalysisStaticMessage {

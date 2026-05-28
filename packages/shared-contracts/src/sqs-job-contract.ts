@@ -19,6 +19,8 @@
 // with the worker-side schemas and Backend `JobQueueService` field set.
 // ════════════════════════════════════════════════════════════════════════
 
+import type { SourceIdentity } from './source-identity';
+
 export const SQS_JOB_CONTRACT_VERSION = 1 as const;
 
 // ── Fetch job body (Backend → Static-Worker) ───────────────────────────
@@ -39,6 +41,7 @@ export const ALLOWED_FETCH_JOB_KEYS = [
   'correlationId',
   'analysisId',
   'packageBaselineFingerprint',
+  'sourceIdentity',
 ] as const;
 
 export const ALLOWED_FETCH_JOB_KEY_SET: ReadonlySet<string> = new Set(
@@ -62,6 +65,7 @@ export interface FetchJobContract {
   correlationId?: string;
   analysisId?: string;
   packageBaselineFingerprint?: unknown;
+  sourceIdentity?: SourceIdentity;
 }
 
 export function isAllowedFetchJobKey(key: string): boolean {

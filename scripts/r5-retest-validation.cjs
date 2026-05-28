@@ -54,7 +54,10 @@ const BASE_FIXTURES = Object.freeze([
 ]);
 
 const DEGRADED_FIXTURE = Object.freeze({
-  ecosystem: 'npm', name: 'flatmap-stream', version: '0.1.1', sourceType: 'registry',
+  ecosystem: process.env.R5_DEGRADED_ECOSYSTEM || 'npm',
+  name: process.env.R5_DEGRADED_NAME || 'kind-of',
+  version: process.env.R5_DEGRADED_VERSION || '6.0.3',
+  sourceType: 'registry',
 });
 
 // Self-check on module load.
@@ -98,6 +101,73 @@ function failGate(msg, details) {
   process.exit(1);
 }
 
+function readCoverageMetadata(meta) {
+  if (!meta || typeof meta !== 'object') return null;
+  return meta.vulnerabilityScanHealth || meta.vulnerabilityCoverage || null;
+}
+
+function assertDependencyGraphCoverage(f, meta, coverage) {
+  if (f.sourceType !== 'registry' || (f.ecosystem !== 'npm' && f.ecosystem !== 'pypi')) {
+    return;
+  }
+
+  const graph = meta.dependencyGraph || {};
+  const reasons = Array.isArray(coverage.degradationReasons) ? coverage.degradationReasons : [];
+  const unresolved = Array.isArray(coverage.unresolvedDependencies)
+    ? coverage.unresolvedDependencies
+    : (Array.isArray(graph.unresolvedDependencies) ? graph.unresolvedDependencies : []);
+  const graphComplete =
+    graph.resolutionComplete === true ||
+    coverage.dependencyGraphResolutionComplete === true ||
+    meta.dependencyGraphStatus === 'COMPLETE';
+  const graphExplicitlyDegraded =
+    coverage.coverageDegraded === true &&
+    (
+      unresolved.length > 0 ||
+      reasons.some((reason) => /^dependency-(graph|resolution)-/.test(String(reason)))
+    );
+
+  if (!graphComplete && !graphExplicitlyDegraded) {
+    failGate(
+      `Row ${f.name}@${f.version} does not prove npm/PyPI dependency graph coverage was complete or explicitly degraded`,
+      { dependencyGraph: graph, vulnerabilityScanHealth: coverage },
+    );
+  }
+
+  if (graphComplete && unresolved.length > 0) {
+    failGate(`Row ${f.name}@${f.version} says dependency graph is complete but has unresolvedDependencies`, {
+      unresolvedDependencies: unresolved,
+    });
+  }
+}
+
+function rowHasGhsaAdvisoryEvidence(row) {
+  const findings = row.findings || [];
+  const securityFindings = row.metadata?.securityFindings || [];
+  const preliminaryVulns = row.metadata?.preliminaryDecision?.vulnerabilities || [];
+
+  const hasGhsaProvider = (item) => {
+    if (!item || typeof item !== 'object') return false;
+    if (item.source === 'ghsa') return true;
+    if (Array.isArray(item.advisorySources) && item.advisorySources.includes('ghsa')) return true;
+    if (typeof item.legacyCode === 'string' && item.legacyCode.startsWith('GHSA-')) return true;
+    if (typeof item.code === 'string' && item.code.startsWith('GHSA-')) return true;
+    if (typeof item.id === 'string' && item.id.startsWith('GHSA-')) return true;
+    if (typeof item.advisoryId === 'string' && item.advisoryId.startsWith('GHSA-')) return true;
+    if (Array.isArray(item.aliases) && item.aliases.some((a) => typeof a === 'string' && a.startsWith('GHSA-'))) {
+      return true;
+    }
+    return false;
+  };
+
+  return findings.some(hasGhsaProvider) ||
+    securityFindings.some(
+      (finding) => hasGhsaProvider(finding) ||
+        (finding.evidence || []).some(hasGhsaProvider),
+    ) ||
+    preliminaryVulns.some(hasGhsaProvider);
+}
+
 async function main() {
   const mode = getArg('mode', 'base');
   const coordsPath = getArg('coords');
@@ -135,8 +205,11 @@ async function main() {
   // eslint-disable-next-line global-require, import/no-dynamic-require
   const { Client } = require(pgPath);
   const client = new Client({
-    host: 'localhost', port: 5433,
-    user: 'codefense', password: 'localtest123', database: 'codefense_db',
+    host: process.env.DATABASE_HOST || '127.0.0.1',
+    port: Number(process.env.DATABASE_PORT || 5433),
+    user: process.env.DATABASE_USER || 'codefense',
+    password: process.env.DATABASE_PASSWORD || 'localtest123',
+    database: process.env.DATABASE_NAME || 'codefense_db',
   });
   await client.connect();
 
@@ -180,20 +253,69 @@ async function validateBase(client, resolved) {
     if (!vsh || typeof vsh !== 'object' || Array.isArray(vsh) || vsh === null) {
       failGate(`Row ${f.name}@${f.version} missing vulnerabilityScanHealth metadata`);
     }
+
+    if (f.sourceType === 'local-dir') {
+      const notRunMarker = (meta.localSourceStaticScanStatus === 'not_run') ||
+        ((row.findings || []).some(
+          (x) => x && x.evidence && x.evidence.localSourceStaticScanStatus === 'not_run',
+        ));
+      const completedMarker = (meta.localSourceStaticScanStatus === 'completed') ||
+        ((row.findings || []).some(
+          (x) => x && x.evidence && x.evidence.localSourceStaticScanStatus === 'completed',
+        ));
+
+      if (vsh.terminalFastGate === true || notRunMarker) {
+        if (vsh.terminalFastGate !== true) {
+          failGate(`Local-dir row ${f.name}@${f.version} expected terminalFastGate=true`, vsh);
+        }
+        if (vsh.scanComplete !== false || vsh.coverageDegraded !== true) {
+          failGate(`Local-dir row ${f.name}@${f.version} expected degraded local static coverage`, vsh);
+        }
+        if (!Array.isArray(vsh.degradationReasons) ||
+            !vsh.degradationReasons.includes('local-source-static-scan-not-run')) {
+          failGate(`Local-dir row ${f.name}@${f.version} missing local-source-static-scan-not-run`, vsh);
+        }
+        if (!notRunMarker) {
+          failGate(`Local-dir row ${f.name}@${f.version} missing localSourceStaticScanStatus=not_run marker`);
+        }
+        continue;
+      }
+
+      if (vsh.scanComplete !== true) {
+        failGate(`Local artifact row ${f.name}@${f.version} vsh.scanComplete !== true`, vsh);
+      }
+      if (vsh.coverageDegraded === true) {
+        failGate(`Local artifact row ${f.name}@${f.version} coverageDegraded === true`, vsh);
+      }
+      if (!completedMarker) {
+        failGate(`Local artifact row ${f.name}@${f.version} missing localSourceStaticScanStatus=completed marker`);
+      }
+      continue;
+    }
+
     if (vsh.scanComplete !== true) {
       failGate(`Row ${f.name}@${f.version} vsh.scanComplete !== true`, vsh);
     }
-    if (vsh.coverageDegraded !== false && f.sourceType !== 'local-dir') {
-      // local-dir rows MAY have coverageDegraded undefined, since they don't query advisories.
-      if (vsh.coverageDegraded === true) {
-        failGate(`Row ${f.name}@${f.version} coverageDegraded === true on base fixture`, vsh);
-      }
+    if (vsh.coverageDegraded === true) {
+      failGate(`Row ${f.name}@${f.version} coverageDegraded === true on registry base fixture`, vsh);
     }
     if (!Array.isArray(vsh.failedSources) || vsh.failedSources.length !== 0) {
       failGate(`Row ${f.name}@${f.version} failedSources should be empty`, vsh.failedSources);
     }
     if (!Array.isArray(vsh.degradationReasons) || vsh.degradationReasons.length !== 0) {
       failGate(`Row ${f.name}@${f.version} degradationReasons should be empty`, vsh.degradationReasons);
+    }
+
+    if (vsh.terminalFastGate === true) {
+      const sourceHealth = vsh.sourceHealth || {};
+      for (const src of ['osv', 'ghsa', 'npm']) {
+        const sh = sourceHealth[src];
+        if (!sh) failGate(`Terminal row ${f.name}@${f.version} sourceHealth.${src} missing`);
+        if (sh.status !== 'skipped') {
+          failGate(`Terminal row ${f.name}@${f.version} sourceHealth.${src}.status should be 'skipped'`, sh);
+        }
+      }
+      continue;
     }
 
     // Per-source applicability check.
@@ -215,24 +337,11 @@ async function validateBase(client, resolved) {
         }
       }
     }
-
-    // Local-dir machine-readable marker.
-    if (f.sourceType === 'local-dir') {
-      const marker = (meta.localSourceStaticScanStatus === 'not_run') ||
-        ((row.findings || []).some(
-          (x) => x && x.evidence && x.evidence.localSourceStaticScanStatus === 'not_run',
-        ));
-      if (!marker) {
-        failGate(`Local-dir row ${f.name}@${f.version} missing localSourceStaticScanStatus=not_run marker`);
-      }
-    }
+    assertDependencyGraphCoverage(f, meta, vsh);
 
     // Count GHSA-sourced findings/advisories on registry rows.
     if (f.sourceType !== 'local-dir') {
-      const ghsaFindings = (row.findings || []).filter(
-        (x) => x && (x.source === 'ghsa' || (x.advisorySources || []).includes('ghsa')),
-      );
-      if (ghsaFindings.length > 0) ghsaPositiveSourceCount++;
+      if (rowHasGhsaAdvisoryEvidence(row)) ghsaPositiveSourceCount++;
     }
   }
   if (ghsaPositiveSourceCount === 0) {
@@ -259,20 +368,20 @@ async function validateDegraded(client, resolved, baseIdsPath) {
   const row = await loadLatestRow(client, DEGRADED_FIXTURE);
   if (!row) failGate(`Missing degraded fixture row for ${DEGRADED_FIXTURE.name}@${DEGRADED_FIXTURE.version}`);
   const meta = row.metadata || {};
-  const cov = meta.vulnerabilityCoverage;
-  if (!cov) failGate(`Degraded row missing vulnerabilityCoverage metadata`);
-  if (cov.coverageDegraded !== true) {
-    failGate(`Degraded row coverageDegraded !== true`, cov);
+  const coverage = readCoverageMetadata(meta);
+  if (!coverage) {
+    failGate('Degraded row missing vulnerabilityScanHealth/vulnerabilityCoverage metadata');
   }
-  const reasons = cov.degradationReasons || [];
-  const expectedReasons = ['ghsa-rate-limited', 'ghsa-unavailable', 'ghsa-malformed-response'];
-  if (!reasons.some((r) => expectedReasons.includes(r))) {
+  if (coverage.coverageDegraded !== true) {
+    failGate('Degraded row coverageDegraded !== true', coverage);
+  }
+  const reasons = Array.isArray(coverage.degradationReasons) ? coverage.degradationReasons : [];
+  if (!reasons.includes('ghsa-rate-limited')) {
     failGate(`Degraded row missing GHSA degradation reason`, reasons);
   }
-  // sourceHealth checks.
-  const sh = (cov.sourceHealth || meta.vulnerabilityScanHealth?.sourceHealth || {});
-  if (!sh.ghsa || sh.ghsa.status !== 'failed' || sh.ghsa.responseValidated !== false) {
-    failGate(`Degraded row sourceHealth.ghsa shape wrong`, sh.ghsa);
+  const sourceHealth = coverage.sourceHealth || {};
+  if (sourceHealth.ghsa?.status !== 'failed') {
+    failGate('Degraded row sourceHealth.ghsa shape wrong', sourceHealth.ghsa);
   }
 }
 

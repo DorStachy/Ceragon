@@ -4,6 +4,13 @@
 # Claude Code worktrees (transient agent workspaces)
 .claude/worktrees/
 
+# Codex/CodeGraph local workspaces and caches
+.worktrees/
+.cursor/
+.codegraph/
+.superpowers/
+tmp/
+
 # Playwright CLI debug artifacts
 .playwright-cli/
 
@@ -70,3 +77,5 @@ packages/shared-contracts/package-lock.json
 
 # Local codesec e2e Docker stack (credentials, env, binaries) — never commit/review
 .codesec-e2e/
+tmp-llm-comparison/
+tmp-opus-live-test/
