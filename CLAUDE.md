@@ -29,7 +29,7 @@ Each component has its own `CLAUDE.md` or `README.md` with commands and architec
 
 Authoritative product, infra, and intelligence references live under [docs/](docs/). When in doubt, prefer these over older plans elsewhere in `docs/`:
 
-- [docs/MostUpdated_SourceOfTruth/](docs/MostUpdated_SourceOfTruth/) — Code Security; Supply Chain Security (`SUPPLY_CHAIN_SOURCE_OF_TRUTH.md`, package dependency scanning, formerly "Dependency Scanning"); Endpoint MCP-server / IDE-extension protection (`MCP_IDE_EXTENSION_PROTECTION_SOURCE_OF_TRUTH.md`, added 2026-05-28); AWS Infrastructure; Database
+- [docs/MostUpdated_SourceOfTruth/](docs/MostUpdated_SourceOfTruth/) — Code Security; Supply Chain Security (`SUPPLY_CHAIN_SOURCE_OF_TRUTH.md`, package dependency scanning, formerly "Dependency Scanning"); Endpoint MCP-server / IDE-extension protection (`MCP_IDE_EXTENSION_PROTECTION_SOURCE_OF_TRUTH.md`, added 2026-05-28) + its discovery→identity→intelligence→decision→persistence engine (`BUMBLEBEE_SOURCE_OF_TRUTH.md`, added 2026-05-29); AWS Infrastructure; Database
 - [docs/Ceragon_Intel/](docs/Ceragon_Intel/) — 16-doc set covering the intelligence pipeline (architecture, followers, queues, tables, S3, Terraform, CI/CD, message contracts)
 
 Other top-level files in `docs/` (e.g., `*_PLAN.md`, `*_HANDOFF_REPORT.md`) are historical or in-flight; treat them as context, not contract.
