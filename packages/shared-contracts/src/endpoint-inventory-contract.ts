@@ -337,3 +337,89 @@ export interface EndpointTriageUpdateResponse {
   triageStatus: EndpointTriageStatus;
   updatedAt: string;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Unified inventory read model (console). One catalog row per distinct item,
+// drillable to the endpoints (workstations) + repositories that have it.
+// Aggregated read-time from endpoint_inventory (workstation presence) ∪
+// repo_dependencies (repo/CLI scans). A repo_dependencies row that resolves to
+// an enrolled agent's hostname (via analysis.agent) is an ENDPOINT location;
+// a GitHub server-scan row is a REPOSITORY location ("the scanner owns it").
+// See docs/superpowers/plans/2026-05-31-unified-endpoint-inventory.md.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Worst-case verdict across an item's endpoint + repo presence. */
+export const INVENTORY_ITEM_VERDICTS = ['BLOCK', 'ALERT', 'ALLOW', 'PENDING'] as const;
+export type InventoryItemVerdict = (typeof INVENTORY_ITEM_VERDICTS)[number];
+
+/** One row in the unified catalog (deduped by ecosystem + name). */
+export interface InventoryCatalogItem {
+  ecosystem: string;
+  name: string;
+  displayName: string;
+  versions: string[];
+  worstVerdict: InventoryItemVerdict;
+  severity: SecuritySeverity | null;
+  endpointCount: number;
+  repoCount: number;
+  lastSeen: string;
+  sources: Array<'endpoint' | 'repo'>;
+}
+
+export interface InventoryCatalogResponse {
+  items: InventoryCatalogItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+  facets: {
+    byType: Record<string, number>;
+    byVerdict: Record<string, number>;
+  };
+}
+
+/** A single endpoint (workstation) that has the item. */
+export interface InventoryLocationEndpoint {
+  endpointId: string | null;
+  hostname: string;
+  os: string | null;
+  version: string;
+  verdict: InventoryItemVerdict;
+  state: string | null;
+  source: 'sweep' | 'extwatch' | 'install-time' | 'repo-cli';
+  lastSeen: string;
+}
+
+/** A single repository that depends on the item. */
+export interface InventoryLocationRepository {
+  repositoryFullName: string;
+  displayName: string;
+  version: string;
+  verdict: InventoryItemVerdict;
+  dependencyType: string | null;
+  lastSeen: string;
+}
+
+export interface InventoryItemLocations {
+  ecosystem: string;
+  name: string;
+  displayName: string;
+  endpoints: InventoryLocationEndpoint[];
+  repositories: InventoryLocationRepository[];
+}
+
+/** Endpoint roll-up (hostname-keyed) for the "search by endpoint" mode. */
+export interface InventoryEndpointSummary {
+  endpointId: string | null;
+  hostname: string;
+  os: string | null;
+  itemCount: number;
+  worstVerdict: InventoryItemVerdict;
+  lastSeen: string;
+}
+
+export interface InventoryEndpointsResponse {
+  endpoints: InventoryEndpointSummary[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
