@@ -293,3 +293,112 @@ export function isEmitSecurityFindingsV2Enabled(
 ): boolean {
   return envValue === 'true';
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Finding Quality Gate metadata contract (2026-05-31 code-scan-finding-quality
+// -gate plan, Frozen Wire Contracts #1/#3/#4).
+//
+// These describe the OPTIONAL, backward-compatible JSON shapes carried under
+// `github_findings.metadata.quality`, `.contextEvidence`, and `.dependency`.
+// They are NOT part of the SecurityFindingV2 channel above — they annotate the
+// existing legacy `Finding` rows.
+//
+//   • `metadata.quality` — written by the Backend quality gate, read by the
+//     Frontend, and filtered by Backend SQL. `customerVisible: false` means
+//     the finding is INTERNAL and is excluded from every customer count/list.
+//   • `metadata.contextEvidence` — written by the GitHub Action producer, read
+//     by the Backend gate (with a legacy filePath/toolName/ruleId fallback).
+//   • `metadata.dependency` — written by the scanner SCA producer, consumed by
+//     the worker enrichment read and the Backend display normalizer.
+//
+// Every field is optional / additive so old workers, old scan rows, and
+// partial deploys keep working ("absent quality ⇒ visible").
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * The gate's classification of a finding for customer reporting.
+ *  - REPORTABLE              — shown as-is.
+ *  - REPORTABLE_WITH_CONTEXT — shown, but carries a context badge (e.g. test).
+ *  - DOWNGRADED              — shown with a lowered display severity.
+ *  - INTERNAL                — `customerVisible: false`; never counted/listed.
+ */
+export type FindingQualityDisposition =
+  | 'REPORTABLE'
+  | 'REPORTABLE_WITH_CONTEXT'
+  | 'DOWNGRADED'
+  | 'INTERNAL';
+
+/** Where the finding's code lives — drives context-aware classification. */
+export type FindingContextClass =
+  | 'RUNTIME'
+  | 'TEST'
+  | 'FIXTURE'
+  | 'EXAMPLE'
+  | 'CANARY'
+  | 'GENERATED'
+  | 'VENDOR'
+  | 'DOCS'
+  | 'WORKFLOW'
+  | 'LOCKFILE'
+  | 'UNKNOWN';
+
+/**
+ * Compact authoritative quality annotation written under
+ * `finding.metadata.quality`. The gate preserves raw provenance
+ * (`rawTitle`/`rawSeverity`/`rawConfidence`) before writing any display field
+ * so re-running the gate is idempotent (display fields are always derived from
+ * the preserved raw values, never from the current mutated values).
+ */
+export type FindingQualityMetadata = {
+  schemaVersion: 1;
+  customerVisible: boolean;
+  disposition: FindingQualityDisposition;
+  context: FindingContextClass;
+  confidence: 'HIGH' | 'MEDIUM' | 'LOW';
+  reasonCodes: string[];
+  displayTitle?: string;
+  displayCategory?: string;
+  displaySeverity?: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'INFO';
+  rawTitle?: string;
+  rawSeverity?: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'INFO';
+  rawConfidence?: 'HIGH' | 'MEDIUM' | 'LOW';
+};
+
+/**
+ * Producer-side context evidence written under
+ * `finding.metadata.contextEvidence`. Consumed by the Backend gate as an INPUT
+ * hint; the gate recomputes the authoritative `customerVisible`/disposition.
+ */
+export type FindingContextEvidence = {
+  schemaVersion: 1;
+  pathClass: FindingContextClass;
+  signals: string[];
+  isRuntimeReachable: boolean;
+  isSyntheticSecret?: boolean;
+};
+
+/**
+ * Nested dependency metadata written under `finding.metadata.dependency` for
+ * SCA findings. `disposition` distinguishes a known-vulnerable advisory match
+ * from actual malware evidence so customer wording stays accurate.
+ */
+export type DependencyFindingMetadata = {
+  dependency?: {
+    packageName?: string;
+    packageVersion?: string;
+    ecosystem?:
+      | 'npm'
+      | 'pypi'
+      | 'maven'
+      | 'go'
+      | 'cargo'
+      | 'rubygems'
+      | 'nuget'
+      | 'unknown';
+    dependencyType?: 'direct' | 'transitive' | 'unknown';
+    dependencyScope?: 'runtime' | 'development' | 'optional' | 'unknown';
+    lockfilePath?: string;
+    disposition?: 'KNOWN_VULNERABLE' | 'MALWARE' | 'HIGH_RISK' | 'NEEDS_REVIEW';
+    advisoryIds?: string[];
+  };
+};
