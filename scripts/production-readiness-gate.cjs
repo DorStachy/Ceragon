@@ -34,9 +34,193 @@ const fs = require('fs');
 const { spawnSync } = require('child_process');
 
 const args = process.argv.slice(2);
+
+// ════════════════════════════════════════════════════════════════════════
+// Vulnerability-applicability corpus section (Task 7, 2026-05-31 plan).
+//
+// Derives ACTIVE / EXCLUDED / DEGRADED / CLEAN finding counts from the SHARED
+// fixture corpus (`packages/shared-contracts/.../vulnerability-applicability-
+// fixtures.ts`, built to dist) and asserts the two LIVE production false
+// positives are classified NOT_AFFECTED while the true-positive control is
+// MATCHED. This is the release-gate's "the FP class is still closed" tripwire:
+// if anyone re-introduces package-level-presence-as-active, these assertions
+// fail and the gate stops.
+//
+// Runs as the FIRST step of the main gate (before any AWS/ECS calls) AND can be
+// invoked standalone for fast local/CI checks:
+//     node scripts/production-readiness-gate.cjs --corpus-only
+//
+// NEVER soften these assertions. The two FPs and the control are load-bearing.
+// ════════════════════════════════════════════════════════════════════════
+
+// The exact live production false positives + the true-positive control,
+// pinned by coordinate + advisory id (plan "Live Retest Evidence").
+const LIVE_FP_EXPECTATIONS = [
+  {
+    label: 'playwright FP',
+    fixtureId: 'playwright-prerelease-above-fix',
+    coordinate: 'npm:playwright@1.61.0-alpha-1778188671000',
+    advisoryId: 'GHSA-7mvr-c777-76hp',
+    expectState: 'NOT_AFFECTED',
+  },
+  {
+    label: 'eslint-scope FP',
+    fixtureId: 'eslint-scope-not-affected',
+    coordinate: 'npm:eslint-scope@7.2.2',
+    advisoryId: 'GHSA-hxxf-q3w9-4xgw',
+    expectState: 'NOT_AFFECTED',
+  },
+];
+const TRUE_POSITIVE_CONTROL = {
+  label: 'eslint-scope control',
+  fixtureId: 'eslint-scope-affected',
+  coordinate: 'npm:eslint-scope@3.7.2',
+  advisoryId: 'GHSA-hxxf-q3w9-4xgw',
+  expectState: 'MATCHED',
+};
+
+function loadApplicabilityCorpus() {
+  const distDir = path.resolve(
+    __dirname,
+    '..',
+    'packages',
+    'shared-contracts',
+    'dist',
+  );
+  const fixturesPath = path.join(distDir, 'vulnerability-applicability-fixtures.js');
+  const contractPath = path.join(distDir, 'vulnerability-applicability.js');
+  if (!fs.existsSync(fixturesPath) || !fs.existsSync(contractPath)) {
+    throw new Error(
+      `vulnerability-applicability dist not built (${fixturesPath}). ` +
+        `Build it first:  (cd packages/shared-contracts && npm run build)`,
+    );
+  }
+  // eslint-disable-next-line global-require, import/no-dynamic-require
+  const fixtures = require(fixturesPath);
+  // eslint-disable-next-line global-require, import/no-dynamic-require
+  const contract = require(contractPath);
+  return { fixtures, contract };
+}
+
+// Classify every advisory across the corpus into the four release-gate buckets
+// and report the per-fixture clean/degraded coverage rollup. Returns the counts
+// plus a failures[] array (empty == green).
+function runApplicabilityCorpusGate() {
+  console.log('\n▶  Vulnerability-applicability fixture corpus');
+  const { fixtures, contract } = loadApplicabilityCorpus();
+  const corpus = fixtures.VULNERABILITY_APPLICABILITY_FIXTURES;
+  if (!Array.isArray(corpus) || corpus.length === 0) {
+    throw new Error('applicability corpus is empty');
+  }
+
+  const counts = { active: 0, excluded: 0, degraded: 0, total: 0 };
+  // Per-fixture coverage rollup buckets.
+  const coverage = { clean: 0, hasActive: 0, degraded: 0, excludedOnly: 0 };
+  const failures = [];
+
+  for (const fx of corpus) {
+    for (const adv of fx.expected.advisories) {
+      counts.total++;
+      const state = adv.worker.state;
+      if (state === 'MATCHED') {
+        counts.active++;
+        // A MATCHED advisory is active everywhere — sanity-cross-check the
+        // canonical predicate agrees so a contract regression trips here.
+        if (!contract.isActiveApplicableVulnerability({ state })) {
+          failures.push(
+            `${fx.id}:${adv.advisoryId} expected ACTIVE (MATCHED) but isActiveApplicableVulnerability() said false`,
+          );
+        }
+      } else if (state === 'DEGRADED' || state === 'UNKNOWN') {
+        counts.degraded++;
+        if (contract.isActiveApplicableVulnerability({ state })) {
+          failures.push(`${fx.id}:${adv.advisoryId} ${state} must NOT be active`);
+        }
+      } else {
+        // NOT_AFFECTED | SUPPRESSED → excluded audit evidence.
+        counts.excluded++;
+        if (contract.isActiveApplicableVulnerability({ state })) {
+          failures.push(`${fx.id}:${adv.advisoryId} ${state} must NOT be active`);
+        }
+      }
+    }
+    // Per-fixture coverage rollup.
+    const cov = fx.expected.coverage;
+    if (cov.uiRendersClean) coverage.clean++;
+    else if (cov.activeVulnerabilityCount > 0) coverage.hasActive++;
+    else if (cov.coverageDegraded) coverage.degraded++;
+    else coverage.excludedOnly++;
+  }
+
+  console.log(`   fixtures:        ${corpus.length}`);
+  console.log(`   advisory rows:   ${counts.total}`);
+  console.log(`   ACTIVE (matched):    ${counts.active}`);
+  console.log(`   EXCLUDED (not-affected/suppressed): ${counts.excluded}`);
+  console.log(`   DEGRADED (unknown/degraded):        ${counts.degraded}`);
+  console.log(
+    `   coverage rollup: clean=${coverage.clean} active=${coverage.hasActive} ` +
+      `degraded=${coverage.degraded} excluded-only=${coverage.excludedOnly}`,
+  );
+
+  // ── Assert the two live FPs are NOT_AFFECTED and the control is MATCHED ──
+  const checkExpectation = (e) => {
+    let fx;
+    try {
+      fx = fixtures.getApplicabilityFixture(e.fixtureId);
+    } catch (err) {
+      failures.push(`${e.label}: fixture '${e.fixtureId}' not found (${err.message})`);
+      return;
+    }
+    const adv = fx.expected.advisories.find((a) => a.advisoryId === e.advisoryId);
+    if (!adv) {
+      failures.push(`${e.label}: advisory ${e.advisoryId} absent from fixture ${e.fixtureId}`);
+      return;
+    }
+    if (adv.worker.state !== e.expectState) {
+      failures.push(
+        `${e.label}: ${e.coordinate} / ${e.advisoryId} expected ${e.expectState}, got ${adv.worker.state}`,
+      );
+      return;
+    }
+    const active = contract.isActiveApplicableVulnerability({ state: adv.worker.state });
+    const wantActive = e.expectState === 'MATCHED';
+    if (active !== wantActive) {
+      failures.push(
+        `${e.label}: ${e.coordinate} active=${active} but expected active=${wantActive}`,
+      );
+      return;
+    }
+    console.log(
+      `   ✔  ${e.label}: ${e.coordinate} / ${e.advisoryId} → ${adv.worker.state} ` +
+        `(active=${active})`,
+    );
+  };
+  LIVE_FP_EXPECTATIONS.forEach(checkExpectation);
+  checkExpectation(TRUE_POSITIVE_CONTROL);
+
+  if (failures.length > 0) {
+    console.error('\n✖  Vulnerability-applicability corpus gate FAILED:');
+    for (const f of failures) console.error(`   - ${f}`);
+    return { ok: false, counts, coverage, failures };
+  }
+  console.log('✔  Vulnerability-applicability fixture corpus (both live FPs NOT_AFFECTED, control MATCHED)');
+  return { ok: true, counts, coverage, failures };
+}
+
+// Standalone invocation: run ONLY the corpus gate (no AWS/ECS config needed).
+if (args.includes('--corpus-only')) {
+  try {
+    const result = runApplicabilityCorpusGate();
+    process.exit(result.ok ? 0 : 1);
+  } catch (err) {
+    console.error(`✖  corpus gate error: ${err.message}`);
+    process.exit(1);
+  }
+}
+
 const configIdx = args.indexOf('--config');
 if (configIdx < 0) {
-  console.error('usage: node production-readiness-gate.cjs --config <path>');
+  console.error('usage: node production-readiness-gate.cjs --config <path>  [| --corpus-only]');
   process.exit(2);
 }
 const configPath = path.resolve(process.cwd(), args[configIdx + 1]);
@@ -97,6 +281,21 @@ function run(label, cmd, opts = {}) {
     process.exit(res.status ?? 1);
   }
   console.log(`✔  ${label}`);
+}
+
+// 0. Vulnerability-applicability corpus gate (Task 7). Runs FIRST — before any
+//    AWS/ECS calls — so a re-introduced package-level false positive fails fast
+//    and cheaply. Skippable only via an explicit opt-out for environments where
+//    shared-contracts dist is intentionally absent.
+if (cfg.skipApplicabilityCorpus !== true) {
+  let corpusResult;
+  try {
+    corpusResult = runApplicabilityCorpusGate();
+  } catch (err) {
+    console.error(`✖  Vulnerability-applicability corpus gate FAILED (${err.message})`);
+    process.exit(1);
+  }
+  if (!corpusResult.ok) process.exit(1);
 }
 
 // 1. Local contract/unit tests
