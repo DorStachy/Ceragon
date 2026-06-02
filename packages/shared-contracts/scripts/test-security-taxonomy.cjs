@@ -21,6 +21,55 @@ for (const [score, expected] of boundaryCases) {
   assert.equal(taxonomy.riskScoreToSeverity(score), expected, `riskScoreToSeverity(${score})`);
 }
 
+// ── severityBandLabel (Phase 3 verdict↔action split, 2026-06-02) ─────────
+// Human display label for each stored SecuritySeverity token. INFO renders
+// as "None" per the plan; the stored token stays INFO (not renamed to NONE).
+// Cover every severity + the riskScore→label round-trip via riskScoreToSeverity.
+const severityLabelCases = [
+  ['INFO', 'None'],
+  ['LOW', 'Low'],
+  ['MEDIUM', 'Medium'],
+  ['HIGH', 'High'],
+  ['CRITICAL', 'Critical'],
+];
+for (const [severity, expected] of severityLabelCases) {
+  assert.equal(
+    taxonomy.severityBandLabel(severity),
+    expected,
+    `severityBandLabel(${severity})`,
+  );
+}
+// Every canonical severity token has a label (no gaps if a new band is added).
+for (const sev of taxonomy.SECURITY_SEVERITIES) {
+  assert.equal(
+    typeof taxonomy.severityBandLabel(sev),
+    'string',
+    `severityBandLabel must return a string for canonical token ${sev}`,
+  );
+  assert.ok(
+    taxonomy.severityBandLabel(sev).length > 0,
+    `severityBandLabel(${sev}) must be non-empty`,
+  );
+}
+// Null/unknown input → "None" (display floor; matches riskScoreToSeverity(null)).
+assert.equal(taxonomy.severityBandLabel(null), 'None', 'severityBandLabel(null)');
+assert.equal(taxonomy.severityBandLabel(undefined), 'None', 'severityBandLabel(undefined)');
+// riskScore → severity → label round-trip for representative scores.
+const scoreToLabelCases = [
+  [0, 'None'],
+  [25, 'Low'],
+  [45, 'Medium'],
+  [65, 'High'],
+  [85, 'Critical'],
+];
+for (const [score, expected] of scoreToLabelCases) {
+  assert.equal(
+    taxonomy.severityBandLabel(taxonomy.riskScoreToSeverity(score)),
+    expected,
+    `severityBandLabel(riskScoreToSeverity(${score}))`,
+  );
+}
+
 const dispositionCases = [
   ['ALLOW', 0, 'NO_FINDING'],
   ['ALLOW_FAST', 0, 'NO_FINDING'],
@@ -383,3 +432,28 @@ if (fs.existsSync(applicabilityIntelMirror)) {
 }
 
 console.log('[applicability-parity] applicability enum + comparator gates passed.');
+
+// ── decision-contract Decision alias (Phase 3 verdict↔action split,
+//    2026-06-02) ─────────────────────────────────────────────────────────
+//
+// In this codebase the `Verdict` type / `VERDICTS` const historically name
+// the enforcement ACTION (ALLOW/ALLOW_FAST/PROMPT/HOLD/BLOCK/...), wired
+// through the install contract the Go CLI depends on. `Decision` is the
+// clearer additive ALIAS for that action axis. `Decision` is a pure TYPE
+// alias (erased at runtime) so we assert it on the SOURCE; and we assert the
+// runtime VERDICTS const is UNCHANGED (the rename hazard guard).
+const decisionContract = require('../dist/decision-contract.js');
+assert.deepEqual(
+  [...decisionContract.VERDICTS],
+  ['ALLOW', 'ALLOW_FAST', 'PROMPT', 'HOLD', 'BLOCK', 'PENDING', 'INCONCLUSIVE'],
+  'VERDICTS const must remain the canonical install-action union (do NOT rename/reorder)',
+);
+const decisionContractSrc = fs.readFileSync(
+  path.resolve(__dirname, '../src/decision-contract.ts'),
+  'utf8',
+);
+assert.ok(
+  /export\s+type\s+Decision\s*=\s*Verdict\s*;/.test(decisionContractSrc),
+  'decision-contract.ts must export `type Decision = Verdict;` (additive clearer alias for the action axis)',
+);
+console.log('[decision-contract] Decision alias present; VERDICTS unchanged.');

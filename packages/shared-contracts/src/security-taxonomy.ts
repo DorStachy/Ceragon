@@ -73,6 +73,34 @@ export function riskScoreToSeverity(score: number | null | undefined): SecurityS
   return 'INFO';
 }
 
+/**
+ * Human-readable display label for a stored `SecuritySeverity` token.
+ *
+ * The stored token stays as-is (`INFO` is NOT renamed to `NONE`); only the
+ * presentation differs — `INFO` displays as "None" per the verdict↔action
+ * split plan (2026-06-02). Null / undefined / unrecognized input falls to
+ * "None" so a missing severity renders as the display floor (matches
+ * `riskScoreToSeverity(null) === null`). Use this so Frontend / API surfaces
+ * share one label convention instead of each re-deriving the string.
+ */
+export function severityBandLabel(
+  severity: SecuritySeverity | null | undefined,
+): string {
+  switch (severity) {
+    case 'CRITICAL':
+      return 'Critical';
+    case 'HIGH':
+      return 'High';
+    case 'MEDIUM':
+      return 'Medium';
+    case 'LOW':
+      return 'Low';
+    case 'INFO':
+    default:
+      return 'None';
+  }
+}
+
 export function reportVerdictToDisposition(
   reportVerdict: string | null | undefined,
 ): DependencyDisposition {

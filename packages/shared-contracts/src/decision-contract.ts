@@ -35,6 +35,21 @@ export const VERDICTS = [
 export type Verdict = (typeof VERDICTS)[number];
 
 /**
+ * Clearer alias for the enforcement ACTION axis.
+ *
+ * NAMING NOTE: in this codebase `Verdict` / `VERDICTS` historically name the
+ * install-enforcement ACTION (ALLOW / ALLOW_FAST / PROMPT / HOLD / BLOCK / …),
+ * and the install wire field that carries it is `CheckPackagesResponse.action`
+ * (the Go CLI depends on it). `Decision` is the additive, self-describing alias
+ * for that same union — prefer it in new code when you mean "the action the
+ * policy engine decided". This is a pure type alias: it adds no new runtime
+ * values and does NOT replace `Verdict`/`VERDICTS` (renaming those would be a
+ * breaking, repo-wide, CLI-affecting change). The orthogonal display SEVERITY
+ * axis lives in `security-taxonomy.ts` (riskScoreToSeverity / severityBandLabel).
+ */
+export type Decision = Verdict;
+
+/**
  * Terminal-and-transitional analysis statuses surfaced by Backend's
  * `GET /api/v1/packages/analysis/:id`.
  *
