@@ -51,8 +51,20 @@
  *        may carry FAILED/BLOCK analyses produced by DTO rejection rather
  *        than real package risk, and may lack workerFailure metadata.
  *        Bumping invalidates all pre-fix rows as miss.
+ *   v9 — 2026-06-02 Supply-Chain Hardening (Phase 1). The transitive-CVE
+ *        policy↔display split fix: the Backend mapper now HONORS the worker's
+ *        per-finding transitive applicability stamp instead of blanket-
+ *        downgrading MATCHED transitive findings to UNKNOWN under a non-COMPLETE
+ *        graph, the authoritative install decision counts MATCHED-only direct
+ *        AND transitive evidence, and an unproven transitive advisory / truncated
+ *        graph now fails closed to a TRANSITIVE_COVERAGE_INCOMPLETE PROMPT. This
+ *        changes what MATCHED/applicability MEANS for a row: v8 rows carry the
+ *        old blanket-UNKNOWN transitive stamp and an authoritativeEvidenceDecision
+ *        computed under the bypass, so a v8 HIT would re-serve the contradiction.
+ *        Bumping invalidates all pre-fix rows as miss (re-analyze under the fixed
+ *        pipeline). Policy→action mapping change per the bump policy above.
  */
-export const SCANNER_CACHE_SCHEMA_VERSION = 8 as const;
+export const SCANNER_CACHE_SCHEMA_VERSION = 9 as const;
 
 /**
  * Type-safe alias for cache rows that carry a `cacheVersion` integer.
