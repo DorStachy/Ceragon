@@ -45,13 +45,35 @@ export type EndpointInventoryEcosystem = (typeof ENDPOINT_INVENTORY_ECOSYSTEMS)[
 
 /**
  * Where a finding originated.
- *   sweep        — scheduled or on-demand inventory match
- *   extwatch     — real-time filesystem watcher catch
- *   install-time — recorded by the existing shim chain (rare in this
- *                  contract; mostly used for historical event correlation)
+ *   sweep             — scheduled or on-demand inventory match
+ *   extwatch          — real-time filesystem watcher catch
+ *   install-time      — recorded by the existing shim chain (rare in this
+ *                       contract; mostly used for historical event correlation)
+ *   install-preflight — install-time GATE check (FastGateService.checkPackages).
+ *                       NON-OBSERVED: the package was merely *considered* (a gate
+ *                       also sees BLOCK / declined-PROMPT / failed attempts), so
+ *                       these rows carry provenance='ANALYZED' and are EXCLUDED
+ *                       from every observed-installed total/posture. Surfaced as
+ *                       the separate "analyzed" population for reconciliation.
  */
-export const ENDPOINT_FINDING_SOURCES = ['sweep', 'extwatch', 'install-time'] as const;
+export const ENDPOINT_FINDING_SOURCES = [
+  'sweep',
+  'extwatch',
+  'install-time',
+  'install-preflight',
+] as const;
 export type EndpointFindingSource = (typeof ENDPOINT_FINDING_SOURCES)[number];
+
+/**
+ * Provenance of an inventory row.
+ *   OBSERVED — confirmed-installed inventory (agent sweep / extwatch). The ONLY
+ *              provenance that contributes to observed totals/posture.
+ *   ANALYZED — an install-time gate check (source='install-preflight') that was
+ *              considered but is NOT confirmed installed; surfaced separately.
+ */
+export const ENDPOINT_INVENTORY_PROVENANCES = ['OBSERVED', 'ANALYZED'] as const;
+export type EndpointInventoryProvenance =
+  (typeof ENDPOINT_INVENTORY_PROVENANCES)[number];
 
 /**
  * Sweep scan profile. Mirrors Bumblebee's three-profile model.
@@ -375,6 +397,16 @@ export interface InventoryCatalogResponse {
     byType: Record<string, number>;
     byVerdict: Record<string, number>;
   };
+  /**
+   * The SEPARATE non-observed "analyzed" population (install-time gate checks,
+   * source='install-preflight' / provenance='ANALYZED'). `items` / `total` /
+   * `facets` stay OBSERVED-only; these counts let the console render
+   * "N observed · M analyzed" and reconcile Inventory vs Analysis.
+   * analyzedItemCount = distinct (ecosystem,name) gate-checked;
+   * analyzedEndpointCount = distinct endpoints that ran a gate check.
+   */
+  analyzedItemCount: number;
+  analyzedEndpointCount: number;
 }
 
 /** A single endpoint (workstation) that has the item. */
