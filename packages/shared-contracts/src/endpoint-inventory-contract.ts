@@ -374,6 +374,22 @@ export interface EndpointTriageUpdateResponse {
 export const INVENTORY_ITEM_VERDICTS = ['BLOCK', 'ALERT', 'ALLOW', 'PENDING'] as const;
 export type InventoryItemVerdict = (typeof INVENTORY_ITEM_VERDICTS)[number];
 
+/**
+ * How an inventory ROW (catalog item / endpoint location) was established.
+ *   OBSERVED          — confirmed present on the endpoint (sweep / extwatch /
+ *                       repo-cli scan) OR depended on by a repo.
+ *   IMPUTED_FROM_REPO — NOT directly observed on the endpoint; attributed to it
+ *                       because the endpoint belongs to a group with this repo
+ *                       attached (Phase 7, behind ENDPOINT_REPO_ATTRIBUTION_V1).
+ *                       Flag-off consumers never see this value.
+ */
+export const INVENTORY_ATTRIBUTION_PROVENANCES = [
+  'OBSERVED',
+  'IMPUTED_FROM_REPO',
+] as const;
+export type InventoryAttributionProvenance =
+  (typeof INVENTORY_ATTRIBUTION_PROVENANCES)[number];
+
 /** One row in the unified catalog (deduped by ecosystem + name). */
 export interface InventoryCatalogItem {
   ecosystem: string;
@@ -385,7 +401,24 @@ export interface InventoryCatalogItem {
   endpointCount: number;
   repoCount: number;
   lastSeen: string;
-  sources: Array<'endpoint' | 'repo'>;
+  /**
+   * Where this item's presence comes from. `'imputed'` (Phase 7, behind
+   * ENDPOINT_REPO_ATTRIBUTION_V1) means at least one of its endpoint locations
+   * was attributed via an attached repo rather than directly observed. ADDITIVE
+   * — flag-off consumers only ever see 'endpoint' | 'repo'.
+   */
+  sources: Array<'endpoint' | 'repo' | 'imputed'>;
+  /**
+   * Attribution provenance of this catalog row (Phase 7). OBSERVED unless every
+   * contributing endpoint location is imputed. Optional + additive: absent on
+   * flag-off responses, where callers treat it as OBSERVED.
+   */
+  provenance?: InventoryAttributionProvenance;
+  /**
+   * When `sources` includes `'imputed'`, the `owner/repo` names whose attachment
+   * imputed this item onto an endpoint. Optional + additive (Phase 7).
+   */
+  imputedFromRepos?: string[];
 }
 
 export interface InventoryCatalogResponse {
@@ -407,6 +440,17 @@ export interface InventoryCatalogResponse {
    */
   analyzedItemCount: number;
   analyzedEndpointCount: number;
+  /**
+   * The IMPUTED population (Phase 7, behind ENDPOINT_REPO_ATTRIBUTION_V1):
+   * items/endpoints attributed via an attached repo rather than directly
+   * observed. Parallel to the analyzed counts. Optional + additive — absent
+   * (treated as 0) on flag-off responses; `items`/`total`/`facets` semantics
+   * for these rows are defined by the later imputation read task.
+   * imputedItemCount = distinct (ecosystem,name) imputed onto ≥1 endpoint;
+   * imputedEndpointCount = distinct endpoints that received an imputed item.
+   */
+  imputedItemCount?: number;
+  imputedEndpointCount?: number;
 }
 
 /** A single endpoint (workstation) that has the item. */
@@ -417,7 +461,13 @@ export interface InventoryLocationEndpoint {
   version: string;
   verdict: InventoryItemVerdict;
   state: string | null;
-  source: 'sweep' | 'extwatch' | 'install-time' | 'repo-cli';
+  /**
+   * How the item reached this endpoint. `'imputed-from-repo'` (Phase 7, behind
+   * ENDPOINT_REPO_ATTRIBUTION_V1) marks a location attributed via an attached
+   * repo rather than directly observed. ADDITIVE — flag-off consumers only see
+   * the original four values.
+   */
+  source: 'sweep' | 'extwatch' | 'install-time' | 'repo-cli' | 'imputed-from-repo';
   lastSeen: string;
 }
 
