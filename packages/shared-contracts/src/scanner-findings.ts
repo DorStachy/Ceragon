@@ -53,6 +53,13 @@ export type FindingBehaviorClass =
   | 'vulnerability'
   | 'license-policy'
   | 'reputation'
+  // Policy-tier members added for the supply-chain zero-day policy hardening
+  // (Resolved Decision 6 — reused by `NormalizedPolicyFact.behaviorClass`,
+  // see policy-facts.ts). Consumers default-arm unknown classes safely.
+  | 'runtime-bootstrap'
+  | 'network'
+  | 'release-integrity'
+  | 'coverage'
   | 'unknown';
 
 /**

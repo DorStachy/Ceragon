@@ -63,8 +63,26 @@
  *        computed under the bypass, so a v8 HIT would re-serve the contradiction.
  *        Bumping invalidates all pre-fix rows as miss (re-analyze under the fixed
  *        pipeline). Policy→action mapping change per the bump policy above.
+ *   v10 — 2026-06-06 Supply-Chain Zero-Day Policy Hardening (Phase 4). Cache
+ *        rows can now carry normalized `policyFacts` (the policy-tier projection
+ *        of scanner/sandbox observations that the install-time decision builder
+ *        consumes). A row is stamped v10 ONLY when the producers required for
+ *        its analysis mode reported terminal `status:'ok'` with clean
+ *        `validation:'ok'` coverage — i.e. the row is fully fact-aware. A v9 row
+ *        either predates facts entirely or carries a partial/incomplete fact
+ *        pack, so it is NOT a complete fact-bearing row.
+ *
+ *        IMPORTANT — this bump is FRESHNESS-FLAG-GATED, not an exact-match flip.
+ *        Backend reads route through `isCacheVersionFreshForRead(v, { readV10 })`
+ *        whose floor is `readV10 ? 10 : 9`. With `BACKEND_POLICY_FACTS_READ_V10`
+ *        OFF (default) BOTH v9 and v10 rows are fresh, so existing v9 rows serve
+ *        normally (no deploy/shadow re-analysis spike) while new v10 rows
+ *        accumulate. Flipping the flag ON raises the floor to 10 so v9 rows go
+ *        stale and re-screen under the fact-bearing pipeline. The constant
+ *        itself stays the max/target; do NOT revert it on rollback — flip the
+ *        read flag instead.
  */
-export const SCANNER_CACHE_SCHEMA_VERSION = 9 as const;
+export const SCANNER_CACHE_SCHEMA_VERSION = 10 as const;
 
 /**
  * Type-safe alias for cache rows that carry a `cacheVersion` integer.
@@ -82,6 +100,48 @@ export function isCacheVersionFresh(persistedVersion: number | undefined | null)
   if (persistedVersion === undefined || persistedVersion === null) return false;
   if (typeof persistedVersion !== 'number' || !Number.isFinite(persistedVersion)) return false;
   return persistedVersion === SCANNER_CACHE_SCHEMA_VERSION;
+}
+
+/**
+ * Supply-Chain Zero-Day Policy Hardening (Phase 4) — minimum cache version a
+ * READ path will accept as fresh. This is the single source of truth for the
+ * `BACKEND_POLICY_FACTS_READ_V10` cutover:
+ *
+ *   readV10 === false (default) → floor 9  → v9 AND v10 rows are fresh.
+ *   readV10 === true            → floor 10 → only v10 rows are fresh.
+ *
+ * Keeping this a derived floor (not an exact-match flip) is what lets the v10
+ * bump deploy WITHOUT a mass cache-miss/HOLD spike: with the flag off, the
+ * already-cached v9 corpus continues to serve while v10 rows accumulate during
+ * shadow burn-in; flipping the flag on re-screens the v9 corpus. See the v10
+ * wave note above.
+ */
+export function minFreshReadVersion(readV10: boolean): number {
+  return readV10 ? SCANNER_CACHE_SCHEMA_VERSION : SCANNER_CACHE_SCHEMA_VERSION - 1;
+}
+
+/**
+ * READ-side freshness gate. Returns true iff a persisted `cacheVersion` is at
+ * least `minFreshReadVersion(readV10)` AND not ahead of the current authoritative
+ * version (future-version rows remain fail-closed for the same rollback-safety
+ * reason as `isCacheVersionFresh`). Use this in every cache-READ path instead of
+ * the exact-equality `isCacheVersionFresh` so the read floor moves atomically
+ * with the `BACKEND_POLICY_FACTS_READ_V10` flag.
+ *
+ * `readV10` defaults to `false` so a caller that has not yet been migrated to
+ * pass the flag behaves exactly like the pre-Phase-4 "accept v9-or-current"
+ * lenient read (it will accept both v9 and v10) — never stricter by accident.
+ */
+export function isCacheVersionFreshForRead(
+  persistedVersion: number | undefined | null,
+  opts?: { readV10?: boolean },
+): boolean {
+  if (persistedVersion === undefined || persistedVersion === null) return false;
+  if (typeof persistedVersion !== 'number' || !Number.isFinite(persistedVersion)) return false;
+  // Future-version rows are never fresh (partial-rollback safety — identical to
+  // isCacheVersionFresh's upper bound).
+  if (persistedVersion > SCANNER_CACHE_SCHEMA_VERSION) return false;
+  return persistedVersion >= minFreshReadVersion(opts?.readV10 === true);
 }
 
 /**
