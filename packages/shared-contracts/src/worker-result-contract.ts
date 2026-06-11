@@ -40,7 +40,15 @@
 // v2 (2026-05-18, plan P0-2): added top-level `metadata` envelope
 // (`metadata.suppressedAdvisories` — withdrawn/disputed advisories excluded
 // from active findings). Future audit buckets extend the same envelope.
-export const WORKER_RESULT_CONTRACT_VERSION = 2 as const;
+// v3 (2026-06-04, P0-7): added top-level `digest` (result-swap binding digest).
+// v4 (2026-06-07, Sandbox Artifact Identity): added `expectedIntegrity`,
+//   `expectedSha256`, `artifactIdentityVerified`. (Canonical catches up to the
+//   Backend snapshot here — these were added to the Backend snapshot at v3/v4
+//   but the canonical was not bumped in lockstep until now.)
+// v5 (2026-06-11, Transitive Malware Detection): added `transitiveInstallSet`
+//   (the deduped runtime+peer+optional install-set the Backend coordinator
+//   evaluates worst-wins) and `bundledDepsPresent` (bundled-node_modules flag).
+export const WORKER_RESULT_CONTRACT_VERSION = 5 as const;
 
 export type WorkerResultProducer = 'static-worker' | 'sandbox-worker';
 
@@ -68,6 +76,14 @@ export const ALLOWED_TOP_LEVEL_RESULT_KEYS = [
   'resolvedVersion',
   'integrity',
   'sha256',
+  // v3 (P0-7): result-swap binding digest (the artifact integrity the worker
+  // analyzed, echoed back so the result can be bound to the job).
+  'digest',
+  // v4 (Sandbox Artifact Identity): the expected anchor (from the job) echoed
+  // verbatim for the backend reality-anchored gate.
+  'expectedIntegrity',
+  'expectedSha256',
+  'artifactIdentityVerified',
   'artifactS3Key',
   'siteId',
   'tenantId',
@@ -111,6 +127,10 @@ export const ALLOWED_TOP_LEVEL_RESULT_KEYS = [
   'pypiArtifact',
   'codeReachability',
   'dependencyGraph',
+  // v5 (Transitive Malware Detection): true when the analyzed tarball ships a
+  // bundled node_modules/ tree (the Shai-Hulud-2.0 bundled-code vector). Flag-only;
+  // the bundled content is scanned by the worker, not resolved as graph nodes.
+  'bundledDepsPresent',
   'scripts',
   'filePaths',
 
@@ -126,6 +146,12 @@ export const ALLOWED_TOP_LEVEL_RESULT_KEYS = [
   'vulnerabilities',
   'vulnerabilityScanHealth',
   'transitiveVulnerabilities',
+  // v5 (Transitive Malware Detection): deduped runtime+peer+optional install-set
+  // (its OWN top-level array, not derived from the trimmable dependencyGraph) the
+  // Backend TransitiveMalwareCoordinator evaluates worst-wins. Each entry carries
+  // { ecosystem, name, version, integrity?, depth, path[], scope, specifierKind,
+  //   publishedAt? }. Kept lenient on the wire (opaque, like transitiveVulnerabilities).
+  'transitiveInstallSet',
 
   // Release anomaly + baseline drift + publisher continuity + campaign
   'packageBaselineFingerprint',
