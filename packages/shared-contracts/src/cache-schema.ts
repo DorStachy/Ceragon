@@ -170,3 +170,49 @@ export function normalizeArtifactDigest(value: string | null | undefined): strin
   if (lower === 'unknown' || lower === 'undefined' || lower === 'null') return null;
   return trimmed;
 }
+
+/**
+ * Async-Install-UX B1-B — extract the hash ALGORITHM of an artifact digest so a
+ * cache-integrity compare can refuse to match across algorithms. Mirrored,
+ * lock-step, in the inlined Backend copy at
+ * `Backend/src/packages/services/scanner-cache-schema.ts`.
+ *
+ * SECURITY CONTEXT: an npm lockfile carries an SRI integrity in the form
+ * `sha512-<base64>`, while a worker-written cache row stores a colon/bare-hex
+ * digest (today usually `sha256:<hex>`). Treating a `sha512` target as a match
+ * for a `sha256` cache row is FALSE EQUIVALENCE — it would let a republished /
+ * mirror-drifted tarball at the same name@version reuse an old clean row. The
+ * compare must treat a cross-algorithm pair as "no comparable proof" (a MISS),
+ * never a hit. `algOf` makes "same algorithm?" decidable.
+ *
+ * Recognizes, in order:
+ *   1. npm SRI prefix:        `sha512-…`, `sha256-…`, `sha1-…`   (case-insensitive)
+ *   2. worker colon form:     `sha512:…`, `sha256:…`, `sha1:…`    (case-insensitive)
+ *   3. bare hex by length:    40→sha1, 64→sha256, 128→sha512
+ *
+ * Returns the lowercase algorithm name, or `null` for an absent / placeholder /
+ * unrecognized digest.
+ */
+export type SupportedDigestAlgorithm = 'sha1' | 'sha256' | 'sha512';
+
+export function algOf(value: string | null | undefined): SupportedDigestAlgorithm | null {
+  const normalized = normalizeArtifactDigest(value);
+  if (normalized === null) return null;
+  const delimited = /^(sha512|sha256|sha1)[-:]/i.exec(normalized);
+  if (delimited) {
+    return delimited[1].toLowerCase() as SupportedDigestAlgorithm;
+  }
+  if (/^[0-9a-f]+$/i.test(normalized)) {
+    switch (normalized.length) {
+      case 40:
+        return 'sha1';
+      case 64:
+        return 'sha256';
+      case 128:
+        return 'sha512';
+      default:
+        return null;
+    }
+  }
+  return null;
+}
