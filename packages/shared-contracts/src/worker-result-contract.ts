@@ -48,9 +48,42 @@
 // v5 (2026-06-11, Transitive Malware Detection): added `transitiveInstallSet`
 //   (the deduped runtime+peer+optional install-set the Backend coordinator
 //   evaluates worst-wins) and `bundledDepsPresent` (bundled-node_modules flag).
-export const WORKER_RESULT_CONTRACT_VERSION = 5 as const;
+// v6 (2026-06-15, FP Phase 7 — SCA evidence disposition): added optional
+//   top-level `evidenceClass`. The Static-Worker (7.2) emits the disposition
+//   of the strongest SCA evidence it found; the Backend (7.5) reads it to gate
+//   the MALICIOUS label (only VERIFIED_MALWARE is permitted to drive MALICIOUS;
+//   a bare high risk score no longer escalates to MALICIOUS). Optional — absent
+//   means a legacy/unknown producer and the Backend falls back to its prior
+//   (score-based) behavior. See `WorkerResultEvidenceClass`.
+export const WORKER_RESULT_CONTRACT_VERSION = 6 as const;
 
 export type WorkerResultProducer = 'static-worker' | 'sandbox-worker';
+
+/**
+ * v6 (FP Phase 7): SCA evidence-disposition the Static-Worker emits for the
+ * artifact and the Backend reads to gate the MALICIOUS label. Ordered roughly
+ * strongest→weakest:
+ *
+ *   - `VERIFIED_MALWARE`     — confirmed-malicious evidence (threat-intel feed
+ *     hit, confirmed source→sink exfil, known IoC). The ONLY class the Backend
+ *     permits to drive a MALICIOUS verdict.
+ *   - `KNOWN_VULNERABLE`     — a matched, applicable known CVE/advisory (not
+ *     malware): vulnerable, not malicious.
+ *   - `HIGH_RISK_HEURISTIC`  — heuristics/score say high-risk but no confirmed
+ *     malware evidence. Suspicious, NOT MALICIOUS — caps at the high-risk band.
+ *   - `REPUTATION_UNKNOWN`   — insufficient reputation/intel signal to dispose;
+ *     unknown, not an accusation.
+ *   - `CLEAN`                — analysis found no malicious or vulnerable evidence.
+ *
+ * Absent (`undefined`) means a legacy/unknown producer; the Backend keeps its
+ * prior behavior for those.
+ */
+export type WorkerResultEvidenceClass =
+  | 'VERIFIED_MALWARE'
+  | 'KNOWN_VULNERABLE'
+  | 'HIGH_RISK_HEURISTIC'
+  | 'REPUTATION_UNKNOWN'
+  | 'CLEAN';
 
 /**
  * Allowed top-level keys on a `/api/v1/worker/results` payload. Anything
@@ -201,6 +234,11 @@ export const ALLOWED_TOP_LEVEL_RESULT_KEYS = [
 
   // Misc operational
   'processingTimeMs',
+
+  // v6 (FP Phase 7): SCA evidence-disposition the Static-Worker emits and the
+  // Backend reads to gate the MALICIOUS label. Optional; values in
+  // `WorkerResultEvidenceClass`. Absent = legacy/unknown producer.
+  'evidenceClass',
 
   // v2 (P0-2): additive metadata envelope (suppressedAdvisories, …)
   'metadata',
@@ -361,6 +399,8 @@ export interface WorkerResultContract {
   filePathCount?: number;
   securityFindings?: Array<Record<string, unknown>>;
   securityFindingsTruncated?: boolean;
+  // v6 (FP Phase 7): SCA evidence-disposition; gates the Backend MALICIOUS label.
+  evidenceClass?: WorkerResultEvidenceClass;
   [k: string]: unknown;
 }
 
