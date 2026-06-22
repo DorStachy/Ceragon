@@ -336,6 +336,18 @@ export interface EndpointInventoryListResponse {
   page: number;
   pageSize: number;
   facets: EndpointInventoryFacets;
+  /**
+   * Server-driven pagination v1 (ADDITIVE) — authoritative next-page sentinel.
+   * Optional + additive: absent on older Backends, where consumers derive
+   * `hasMore` from `page * pageSize < total`.
+   */
+  hasMore?: boolean;
+  /**
+   * Server-driven pagination v1 (ADDITIVE) — true when `total` is a capped or
+   * estimated count rather than exact. Optional + additive: absent ⇒ treat
+   * `total` as exact.
+   */
+  totalIsEstimate?: boolean;
 }
 
 /** Response for GET /api/v1/endpoint/inventory/stats (Overview card). */
@@ -451,6 +463,17 @@ export interface InventoryCatalogResponse {
    */
   imputedItemCount?: number;
   imputedEndpointCount?: number;
+  /**
+   * Server-driven pagination v1 (ADDITIVE) — authoritative next-page sentinel for
+   * the catalog `items` page. Optional + additive: absent on older Backends,
+   * where consumers derive `hasMore` from `page * pageSize < total`.
+   */
+  hasMore?: boolean;
+  /**
+   * Server-driven pagination v1 (ADDITIVE) — true when `total` is a capped or
+   * estimated count rather than exact. Optional + additive: absent ⇒ exact.
+   */
+  totalIsEstimate?: boolean;
 }
 
 /** A single endpoint (workstation) that has the item. */
@@ -504,4 +527,15 @@ export interface InventoryEndpointsResponse {
   total: number;
   page: number;
   pageSize: number;
+  /**
+   * Server-driven pagination v1 (ADDITIVE) — authoritative next-page sentinel.
+   * Optional + additive: absent on older Backends, where consumers derive
+   * `hasMore` from `page * pageSize < total`.
+   */
+  hasMore?: boolean;
+  /**
+   * Server-driven pagination v1 (ADDITIVE) — true when `total` is a capped or
+   * estimated count rather than exact. Optional + additive: absent ⇒ exact.
+   */
+  totalIsEstimate?: boolean;
 }
