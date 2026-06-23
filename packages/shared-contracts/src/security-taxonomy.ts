@@ -169,3 +169,38 @@ export function legacyInstallVerdictToDisposition(
   }
   return 'NO_FINDING';
 }
+
+/**
+ * Customer-facing finding CATEGORY labels (UI + CLI). Maps an internal advisory
+ * class to one of these; NEVER the engine that produced it (HARD RULE — no
+ * gitleaks/semgrep/codeql/trivy/osv/bandit/checkov/scorecard/trufflehog/
+ * actionlint/zizmor anywhere a customer can see). Order is display order.
+ */
+export const SECURITY_CATEGORIES = [
+  'Injection',
+  'Secret',
+  'Supply chain',
+  'Access control',
+  'Crypto',
+  'Config',
+  'Info leak',
+  'Infrastructure',
+  'AI/prompt',
+] as const;
+export type SecurityCategory = (typeof SECURITY_CATEGORIES)[number];
+
+/**
+ * Customer-facing COVERAGE category labels for the Overview posture dashboard
+ * (S6). Each maps from one or more of the 9 internal analysis surfaces — the
+ * surface→label mapping lives in the Backend aggregate; the labels are pinned
+ * here so FE renders the same six chips. NO tool names.
+ */
+export const COVERAGE_CATEGORIES = [
+  'Secrets & credentials',
+  'Injection & unsafe data flow',
+  'Dependencies & supply chain',
+  'Infrastructure & CI/CD',
+  'AI & prompt safety',
+  'Auth & access control',
+] as const;
+export type CoverageCategory = (typeof COVERAGE_CATEGORIES)[number];
