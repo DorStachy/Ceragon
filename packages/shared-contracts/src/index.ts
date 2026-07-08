@@ -18,3 +18,11 @@ export * from './vulnerability-applicability-fixtures';
 export * from './policy-facts';
 export * from './scan-run-view-contract';
 export * from './customer-taxonomy';
+export * from './ai-governance-contract';
+// M3 Rollout Governance
+export * from './endpoint-controls-contract';
+export * from './team-autosort-contract';
+export * from './rollout-readiness-contract';
+export * from './rollout-readiness-fixtures';
+export * from './console-roles-contract';
+export * from './rollout-strictness-contract';
