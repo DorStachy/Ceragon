@@ -9,6 +9,14 @@
 [CmdletBinding()]
 param(
   [string]$RepoRoot,
+  [string]$BackendRoot,
+  [string]$FrontendRoot,
+  [string]$ScannerRoot,
+  [string]$StaticWorkerRoot,
+  [string]$SandboxWorkerRoot,
+  [string]$StackDir,
+  [string[]]$ComposeFiles,
+  [string]$NpmCommand = 'npm',
   [switch]$FullRebuild,
   [switch]$KeepContainers,
   [switch]$WithGhsaMock
@@ -26,15 +34,41 @@ if (-not $RepoRoot) {
   $RepoRoot = Split-Path -Parent (Split-Path -Parent $scriptPath)
 }
 
+if (-not $BackendRoot) { $BackendRoot = Join-Path $RepoRoot 'Backend' }
+if (-not $FrontendRoot) { $FrontendRoot = Join-Path $RepoRoot 'Frontend' }
+if (-not $ScannerRoot) { $ScannerRoot = Join-Path $RepoRoot 'GithubApp-Bot-Scanner-Worker' }
+if (-not $StaticWorkerRoot) { $StaticWorkerRoot = Join-Path $RepoRoot 'Static-Worker' }
+if (-not $SandboxWorkerRoot) { $SandboxWorkerRoot = Join-Path $RepoRoot 'Sandbox-Worker' }
+if (-not $StackDir) { $StackDir = Join-Path $RepoRoot '.codesec-e2e' }
+
+foreach ($root in @($BackendRoot, $FrontendRoot, $ScannerRoot, $StaticWorkerRoot, $SandboxWorkerRoot, $StackDir)) {
+  if (-not (Test-Path -LiteralPath $root)) { throw "Required local-stack path not found: $root" }
+}
+$BackendRoot = (Resolve-Path -LiteralPath $BackendRoot).Path
+$FrontendRoot = (Resolve-Path -LiteralPath $FrontendRoot).Path
+$ScannerRoot = (Resolve-Path -LiteralPath $ScannerRoot).Path
+$StaticWorkerRoot = (Resolve-Path -LiteralPath $StaticWorkerRoot).Path
+$SandboxWorkerRoot = (Resolve-Path -LiteralPath $SandboxWorkerRoot).Path
+$StackDir = (Resolve-Path -LiteralPath $StackDir).Path
+$env:CERAGON_E2E_BACKEND_ROOT = $BackendRoot.Replace('\', '/')
+$env:CERAGON_E2E_FRONTEND_ROOT = $FrontendRoot.Replace('\', '/')
+
+if (-not $ComposeFiles -or $ComposeFiles.Count -eq 0) {
+  $ComposeFiles = @(Join-Path $StackDir 'docker-compose.yml')
+}
+$composeFileArgs = @()
+foreach ($file in $ComposeFiles) {
+  $resolved = (Resolve-Path -LiteralPath $file).Path
+  $composeFileArgs += @('-f', $resolved)
+}
+
 # Default: full rebuild ON. Operators opt OUT with -FullRebuild:$false.
 if (-not $PSBoundParameters.ContainsKey('FullRebuild')) { $FullRebuild = $true }
 
 Write-Host "==> local-e2e-reset: RepoRoot=$RepoRoot FullRebuild=$FullRebuild WithGhsaMock=$WithGhsaMock"
+Write-Host "    Backend=$BackendRoot Frontend=$FrontendRoot Scanner=$ScannerRoot Stack=$StackDir"
 
-$composeDir = Join-Path $RepoRoot '.codesec-e2e'
-if (-not (Test-Path $composeDir)) {
-  throw ".codesec-e2e directory not found at $composeDir"
-}
+$composeDir = $StackDir
 
 $mockProc = $null
 $resetComplete = $false
@@ -86,7 +120,7 @@ function Invoke-EmulatorBootstrap {
   docker run --rm `
     --network codesec-e2e_net `
     -v "${composeDir}:/work" `
-    -v "$(Join-Path $RepoRoot 'Backend\node_modules'):/nm" `
+    -v "$(Join-Path $BackendRoot 'node_modules'):/nm" `
     -e NODE_PATH=/nm `
     -w /work `
     node:20-bookworm-slim `
@@ -106,10 +140,11 @@ function Invoke-SchemaSync {
     --name $syncName `
     --network container:codesec-e2e-postgres `
     --env-file (Join-Path $composeDir 'backend.sync.env') `
-    -v "$(Join-Path $RepoRoot 'Backend'):/app" `
+    -v "${BackendRoot}:/app" `
+    -v "$(Join-Path $BackendRoot 'packages\shared-contracts'):/app/node_modules/@ceragon/shared-contracts" `
     -w /app `
     node:20-bookworm-slim `
-    sh -lc "node dist/main.js"
+    sh -lc "node dist/src/main.js"
   if ($LASTEXITCODE -ne 0) { throw 'schema-sync container failed to start' }
 
   $schemaReady = $false
@@ -204,33 +239,35 @@ try {
   if ($FullRebuild) {
     Write-Host "==> Phase 1: rebuild artifacts/images..."
 
-    Push-Location (Join-Path $RepoRoot 'Backend')
+    Push-Location $BackendRoot
     try {
-      npm run build
+      & $NpmCommand run build
       if ($LASTEXITCODE -ne 0) { throw 'Backend build failed' }
     } finally { Pop-Location }
 
-    Push-Location (Join-Path $RepoRoot 'Frontend')
+    Push-Location $FrontendRoot
     try {
-      npm run build
+      & $NpmCommand run build
       if ($LASTEXITCODE -ne 0) { throw 'Frontend build failed' }
     } finally { Pop-Location }
 
-    docker build -t codesec-e2e/static-worker:local (Join-Path $RepoRoot 'Static-Worker')
+    docker build -t codesec-e2e/static-worker:local $StaticWorkerRoot
     if ($LASTEXITCODE -ne 0) { throw 'static-worker image build failed' }
 
-    docker build -t codesec-e2e/sandbox-worker:local (Join-Path $RepoRoot 'Sandbox-Worker')
+    docker build -t codesec-e2e/sandbox-worker:local $SandboxWorkerRoot
     if ($LASTEXITCODE -ne 0) { throw 'sandbox-worker image build failed' }
 
     $scannerCandidates = @(
-      @{ Dockerfile = (Join-Path $RepoRoot 'GithubApp-Bot-Scanner-Worker\Dockerfile.scanner-worker'); Context = (Join-Path $RepoRoot 'GithubApp-Bot-Scanner-Worker') },
-      @{ Dockerfile = (Join-Path $RepoRoot 'GithubApp-Bot-Scanner-Worker\scanner-worker\Dockerfile'); Context = (Join-Path $RepoRoot 'GithubApp-Bot-Scanner-Worker\scanner-worker') },
-      @{ Dockerfile = (Join-Path $RepoRoot 'GithubApp-Bot-Scanner-Worker\Dockerfile'); Context = (Join-Path $RepoRoot 'GithubApp-Bot-Scanner-Worker') }
+      @{ Dockerfile = (Join-Path $ScannerRoot 'Dockerfile.scanner-worker'); Context = $ScannerRoot },
+      @{ Dockerfile = (Join-Path $ScannerRoot 'scanner-worker\Dockerfile'); Context = (Join-Path $ScannerRoot 'scanner-worker') },
+      @{ Dockerfile = (Join-Path $ScannerRoot 'Dockerfile'); Context = $ScannerRoot }
     )
     $scannerBuild = $scannerCandidates | Where-Object { Test-Path $_.Dockerfile } | Select-Object -First 1
     if (-not $scannerBuild) { throw 'scanner-worker Dockerfile not found' }
 
-    docker build -f $scannerBuild.Dockerfile -t codesec-e2e/scanner-worker:local $scannerBuild.Context
+    # Dockerfile.scanner-worker keeps a CI-only smoke stage after runtime, so
+    # an untargeted build silently produces a non-worker image (`CMD node`).
+    docker build --target runtime -f $scannerBuild.Dockerfile -t codesec-e2e/scanner-worker:local $scannerBuild.Context
     if ($LASTEXITCODE -ne 0) { throw 'scanner-worker image build failed' }
 
     Write-Host "==> Phase 1: all images built."
@@ -240,12 +277,12 @@ try {
   Push-Location $composeDir
   try {
     if (-not $KeepContainers) {
-      docker compose down -v --remove-orphans
+      docker compose @composeFileArgs down -v --remove-orphans
       if ($LASTEXITCODE -ne 0) { throw 'docker compose down failed' }
     }
 
     Write-Host "==> Phase 3: starting infra (postgres / elasticmq / minio / dynamodb)..."
-    docker compose up -d postgres elasticmq minio dynamodb
+    docker compose @composeFileArgs up -d postgres elasticmq minio dynamodb
     if ($LASTEXITCODE -ne 0) { throw 'infra start failed' }
     Wait-PostgresHealthy
 
@@ -264,7 +301,7 @@ try {
     }
 
     Write-Host "==> Phase 6: starting backend + workers + frontend..."
-    docker compose up -d
+    docker compose @composeFileArgs up -d
     if ($LASTEXITCODE -ne 0) { throw 'docker compose up failed' }
 
     if ($WithGhsaMock) {

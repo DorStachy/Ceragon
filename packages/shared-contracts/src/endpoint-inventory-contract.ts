@@ -29,7 +29,8 @@ import type { SecuritySeverity } from './security-taxonomy';
  * may also surface in sweep findings when a previously-installed package
  * matches a fresh advisory.
  *
- * Future additions: 'browser-extension'.
+ * 'browser-extension' identifies the managed Web AI Guard reported by the
+ * endpoint daemon on its inventory heartbeat.
  */
 export const ENDPOINT_INVENTORY_ECOSYSTEMS = [
   'npm',
@@ -40,6 +41,7 @@ export const ENDPOINT_INVENTORY_ECOSYSTEMS = [
   'packagist',
   'mcp',
   'editor-extension',
+  'browser-extension',
 ] as const;
 export type EndpointInventoryEcosystem = (typeof ENDPOINT_INVENTORY_ECOSYSTEMS)[number];
 

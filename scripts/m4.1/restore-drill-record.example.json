@@ -1,0 +1,10 @@
+{
+  "completedAt": "2026-07-10T00:00:00.000Z",
+  "sourceDbIdentifier": "codefense-postgressdb",
+  "snapshotArn": "arn:aws:rds:eu-north-1:113627991972:snapshot:replace-with-real-drill-snapshot",
+  "restoredDbIdentifier": "replace-with-temporary-restored-instance",
+  "restoredEncrypted": true,
+  "applicationProbePassed": true,
+  "deletedAfterVerification": true,
+  "operator": "replace-with-operator-identity"
+}
