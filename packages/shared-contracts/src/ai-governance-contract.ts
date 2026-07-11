@@ -20,6 +20,24 @@
  * package-check finalize path; the rest are declared now so later waves
  * (prompt capture, tool-call gating, MCP governance, diff/push gating)
  * add emitters without re-touching this contract.
+ *
+ * M4 (WS-H) — the five untrusted-ingress + upload-governance types are APPENDED
+ * at the tail (never re-ordered), emitted later by the daemon (ingress redaction,
+ * context taint, tool-hold) and the browser extension (upload gating):
+ *   - INGRESS_REDACTED     — untrusted ingested content (tool output / README /
+ *                            MCP result) had a secret or injection redacted
+ *                            BEFORE the model read it.
+ *   - CONTEXT_TAINTED      — the session was marked tainted by untrusted ingress.
+ *   - TOOL_CALL_HELD       — the next risky tool call was HELD for confirmation
+ *                            (distinct from TOOL_CALL_BLOCKED).
+ *   - UPLOAD_BLOCKED       — a browser file upload was blocked (file-type / secret).
+ *   - UPLOAD_NOT_INSPECTED — a browser upload was allowed but could not be
+ *                            inspected (honest taxonomy).
+ * Metadata for all five stays redaction-safe (class / count / disposition /
+ * reason-slug only — NEVER raw prompt/file content).
+ *
+ * NOTE: keep this tuple free of in-array comments — the Backend parity test
+ * regex-extracts it by splitting on commas.
  */
 export const AI_EVENT_TYPES = [
   'PROMPT_SUBMITTED',
@@ -46,6 +64,11 @@ export const AI_EVENT_TYPES = [
   'CODE_DIFF_FLAGGED',
   'EXCEPTION_REQUESTED',
   'AGENT_CONTROL_TAMPER',
+  'INGRESS_REDACTED',
+  'CONTEXT_TAINTED',
+  'TOOL_CALL_HELD',
+  'UPLOAD_BLOCKED',
+  'UPLOAD_NOT_INSPECTED',
 ] as const;
 
 export type AIEventType = (typeof AI_EVENT_TYPES)[number];
@@ -105,6 +128,12 @@ export type POLICY_DECISION = AiPolicyDecision;
  */
 export const AI_DLP_BLOCK_CLASSES = ['private-key', 'aws-secret-key'] as const;
 
+// The redact tier: the last 10 (openai-key … google-oauth-secret) are the M4
+// (WS-C) structured provider/service credential classes the daemon + browser
+// engines detect. Redact (mask + let the prompt through) matches the
+// sibling-secret tier; an admin can escalate to block or relax to warn/allow.
+// NOTE: entries here MUST be bare string literals (no inline comments) — the
+// contract-parity spec extracts this tuple by a text regex.
 export const AI_DLP_REDACT_CLASSES = [
   'aws-access-key',
   'gcp-key',
@@ -114,9 +143,31 @@ export const AI_DLP_REDACT_CLASSES = [
   'slack-token',
   'github-token',
   'internal-url',
+  'openai-key',
+  'anthropic-key',
+  'stripe-live',
+  'slack-webhook',
+  'sendgrid-key',
+  'twilio-key',
+  'npm-token',
+  'pypi-token',
+  'gitlab-token',
+  'google-oauth-secret',
 ] as const;
 
-export const AI_DLP_WARN_CLASSES = ['high-entropy'] as const;
+// The warn tier. kubeconfig / db-connection-string are M4 (WS-C) ambiguous
+// shapes — a redacted sample kubeconfig / a connection string is common in
+// benign context, so they WARN rather than mask by default; an admin can
+// escalate per class. Matches the browser-extension DEFAULT_POLICY tiers
+// exactly (Installers/browser-extension/src/dlp.js). NOTE: the daemon's
+// `base64-wrapped-secret` detector is deliberately NOT tiered here — like the
+// browser default it falls to the built-in WARN default (policyeval), keeping
+// this heuristic out of the configurable closed set.
+export const AI_DLP_WARN_CLASSES = [
+  'high-entropy',
+  'kubeconfig',
+  'db-connection-string',
+] as const;
 
 /** The union of every DLP class across block/redact/warn tiers. */
 export const AI_DLP_CLASSES = [
