@@ -36,6 +36,8 @@ export interface ReleaseObservationMessage {
     currentPublisher?: string;
     currentMaintainerCount?: number;
     distTagChanged?: boolean;
+    /** Follower-derived: version ships an install/preinstall/postinstall lifecycle hook. */
+    hasInstallScript?: boolean;
   };
 }
 
@@ -51,6 +53,8 @@ export interface EnrichmentHints {
   currentPublisher?: string;
   currentMaintainerCount?: number;
   distTagChanged?: boolean;
+  /** Follower-derived: version ships an install/preinstall/postinstall lifecycle hook. */
+  hasInstallScript?: boolean;
 }
 
 export interface ArtifactFetchMessage {
