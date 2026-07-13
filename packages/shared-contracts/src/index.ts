@@ -28,3 +28,5 @@ export * from './console-roles-contract';
 export * from './rollout-strictness-contract';
 // M4.1 Core Trust & Capability Truth
 export * from './governance-profile-contract';
+// M4.5 Native AI Runtime Adapter Backbone
+export * from './runtime-adapter-contract';
