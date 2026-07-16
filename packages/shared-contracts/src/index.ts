@@ -28,3 +28,4 @@ export * from './console-roles-contract';
 export * from './rollout-strictness-contract';
 // M4.1 Core Trust & Capability Truth
 export * from './governance-profile-contract';
+export * from './runtime-adapter-contract';
