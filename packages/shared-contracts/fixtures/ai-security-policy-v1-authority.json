@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "capturedControlPlaneSotSha256": "023bb89f1bac4e1f2a3eff42f630d0697841f9d3adea0e2e340cc08721c829a6",
+  "authoritativeSources": {
+    "Workspace/packages/shared-contracts/src/ai-governance-contract.ts": "a2bc438b0b6f08b14fc56948b0104bb70e35cc69ec63d23aa6b753a8e805e2cc",
+    "Backend/src/ai-security-policy/ai-security-policy.constants.ts": "49d077c7b62b74751c5515d2f56deeea78f15f913cecad848957c2469aff346b",
+    "Backend/src/ai-security-policy/dto/ai-security-policy.dto.ts": "724fcea622ac37f3739b4bd8b2d140b370a4009d1b18ceadecf8c7deeb5a25df",
+    "Backend/src/ai-security-policy/ai-security-policy.service.ts": "92ca68f437c4e46946bbbb91a4b0ae895d8cfaf39cdb21804c04ef9e76af78d8",
+    "Backend/src/ai-governance/services/ai-policy.service.ts": "f77bc6f7651af0db23cb57aa306ea976852413adbe24c1cb86008e7255b223b6",
+    "Installers/internal/core/backend/ai_prompt.go": "756368f5906778e04674566d401b6ed8898ee5f7b2a8cdfdcaabd5f09a8a18cb",
+    "Installers/internal/policyeval/policyeval.go": "22ff2a1fa1e2d7d2d8b01d55455af0b8119fdc231e09b598974b4cd1e5099fb2",
+    "Installers/internal/aiagent/aiagent.go": "1732b70eb3cf9d28af7a700bb1a6a320c3c97c7fe30e619f229052e5827b28aa",
+    "Installers/internal/proxy/ai_egress.go": "7f43bbdc601619db83313b131088b3a00add5ffe6c0636100a92fc21ec70b105",
+    "Installers/internal/daemon/ai_ingress.go": "7d9873f17cfb614e6812a9735796d056584f2c035ceedd6688a063d4c033b61c",
+    "Installers/internal/policybundle/bundle.go": "82284e569afcf68c28d5d6a9f6f2c5cc321027fcf765c41986d892a84ea174d2",
+    "Installers/internal/proxy/ai_proxy.go": "cec5a784028104ce35321944e4f092ee615b427a460738b8f494f19857939276",
+    "Installers/internal/proxy/ai_ingress.go": "e903e8a9bb4495beb25f8fc324d531378fb0b6635fe8830336299af9bf5e52fc",
+    "Installers/internal/proxy/openai_decision.go": "40810cb67e3eac6dd3c0f600a1be2473428a0b887bdd0ad1aec924d76c00d393",
+    "Installers/internal/daemon/ai_handlers.go": "fe64d5e877ed46ae1a6d11d650a729b294c3223d52f283b467d0bfeb1ce08115",
+    "Installers/internal/daemon/server.go": "8bc9ab82d0e79f4feace67ce14e4fedeec6bc02d39f23a5f01dceb7a309db6ad",
+    "Installers/internal/daemon/openai_wire.go": "0d2335a69a277755897154755458cc089575e9d209362ada7aef2366e5d8075b"
+  },
+  "wireFixtures": {
+    "legacyOrg": {
+      "evidenceMode": "HASH_ONLY",
+      "blockedProviders": ["fixture-blocked-provider"],
+      "toleratedProviders": ["fixture-tolerated-provider"],
+      "dlp": {
+        "enabled": true,
+        "blockClasses": ["private-key", "aws-secret-key"],
+        "redactClasses": [
+          "aws-access-key",
+          "gcp-key",
+          "azure-key",
+          "generic-api-key",
+          "jwt",
+          "slack-token",
+          "github-token",
+          "internal-url",
+          "openai-key",
+          "anthropic-key",
+          "stripe-live",
+          "slack-webhook",
+          "sendgrid-key",
+          "twilio-key",
+          "npm-token",
+          "pypi-token",
+          "gitlab-token",
+          "google-oauth-secret"
+        ],
+        "warnClasses": ["high-entropy", "kubeconfig", "db-connection-string"]
+      },
+      "updatedAt": "2026-07-16T00:00:00.000Z"
+    },
+    "effectiveNoTeam": {
+      "evidenceMode": "HASH_ONLY",
+      "siteId": "site-authority-fixture",
+      "blockedProviders": ["openai"],
+      "toleratedProviders": ["anthropic"],
+      "providers": {
+        "blocked": ["openai"],
+        "tolerated": ["anthropic"]
+      },
+      "dlp": {
+        "enabled": true,
+        "actions": {
+          "private-key": "block",
+          "aws-secret-key": "block",
+          "aws-access-key": "redact",
+          "gcp-key": "redact",
+          "azure-key": "redact",
+          "generic-api-key": "redact",
+          "jwt": "redact",
+          "slack-token": "redact",
+          "github-token": "redact",
+          "internal-url": "redact",
+          "openai-key": "redact",
+          "anthropic-key": "redact",
+          "stripe-live": "redact",
+          "slack-webhook": "redact",
+          "sendgrid-key": "redact",
+          "twilio-key": "redact",
+          "npm-token": "redact",
+          "pypi-token": "redact",
+          "gitlab-token": "redact",
+          "google-oauth-secret": "redact",
+          "high-entropy": "warn",
+          "kubeconfig": "warn",
+          "db-connection-string": "warn"
+        },
+        "blockClasses": ["private-key", "aws-secret-key"],
+        "redactClasses": [
+          "aws-access-key",
+          "gcp-key",
+          "azure-key",
+          "generic-api-key",
+          "jwt",
+          "slack-token",
+          "github-token",
+          "internal-url",
+          "openai-key",
+          "anthropic-key",
+          "stripe-live",
+          "slack-webhook",
+          "sendgrid-key",
+          "twilio-key",
+          "npm-token",
+          "pypi-token",
+          "gitlab-token",
+          "google-oauth-secret"
+        ],
+        "warnClasses": ["high-entropy", "kubeconfig", "db-connection-string"]
+      },
+      "promptRisk": {
+        "enabled": true,
+        "actions": {
+          "injection-instruction-override": "warn",
+          "injection-system-exfil": "warn",
+          "injection-role-marker": "warn",
+          "injection-obfuscation-unicode": "warn",
+          "injection-encoded-payload": "warn",
+          "jailbreak-persona": "warn",
+          "jailbreak-restriction-removal": "warn",
+          "jailbreak-role-reassign": "warn",
+          "injection-override-exfil": "block",
+          "jailbreak-persona-unrestricted": "block"
+        }
+      },
+      "exclusions": {
+        "allow": ["fixture-allow-marker"],
+        "block": ["fixture-block-marker"],
+        "patterns": [
+          {
+            "prefix": "fixture-prefix",
+            "suffix": "fixture-suffix",
+            "action": "allow"
+          }
+        ]
+      },
+      "mcp": {
+        "enabled": true,
+        "autoEnforce": false
+      },
+      "uploads": {
+        "files": "warn",
+        "images": "warn",
+        "blockAllImages": false,
+        "maxSizeKb": 5120
+      },
+      "paths": {
+        "blocked": ["/fixture/restricted"],
+        "allowed": ["/fixture/allowed"]
+      },
+      "agents": {
+        "allowed": [],
+        "mode": "",
+        "enforcementTier": "detect"
+      },
+      "egress": {
+        "mode": "",
+        "allowed": [],
+        "blocked": [],
+        "includeDefaults": true
+      },
+      "proxy": {
+        "failMode": "closed"
+      },
+      "updatedAt": "2026-07-16T00:00:00.000Z"
+    }
+  }
+}

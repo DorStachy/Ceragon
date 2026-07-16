@@ -1,16 +1,27 @@
 {
   "name": "@ceragon/shared-contracts",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Shared type contracts for Ceragon package intelligence (Ingestion + Backend)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "generated/ai-security/0.2.0"
+  ],
   "scripts": {
     "build": "tsc",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
-    "test": "npm run build && node scripts/test-security-taxonomy.cjs && node scripts/test-vulnerability-applicability.cjs && node scripts/test-m3-contracts.cjs && node scripts/test-governance-profile.cjs && node scripts/test-runtime-adapter-contract.cjs"
+    "prepack": "npm run clean && npm run check:ai-security-generated",
+    "validate:ai-security-sources": "node scripts/test-ai-security-policy-schemas.cjs && node scripts/test-jcs-conformance.cjs",
+    "generate:ai-security": "npm run build && npm run validate:ai-security-sources && node scripts/generate-ai-security-artifact.cjs --output generated/ai-security/0.2.0",
+    "check:ai-security-generated": "npm run build && npm run validate:ai-security-sources && node scripts/check-ai-security-generated.cjs",
+    "test": "npm run build && node scripts/test-security-taxonomy.cjs && node scripts/test-vulnerability-applicability.cjs && node scripts/test-m3-contracts.cjs && node scripts/test-governance-profile.cjs && node scripts/test-runtime-adapter-contract.cjs && node scripts/test-ai-security-policy-v1-contract.cjs && npm run validate:ai-security-sources && node scripts/test-ai-security-portable-artifact.cjs"
   },
   "devDependencies": {
+    "@types/node": "24.13.2",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
     "typescript": "5.9.3"
   }
 }

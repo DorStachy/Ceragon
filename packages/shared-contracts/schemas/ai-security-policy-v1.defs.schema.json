@@ -1,0 +1,542 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.ceragon.ai/ai-security-policy/v1/defs.schema.json",
+  "title": "Ceragon AI Security Policy V1 shared schema definitions",
+  "definitions": {
+    "dlpAction": {
+      "type": "string",
+      "enum": ["block", "redact", "warn", "allow"]
+    },
+    "promptAction": {
+      "type": "string",
+      "enum": ["block", "warn", "allow"]
+    },
+    "exclusionAction": {
+      "type": "string",
+      "enum": ["allow", "block"]
+    },
+    "uploadAction": {
+      "type": "string",
+      "enum": ["block", "warn", "allow"]
+    },
+    "governanceMode": {
+      "type": "string",
+      "enum": ["enforce", "monitor", ""]
+    },
+    "enforcementTier": {
+      "type": "string",
+      "enum": ["detect", "strict"]
+    },
+    "proxyFailMode": {
+      "type": "string",
+      "enum": ["closed", "open"]
+    },
+    "ingressAction": {
+      "type": "string",
+      "enum": ["redact", "warn", "hold", "off"]
+    },
+    "strictDlpActionsPartial": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "private-key": { "$ref": "#/definitions/dlpAction" },
+        "aws-secret-key": { "$ref": "#/definitions/dlpAction" },
+        "aws-access-key": { "$ref": "#/definitions/dlpAction" },
+        "gcp-key": { "$ref": "#/definitions/dlpAction" },
+        "azure-key": { "$ref": "#/definitions/dlpAction" },
+        "generic-api-key": { "$ref": "#/definitions/dlpAction" },
+        "jwt": { "$ref": "#/definitions/dlpAction" },
+        "slack-token": { "$ref": "#/definitions/dlpAction" },
+        "github-token": { "$ref": "#/definitions/dlpAction" },
+        "internal-url": { "$ref": "#/definitions/dlpAction" },
+        "openai-key": { "$ref": "#/definitions/dlpAction" },
+        "anthropic-key": { "$ref": "#/definitions/dlpAction" },
+        "stripe-live": { "$ref": "#/definitions/dlpAction" },
+        "slack-webhook": { "$ref": "#/definitions/dlpAction" },
+        "sendgrid-key": { "$ref": "#/definitions/dlpAction" },
+        "twilio-key": { "$ref": "#/definitions/dlpAction" },
+        "npm-token": { "$ref": "#/definitions/dlpAction" },
+        "pypi-token": { "$ref": "#/definitions/dlpAction" },
+        "gitlab-token": { "$ref": "#/definitions/dlpAction" },
+        "google-oauth-secret": { "$ref": "#/definitions/dlpAction" },
+        "high-entropy": { "$ref": "#/definitions/dlpAction" },
+        "kubeconfig": { "$ref": "#/definitions/dlpAction" },
+        "db-connection-string": { "$ref": "#/definitions/dlpAction" }
+      }
+    },
+    "strictPromptActionsPartial": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "injection-instruction-override": { "$ref": "#/definitions/promptAction" },
+        "injection-system-exfil": { "$ref": "#/definitions/promptAction" },
+        "injection-role-marker": { "$ref": "#/definitions/promptAction" },
+        "injection-obfuscation-unicode": { "$ref": "#/definitions/promptAction" },
+        "injection-encoded-payload": { "$ref": "#/definitions/promptAction" },
+        "jailbreak-persona": { "$ref": "#/definitions/promptAction" },
+        "jailbreak-restriction-removal": { "$ref": "#/definitions/promptAction" },
+        "jailbreak-role-reassign": { "$ref": "#/definitions/promptAction" },
+        "injection-override-exfil": { "$ref": "#/definitions/promptAction" },
+        "jailbreak-persona-unrestricted": { "$ref": "#/definitions/promptAction" }
+      }
+    },
+    "providerListWrite": {
+      "type": "array",
+      "maxItems": 200,
+      "items": { "type": "string", "maxLength": 128 }
+    },
+    "exclusionLiteralListWrite": {
+      "type": "array",
+      "maxItems": 200,
+      "items": { "type": "string", "maxLength": 512, "pattern": "\\S" }
+    },
+    "pathListWrite": {
+      "type": "array",
+      "maxItems": 200,
+      "items": { "type": "string", "maxLength": 512 }
+    },
+    "agentListWrite": {
+      "type": "array",
+      "maxItems": 200,
+      "items": { "type": "string", "maxLength": 128 }
+    },
+    "egressListWrite": {
+      "type": "array",
+      "maxItems": 500,
+      "items": { "type": "string", "maxLength": 512 }
+    },
+    "strictDlpSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "actions"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "actions": { "$ref": "#/definitions/strictDlpActionsPartial" }
+      }
+    },
+    "strictPromptRiskSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "actions"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "actions": { "$ref": "#/definitions/strictPromptActionsPartial" },
+        "obfuscationEscalates": { "type": "boolean" }
+      }
+    },
+    "strictProvidersSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["blocked", "tolerated"],
+      "properties": {
+        "blocked": { "$ref": "#/definitions/providerListWrite" },
+        "tolerated": { "$ref": "#/definitions/providerListWrite" }
+      }
+    },
+    "strictExclusionPattern": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prefix", "suffix", "action"],
+      "properties": {
+        "prefix": { "type": "string", "maxLength": 256 },
+        "suffix": { "type": "string", "maxLength": 256 },
+        "action": { "$ref": "#/definitions/exclusionAction" }
+      },
+      "anyOf": [
+        { "properties": { "prefix": { "type": "string", "minLength": 1 } } },
+        { "properties": { "suffix": { "type": "string", "minLength": 1 } } }
+      ]
+    },
+    "strictExclusionsSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allow", "block", "patterns"],
+      "properties": {
+        "allow": { "$ref": "#/definitions/exclusionLiteralListWrite" },
+        "block": { "$ref": "#/definitions/exclusionLiteralListWrite" },
+        "patterns": {
+          "type": "array",
+          "maxItems": 100,
+          "items": { "$ref": "#/definitions/strictExclusionPattern" }
+        }
+      }
+    },
+    "strictMcpSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "autoEnforce"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "autoEnforce": { "type": "boolean" }
+      }
+    },
+    "strictUploadsSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["files", "images", "blockAllImages", "maxSizeKb"],
+      "properties": {
+        "files": { "$ref": "#/definitions/uploadAction" },
+        "images": { "$ref": "#/definitions/uploadAction" },
+        "blockAllImages": { "type": "boolean" },
+        "maxSizeKb": { "type": "integer", "minimum": 0, "maximum": 1048576 }
+      }
+    },
+    "strictPathsSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["blocked", "allowed"],
+      "properties": {
+        "blocked": { "$ref": "#/definitions/pathListWrite" },
+        "allowed": { "$ref": "#/definitions/pathListWrite" }
+      }
+    },
+    "strictAgentsSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed", "mode"],
+      "properties": {
+        "allowed": { "$ref": "#/definitions/agentListWrite" },
+        "mode": { "$ref": "#/definitions/governanceMode" },
+        "enforcementTier": { "$ref": "#/definitions/enforcementTier" }
+      }
+    },
+    "strictEgressSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "allowed", "blocked", "includeDefaults"],
+      "properties": {
+        "mode": { "$ref": "#/definitions/governanceMode" },
+        "allowed": { "$ref": "#/definitions/egressListWrite" },
+        "blocked": { "$ref": "#/definitions/egressListWrite" },
+        "includeDefaults": { "type": "boolean" }
+      }
+    },
+    "strictProxySection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["failMode"],
+      "properties": {
+        "failMode": { "$ref": "#/definitions/proxyFailMode" }
+      }
+    },
+    "strictIngressActions": {
+      "type": "object",
+      "propertyNames": { "pattern": "\\S" },
+      "additionalProperties": { "$ref": "#/definitions/ingressAction" }
+    },
+    "strictIngressSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "actions": { "$ref": "#/definitions/strictIngressActions" },
+        "taintHold": { "type": "boolean" }
+      }
+    },
+    "stringArrayRead": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "tokenMapRead": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "tolerantLegacyDlp": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["enabled", "blockClasses", "redactClasses", "warnClasses"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "blockClasses": { "$ref": "#/definitions/stringArrayRead" },
+        "redactClasses": { "$ref": "#/definitions/stringArrayRead" },
+        "warnClasses": { "$ref": "#/definitions/stringArrayRead" },
+        "actions": { "$ref": "#/definitions/tolerantEffectiveDlpActions" }
+      }
+    },
+    "tolerantEffectiveDlpActions": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "required": [
+        "private-key",
+        "aws-secret-key",
+        "aws-access-key",
+        "gcp-key",
+        "azure-key",
+        "generic-api-key",
+        "jwt",
+        "slack-token",
+        "github-token",
+        "internal-url",
+        "openai-key",
+        "anthropic-key",
+        "stripe-live",
+        "slack-webhook",
+        "sendgrid-key",
+        "twilio-key",
+        "npm-token",
+        "pypi-token",
+        "gitlab-token",
+        "google-oauth-secret",
+        "high-entropy",
+        "kubeconfig",
+        "db-connection-string"
+      ],
+      "properties": {
+        "private-key": { "type": "string" },
+        "aws-secret-key": { "type": "string" },
+        "aws-access-key": { "type": "string" },
+        "gcp-key": { "type": "string" },
+        "azure-key": { "type": "string" },
+        "generic-api-key": { "type": "string" },
+        "jwt": { "type": "string" },
+        "slack-token": { "type": "string" },
+        "github-token": { "type": "string" },
+        "internal-url": { "type": "string" },
+        "openai-key": { "type": "string" },
+        "anthropic-key": { "type": "string" },
+        "stripe-live": { "type": "string" },
+        "slack-webhook": { "type": "string" },
+        "sendgrid-key": { "type": "string" },
+        "twilio-key": { "type": "string" },
+        "npm-token": { "type": "string" },
+        "pypi-token": { "type": "string" },
+        "gitlab-token": { "type": "string" },
+        "google-oauth-secret": { "type": "string" },
+        "high-entropy": { "type": "string" },
+        "kubeconfig": { "type": "string" },
+        "db-connection-string": { "type": "string" }
+      }
+    },
+    "tolerantEffectiveDlp": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["enabled", "actions", "blockClasses", "redactClasses", "warnClasses"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "actions": { "$ref": "#/definitions/tolerantEffectiveDlpActions" },
+        "blockClasses": { "$ref": "#/definitions/stringArrayRead" },
+        "redactClasses": { "$ref": "#/definitions/stringArrayRead" },
+        "warnClasses": { "$ref": "#/definitions/stringArrayRead" }
+      }
+    },
+    "tolerantPromptActions": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "required": [
+        "injection-instruction-override",
+        "injection-system-exfil",
+        "injection-role-marker",
+        "injection-obfuscation-unicode",
+        "injection-encoded-payload",
+        "jailbreak-persona",
+        "jailbreak-restriction-removal",
+        "jailbreak-role-reassign",
+        "injection-override-exfil",
+        "jailbreak-persona-unrestricted"
+      ],
+      "properties": {
+        "injection-instruction-override": { "type": "string" },
+        "injection-system-exfil": { "type": "string" },
+        "injection-role-marker": { "type": "string" },
+        "injection-obfuscation-unicode": { "type": "string" },
+        "injection-encoded-payload": { "type": "string" },
+        "jailbreak-persona": { "type": "string" },
+        "jailbreak-restriction-removal": { "type": "string" },
+        "jailbreak-role-reassign": { "type": "string" },
+        "injection-override-exfil": { "type": "string" },
+        "jailbreak-persona-unrestricted": { "type": "string" }
+      }
+    },
+    "tolerantPromptRisk": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["enabled", "actions"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "actions": { "$ref": "#/definitions/tolerantPromptActions" },
+        "obfuscationEscalates": { "type": "boolean" }
+      }
+    },
+    "tolerantProviders": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["blocked", "tolerated"],
+      "properties": {
+        "blocked": { "$ref": "#/definitions/stringArrayRead" },
+        "tolerated": { "$ref": "#/definitions/stringArrayRead" }
+      }
+    },
+    "tolerantExclusionPattern": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["prefix", "suffix", "action"],
+      "properties": {
+        "prefix": { "type": "string" },
+        "suffix": { "type": "string" },
+        "action": { "type": "string" }
+      }
+    },
+    "tolerantExclusions": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["allow", "block", "patterns"],
+      "properties": {
+        "allow": { "$ref": "#/definitions/stringArrayRead" },
+        "block": { "$ref": "#/definitions/stringArrayRead" },
+        "patterns": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/tolerantExclusionPattern" }
+        }
+      }
+    },
+    "tolerantMcp": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["enabled", "autoEnforce"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "autoEnforce": { "type": "boolean" }
+      }
+    },
+    "tolerantUploads": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["files", "images", "blockAllImages", "maxSizeKb"],
+      "properties": {
+        "files": { "type": "string" },
+        "images": { "type": "string" },
+        "blockAllImages": { "type": "boolean" },
+        "maxSizeKb": { "type": "integer" }
+      }
+    },
+    "tolerantPaths": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["blocked", "allowed"],
+      "properties": {
+        "blocked": { "$ref": "#/definitions/stringArrayRead" },
+        "allowed": { "$ref": "#/definitions/stringArrayRead" }
+      }
+    },
+    "tolerantAgents": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["allowed", "mode", "enforcementTier"],
+      "properties": {
+        "allowed": { "$ref": "#/definitions/stringArrayRead" },
+        "mode": { "type": "string" },
+        "enforcementTier": { "type": "string" }
+      }
+    },
+    "tolerantEgress": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["mode", "allowed", "blocked", "includeDefaults"],
+      "properties": {
+        "mode": { "type": "string" },
+        "allowed": { "$ref": "#/definitions/stringArrayRead" },
+        "blocked": { "$ref": "#/definitions/stringArrayRead" },
+        "includeDefaults": { "type": "boolean" }
+      }
+    },
+    "tolerantProxy": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["failMode"],
+      "properties": {
+        "failMode": { "type": "string" }
+      }
+    },
+    "tolerantIngress": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "actions": { "$ref": "#/definitions/tokenMapRead" },
+        "taintHold": { "type": "boolean" }
+      }
+    },
+    "tolerantLegacyPolicyWire": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["evidenceMode", "blockedProviders", "toleratedProviders", "dlp", "updatedAt"],
+      "properties": {
+        "evidenceMode": { "type": "string" },
+        "siteId": false,
+        "blockedProviders": { "$ref": "#/definitions/stringArrayRead" },
+        "toleratedProviders": { "$ref": "#/definitions/stringArrayRead" },
+        "providers": { "$ref": "#/definitions/tolerantProviders" },
+        "dlp": { "$ref": "#/definitions/tolerantLegacyDlp" },
+        "promptRisk": { "$ref": "#/definitions/tolerantPromptRisk" },
+        "exclusions": { "$ref": "#/definitions/tolerantExclusions" },
+        "mcp": { "$ref": "#/definitions/tolerantMcp" },
+        "uploads": { "$ref": "#/definitions/tolerantUploads" },
+        "paths": { "$ref": "#/definitions/tolerantPaths" },
+        "agents": { "$ref": "#/definitions/tolerantAgents" },
+        "egress": { "$ref": "#/definitions/tolerantEgress" },
+        "proxy": { "$ref": "#/definitions/tolerantProxy" },
+        "ingress": { "$ref": "#/definitions/tolerantIngress" },
+        "updatedAt": { "type": "string" },
+        "resolvedScope": { "type": "string" },
+        "teamId": { "type": ["string", "null"] },
+        "appliedProfileId": { "type": ["string", "null"] },
+        "effective": { "const": true }
+      },
+      "dependencies": {
+        "resolvedScope": ["teamId", "appliedProfileId", "effective"],
+        "teamId": ["resolvedScope", "appliedProfileId", "effective"],
+        "appliedProfileId": ["resolvedScope", "teamId", "effective"],
+        "effective": ["resolvedScope", "teamId", "appliedProfileId"]
+      }
+    },
+    "tolerantEffectivePolicyWire": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "evidenceMode",
+        "siteId",
+        "blockedProviders",
+        "toleratedProviders",
+        "providers",
+        "dlp",
+        "promptRisk",
+        "exclusions",
+        "mcp",
+        "uploads",
+        "paths",
+        "agents",
+        "egress",
+        "proxy",
+        "updatedAt"
+      ],
+      "properties": {
+        "evidenceMode": { "type": "string" },
+        "siteId": { "type": "string" },
+        "blockedProviders": { "$ref": "#/definitions/stringArrayRead" },
+        "toleratedProviders": { "$ref": "#/definitions/stringArrayRead" },
+        "providers": { "$ref": "#/definitions/tolerantProviders" },
+        "dlp": { "$ref": "#/definitions/tolerantEffectiveDlp" },
+        "promptRisk": { "$ref": "#/definitions/tolerantPromptRisk" },
+        "exclusions": { "$ref": "#/definitions/tolerantExclusions" },
+        "mcp": { "$ref": "#/definitions/tolerantMcp" },
+        "uploads": { "$ref": "#/definitions/tolerantUploads" },
+        "paths": { "$ref": "#/definitions/tolerantPaths" },
+        "agents": { "$ref": "#/definitions/tolerantAgents" },
+        "egress": { "$ref": "#/definitions/tolerantEgress" },
+        "proxy": { "$ref": "#/definitions/tolerantProxy" },
+        "ingress": { "$ref": "#/definitions/tolerantIngress" },
+        "updatedAt": { "type": "string" },
+        "resolvedScope": { "type": "string" },
+        "teamId": { "type": ["string", "null"] },
+        "appliedProfileId": { "type": ["string", "null"] },
+        "effective": { "const": true }
+      },
+      "dependencies": {
+        "resolvedScope": ["teamId", "appliedProfileId", "effective"],
+        "teamId": ["resolvedScope", "appliedProfileId", "effective"],
+        "appliedProfileId": ["resolvedScope", "teamId", "effective"],
+        "effective": ["resolvedScope", "teamId", "appliedProfileId"]
+      }
+    }
+  }
+}

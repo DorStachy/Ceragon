@@ -1,0 +1,148 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.ceragon.ai/ai-security/portable-artifact-v1.schema.json",
+  "title": "Ceragon AI security portable contract artifact V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "formatVersion",
+    "package",
+    "generator",
+    "authority",
+    "protocol",
+    "runtimeActivatable",
+    "signedRuntimePolicyBundle",
+    "requiredIntegrationGate",
+    "deferredContractSections",
+    "canonicalization",
+    "v1Policy"
+  ],
+  "properties": {
+    "format": { "const": "ceragon.ai-security.portable-contract" },
+    "formatVersion": { "const": 1 },
+    "package": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "const": "@ceragon/shared-contracts" },
+        "version": { "const": "0.2.0" }
+      }
+    },
+    "generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "const": "ceragon-ai-security-artifact" },
+        "version": { "const": "1.0.0" }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decisionId", "decisionSha256", "approvalEventSha256", "model"],
+      "properties": {
+        "decisionId": { "const": "G-CONTRACT-AUTHORITY" },
+        "decisionSha256": { "$ref": "#/definitions/digest" },
+        "approvalEventSha256": { "$ref": "#/definitions/digest" },
+        "model": { "const": "WORKSPACE_PORTABLE_AUTHORITY_WITH_IMMUTABLE_GENERATED_CONSUMERS" }
+      }
+    },
+    "protocol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["readableVersions", "writableVersions", "v2WriterEnabled"],
+      "properties": {
+        "readableVersions": {
+          "type": "array",
+          "const": ["1", "2"]
+        },
+        "writableVersions": {
+          "type": "array",
+          "const": ["1"]
+        },
+        "v2WriterEnabled": { "const": false }
+      }
+    },
+    "runtimeActivatable": { "const": false },
+    "signedRuntimePolicyBundle": { "const": false },
+    "requiredIntegrationGate": { "const": "P0-C07" },
+    "deferredContractSections": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fourAxisRuntimeTruth", "obligationUnion", "failureOracle", "signingAndTrust"],
+      "properties": {
+        "fourAxisRuntimeTruth": { "const": "P0-E01" },
+        "obligationUnion": { "const": "P0-O01" },
+        "failureOracle": { "const": "P0-F01" },
+        "signingAndTrust": { "const": "P0-S01" }
+      }
+    },
+    "canonicalization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm",
+        "digestAlgorithm",
+        "conformanceVectors",
+        "strictIngestionRejectionVectors"
+      ],
+      "properties": {
+        "algorithm": { "const": "RFC8785_JCS" },
+        "digestAlgorithm": { "const": "SHA-256" },
+        "conformanceVectors": { "type": "object" },
+        "strictIngestionRejectionVectors": { "type": "object" }
+      }
+    },
+    "v1Policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "orderedTuples",
+        "policyCatalog",
+        "directOmissionDefaults",
+        "readerFallbacks",
+        "recommendedPolicy",
+        "schemas",
+        "schemaCases",
+        "authorityProof"
+      ],
+      "properties": {
+        "orderedTuples": {
+          "type": "object",
+          "minProperties": 37,
+          "maxProperties": 37,
+          "propertyNames": { "pattern": "^[A-Z][A-Z0-9_]+$" },
+          "additionalProperties": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "policyCatalog": { "type": "object" },
+        "directOmissionDefaults": { "type": "object" },
+        "readerFallbacks": { "type": "object" },
+        "recommendedPolicy": { "type": "object" },
+        "schemas": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["definitions", "strictWrite", "tolerantRead"],
+          "properties": {
+            "definitions": { "type": "object" },
+            "strictWrite": { "type": "object" },
+            "tolerantRead": { "type": "object" }
+          }
+        },
+        "schemaCases": { "type": "object" },
+        "authorityProof": { "type": "object" }
+      }
+    }
+  },
+  "definitions": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  }
+}

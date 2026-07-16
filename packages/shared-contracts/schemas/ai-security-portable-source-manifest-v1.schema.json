@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.ceragon.ai/ai-security/portable-source-manifest-v1.schema.json",
+  "title": "Ceragon AI security portable artifact source manifest V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "formatVersion",
+    "packageName",
+    "packageVersion",
+    "generatorName",
+    "generatorVersion",
+    "authority",
+    "orderedTupleSymbols",
+    "sources",
+    "runtimeActivatable",
+    "signedRuntimePolicyBundle",
+    "v2WriterEligible",
+    "requiredIntegrationGate"
+  ],
+  "properties": {
+    "format": { "const": "ceragon.ai-security.portable-source" },
+    "formatVersion": { "const": 1 },
+    "packageName": { "const": "@ceragon/shared-contracts" },
+    "packageVersion": { "const": "0.2.0" },
+    "generatorName": { "const": "ceragon-ai-security-artifact" },
+    "generatorVersion": { "const": "1.0.0" },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decisionId", "decisionSha256", "approvalEventSha256", "model"],
+      "properties": {
+        "decisionId": { "const": "G-CONTRACT-AUTHORITY" },
+        "decisionSha256": { "const": "sha256:0667406e1ccc23439e2fb48d0bb2faee1abe4f5d5e0ad9c4e82fabd3b73c415a" },
+        "approvalEventSha256": { "const": "sha256:2762f5819ed206d24abf435f4218cba4d05cfe8d458236598606a4d480c44eab" },
+        "model": { "const": "WORKSPACE_PORTABLE_AUTHORITY_WITH_IMMUTABLE_GENERATED_CONSUMERS" }
+      }
+    },
+    "orderedTupleSymbols": {
+      "type": "array",
+      "minItems": 37,
+      "maxItems": 37,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]+$" }
+    },
+    "sources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "definitionsSchema",
+        "strictWriteSchema",
+        "tolerantReadSchema",
+        "schemaCases",
+        "jcsConformanceVectors",
+        "strictJsonRejectionVectors",
+        "authorityFixture"
+      ],
+      "properties": {
+        "definitionsSchema": { "const": "schemas/ai-security-policy-v1.defs.schema.json" },
+        "strictWriteSchema": { "const": "schemas/ai-security-policy-v1.strict-write.schema.json" },
+        "tolerantReadSchema": { "const": "schemas/ai-security-policy-v1.tolerant-read.schema.json" },
+        "schemaCases": { "const": "vectors/ai-security-policy-v1-schema-cases.json" },
+        "jcsConformanceVectors": { "const": "vectors/rfc8785-conformance.v1.json" },
+        "strictJsonRejectionVectors": { "const": "vectors/rfc8785-rejections.v1.json" },
+        "authorityFixture": { "const": "fixtures/ai-security-policy-v1-authority.json" }
+      }
+    },
+    "runtimeActivatable": { "const": false },
+    "signedRuntimePolicyBundle": { "const": false },
+    "v2WriterEligible": { "const": false },
+    "requiredIntegrationGate": { "const": "P0-C07" }
+  }
+}
