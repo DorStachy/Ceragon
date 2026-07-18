@@ -7,6 +7,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 const test = require('node:test');
+const dockerTest = process.env.CERAGON_C07_RUN_DOCKER_TESTS === '1' ? test : test.skip;
 const Ajv = require('ajv');
 
 const {
@@ -429,8 +430,7 @@ test('the accepted manifest cannot omit or placeholder the browser consumer', ()
     /pending non-acceptance|browser C05/i,
   );
 
-  const injected = structuredClone(pending);
-  injected.acceptance = 'ACCEPTED';
+  const injected = structuredClone(loadReviewedIntegrationManifest(packageRoot));
   injected.consumers.browser = {
     repository: 'Installers/browser-extension',
     commit: 'b'.repeat(40),
@@ -677,7 +677,7 @@ test('status-only commands and caller-created rollback objects cannot mint compa
     /profile has no contained authority provenance/,
   );
 });
-test('the protected schema rejects the pending fixture and production cannot self-promote it', () => {
+test('the protected schema rejects pending input and loads only the reviewed accepted manifest', () => {
   const packageRoot = path.resolve(__dirname, '..');
   const schemaSnapshot = createProtectedSnapshotter(packageRoot).snapshot(
     INTEGRATION_SCHEMA_DESCRIPTOR,
@@ -689,10 +689,13 @@ test('the protected schema rejects the pending fixture and production cannot sel
     path.join(packageRoot, 'fixtures', 'ai-security-integration-input-manifest-v1.pending.json'),
   ));
   assert.equal(validate(pending), false, 'pending browser fixture unexpectedly passed accepted schema');
-  assert.throws(
-    () => loadReviewedIntegrationManifest(packageRoot),
-    (error) => error.code === 'FINAL_MANIFEST_PENDING',
-  );
+
+  const accepted = loadReviewedIntegrationManifest(packageRoot);
+  assert.equal(validate(accepted), true, JSON.stringify(validate.errors));
+  assert.equal(accepted.acceptance, 'ACCEPTED');
+  assert.deepEqual(accepted.consumers.browser, APPROVED_INPUTS.consumers.browser);
+  assert.deepEqual(accepted.consumers.backend, APPROVED_INPUTS.consumers.backend);
+  assert.deepEqual(accepted.consumers.installer, APPROVED_INPUTS.consumers.installer);
 });
 
 test('canonical equality compares exact bytes across all four consumers', () => {
@@ -1279,9 +1282,6 @@ test('full container inspection rejects ID/name swaps, mounts, and weakened isol
     ),
     /root filesystem must be read-only/,
   );
-});
-test('termination watchdog bounds a stuck attach even when container kill fails or returns', async () => {
-  async function exercise(killThrows) {
   assert.throws(
     () => validateContainedContainerInspection(
       { ...inspected, config: { ...inspected.config, Env: [...inspected.config.Env, 'LD_PRELOAD=/attacker.so'] } },
@@ -1312,6 +1312,9 @@ test('termination watchdog bounds a stuck attach even when container kill fails 
     ),
     /NetworkID must be empty/,
   );
+});
+test('termination watchdog bounds a stuck attach even when container kill fails or returns', async () => {
+  async function exercise(killThrows) {
     let settled = false;
     let attachKills = 0;
     let watchdogError;
@@ -1348,7 +1351,7 @@ test('termination watchdog bounds a stuck attach even when container kill fails 
   await exercise(false);
   await exercise(true);
 });
-test('C01 prior canonical source builds, runs five exact vectors, packs, and imports in containment', async () => {
+dockerTest('C01 prior canonical source builds, runs five exact vectors, packs, and imports in containment', async () => {
   const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'ceragon-c07-c01-'));
   const repository = path.join(scratch, 'repository');
   let snapshot;
@@ -1396,7 +1399,7 @@ test('C01 prior canonical source builds, runs five exact vectors, packs, and imp
     fs.rmSync(scratch, { recursive: true, force: true });
   }
 });
-test('Docker runner contains descendants on PASS, timeout, and output-limit paths', async () => {
+dockerTest('Docker runner contains descendants on PASS, timeout, and output-limit paths', async () => {
   assert.equal(FIXED_CONTAINER_IMAGES.node.id, 'sha256:8f693eaa7e0a8e71560c9a82b55fd54c2ae920a2ba5d2cde28bac7d1c01c9ba5');
   const dockerProof = verifyDockerExecutionEnvironment(['node']);
   assert.equal(dockerProof.engine.os, 'linux');
@@ -1457,10 +1460,16 @@ test('Docker runner contains descendants on PASS, timeout, and output-limit path
     assert.equal(success.containerRemoved, true);
     assert.equal(success.survivorCount, 0);
     assert.equal(success.inputImageRemoved, true);
-    assert.equal(success.inputImageRemovalScope, 'ENGINE_IMAGE_ID_AND_TEMPORARY_TAG_ONLY');
+    assert.equal(
+      success.inputImageRemovalScope,
+      'ENGINE_IMAGE_IDS_TEMPORARY_TAG_AND_BUILD_RUN_LABEL',
+    );
     assert.equal(success.buildCacheRetention, 'MAY_RETAIN_NEW_LOCAL_COPY_CACHE');
-    assert.equal(success.inputImage.historyPolicy, 'EXACT_BASE_SUFFIX_FIXED_LABELS_ONE_COPY');
-    assert.equal(success.inputImage.addedHistoryEntries, 5);
+    assert.equal(
+      success.inputImage.historyPolicy,
+      'EXACT_BASE_SUFFIX_FIVE_FIXED_LABELS_ONE_COPY',
+    );
+    assert.equal(success.inputImage.addedHistoryEntries, 6);
     assert.equal(success.inputImage.nonEmptyAddedLayers, 1);
     assert.equal(success.inputImage.buildCacheReuse, false);
     assert.equal(success.inputImage.buildCacheRetentionLimitation, 'MAY_RETAIN_NEW_LOCAL_COPY_CACHE');
@@ -1697,5 +1706,71 @@ test('canonical Docker context injects exactly one digest-bound read-only C07 dr
   assert.throws(
     () => buildWithDriver(artifact, { ...witness, exactBytes: mutatedDriverBytes }),
     /canonical driver digest changed/,
+  );
+
+  const installerBytes = fs.readFileSync(path.join(
+    __dirname,
+    'c07-drivers',
+    'installer-semantic-driver',
+    'main.go',
+  ));
+  const installerArtifact = {
+    consumer: 'installer',
+    driverId: DRIVER_IDS.installer,
+    bytes: installerBytes.length,
+    sha256: digest(installerBytes),
+  };
+  const installerWitness = {
+    exactBytes: installerBytes,
+    containerPath: '/workspace/cmd/c07semanticdriver/main.go',
+  };
+  const installerContext = buildCanonicalDockerContext(
+    [{ mode: '100644', oid: '0'.repeat(40), path: 'input.txt', size: inputBytes.length }],
+    [inputBytes],
+    {
+      commit: '1'.repeat(40),
+      tree: '2'.repeat(40),
+      manifestSha256: `sha256:${'3'.repeat(64)}`,
+    },
+    FIXED_CONTAINER_IMAGES.go,
+    { artifact: installerArtifact, witness: installerWitness },
+  );
+  const installerDockerfileSize = Number.parseInt(
+    installerContext.bytes.subarray(124, 136).toString('ascii').replace(/\0.*$/, ''),
+    8,
+  );
+  const installerDockerfile = installerContext.bytes
+    .subarray(512, 512 + installerDockerfileSize)
+    .toString('utf8');
+  assert.match(
+    installerDockerfile,
+    /COPY --chown=65534:65534 c07\/installer-semantic-driver\.go \/workspace\/cmd\/c07semanticdriver\/main\.go/,
+  );
+  assert.deepEqual(installerContext.driver, {
+    id: installerArtifact.driverId,
+    bytes: installerArtifact.bytes,
+    sha256: installerArtifact.sha256,
+    containerPath: installerWitness.containerPath,
+    tarMode: '0444',
+  });
+});
+
+test('contained semantic dispatch is fixed for all four accepted consumers', () => {
+  const profiles = testing.containedSemanticProfiles;
+  assert.deepEqual(Object.keys(profiles), ['backend', 'installer', 'browser', 'frontend']);
+  assert.deepEqual(
+    Object.fromEntries(Object.entries(profiles).map(([key, value]) => [key, value.image])),
+    { backend: 'backend', installer: 'go', browser: 'node', frontend: 'frontend' },
+  );
+  assert.equal(profiles.backend.args[0], '/c07/backend-semantic-driver.cjs');
+  assert.equal(profiles.installer.args[1], '/workspace/cmd/c07semanticdriver/main.go');
+  assert.equal(profiles.browser.args[0], '/c07/browser-semantic-driver.mjs');
+  assert.deepEqual(profiles.frontend.args, ['/c07/frontend-semantic-driver.test.cjs']);
+  assert.throws(
+    () => testing.registerFrontendDependencyImage({
+      id: 'frontend:latest',
+      configSha256: `sha256:${'0'.repeat(64)}`,
+    }),
+    /Frontend dependency image ID invalid/,
   );
 });

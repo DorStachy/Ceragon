@@ -210,6 +210,43 @@ const FIXED_CONTAINER_IMAGES = deepFreeze({
     configSha256: 'sha256:c295af6e493734d4a3c8f7cd1c3880f990ed685ddbe077ca66c2ae350edd989d',
   },
 });
+const runtimeContainerImages = new Map(Object.entries(FIXED_CONTAINER_IMAGES));
+
+function registerFrontendDependencyImage(input) {
+  assertExactKeys(input, ['id', 'configSha256'], 'Frontend dependency image');
+  assert.match(input.id, /^sha256:[0-9a-f]{64}$/, 'Frontend dependency image ID invalid');
+  assert.match(
+    input.configSha256,
+    /^sha256:[0-9a-f]{64}$/,
+    'Frontend dependency image Config digest invalid',
+  );
+  const descriptor = deepFreeze({
+    id: input.id,
+    repositoryDigest: 'ceragon-c07-frontend-deps@' + input.id,
+    os: 'linux',
+    architecture: 'amd64',
+    entrypoint: '/usr/local/bin/node',
+    tmpfs: 'rw,nosuid,nodev,noexec,size=536870912,mode=1777',
+    configSha256: input.configSha256,
+  });
+  const prior = runtimeContainerImages.get('frontend');
+  if (prior) {
+    assert.deepStrictEqual(prior, descriptor, 'Frontend dependency image changed during C07');
+    return prior;
+  }
+  runtimeContainerImages.set('frontend', descriptor);
+  return descriptor;
+}
+
+function containerImage(key) {
+  const image = runtimeContainerImages.get(key);
+  assert.ok(image, 'unknown fixed Docker image ' + key);
+  return image;
+}
+
+function containerImageValues() {
+  return [...runtimeContainerImages.values()];
+}
 const fixedSystemToolCache = new Map();
 
 function inspectExecutableAlias(absolute, name, expectedLinkCount) {
@@ -627,7 +664,7 @@ function buildCanonicalDockerContext(
   buildRunId = null,
 ) {
   assert.equal(entries.length, blobs.length, 'canonical Docker context entries mismatch');
-  const reviewedBaseImage = Object.values(FIXED_CONTAINER_IMAGES)
+  const reviewedBaseImage = containerImageValues()
     .find((candidate) => candidate === baseImage);
   assert.ok(reviewedBaseImage, 'canonical Docker context base image is not reviewed');
   assert.match(
@@ -691,9 +728,10 @@ function buildCanonicalDockerContext(
     assert.equal(Buffer.isBuffer(driver.witness.exactBytes), true, 'canonical driver bytes missing');
     assert.equal(driver.witness.exactBytes.length, driver.artifact.bytes, 'canonical driver byte count changed');
     assert.equal(sha256(driver.witness.exactBytes), driver.artifact.sha256, 'canonical driver digest changed');
-    assert.match(
-      driver.witness.containerPath,
-      /^\/c07\/[a-z][a-z0-9.-]{0,95}$/,
+    assert.equal(
+      /^\/c07\/[a-z][a-z0-9.-]{0,95}$/.test(driver.witness.containerPath)
+        || driver.witness.containerPath === '/workspace/cmd/c07semanticdriver/main.go',
+      true,
       'canonical driver container path changed',
     );
     assert.equal(
@@ -706,7 +744,7 @@ function buildCanonicalDockerContext(
       bytes: driver.artifact.bytes,
       sha256: driver.artifact.sha256,
       containerPath: driver.witness.containerPath,
-      contextPath: driver.witness.containerPath.slice(1),
+      contextPath: reviewedDescriptor.contextPath || driver.witness.containerPath.slice(1),
       exactBytes: driver.witness.exactBytes,
     });
   }
@@ -839,7 +877,7 @@ async function materializeRepositorySnapshot(repositoryRoot, pin, label) {
       verify,
       buildDockerContext(baseImageKey, driver = null, buildRunId = null) {
         assert.equal(disposed, false, `${label} snapshot is already disposed`);
-        const baseImage = FIXED_CONTAINER_IMAGES[baseImageKey];
+        const baseImage = containerImage(baseImageKey);
         assert.ok(baseImage, `unknown fixed Docker base image ${baseImageKey}`);
         return buildCanonicalDockerContext(
           parsed.entries,
@@ -926,8 +964,8 @@ const APPROVED_INPUTS = deepFreeze({
     },
     installer: {
       repository: 'Installers',
-      commit: '22e8869659e6c7dae2af9f9eb9ef87a54a82c461',
-      tree: 'fd0416434f6b0cfe1ecb2c7daa83563d76d80160',
+      commit: '6115f9491de02400a2ec477c56bfa5210b2035e7',
+      tree: '4510c629b118fdd76d069fae849cf47181809b51',
       profile: 'INSTALLER_C04_V1',
       pin: {
         path: 'internal/aipolicycontract/consumer-pin.v1.json',
@@ -1461,12 +1499,12 @@ function dockerHistoryDigest(history) {
 
 const dockerImageHistoryState = new Map();
 const dockerBaseImageConfigState = new Map();
-function verifyDockerExecutionEnvironment(imageKeys = Object.keys(FIXED_CONTAINER_IMAGES)) {
+function verifyDockerExecutionEnvironment(imageKeys = [...runtimeContainerImages.keys()]) {
   assert.equal(Array.isArray(imageKeys) && imageKeys.length >= 1, true, 'Docker image keys must be non-empty');
   const uniqueKeys = [...new Set(imageKeys)];
   const buildxVersion = buildxVersionProof();
   assert.equal(uniqueKeys.length, imageKeys.length, 'Docker image keys must not repeat');
-  for (const key of uniqueKeys) assert.ok(FIXED_CONTAINER_IMAGES[key], `unknown fixed Docker image ${key}`);
+  for (const key of uniqueKeys) containerImage(key);
 
   const infoTemplate = '{"serverId":"{{.ID}}","serverVersion":"{{.ServerVersion}}","os":"{{.OSType}}","architecture":"{{.Architecture}}"}';
   const engine = parseDockerJson(
@@ -1478,7 +1516,7 @@ function verifyDockerExecutionEnvironment(imageKeys = Object.keys(FIXED_CONTAINE
   assert.equal(engine.os, 'linux', 'C07 requires a Linux Docker engine');
   assert.equal(engine.architecture, 'x86_64', 'C07 requires an amd64 Docker engine');
   const imageEntries = uniqueKeys.sort().map((key) => {
-    const expected = FIXED_CONTAINER_IMAGES[key];
+    const expected = containerImage(key);
     const template = '{"id":"{{.Id}}","repoDigests":{{json .RepoDigests}},"os":"{{.Os}}","architecture":"{{.Architecture}}","config":{{json .Config}},"layers":{{json .RootFS.Layers}}}';
     const inspected = parseDockerJson(
       runDockerSync(
@@ -1616,6 +1654,21 @@ const REVIEWED_SEMANTIC_DRIVER_DESCRIPTORS = deepFreeze({
     sha256: 'sha256:ab3bd7fc3cc7d5fb5d4b87a53414970c53ef66319eeddaf5d909cb4d37daceb6',
     driverId: 'C07_BROWSER_SEMANTIC_V1',
     containerPath: '/c07/browser-semantic-driver.mjs',
+  },
+  installer: {
+    path: 'scripts/c07-drivers/installer-semantic-driver/main.go',
+    bytes: 21_060,
+    sha256: 'sha256:9e1edb41fcbe8ab922d83fcc5317b125a483d58c86cf4ab2179b2e907a271f41',
+    driverId: 'C07_INSTALLER_SEMANTIC_V1',
+    contextPath: 'c07/installer-semantic-driver.go',
+    containerPath: '/workspace/cmd/c07semanticdriver/main.go',
+  },
+  frontend: {
+    path: 'scripts/c07-drivers/frontend-semantic-driver.test.cjs',
+    bytes: 24_262,
+    sha256: 'sha256:6796ef1b2823cf2c48411d72147c833281c08cb2458ff44c5b0a7d4f20153a24',
+    driverId: 'C07_FRONTEND_SEMANTIC_V1',
+    containerPath: '/c07/frontend-semantic-driver.test.cjs',
   },
 });
 const reviewedDriverArtifactCache = new Map();
@@ -1992,7 +2045,7 @@ function validateBuildxAttestationBytes(iidBytes, metadataBytes, expected) {
   assert.equal(Buffer.isBuffer(metadataBytes), true, 'Buildx metadata must be bytes');
   assert.equal(metadataBytes.length >= 2 && metadataBytes.length <= 262_144, true, 'Buildx metadata byte count invalid');
   assertExactKeys(expected, ['baseImage', 'buildTag'], 'expected Buildx attestation');
-  const baseImage = Object.values(FIXED_CONTAINER_IMAGES).find((candidate) => candidate === expected.baseImage);
+  const baseImage = containerImageValues().find((candidate) => candidate === expected.baseImage);
   assert.ok(baseImage, 'expected Buildx base image is not reviewed');
   assert.match(expected.buildTag, /^ceragon-c07-input:[0-9a-f]{32}$/, 'expected Buildx image tag invalid');
 
@@ -2090,10 +2143,10 @@ function validateBuildxAttestationBytes(iidBytes, metadataBytes, expected) {
   });
 }
 
-function buildImmutableInputImage(snapshot, baseImageKey) {
+function buildImmutableInputImage(snapshot, baseImageKey, driver = null) {
   assert.equal(repositorySnapshots.has(snapshot), true, 'immutable input must come from a C07 commit snapshot');
   assert.equal(snapshot.verify(), true, 'commit snapshot changed before immutable image construction');
-  const baseImage = FIXED_CONTAINER_IMAGES[baseImageKey];
+  const baseImage = containerImage(baseImageKey);
   assert.ok(baseImage, `unknown fixed Docker base image ${baseImageKey}`);
   if (!dockerEnvironmentState.proof?.images?.[baseImageKey]) {
     verifyDockerExecutionEnvironment([baseImageKey]);
@@ -2105,7 +2158,14 @@ function buildImmutableInputImage(snapshot, baseImageKey) {
   );
   const buildRunId = crypto.randomBytes(16).toString('hex');
   const buildTag = 'ceragon-c07-input:' + buildRunId;
-  const context = snapshot.buildDockerContext(baseImageKey, null, buildRunId);
+  const context = snapshot.buildDockerContext(baseImageKey, driver, buildRunId);
+  const driverDescriptor = driver === null
+    ? null
+    : REVIEWED_SEMANTIC_DRIVER_DESCRIPTORS[driver.artifact.consumer];
+  const driverContextPath = driverDescriptor === null
+    ? null
+    : (driverDescriptor.contextPath || driverDescriptor.containerPath.slice(1));
+  const addedCopyLayerCount = driver === null ? 1 : 2;
   const attestationWorkspace = createBuildAttestationWorkspace();
   const candidateImageIds = new Set();
   let built = null;
@@ -2207,6 +2267,12 @@ function buildImmutableInputImage(snapshot, baseImageKey) {
     'ceragon.c07.snapshot.manifest': snapshot.proof.manifestSha256,
     'ceragon.c07.base.image': baseImage.id,
     'ceragon.c07.build.run': buildRunId,
+    ...(context.driver ? {
+      'ceragon.c07.driver.id': context.driver.id,
+      'ceragon.c07.driver.sha256': context.driver.sha256,
+      'ceragon.c07.driver.bytes': String(context.driver.bytes),
+      'ceragon.c07.driver.path': context.driver.containerPath,
+    } : {}),
   };
   const expectedImageConfig = deepFreeze({
     ...baseConfig,
@@ -2227,34 +2293,59 @@ function buildImmutableInputImage(snapshot, baseImageKey) {
       baseProof.layers,
       'immutable input image does not descend from the exact reviewed base layers',
     );
-    if (inspected.layers.length !== baseProof.layers.length + 1) {
+    if (inspected.layers.length !== baseProof.layers.length + addedCopyLayerCount) {
       throw new IntegrationGateError(
         'IMMUTABLE_IMAGE_LAYER_COUNT',
-        'immutable input image must add exactly one COPY layer',
-        { baseLayerCount: baseProof.layers.length, childLayerCount: inspected.layers.length, addedLayers: inspected.layers.slice(baseProof.layers.length) },
+        'immutable input image COPY layer count changed',
+        {
+          baseLayerCount: baseProof.layers.length,
+          childLayerCount: inspected.layers.length,
+          expectedAddedLayers: addedCopyLayerCount,
+          addedLayers: inspected.layers.slice(baseProof.layers.length),
+        },
       );
     }
-    assert.match(inspected.layers.at(-1), /^sha256:[0-9a-f]{64}$/, 'immutable input diff layer is invalid');
-    assert.notEqual(inspected.layers.at(-1), 'sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef', 'immutable input COPY diff must not be the canonical empty layer');
+    const addedLayers = inspected.layers.slice(baseProof.layers.length);
+    for (const layer of addedLayers) {
+      assert.match(layer, /^sha256:[0-9a-f]{64}$/, 'immutable input diff layer is invalid');
+      assert.notEqual(
+        layer,
+        'sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef',
+        'immutable input COPY diff must not be the canonical empty layer',
+      );
+    }
     const baseHistory = dockerImageHistoryState.get(baseImageKey);
     assert.ok(baseHistory, 'reviewed base image history proof is missing');
     childHistory = readDockerImageHistory(id, 'immutable input image history proof');
     const addedHistoryCount = childHistory.length - baseHistory.length;
-    assert.equal(addedHistoryCount, 6, 'immutable input history must add five fixed labels and one COPY');
+    const expectedAddedHistory = [
+      ...(context.driver ? [
+        `COPY --chown=65534:65534 ${driverContextPath} ${context.driver.containerPath} # buildkit`,
+      ] : []),
+      `COPY --chown=65534:65534 snapshot/ /workspace/ # buildkit`,
+      ...(context.driver ? [
+        `LABEL ceragon.c07.driver.path=${context.driver.containerPath}`,
+        `LABEL ceragon.c07.driver.bytes=${context.driver.bytes}`,
+        `LABEL ceragon.c07.driver.sha256=${context.driver.sha256}`,
+        `LABEL ceragon.c07.driver.id=${context.driver.id}`,
+      ] : []),
+      `LABEL ceragon.c07.build.run=${buildRunId}`,
+      `LABEL ceragon.c07.base.image=${baseImage.id}`,
+      `LABEL ceragon.c07.snapshot.manifest=${snapshot.proof.manifestSha256}`,
+      `LABEL ceragon.c07.snapshot.tree=${snapshot.proof.tree}`,
+      `LABEL ceragon.c07.snapshot.commit=${snapshot.proof.commit}`,
+    ];
+    assert.equal(
+      addedHistoryCount,
+      expectedAddedHistory.length,
+      'immutable input history entry count changed',
+    );
     assert.deepStrictEqual(
       childHistory.slice(addedHistoryCount),
       baseHistory,
       'immutable input history does not end with the exact reviewed base history',
     );
     addedHistory = childHistory.slice(0, addedHistoryCount);
-    const expectedAddedHistory = [
-      `COPY --chown=65534:65534 snapshot/ /workspace/ # buildkit`,
-      `LABEL ceragon.c07.base.image=${baseImage.id}`,
-      `LABEL ceragon.c07.build.run=${buildRunId}`,
-      `LABEL ceragon.c07.snapshot.manifest=${snapshot.proof.manifestSha256}`,
-      `LABEL ceragon.c07.snapshot.tree=${snapshot.proof.tree}`,
-      `LABEL ceragon.c07.snapshot.commit=${snapshot.proof.commit}`,
-    ];
     assert.deepStrictEqual(
       addedHistory.map(({ createdBy }) => createdBy),
       expectedAddedHistory,
@@ -2262,7 +2353,7 @@ function buildImmutableInputImage(snapshot, baseImageKey) {
     );
     assert.deepStrictEqual(
       addedHistory.map(({ comment }) => comment),
-      Array(6).fill('buildkit.dockerfile.v0'),
+      Array(expectedAddedHistory.length).fill('buildkit.dockerfile.v0'),
       'immutable input history builder comments changed',
     );
   } catch (error) {
@@ -2315,12 +2406,14 @@ function buildImmutableInputImage(snapshot, baseImageKey) {
     layersSha256: sha256(Buffer.from(`${inspected.layers.join('\n')}\n`, 'ascii')),
     diffLayerSha256: inspected.layers.at(-1),
     diffLayerEmpty: false,
-    nonEmptyAddedLayers: 1,
+    nonEmptyAddedLayers: addedCopyLayerCount,
     historyEntryCount: childHistory.length,
     historySha256: dockerHistoryDigest(childHistory),
     addedHistoryEntries: addedHistory.length,
     addedHistorySha256: dockerHistoryDigest(addedHistory),
-    historyPolicy: 'EXACT_BASE_SUFFIX_FIVE_FIXED_LABELS_ONE_COPY',
+    historyPolicy: context.driver
+      ? 'EXACT_BASE_SUFFIX_NINE_FIXED_LABELS_TWO_COPIES'
+      : 'EXACT_BASE_SUFFIX_FIVE_FIXED_LABELS_ONE_COPY',
     dockerfilePolicy: 'FROM_EXACT_DIGEST_FIXED_LABELS_COPY_ONLY_NO_RUN_NO_ADD',
     buildNetwork: 'NONE',
     buildPull: false,
@@ -2360,7 +2453,7 @@ function buildImmutableInputImage(snapshot, baseImageKey) {
 function validateContainedProcessSpec(spec) {
   assertExactKeys(spec, ['id', 'image', 'snapshot', 'cwd', 'args'], 'contained process specification');
   assert.match(spec.id, /^[a-z][a-z0-9.-]{0,95}$/, 'contained process id is invalid');
-  assert.ok(FIXED_CONTAINER_IMAGES[spec.image], `unknown fixed container image ${spec.image}`);
+  containerImage(spec.image);
   assert.equal(repositorySnapshots.has(spec.snapshot), true, 'contained process requires a C07 commit snapshot');
   assert.equal(typeof spec.cwd === 'string' && spec.cwd.length >= 1 && spec.cwd.length <= 512, true, 'contained cwd is invalid');
   assert.equal(spec.cwd.includes('\\'), false, 'contained cwd must use forward slashes');
@@ -2962,8 +3055,17 @@ function runContainedProcess(spec, limits, semanticRequest = null) {
     assert.equal(spec.snapshot.proof.tree, approved.tree, 'semantic snapshot tree changed');
   }
 
-  const baseImage = FIXED_CONTAINER_IMAGES[spec.image];
-  const inputImage = buildImmutableInputImage(spec.snapshot, spec.image);
+  const baseImage = containerImage(spec.image);
+  const driverContext = semanticCapture
+    ? Object.freeze({
+        artifact: semanticRequest.driverArtifact,
+        witness: Object.freeze({
+          exactBytes: semanticDriverWitness.exactBytes,
+          containerPath: semanticDriverWitness.containerPath,
+        }),
+      })
+    : null;
+  const inputImage = buildImmutableInputImage(spec.snapshot, spec.image, driverContext);
   const inputImageConfig = immutableInputImageConfigWitnesses.get(inputImage);
   assert.ok(inputImageConfig, 'immutable input image Config witness is missing at runtime');
   const name = `ceragon-c07-${crypto.randomBytes(16).toString('hex')}`;
@@ -3921,19 +4023,91 @@ function assertCommandEntry(root, cwd, command) {
   assert.equal(samePath(realpath(absolute), absolute), true, `${command.id} entry path is indirect`);
 }
 
-async function runFixedProfile(consumerKey, root) {
+const CONTAINED_SEMANTIC_PROFILES = deepFreeze({
+  backend: {
+    id: 'backend.semantic-compatibility',
+    image: 'backend',
+    cwd: '.',
+    args: [
+      '/c07/backend-semantic-driver.cjs',
+      '/workspace/packages/shared-contracts/generated/ai-security/0.2.0/portable-contract.v1.jcs.json',
+      '/workspace/src/ai-security-policy/ai-security-portable-reader.ts',
+      '/app/dist/ai-security-policy/resolve-strictest-policy.js',
+      '/workspace/packages/shared-contracts/dist/generated/ai-security-portable.generated.js',
+    ],
+  },
+  installer: {
+    id: 'installer.semantic-compatibility',
+    image: 'go',
+    cwd: '.',
+    args: [
+      'run',
+      '/workspace/cmd/c07semanticdriver/main.go',
+      '/workspace/internal/aipolicycontract/embedded/0.2.0/portable-contract.v1.jcs.json',
+      '/workspace/cmd/c07semanticdriver/main.go',
+    ],
+  },
+  browser: {
+    id: 'browser.semantic-compatibility',
+    image: 'node',
+    cwd: '.',
+    args: [
+      '/c07/browser-semantic-driver.mjs',
+      '/workspace/browser-extension/generated/ai-security/0.2.0/portable-contract.v1.jcs.json',
+      '/workspace/browser-extension/src/ai-security-policy-v1-reader.js',
+      '/workspace/browser-extension/src/generated/ai-security-portable.generated.js',
+    ],
+  },
+  frontend: {
+    id: 'frontend.semantic-compatibility',
+    image: 'frontend',
+    cwd: '.',
+    args: ['/c07/frontend-semantic-driver.test.cjs'],
+  },
+});
+
+function semanticProfileSpec(consumerKey, snapshot) {
   const profile = FIXED_PROFILES[consumerKey];
   assert.ok(profile, `unknown fixed consumer profile ${consumerKey}`);
   assert.equal(
-    repositorySnapshots.has(root),
+    repositorySnapshots.has(snapshot),
     true,
     `${profile.profile} requires an immutable repository commit snapshot`,
   );
-  assert.equal(root.verify(), true, `${profile.profile} snapshot changed before execution`);
-  throw new IntegrationGateError(
-    'CONTAINED_SEMANTIC_PROFILE_PENDING',
-    `${profile.profile} cannot run until its reviewed driver is bound into an immutable contained image`,
+  assert.equal(snapshot.verify(), true, `${profile.profile} snapshot changed before execution`);
+  const reviewed = CONTAINED_SEMANTIC_PROFILES[consumerKey];
+  assert.ok(reviewed, `${profile.profile} has no contained semantic profile`);
+  return Object.freeze({
+    id: reviewed.id,
+    image: reviewed.image,
+    snapshot,
+    cwd: reviewed.cwd,
+    args: reviewed.args,
+  });
+}
+
+async function runFixedProfile(consumerKey, snapshot, context) {
+  assertExactKeys(context, ['rollback', 'artifactBytes'], 'contained semantic profile context');
+  assert.equal(Buffer.isBuffer(context.artifactBytes), true, 'canonical artifact must be exact bytes');
+  const driverArtifact = issueReviewedSemanticDriver(consumerKey);
+  const execution = await runContainedProcess(
+    semanticProfileSpec(consumerKey, snapshot),
+    {
+      timeoutMs: 300_000,
+      maxStdoutBytes: MAX_CONTAINED_SEMANTIC_ENVELOPE_BYTES,
+      maxStderrBytes: 1,
+    },
+    {
+      authority: SEMANTIC_CAPTURE_AUTHORITY,
+      consumer: consumerKey,
+      driverArtifact,
+    },
   );
+  return consumeContainedSemanticRun({
+    execution,
+    rollback: context.rollback,
+    artifactBytes: context.artifactBytes,
+  });
 }
 const reviewedDriverBindings = new WeakMap();
 const containedSemanticReceipts = new WeakMap();
@@ -4155,7 +4329,7 @@ function containedExecutionWitness(execution, consumer) {
   assert.equal(execution.inputImageRemoved, true, `${consumer} input image cleanup was not witnessed`);
   assert.equal(
     execution.inputImageRemovalScope,
-    'ENGINE_IMAGE_ID_AND_TEMPORARY_TAG_ONLY',
+    'ENGINE_IMAGE_IDS_TEMPORARY_TAG_AND_BUILD_RUN_LABEL',
     `${consumer} image cleanup scope changed`,
   );
   assert.deepStrictEqual(execution.inputImage, witness.inputImage.proof, `${consumer} input image proof changed`);
@@ -4219,6 +4393,8 @@ function mintContainedProfileProof(input) {
     sourceTree: witness.snapshot.proof.tree,
     snapshotManifestSha256: witness.snapshot.proof.manifestSha256,
     inputImageId: witness.inputImage.id,
+    baseImageId: execution.inputImage.baseImageId,
+    baseImageConfigSha256: execution.inputImage.baseImageConfigSha256,
     containerConfigurationSha256: execution.containerConfigurationSha256,
     challengeSha256: witness.challengeSha256,
     driverId: driverBinding.driverId,
@@ -4399,6 +4575,8 @@ function evidenceConsumerProjection(consumer, label) {
 const PROFILE_EVIDENCE_SHA256_KEYS = Object.freeze([
   'snapshotManifestSha256',
   'inputImageId',
+  'baseImageId',
+  'baseImageConfigSha256',
   'containerConfigurationSha256',
   'challengeSha256',
   'driverSha256',
@@ -4419,6 +4597,8 @@ function evidenceProfileProjection(profile, label) {
       'sourceTree',
       'snapshotManifestSha256',
       'inputImageId',
+      'baseImageId',
+      'baseImageConfigSha256',
       'containerConfigurationSha256',
       'challengeSha256',
       'driverId',
@@ -4445,6 +4625,8 @@ function evidenceProfileProjection(profile, label) {
     sourceTree: profile.sourceTree,
     snapshotManifestSha256: profile.snapshotManifestSha256,
     inputImageId: profile.inputImageId,
+    baseImageId: profile.baseImageId,
+    baseImageConfigSha256: profile.baseImageConfigSha256,
     containerConfigurationSha256: profile.containerConfigurationSha256,
     challengeSha256: profile.challengeSha256,
     driverId: profile.driverId,
@@ -4629,10 +4811,13 @@ const INTEGRATION_SCHEMA_DESCRIPTOR = deepFreeze({
   sha256: 'sha256:53bc9cc5816aefbd3fc2bfe8bb65fd2aaeaed53f5ac0abc426301d34d1094049',
 });
 
-// Deliberately absent until P0-C05 has an accepted commit, tree, consumer pin,
-// independent review, and clean-root evidence. A pending fixture can never be
-// promoted by a CLI flag or caller-supplied manifest path.
-const REVIEWED_FINAL_MANIFEST_DESCRIPTOR = null;
+// This exact accepted manifest is the only promotable C07 input. Caller-supplied
+// paths and the retained pending negative fixture cannot enter reviewed execution.
+const REVIEWED_FINAL_MANIFEST_DESCRIPTOR = deepFreeze({
+  path: 'fixtures/ai-security-integration-input-manifest-v1.accepted.json',
+  bytes: 3_823,
+  sha256: 'sha256:7750987cf35b817b2af37621c0f1be6820a961a2bd2e7788100ae20a19e5a790',
+});
 
 function verifyCanonicalSource(root, canonical) {
   const snapshotter = createProtectedSnapshotter(root);
@@ -4745,9 +4930,18 @@ function validateRoots(roots) {
   }
 }
 
-async function runIntegrationGate(manifest, roots) {
+function validateRuntimeInputs(runtimeInputs) {
+  assertExactKeys(runtimeInputs, ['frontendDependencyImage'], 'integration runtime inputs');
+  const frontendDependencyImage = registerFrontendDependencyImage(
+    runtimeInputs.frontendDependencyImage,
+  );
+  return Object.freeze({ frontendDependencyImage });
+}
+
+async function runIntegrationGate(manifest, roots, runtimeInputs) {
   const accepted = validateIntegrationManifest(manifest);
   validateRoots(roots);
+  validateRuntimeInputs(runtimeInputs);
   const repositoryPins = {
     canonical: accepted.canonical.source,
     priorCanonical: accepted.canonical.priorSource,
@@ -4772,55 +4966,60 @@ async function runIntegrationGate(manifest, roots) {
     ]),
   );
   assertCanonicalByteEquality(canonical, consumers);
-  const priorSnapshot = await materializeRepositorySnapshot(
-    roots.priorCanonical,
-    APPROVED_INPUTS.priorCanonical,
-    'prior canonical rollback source',
-  );
+
+  const snapshots = {};
+  const acquiredSnapshots = [];
   try {
-    const rollback = verifyPriorSourceRollback(priorSnapshot);
-
-  const profileEntries = await Promise.all(
-    ['backend', 'installer', 'browser', 'frontend'].map(async (key) => [
-      key,
-      await runFixedProfile(key, roots[key]),
-    ]),
-  );
-  const profiles = Object.fromEntries(profileEntries);
-  buildCompatibilityMatrix({ profiles, rollback });
-
-  for (const key of Object.keys(repositoryPins)) {
-    const after = await assertRepositoryAtPin(
-      roots[key],
-      repositoryPins[key],
-      `${key} integration input after profile execution`,
+    for (const key of ['priorCanonical', 'backend', 'installer', 'browser', 'frontend']) {
+      const snapshot = await materializeRepositorySnapshot(
+        roots[key],
+        repositoryPins[key],
+        `${key} immutable integration source`,
+      );
+      snapshots[key] = snapshot;
+      acquiredSnapshots.push(snapshot);
+    }
+    const rollback = verifyPriorSourceRollback(snapshots.priorCanonical);
+    const consumerKeys = ['backend', 'installer', 'browser', 'frontend'];
+    const profileSettlements = await Promise.allSettled(
+      consumerKeys.map((key) => runFixedProfile(key, snapshots[key], {
+        rollback,
+        artifactBytes: canonical.artifactBytes,
+      })),
     );
-    assert.deepStrictEqual(after, repositories[key], `${key} repository changed during integration`);
-  }
+    const failedProfile = profileSettlements.find((result) => result.status === 'rejected');
+    if (failedProfile) throw failedProfile.reason;
+    const profiles = Object.fromEntries(
+      profileSettlements.map((result, index) => [consumerKeys[index], result.value]),
+    );
+    buildCompatibilityMatrix({ profiles, rollback });
 
-  const evidence = buildContentFreeEvidence({
-    repositories,
-    canonicalFiles: canonical.files,
-    consumers,
-    profiles,
-    rollback,
-    unsupportedSurfaces: accepted.unsupportedSurfaces,
-    activeWaivers: accepted.activeWaivers,
-  });
-  const evidenceBytes = serializeContentFreeEvidence(evidence);
-  return Object.freeze({ evidence, evidenceBytes });
+    for (const key of Object.keys(repositoryPins)) {
+      const after = await assertRepositoryAtPin(
+        roots[key],
+        repositoryPins[key],
+        `${key} integration input after profile execution`,
+      );
+      assert.deepStrictEqual(after, repositories[key], `${key} repository changed during integration`);
+    }
+
+    const evidence = buildContentFreeEvidence({
+      repositories,
+      canonicalFiles: canonical.files,
+      consumers,
+      profiles,
+      rollback,
+      unsupportedSurfaces: accepted.unsupportedSurfaces,
+      activeWaivers: accepted.activeWaivers,
+    });
+    const evidenceBytes = serializeContentFreeEvidence(evidence);
+    return Object.freeze({ evidence, evidenceBytes });
   } finally {
-    priorSnapshot.dispose();
+    for (const snapshot of acquiredSnapshots.reverse()) snapshot.dispose();
   }
 }
 
 function loadReviewedIntegrationManifest(packageRoot) {
-  if (REVIEWED_FINAL_MANIFEST_DESCRIPTOR === null) {
-    throw new IntegrationGateError(
-      'FINAL_MANIFEST_PENDING',
-      'P0-C07 final execution is disabled until the independently accepted C05 browser commit/tree/pin is reviewed',
-    );
-  }
   const snapshotter = createProtectedSnapshotter(packageRoot);
   snapshotter.snapshot(INTEGRATION_SCHEMA_DESCRIPTOR, 'integration manifest schema');
   const snapshot = snapshotter.snapshot(
@@ -4830,14 +5029,16 @@ function loadReviewedIntegrationManifest(packageRoot) {
   return validateIntegrationManifest(parseStrictJsonBytes(snapshot.bytes));
 }
 
-async function runReviewedIntegrationGate(packageRoot, roots) {
+async function runReviewedIntegrationGate(packageRoot, roots, runtimeInputs) {
   const manifest = loadReviewedIntegrationManifest(packageRoot);
-  return runIntegrationGate(manifest, roots);
+  return runIntegrationGate(manifest, roots, runtimeInputs);
 }
 // These isolated transport primitives cannot seed this module's private gate authority.
 // They exist only so the exact one-shot and canonical-transport algorithms are adversarially tested.
 const testing = Object.freeze({
+  containedSemanticProfiles: CONTAINED_SEMANTIC_PROFILES,
   createOneShotSemanticRunAuthority,
+  registerFrontendDependencyImage,
   validateContainedSemanticEnvelopeBytes,
   trustedGitFileModeSetting,
   parseTreeEntries,
