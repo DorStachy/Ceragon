@@ -398,6 +398,26 @@ restriction.parameters = {
   destinationRefs: [],
 };
 assert.equal(validateObligationCatalog(emptyRestriction), false);
+const duplicateObligationKind = clone(obligationCatalog);
+duplicateObligationKind.obligationUnionCases[1] = clone(
+  duplicateObligationKind.obligationUnionCases[0],
+);
+duplicateObligationKind.obligationUnionCases[1].obligationId =
+  'rule.audit:audit:1';
+assert.equal(validateObligationCatalog(duplicateObligationKind), false);
+
+const unlistedDownConversion = clone(obligationCatalog);
+unlistedDownConversion.v2ToV1DownConversion[0].v1Decision = 'HOLD';
+assert.equal(validateObligationCatalog(unlistedDownConversion), false);
+
+const unlistedWarn = clone(obligationCatalog);
+Object.assign(unlistedWarn.legacyWarnByCheckpoint[0], {
+  semantic: 'HOLD',
+  v1Decision: 'HOLD',
+  requestedEffect: 'stop-continuation',
+});
+assert.equal(validateObligationCatalog(unlistedWarn), false);
+
 
 const crossSurface = clone(failureCatalog);
 crossSurface.rows[0].checkpoint = 'PRE_SUBMIT';
@@ -418,6 +438,26 @@ const proceedRow = sensitiveFailOpen.rows.find(
 );
 proceedRow.impact = 'SENSITIVE_DATA';
 assert.equal(validateFailureCatalog(sensitiveFailOpen), false);
+const duplicateDimensionKey = clone(failureCatalog);
+const duplicateKeyVariant = clone(duplicateDimensionKey.rows[0]);
+duplicateKeyVariant.copyKey =
+  'ai.security.failure.pre.proceed-observed-only.low-impact.variant';
+duplicateDimensionKey.rows[1] = duplicateKeyVariant;
+assert.equal(validateFailureCatalog(duplicateDimensionKey), false);
+
+const unlistedCombination = clone(failureCatalog);
+const unlistedRow = unlistedCombination.rows.find(
+  (row) =>
+    row.checkpoint === 'PRE_PROMPT' &&
+    row.failure === 'POLICY_UNAVAILABLE' &&
+    row.impact === 'SENSITIVE_DATA',
+);
+Object.assign(unlistedRow, {
+  outcome: 'HOLD',
+  primaryState: 'BLOCKED_BEFORE_EFFECT',
+});
+assert.equal(validateFailureCatalog(unlistedCombination), false);
+
 
 process.stdout.write(
   `P0-O01/P0-F01 contracts: PASS (8 obligations, 8 down-conversions, 9 WARN checkpoints, ${failureCatalog.rows.length} explicit oracle rows)\n`,

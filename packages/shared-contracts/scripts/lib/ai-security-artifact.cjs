@@ -17,7 +17,7 @@ const EXPECTED_FILES = Object.freeze([RELEASE_FILE, ARTIFACT_FILE, DIGEST_FILE].
 const EXPECTED_TUPLE_SYMBOLS_DIGEST =
   'sha256:24aa6b53a3d1552bb446510ed7ce4fe37f70ea0ef102a5630e86c35cd2de62bd';
 const EXPECTED_PORTABLE_ARTIFACT_DIGEST =
-  'sha256:04f93e98f030375539de7f7bb8249902f38dd9ff5ebb6103b60534df3f5f82a0';
+  'sha256:bb172d0d535530fba9ade9648c2a5f9784ccd4fb9b1a08535f0172188aadca67';
 const EXPECTED_SOURCE_PATHS = Object.freeze({
   definitionsSchema: 'schemas/ai-security-policy-v1.defs.schema.json',
   strictWriteSchema: 'schemas/ai-security-policy-v1.strict-write.schema.json',
@@ -55,9 +55,9 @@ const REVIEWED_SOURCE_DIGESTS = Object.freeze({
   'fixtures/ai-security-policy-v1-authority.json':
     'sha256:18ff07ab942a5ff4b816254cab6585ce9cf288e096dbcdafa3f3a0f4352b2e16',
   'schemas/ai-security-obligation-contract-v1.schema.json':
-    'sha256:a80c1f8902a9384089fe62944049b29ba2aad43045ef15a7ac20431103cbe0ed',
+    'sha256:29b4247238dc7dc4631db987c9692a7b3d9a25a77086ce35b59e4ccd1e760bb4',
   'schemas/ai-security-failure-oracle-v1.schema.json':
-    'sha256:1109b8dfdc98d15e1ff304da8a75a27fbd456f64af9bf3dfa80028585c92d58d',
+    'sha256:9a4d3a6b3d2d429c118d4e43b434766a801abb83f7bfefd8417c3f889ec6c572',
   'fixtures/ai-security-obligation-contract.v1.json':
     'sha256:fa4adf030d3ad700c8e7738cf7a583bf33605de9b906f792189f48733b8e86e9',
   'fixtures/ai-security-failure-oracle.v1.json':

@@ -10,6 +10,12 @@ const {
 function bytesFor(value) {
   return Buffer.from(`${JSON.stringify(value, null, 2)}\n`, 'utf8');
 }
+function closedSchemaBytes(absolute, catalog) {
+  const schema = JSON.parse(fs.readFileSync(absolute, 'utf8'));
+  schema.const = catalog;
+  return bytesFor(schema);
+}
+
 
 function writeOrCheck(absolute, bytes, mode) {
   if (mode === '--write') {
@@ -29,18 +35,32 @@ function main(args) {
   const packageRoot = path.resolve(__dirname, '..');
   const contracts = require(path.join(packageRoot, 'dist', 'index.js'));
   const { canonicalizeJcs } = require(path.join(packageRoot, 'dist', 'sqs-signer.js'));
+  const obligationCatalog = buildO01Catalog(contracts, canonicalizeJcs);
+  const failureCatalog = buildF01Catalog(contracts);
+  const obligationSchemaPath = path.join(
+    packageRoot,
+    'schemas',
+    'ai-security-obligation-contract-v1.schema.json',
+  );
+  const failureSchemaPath = path.join(
+    packageRoot,
+    'schemas',
+    'ai-security-failure-oracle-v1.schema.json',
+  );
   const outputs = [
     [
       path.join(packageRoot, 'fixtures', 'ai-security-obligation-contract.v1.json'),
-      buildO01Catalog(contracts, canonicalizeJcs),
+      bytesFor(obligationCatalog),
     ],
     [
       path.join(packageRoot, 'fixtures', 'ai-security-failure-oracle.v1.json'),
-      buildF01Catalog(contracts),
+      bytesFor(failureCatalog),
     ],
+    [obligationSchemaPath, closedSchemaBytes(obligationSchemaPath, obligationCatalog)],
+    [failureSchemaPath, closedSchemaBytes(failureSchemaPath, failureCatalog)],
   ];
-  for (const [absolute, value] of outputs) {
-    writeOrCheck(absolute, bytesFor(value), args[0]);
+  for (const [absolute, bytes] of outputs) {
+    writeOrCheck(absolute, bytes, args[0]);
   }
 }
 
