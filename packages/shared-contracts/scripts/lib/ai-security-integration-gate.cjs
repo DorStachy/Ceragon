@@ -893,14 +893,30 @@ async function materializeRepositorySnapshot(repositoryRoot, pin, label) {
         disposed = true;
         assert.equal(isWithin(temporaryBase, snapshotRoot), true, 'snapshot cleanup escaped temporary base');
         assert.match(path.basename(snapshotRoot), /^ceragon-c07-commit-/);
-        fs.rmSync(snapshotRoot, { recursive: true, force: true });
+        try {
+          // Best-effort cleanup with retries: a Windows ENOTEMPTY race here
+          // must never replace an otherwise-completed gate run's verdict.
+          fs.rmSync(snapshotRoot, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+        } catch (cleanupError) {
+          process.stderr.write(
+            `WARNING: C07 snapshot cleanup left ${snapshotRoot} behind `
+            + `(${cleanupError?.code || cleanupError?.message}); remove it manually.\n`,
+          );
+        }
         for (const bytes of blobs) bytes.fill(0);
       },
     });
     repositorySnapshots.add(snapshot);
     return snapshot;
   } catch (error) {
-    fs.rmSync(snapshotRoot, { recursive: true, force: true });
+    try {
+      fs.rmSync(snapshotRoot, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+    } catch (cleanupError) {
+      process.stderr.write(
+        `WARNING: C07 snapshot cleanup left ${snapshotRoot} behind `
+        + `(${cleanupError?.code || cleanupError?.message}); remove it manually.\n`,
+      );
+    }
     throw error;
   }
 }
@@ -1950,13 +1966,14 @@ function removeImmutableInputImage(inputImage) {
   inputImage.markRemoved();
   return immutableInputRemovalProof();
 }
-function verifyLocalBuildReference(baseImage, label) {
+function verifyLocalBuildReference(baseImage, label, options = {}) {
+  const { timeoutMs = 10_000 } = options;
   const reference = baseImage.repositoryDigest;
   const inspected = parseDockerJson(
     runDockerSync(
       ['image', 'inspect', reference, '--format', '{"id":"{{.Id}}"}'],
       label,
-      { maxStdoutBytes: 65_536, maxStderrBytes: 65_536, timeoutMs: 10_000 },
+      { maxStdoutBytes: 65_536, maxStderrBytes: 65_536, timeoutMs },
     ).stdout,
     label,
   );
@@ -2228,6 +2245,9 @@ function buildImmutableInputImage(snapshot, baseImageKey, driver = null) {
   const buildReferenceAfter = verifyLocalBuildReference(
     baseImage,
     `${baseImageKey} local build reference after build`,
+    // Build-class bound: right after a large Buildx build the engine can be
+    // slow to answer even a trivial inspect. Still bounded, never unbounded.
+    { timeoutMs: 600_000 },
   );
   assert.deepStrictEqual(
     buildReferenceAfter,
@@ -2239,6 +2259,7 @@ function buildImmutableInputImage(snapshot, baseImageKey, driver = null) {
     runDockerSync(
       ['image', 'inspect', attestation.manifestDigest, '--format', template],
       'immutable input image inspection by attested engine ID',
+      { timeoutMs: 600_000 },
     ).stdout,
     'immutable input image inspection by attested engine ID',
   );
@@ -2246,6 +2267,7 @@ function buildImmutableInputImage(snapshot, baseImageKey, driver = null) {
     runDockerSync(
       ['image', 'inspect', buildTag, '--format', '{"id":"{{.Id}}"}'],
       'immutable input temporary tag binding',
+      { timeoutMs: 600_000 },
     ).stdout,
     'immutable input temporary tag binding',
   );
