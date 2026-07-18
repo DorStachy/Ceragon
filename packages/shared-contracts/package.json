@@ -16,7 +16,9 @@
     "validate:ai-security-sources": "node scripts/test-ai-security-policy-schemas.cjs && node scripts/test-jcs-conformance.cjs",
     "generate:ai-security": "npm run build && npm run validate:ai-security-sources && node scripts/generate-ai-security-artifact.cjs --output generated/ai-security/0.2.0",
     "check:ai-security-generated": "npm run build && npm run validate:ai-security-sources && node scripts/check-ai-security-generated.cjs",
-    "test": "npm run build && node scripts/test-security-taxonomy.cjs && node scripts/test-vulnerability-applicability.cjs && node scripts/test-m3-contracts.cjs && node scripts/test-governance-profile.cjs && node scripts/test-runtime-adapter-contract.cjs && node scripts/test-ai-security-policy-v1-contract.cjs && npm run validate:ai-security-sources && node scripts/test-ai-security-portable-artifact.cjs"
+    "test:ai-security-integration-harness": "node --test --test-concurrency=1 scripts/test-ai-security-semantic-receipts.cjs scripts/test-ai-security-integration-gate.cjs",
+    "run:ai-security-integration-gate": "node scripts/run-ai-security-integration-gate.cjs",
+    "test": "npm run build && node scripts/test-security-taxonomy.cjs && node scripts/test-vulnerability-applicability.cjs && node scripts/test-m3-contracts.cjs && node scripts/test-governance-profile.cjs && node scripts/test-runtime-adapter-contract.cjs && node scripts/test-ai-security-policy-v1-contract.cjs && npm run validate:ai-security-sources && node scripts/test-ai-security-portable-artifact.cjs && npm run test:ai-security-integration-harness"
   },
   "devDependencies": {
     "@types/node": "24.13.2",

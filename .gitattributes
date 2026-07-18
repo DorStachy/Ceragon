@@ -5,6 +5,8 @@ packages/shared-contracts/schemas/** text eol=lf
 packages/shared-contracts/manifests/** text eol=lf
 packages/shared-contracts/vectors/** text eol=lf
 packages/shared-contracts/fixtures/ai-security-policy-v1-authority.json -text whitespace=cr-at-eol
+packages/shared-contracts/fixtures/ai-security-integration-*.json text eol=lf
+packages/shared-contracts/fixtures/test-only/*.json text eol=lf
 packages/shared-contracts/scripts/** text eol=lf
 packages/shared-contracts/generated/**/*.jcs.json -text
 packages/shared-contracts/generated/**/*.sha256 text eol=lf
