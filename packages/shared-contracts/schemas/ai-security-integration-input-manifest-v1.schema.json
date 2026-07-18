@@ -40,7 +40,7 @@
             "name": { "const": "@ceragon/shared-contracts" },
             "version": { "const": "0.3.0" },
             "generatorName": { "const": "ceragon-ai-security-artifact" },
-            "generatorVersion": { "const": "1.0.0" },
+            "generatorVersion": { "const": "1.2.0" },
             "policySchemaVersion": { "const": 1 }
           }
         },

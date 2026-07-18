@@ -584,10 +584,10 @@ test('consumer pins bind every described byte and cannot activate a writer or ru
       format: 'ceragon.ai-security.frontend-consumer-pin',
       formatVersion: 1,
       consumer: 'Frontend',
-      sourceCommit: '4eefa8cee1633b0062584a886f8e564dbe99719a',
+      sourceCommit: '781685f69bc7760df732612030b7e25af6223ff3',
       sourcePackage: { name: '@ceragon/shared-contracts', version: '0.3.0' },
       policySchemaVersion: 1,
-      canonicalGenerator: { name: 'ceragon-ai-security-artifact', version: '1.0.0' },
+      canonicalGenerator: { name: 'ceragon-ai-security-artifact', version: '1.2.0' },
       projectionGenerator: {
         name: 'ceragon-ai-security-frontend-projection',
         version: 'fixture.1',

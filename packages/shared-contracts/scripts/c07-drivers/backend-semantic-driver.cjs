@@ -8,11 +8,11 @@ const path = require('node:path');
 const CONSUMER = 'backend';
 const DRIVER_ID = 'C07_BACKEND_SEMANTIC_V1';
 const ARTIFACT_SHA256 =
-  'sha256:1bb9aed7553750f0161dadaba531583101d34eef2b35110e326d4d4a20153826';
+  'sha256:bb172d0d535530fba9ade9648c2a5f9784ccd4fb9b1a08535f0172188aadca67';
 const EXPECTED_MODULE_SHA256 = Object.freeze({
-  reader: 'sha256:0d89e3eea3fd5ae5e158d878fad61f0d4595ee8d2c2cd11297c565202c11dadb',
-  strictest: 'sha256:bbbd6e9fdcb021114146000d0978e92b35aae8f41b8587e9b006429baa8dc428',
-  metadata: 'sha256:cf220c7d4accc03b114b0f98453ba9105c31bf269827680ea498de23afdfa721',
+  reader: 'sha256:3e638b3fccff7b377746deb6058bc7c72d473adca3ed61e333100a898064c177',
+  strictest: 'sha256:99a2655adb5afaac262be6a01d969182075763ce8e94d7087b18d8648f7c5efc',
+  metadata: 'sha256:81c52b21a11cdd68b6d50dd424091cbf804c4aeecf92e263e29ba176bf99855f',
 });
 const ENVELOPE_ENV_KEYS = Object.freeze([
   'CERAGON_C07_CONSUMER',

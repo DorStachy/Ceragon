@@ -6,14 +6,14 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const CONSUMER = 'browser';
 const DRIVER_ID = 'C07_BROWSER_SEMANTIC_V1';
 const ARTIFACT_SHA256 =
-  'sha256:1bb9aed7553750f0161dadaba531583101d34eef2b35110e326d4d4a20153826';
+  'sha256:bb172d0d535530fba9ade9648c2a5f9784ccd4fb9b1a08535f0172188aadca67';
 const EXPECTED_FILE_SHA256 = Object.freeze({
   reader: 'sha256:35c974ec897b9ffdf5ac2e60f628b42c5745585665ef6fb9d5beff024890d880',
   tokens: 'sha256:c0005d05a9c66e5e1f14105f08713fe787dba012bce55e4137d99a44cddbd9e8',
   forwardInspection: 'sha256:9fcb373792d67bb9a0319fd37f38feaf5193a8f5b0c29e137a5e720c3d3f0ae6',
-  metadata: 'sha256:2756aac7b70caff5016e59451eedf3d695dc3917ce5ef53e4b13fbbf13d1363f',
-  validators: 'sha256:ead80bfae5fe2fda598b716e7e84e17b49e5c94ec3173ed7e0cf3d126b6beede',
-  packageJson: 'sha256:618a51fe6d4dbde2345bd682238ca689098725336d381c35079d55566465dc19',
+  metadata: 'sha256:641471d85fca3d730ecf8d417ac3d6538249b514975fb394e3941e5cb36f3323',
+  validators: 'sha256:2a525792ef104e358c8e765e68e26b8aa85b170db87c1bc0452b05f28b95aa3d',
+  packageJson: 'sha256:774dd24135f8fd34d829080a39b3c94c9dddbbbb20dfe988f2d1cbb865199d16',
 });
 const ENVELOPE_ENV_KEYS = Object.freeze([
   'CERAGON_C07_CONSUMER',

@@ -14,19 +14,19 @@
     "amendments": []
   },
   "canonical": {
-    "source": { "repository": "Workspace", "commit": "4eefa8cee1633b0062584a886f8e564dbe99719a", "tree": "8dc90d72c8dcba747ab8cb92f675ac5c4f7a290b" },
+    "source": { "repository": "Workspace", "commit": "781685f69bc7760df732612030b7e25af6223ff3", "tree": "106cab4a9a35dab5b9f2a1230aff86de2980bfc6" },
     "priorSource": { "repository": "Workspace", "commit": "288da9535cca5e60394334e35674d33a930351a4", "tree": "49a68113a4625c6dfa9d518949604088195673f1" },
-    "package": { "name": "@ceragon/shared-contracts", "version": "0.3.0", "generatorName": "ceragon-ai-security-artifact", "generatorVersion": "1.0.0", "policySchemaVersion": 1 },
-    "artifact": { "path": "packages/shared-contracts/generated/ai-security/0.3.0/portable-contract.v1.jcs.json", "bytes": 46707, "sha256": "sha256:1bb9aed7553750f0161dadaba531583101d34eef2b35110e326d4d4a20153826" },
-    "releaseManifest": { "path": "packages/shared-contracts/generated/ai-security/0.3.0/portable-contract-release.v1.jcs.json", "bytes": 536, "sha256": "sha256:91d95d99ec2d916260be4afd360e482d938419b871831d6757f66476523d5686" },
-    "digestSidecar": { "path": "packages/shared-contracts/generated/ai-security/0.3.0/portable-contract.v1.jcs.json.sha256", "bytes": 72, "sha256": "sha256:bb1949874d3da79c204c4e76dc8abd08a0a29753a773b79c02642dc80c49d5dc" },
+    "package": { "name": "@ceragon/shared-contracts", "version": "0.3.0", "generatorName": "ceragon-ai-security-artifact", "generatorVersion": "1.2.0", "policySchemaVersion": 1 },
+    "artifact": { "path": "packages/shared-contracts/generated/ai-security/0.3.0/portable-contract.v1.jcs.json", "bytes": 768554, "sha256": "sha256:bb172d0d535530fba9ade9648c2a5f9784ccd4fb9b1a08535f0172188aadca67" },
+    "releaseManifest": { "path": "packages/shared-contracts/generated/ai-security/0.3.0/portable-contract-release.v1.jcs.json", "bytes": 537, "sha256": "sha256:ddc485a8f057855ce56d3cf3828393718661d2405060cfd693b14b4361f6d932" },
+    "digestSidecar": { "path": "packages/shared-contracts/generated/ai-security/0.3.0/portable-contract.v1.jcs.json.sha256", "bytes": 72, "sha256": "sha256:d82272a06fb5918fcd6423fadd5bc14fb59a9ce7f96f9dbebe006ba6c5a3bfda" },
     "protocol": { "minimumReadable": "1", "maximumReadable": "2", "readableVersions": ["1", "2"], "writableVersions": ["1"], "nMinusOneShape": "V1_LEGACY_ORG", "runtimeActivatable": false, "signedRuntimePolicyBundle": false, "v2WriterEnabled": false }
   },
   "consumers": {
-    "backend": { "repository": "Backend", "commit": "2d499ad2736da2dfa3a8115ccb2f7baf26080c3e", "tree": "4476b89decf68e9b18b362bfa8d5be44842245c6", "profile": "BACKEND_C03_V1", "pin": { "path": "packages/shared-contracts/ai-security-consumer-pin.v1.json", "bytes": 3198, "sha256": "sha256:31bd248bfdda18e3e37b9af3c6969ad89689c8a17922adf558674ceb6cff24cf" } },
-    "installer": { "repository": "Installers", "commit": "6115f9491de02400a2ec477c56bfa5210b2035e7", "tree": "4510c629b118fdd76d069fae849cf47181809b51", "profile": "INSTALLER_C04_V1", "pin": { "path": "internal/aipolicycontract/consumer-pin.v1.json", "bytes": 1076, "sha256": "sha256:95868f60105999cce0cd67687258b0b3c7a69cf9c23055e9247d0d3286796003" } },
-    "browser": { "repository": "Installers/browser-extension", "commit": "22e8869659e6c7dae2af9f9eb9ef87a54a82c461", "tree": "fd0416434f6b0cfe1ecb2c7daa83563d76d80160", "profile": "BROWSER_C05_V1", "pin": { "path": "browser-extension/ai-security-browser-consumer-pin.v1.json", "bytes": 2122, "sha256": "sha256:397a61ab760988b8c04213e683d5a6ddfb4e14dabb722b9bd1b692c53291d8df" } },
-    "frontend": { "repository": "Frontend", "commit": "b78460df7134d0d4f70915006242473b16e8ac82", "tree": "b0488302be097af466f599d8608f7fa43b425ac5", "profile": "FRONTEND_C06_V1", "pin": { "path": "ai-security-frontend-consumer-pin.v1.json", "bytes": 1673, "sha256": "sha256:6b75af97e01935049bbba3b511cc56cb68372b1b9db6776e19d26b53233a3635" } }
+    "backend": { "repository": "Backend", "commit": "911202ec24f13bfa30200504e02dfc6898197001", "tree": "c509a87cd190883bf7e6aa6fb811d5c148abc30d", "profile": "BACKEND_C03_V1", "pin": { "path": "packages/shared-contracts/ai-security-consumer-pin.v1.json", "bytes": 3199, "sha256": "sha256:e039a06284096608e8642a540aa21f47f2cedb950e9f86286f64b81e7449614c" } },
+    "installer": { "repository": "Installers", "commit": "d971db653e62ed111941912f73d7f6db59b5d3d9", "tree": "3a09ac7567b3ad222b174e6a689e4e3334d12494", "profile": "INSTALLER_C04_V1", "pin": { "path": "internal/aipolicycontract/consumer-pin.v1.json", "bytes": 1077, "sha256": "sha256:a6973676c551e7b09b1ebebd06e4b5370970ae8baa3f8eb54ed81d3a9fc28c13" } },
+    "browser": { "repository": "Installers/browser-extension", "commit": "d971db653e62ed111941912f73d7f6db59b5d3d9", "tree": "3a09ac7567b3ad222b174e6a689e4e3334d12494", "profile": "BROWSER_C05_V1", "pin": { "path": "browser-extension/ai-security-browser-consumer-pin.v1.json", "bytes": 2123, "sha256": "sha256:909fc218efdf7c3431bcae206f78f779d74ccf2e83574e9675e2794f6bdac52a" } },
+    "frontend": { "repository": "Frontend", "commit": "a6ae5dcd4ead53c22f8b1e2a103a89ff54ceb844", "tree": "819c6029b0f6a8d023eec14393048dbbbf8dc036", "profile": "FRONTEND_C06_V1", "pin": { "path": "ai-security-frontend-consumer-pin.v1.json", "bytes": 1674, "sha256": "sha256:81a0c2124a90ae1fc8236c6fa545506a0395e0874c63cebf1910a1e0fa9d4696" } }
   },
   "rollback": { "sourceCommit": "288da9535cca5e60394334e35674d33a930351a4", "sourceTree": "49a68113a4625c6dfa9d518949604088195673f1", "canonicalArtifactAbsentAtTarget": true, "consumerStrategy": "VENDORED_IMMUTABLE_STANDALONE", "runtimeActivationChanged": false },
   "databaseMigrationIds": [],

@@ -924,26 +924,26 @@ const AUTHORITY = deepFreeze({
 const CANONICAL_FILES = deepFreeze({
   artifact: {
     path: 'packages/shared-contracts/generated/ai-security/0.3.0/portable-contract.v1.jcs.json',
-    bytes: 46_707,
-    sha256: 'sha256:1bb9aed7553750f0161dadaba531583101d34eef2b35110e326d4d4a20153826',
+    bytes: 768_554,
+    sha256: 'sha256:bb172d0d535530fba9ade9648c2a5f9784ccd4fb9b1a08535f0172188aadca67',
   },
   releaseManifest: {
     path: 'packages/shared-contracts/generated/ai-security/0.3.0/portable-contract-release.v1.jcs.json',
-    bytes: 536,
-    sha256: 'sha256:91d95d99ec2d916260be4afd360e482d938419b871831d6757f66476523d5686',
+    bytes: 537,
+    sha256: 'sha256:ddc485a8f057855ce56d3cf3828393718661d2405060cfd693b14b4361f6d932',
   },
   digestSidecar: {
     path: 'packages/shared-contracts/generated/ai-security/0.3.0/portable-contract.v1.jcs.json.sha256',
     bytes: 72,
-    sha256: 'sha256:bb1949874d3da79c204c4e76dc8abd08a0a29753a773b79c02642dc80c49d5dc',
+    sha256: 'sha256:d82272a06fb5918fcd6423fadd5bc14fb59a9ce7f96f9dbebe006ba6c5a3bfda',
   },
 });
 
 const APPROVED_INPUTS = deepFreeze({
   canonical: {
     repository: 'Workspace',
-    commit: '4eefa8cee1633b0062584a886f8e564dbe99719a',
-    tree: '8dc90d72c8dcba747ab8cb92f675ac5c4f7a290b',
+    commit: '781685f69bc7760df732612030b7e25af6223ff3',
+    tree: '106cab4a9a35dab5b9f2a1230aff86de2980bfc6',
   },
   priorCanonical: {
     repository: 'Workspace',
@@ -953,46 +953,46 @@ const APPROVED_INPUTS = deepFreeze({
   consumers: {
     backend: {
       repository: 'Backend',
-      commit: '2d499ad2736da2dfa3a8115ccb2f7baf26080c3e',
-      tree: '4476b89decf68e9b18b362bfa8d5be44842245c6',
+      commit: '911202ec24f13bfa30200504e02dfc6898197001',
+      tree: 'c509a87cd190883bf7e6aa6fb811d5c148abc30d',
       profile: 'BACKEND_C03_V1',
       pin: {
         path: 'packages/shared-contracts/ai-security-consumer-pin.v1.json',
-        bytes: 3_198,
-        sha256: 'sha256:31bd248bfdda18e3e37b9af3c6969ad89689c8a17922adf558674ceb6cff24cf',
+        bytes: 3_199,
+        sha256: 'sha256:e039a06284096608e8642a540aa21f47f2cedb950e9f86286f64b81e7449614c',
       },
     },
     installer: {
       repository: 'Installers',
-      commit: '6115f9491de02400a2ec477c56bfa5210b2035e7',
-      tree: '4510c629b118fdd76d069fae849cf47181809b51',
+      commit: 'd971db653e62ed111941912f73d7f6db59b5d3d9',
+      tree: '3a09ac7567b3ad222b174e6a689e4e3334d12494',
       profile: 'INSTALLER_C04_V1',
       pin: {
         path: 'internal/aipolicycontract/consumer-pin.v1.json',
-        bytes: 1_076,
-        sha256: 'sha256:95868f60105999cce0cd67687258b0b3c7a69cf9c23055e9247d0d3286796003',
+        bytes: 1_077,
+        sha256: 'sha256:a6973676c551e7b09b1ebebd06e4b5370970ae8baa3f8eb54ed81d3a9fc28c13',
       },
     },
     browser: {
       repository: 'Installers/browser-extension',
-      commit: '22e8869659e6c7dae2af9f9eb9ef87a54a82c461',
-      tree: 'fd0416434f6b0cfe1ecb2c7daa83563d76d80160',
+      commit: 'd971db653e62ed111941912f73d7f6db59b5d3d9',
+      tree: '3a09ac7567b3ad222b174e6a689e4e3334d12494',
       profile: 'BROWSER_C05_V1',
       pin: {
         path: 'browser-extension/ai-security-browser-consumer-pin.v1.json',
-        bytes: 2_122,
-        sha256: 'sha256:397a61ab760988b8c04213e683d5a6ddfb4e14dabb722b9bd1b692c53291d8df',
+        bytes: 2_123,
+        sha256: 'sha256:909fc218efdf7c3431bcae206f78f779d74ccf2e83574e9675e2794f6bdac52a',
       },
     },
     frontend: {
       repository: 'Frontend',
-      commit: 'b78460df7134d0d4f70915006242473b16e8ac82',
-      tree: 'b0488302be097af466f599d8608f7fa43b425ac5',
+      commit: 'a6ae5dcd4ead53c22f8b1e2a103a89ff54ceb844',
+      tree: '819c6029b0f6a8d023eec14393048dbbbf8dc036',
       profile: 'FRONTEND_C06_V1',
       pin: {
         path: 'ai-security-frontend-consumer-pin.v1.json',
-        bytes: 1_673,
-        sha256: 'sha256:6b75af97e01935049bbba3b511cc56cb68372b1b9db6776e19d26b53233a3635',
+        bytes: 1_674,
+        sha256: 'sha256:81a0c2124a90ae1fc8236c6fa545506a0395e0874c63cebf1910a1e0fa9d4696',
       },
     },
   },
@@ -1100,7 +1100,7 @@ function validateIntegrationManifest(manifest) {
     name: '@ceragon/shared-contracts',
     version: '0.3.0',
     generatorName: 'ceragon-ai-security-artifact',
-    generatorVersion: '1.0.0',
+    generatorVersion: '1.2.0',
     policySchemaVersion: 1,
   });
   for (const key of ['artifact', 'releaseManifest', 'digestSidecar']) {
@@ -1644,21 +1644,21 @@ const REVIEWED_SEMANTIC_DRIVER_DESCRIPTORS = deepFreeze({
   backend: {
     path: 'scripts/c07-drivers/backend-semantic-driver.cjs',
     bytes: 18_623,
-    sha256: 'sha256:07ad7574c074e99e245f0d77740d613db441b8c6cf10a2ba51234dd2c07025fe',
+    sha256: 'sha256:8b9c7241a0826ffb3714f35906df6fa2a8523f5ae5c6cb79cc106a0588bd63d3',
     driverId: 'C07_BACKEND_SEMANTIC_V1',
     containerPath: '/c07/backend-semantic-driver.cjs',
   },
   browser: {
     path: 'scripts/c07-drivers/browser-semantic-driver.mjs',
     bytes: 18_806,
-    sha256: 'sha256:0770a0bfea74f8f893773abd0ae14046a022fa798a9de48202ecc13375384983',
+    sha256: 'sha256:89a251f46d0cc98d4c0bd287016ee41d3d64562c445099e910af02c6747b4f9e',
     driverId: 'C07_BROWSER_SEMANTIC_V1',
     containerPath: '/c07/browser-semantic-driver.mjs',
   },
   installer: {
     path: 'scripts/c07-drivers/installer-semantic-driver/main.go',
     bytes: 21_060,
-    sha256: 'sha256:68222ae8bef94a28938a3caa7be70929fdafd367ce89777ebe7b4e4eb2e19e30',
+    sha256: 'sha256:2cdbf7f0199497fedbf649e7fd90b59f6ac0f0c1ffadc233c4e9948aef11ab2b',
     driverId: 'C07_INSTALLER_SEMANTIC_V1',
     contextPath: 'c07/installer-semantic-driver.go',
     containerPath: '/workspace/cmd/c07semanticdriver/main.go',
@@ -1666,7 +1666,7 @@ const REVIEWED_SEMANTIC_DRIVER_DESCRIPTORS = deepFreeze({
   frontend: {
     path: 'scripts/c07-drivers/frontend-semantic-driver.test.cjs',
     bytes: 24_261,
-    sha256: 'sha256:a2abaf956471e1afde046226b55c893cc8b1cc82b2a7ec6909cf9fc573d71241',
+    sha256: 'sha256:4501b61652f94330a0fc821c238cbf672806de51d2c55b38133a3c8eeff70bb5',
     driverId: 'C07_FRONTEND_SEMANTIC_V1',
     containerPath: '/c07/frontend-semantic-driver.test.cjs',
   },
@@ -3785,7 +3785,7 @@ function verifyPinnedConsumer(root, manifestEntry, consumerKey) {
   assert.equal(pin.policySchemaVersion, 1, `${consumerKey} policy schema version mismatch`);
   assert.deepStrictEqual(pin.canonicalGenerator, {
     name: 'ceragon-ai-security-artifact',
-    version: '1.0.0',
+    version: '1.2.0',
   });
   assert.equal(pin.requiredIntegrationGate, 'P0-C07', `${consumerKey} integration gate mismatch`);
   assert.equal(pin.runtimeActivatable, false, `${consumerKey} runtimeActivatable must remain false`);
@@ -4808,15 +4808,15 @@ function serializeContentFreeEvidence(evidence) {
 const INTEGRATION_SCHEMA_DESCRIPTOR = deepFreeze({
   path: 'schemas/ai-security-integration-input-manifest-v1.schema.json',
   bytes: 6_047,
-  sha256: 'sha256:2786ea9729013832e1506c904ef2ff7b92264eae08e15c59eba11a71f17f5376',
+  sha256: 'sha256:57d2bde7cce294c1f8c67d508b8e660f2c416f5b3b5ee3b827372fec8d46b831',
 });
 
 // This exact accepted manifest is the only promotable C07 input. Caller-supplied
 // paths and the retained pending negative fixture cannot enter reviewed execution.
 const REVIEWED_FINAL_MANIFEST_DESCRIPTOR = deepFreeze({
   path: 'fixtures/ai-security-integration-input-manifest-v1.accepted.json',
-  bytes: 3_823,
-  sha256: 'sha256:ae06b5e163e46f1fc41d2a4d9e1dbdffed5aaafcf693f489c205ac023503e419',
+  bytes: 3_824,
+  sha256: 'sha256:cc5b4903dc2432b4ab891c9e94bdb2a86a076b18223714dc8ea3701e53a77dd8',
 });
 
 function verifyCanonicalSource(root, canonical) {
