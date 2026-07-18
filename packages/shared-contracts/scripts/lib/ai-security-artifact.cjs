@@ -39,7 +39,7 @@ const REVIEWED_SOURCE_DIGESTS = Object.freeze({
   'schemas/ai-security-portable-artifact-v1.schema.json':
     'sha256:ba2798a62b903c477b5e3b464b907ad2dd3c9cc2a13ae283e18c39bdbdaf4f17',
   'schemas/ai-security-portable-release-manifest-v1.schema.json':
-    'sha256:bce7fb3cfb4d78f25d5a5fa8e09283cb664d35a07722168400ee7ef8ad16c871',
+    'sha256:73b68e434fa19720ddef865143452280b30c6edcd2e587a578f0ac1ed50b6800',
   'schemas/ai-security-policy-v1.defs.schema.json':
     'sha256:b111a9bde263b06714eba61ed7b0928a198fece15b949f58b5828acd17d593ec',
   'schemas/ai-security-policy-v1.strict-write.schema.json':
