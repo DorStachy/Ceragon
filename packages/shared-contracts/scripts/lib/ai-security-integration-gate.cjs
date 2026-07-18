@@ -2577,8 +2577,23 @@ function validateContainedContainerInspection(inspected, expected, label, option
   assert.equal(Array.isArray(inspected.mounts), true, `${label} Mounts must be an array`);
   assert.deepStrictEqual(inspected.mounts, [], `${label} must not have any mounts`);
   const config = inspected.config;
+  const boundedConfig = { ...config };
+  if (Object.hasOwn(boundedConfig, 'ExposedPorts')) {
+    // Optional, inert, image-inherited port declarations only. Networking
+    // itself stays impossible: NetworkMode none, PublishAllPorts false, empty
+    // PortBindings, and zero network endpoints are all asserted below.
+    if (boundedConfig.ExposedPorts !== null) {
+      assertRecord(boundedConfig.ExposedPorts, label + ' Config.ExposedPorts');
+      for (const [portKey, portValue] of Object.entries(boundedConfig.ExposedPorts)) {
+        assert.match(portKey, /^\d{1,5}\/(tcp|udp|sctp)$/, label + ' exposed-port key is invalid');
+        assertRecord(portValue, label + ' exposed-port value');
+        assert.equal(Object.keys(portValue).length, 0, label + ' exposed-port value must be empty');
+      }
+    }
+    delete boundedConfig.ExposedPorts;
+  }
   assertExactKeys(
-    config,
+    boundedConfig,
     [
       'Hostname',
       'Domainname',
