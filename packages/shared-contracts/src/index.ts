@@ -32,3 +32,4 @@ export * from './runtime-adapter-contract';
 export * from './ai-security-policy-v1-contract';
 export * from './ai-security-portable-contract';
 export * from './ai-enforcement-contract';
+export * from './ai-failure-oracle-contract';

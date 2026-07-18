@@ -15,9 +15,9 @@ const DIGEST_FILE = `${ARTIFACT_FILE}.sha256`;
 const RELEASE_FILE = 'portable-contract-release.v1.jcs.json';
 const EXPECTED_FILES = Object.freeze([RELEASE_FILE, ARTIFACT_FILE, DIGEST_FILE].sort());
 const EXPECTED_TUPLE_SYMBOLS_DIGEST =
-  'sha256:867c91f2d844142916bb20203a6a1316045c03a3338fed01da85044eb1a5328e';
+  'sha256:24aa6b53a3d1552bb446510ed7ce4fe37f70ea0ef102a5630e86c35cd2de62bd';
 const EXPECTED_PORTABLE_ARTIFACT_DIGEST =
-  'sha256:1bb9aed7553750f0161dadaba531583101d34eef2b35110e326d4d4a20153826';
+  'sha256:04f93e98f030375539de7f7bb8249902f38dd9ff5ebb6103b60534df3f5f82a0';
 const EXPECTED_SOURCE_PATHS = Object.freeze({
   definitionsSchema: 'schemas/ai-security-policy-v1.defs.schema.json',
   strictWriteSchema: 'schemas/ai-security-policy-v1.strict-write.schema.json',
@@ -26,16 +26,20 @@ const EXPECTED_SOURCE_PATHS = Object.freeze({
   jcsConformanceVectors: 'vectors/rfc8785-conformance.v1.json',
   strictJsonRejectionVectors: 'vectors/rfc8785-rejections.v1.json',
   authorityFixture: 'fixtures/ai-security-policy-v1-authority.json',
+  obligationSchema: 'schemas/ai-security-obligation-contract-v1.schema.json',
+  obligationCatalog: 'fixtures/ai-security-obligation-contract.v1.json',
+  failureOracleSchema: 'schemas/ai-security-failure-oracle-v1.schema.json',
+  failureOracleCatalog: 'fixtures/ai-security-failure-oracle.v1.json',
 });
 const REVIEWED_SOURCE_DIGESTS = Object.freeze({
   'manifests/ai-security-portable-release.v1.json':
-    'sha256:c51a5db74f69674972b18e041a51f7c54dc4a6c427d536c1ba89862363a4d108',
+    'sha256:7bad153e0d4c5f67d1598d59a92023516a75f8eda2d27592dd48539f2f6eee0e',
   'schemas/ai-security-portable-source-manifest-v1.schema.json':
-    'sha256:295c35cdb931e4742024b1560d81f0cf508504303155fcb1e3416464ac91e8d0',
+    'sha256:33008d29c2deee39c2214675274dbf33f448dc7766f27677b2508873ba4c6836',
   'schemas/ai-security-portable-artifact-v1.schema.json':
-    'sha256:23b92d829672535604e2c5e52f271366159960dcc76f964fc862698ddb80fadf',
+    'sha256:ba2798a62b903c477b5e3b464b907ad2dd3c9cc2a13ae283e18c39bdbdaf4f17',
   'schemas/ai-security-portable-release-manifest-v1.schema.json':
-    'sha256:402f06380274d1c16a941d135aaad8bcb8e403e720f0860b758a4c2489f889e5',
+    'sha256:bce7fb3cfb4d78f25d5a5fa8e09283cb664d35a07722168400ee7ef8ad16c871',
   'schemas/ai-security-policy-v1.defs.schema.json':
     'sha256:b111a9bde263b06714eba61ed7b0928a198fece15b949f58b5828acd17d593ec',
   'schemas/ai-security-policy-v1.strict-write.schema.json':
@@ -50,6 +54,14 @@ const REVIEWED_SOURCE_DIGESTS = Object.freeze({
     'sha256:95f35aa37efb36684fabbec794c73146053b84c5500b2df9e3be5cf79a8e1346',
   'fixtures/ai-security-policy-v1-authority.json':
     'sha256:18ff07ab942a5ff4b816254cab6585ce9cf288e096dbcdafa3f3a0f4352b2e16',
+  'schemas/ai-security-obligation-contract-v1.schema.json':
+    'sha256:a80c1f8902a9384089fe62944049b29ba2aad43045ef15a7ac20431103cbe0ed',
+  'schemas/ai-security-failure-oracle-v1.schema.json':
+    'sha256:1109b8dfdc98d15e1ff304da8a75a27fbd456f64af9bf3dfa80028585c92d58d',
+  'fixtures/ai-security-obligation-contract.v1.json':
+    'sha256:fa4adf030d3ad700c8e7738cf7a583bf33605de9b906f792189f48733b8e86e9',
+  'fixtures/ai-security-failure-oracle.v1.json':
+    'sha256:4f40822e1de7e3137c59b2e4a321f14560ef7e2f73eb26b23c64b9d3eab44493',
 });
 const EXPECTED_MANIFEST_SCALARS = Object.freeze({
   format: 'ceragon.ai-security.portable-source',
@@ -57,7 +69,7 @@ const EXPECTED_MANIFEST_SCALARS = Object.freeze({
   packageName: '@ceragon/shared-contracts',
   packageVersion: '0.3.0',
   generatorName: 'ceragon-ai-security-artifact',
-  generatorVersion: '1.1.0',
+  generatorVersion: '1.2.0',
   runtimeActivatable: false,
   signedRuntimePolicyBundle: false,
   v2WriterEligible: false,
@@ -303,7 +315,7 @@ function buildPortableArtifact(packageRoot) {
     'compiled contract module',
   ));
   const tupleSymbols = sourceManifest.orderedTupleSymbols;
-  assertCondition(Array.isArray(tupleSymbols) && tupleSymbols.length === 41, 'portable tuple manifest must contain exactly 41 symbols');
+  assertCondition(Array.isArray(tupleSymbols) && tupleSymbols.length === 54, 'portable tuple manifest must contain exactly 54 symbols');
   assertCondition(new Set(tupleSymbols).size === tupleSymbols.length, 'portable tuple manifest has duplicate symbols');
   assertCondition(
     sha256Digest(Buffer.from(JSON.stringify(tupleSymbols), 'utf8')) === EXPECTED_TUPLE_SYMBOLS_DIGEST,
@@ -320,7 +332,14 @@ function buildPortableArtifact(packageRoot) {
       symbol === 'AI_TRANSLATION_DISPOSITIONS' ||
       symbol === 'AI_SECURITY_OUTCOMES' ||
       symbol === 'AI_RECEIPT_ASSURANCE' ||
-      symbol === 'AI_ACTUAL_EFFECT_OBSERVERS'
+      symbol === 'AI_ACTUAL_EFFECT_OBSERVERS' ||
+      symbol.startsWith('AI_OBLIGATION_') ||
+      symbol === 'AI_PRIMARY_STATES' ||
+      symbol === 'AI_INSPECTION_STATUSES' ||
+      symbol === 'AI_NOTIFY_AUDIENCES' ||
+      symbol === 'AI_TRUSTED_CONFIRMATION_SURFACES' ||
+      symbol === 'AI_QUARANTINE_UNTIL_STATES' ||
+      symbol.startsWith('AI_FAILURE_ORACLE_')
     ) {
       assertCondition(Object.isFrozen(tuple), `new ordered tuple ${symbol} must be runtime-frozen`);
     }
@@ -340,6 +359,32 @@ function buildPortableArtifact(packageRoot) {
     sourceManifest.sources.strictJsonRejectionVectors,
   );
   const authorityProof = readReviewedStrictJson(packageRoot, sourceManifest.sources.authorityFixture);
+  const obligationSchema = readReviewedStrictJson(
+    packageRoot,
+    sourceManifest.sources.obligationSchema,
+  );
+  const obligationCatalog = readReviewedStrictJson(
+    packageRoot,
+    sourceManifest.sources.obligationCatalog,
+  );
+  const failureOracleSchema = readReviewedStrictJson(
+    packageRoot,
+    sourceManifest.sources.failureOracleSchema,
+  );
+  const failureOracleCatalog = readReviewedStrictJson(
+    packageRoot,
+    sourceManifest.sources.failureOracleCatalog,
+  );
+  validateOrThrow(
+    compileSchema(obligationSchema, 'P0-O01 obligation schema'),
+    obligationCatalog,
+    'P0-O01 obligation catalog',
+  );
+  validateOrThrow(
+    compileSchema(failureOracleSchema, 'P0-F01 failure-oracle schema'),
+    failureOracleCatalog,
+    'P0-F01 failure-oracle catalog',
+  );
   assertReviewedVectorShapes(schemaCases, jcsConformanceVectors, strictJsonRejectionVectors);
   compileSchema(strictWriteSchema, 'strict-write policy schema', [definitionsSchema]);
   compileSchema(tolerantReadSchema, 'tolerant-read policy schema', [definitionsSchema]);
@@ -363,6 +408,14 @@ function buildPortableArtifact(packageRoot) {
     },
     runtimeActivatable: contracts.AI_SECURITY_PORTABLE_RUNTIME_ACTIVATABLE,
     signedRuntimePolicyBundle: false,
+    v2Obligations: {
+      schema: obligationSchema,
+      catalog: obligationCatalog,
+    },
+    failureOracle: {
+      schema: failureOracleSchema,
+      catalog: failureOracleCatalog,
+    },
     requiredIntegrationGate: contracts.AI_SECURITY_PORTABLE_REQUIRED_INTEGRATION_GATE,
     deferredContractSections: { ...contracts.AI_SECURITY_DEFERRED_CONTRACT_SECTIONS },
     canonicalization: {

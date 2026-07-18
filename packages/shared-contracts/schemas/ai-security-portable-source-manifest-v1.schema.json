@@ -25,7 +25,7 @@
     "packageName": { "const": "@ceragon/shared-contracts" },
     "packageVersion": { "const": "0.3.0" },
     "generatorName": { "const": "ceragon-ai-security-artifact" },
-    "generatorVersion": { "const": "1.1.0" },
+    "generatorVersion": { "const": "1.2.0" },
     "authority": {
       "type": "object",
       "additionalProperties": false,
@@ -39,8 +39,8 @@
     },
     "orderedTupleSymbols": {
       "type": "array",
-      "minItems": 41,
-      "maxItems": 41,
+      "minItems": 54,
+      "maxItems": 54,
       "uniqueItems": true,
       "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]+$" }
     },
@@ -54,7 +54,11 @@
         "schemaCases",
         "jcsConformanceVectors",
         "strictJsonRejectionVectors",
-        "authorityFixture"
+        "authorityFixture",
+        "obligationSchema",
+        "obligationCatalog",
+        "failureOracleSchema",
+        "failureOracleCatalog"
       ],
       "properties": {
         "definitionsSchema": { "const": "schemas/ai-security-policy-v1.defs.schema.json" },
@@ -63,7 +67,11 @@
         "schemaCases": { "const": "vectors/ai-security-policy-v1-schema-cases.json" },
         "jcsConformanceVectors": { "const": "vectors/rfc8785-conformance.v1.json" },
         "strictJsonRejectionVectors": { "const": "vectors/rfc8785-rejections.v1.json" },
-        "authorityFixture": { "const": "fixtures/ai-security-policy-v1-authority.json" }
+        "authorityFixture": { "const": "fixtures/ai-security-policy-v1-authority.json" },
+        "obligationSchema": { "const": "schemas/ai-security-obligation-contract-v1.schema.json" },
+        "obligationCatalog": { "const": "fixtures/ai-security-obligation-contract.v1.json" },
+        "failureOracleSchema": { "const": "schemas/ai-security-failure-oracle-v1.schema.json" },
+        "failureOracleCatalog": { "const": "fixtures/ai-security-failure-oracle.v1.json" }
       }
     },
     "runtimeActivatable": { "const": false },

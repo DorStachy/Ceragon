@@ -515,6 +515,30 @@ try {
     );
   }
   assert.deepEqual(
+    artifact.v2Obligations.schema,
+    parseStrictJsonBytes(
+      fs.readFileSync(path.join(packageRoot, sourceManifest.sources.obligationSchema)),
+    ),
+  );
+  assert.deepEqual(
+    artifact.v2Obligations.catalog,
+    parseStrictJsonBytes(
+      fs.readFileSync(path.join(packageRoot, sourceManifest.sources.obligationCatalog)),
+    ),
+  );
+  assert.deepEqual(
+    artifact.failureOracle.schema,
+    parseStrictJsonBytes(
+      fs.readFileSync(path.join(packageRoot, sourceManifest.sources.failureOracleSchema)),
+    ),
+  );
+  assert.deepEqual(
+    artifact.failureOracle.catalog,
+    parseStrictJsonBytes(
+      fs.readFileSync(path.join(packageRoot, sourceManifest.sources.failureOracleCatalog)),
+    ),
+  );
+  assert.deepEqual(
     [...Object.keys(artifact.v1Policy.orderedTuples)].sort(),
     [...sourceManifest.orderedTupleSymbols].sort(),
   );
@@ -546,9 +570,7 @@ try {
   assert.equal(artifact.signedRuntimePolicyBundle, false);
   assert.equal(artifact.requiredIntegrationGate, 'P0-C07');
   assert.equal(Object.hasOwn(artifact.deferredContractSections, 'fourAxisRuntimeTruth'), false);
-  assert.equal(artifact.deferredContractSections.obligationUnion, 'P0-O01');
-  assert.equal(artifact.deferredContractSections.failureOracle, 'P0-F01');
-  assert.equal(artifact.deferredContractSections.signingAndTrust, 'P0-S01');
+  assert.deepEqual(artifact.deferredContractSections, { signingAndTrust: 'P0-S01' });
   assert.equal(release.artifactDigest, expectedDigest);
   assert.equal(release.artifactBytes, artifactBytes.length);
   assert.equal(release.runtimeActivatable, false);

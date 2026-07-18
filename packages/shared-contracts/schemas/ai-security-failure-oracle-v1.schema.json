@@ -1,0 +1,191 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.ceragon.ai/ai-security/failure-oracle-v1.schema.json",
+  "title": "Ceragon AI security P0-F01 failure oracle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "formatVersion",
+    "authority",
+    "surfaceCheckpoints",
+    "orderedTuples",
+    "invariants",
+    "rows"
+  ],
+  "properties": {
+    "format": { "const": "ceragon.ai-security.failure-oracle" },
+    "formatVersion": { "const": 1 },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decisionId",
+        "approvalEventSha256",
+        "approvalRecordedAt",
+        "representedAuthorities",
+        "basis",
+        "restoration"
+      ],
+      "properties": {
+        "decisionId": { "const": "G-FAIL-ORACLE" },
+        "approvalEventSha256": { "const": "sha256:2762f5819ed206d24abf435f4218cba4d05cfe8d458236598606a4d480c44eab" },
+        "approvalRecordedAt": { "const": "2026-07-16T10:20:06Z" },
+        "representedAuthorities": { "const": ["Product/Architecture", "Security/CISO", "Product", "Privacy"] },
+        "basis": { "const": "BLUEPRINT_IR0_12_APPROVED_WRITTEN_RULE" },
+        "restoration": { "const": "P0_G02_RECORD_RESTORED_FROM_APPROVED_WRITTEN_RULE" }
+      }
+    },
+    "surfaceCheckpoints": {
+      "const": {
+        "RUNTIME_ADAPTER": ["PRE_PROMPT", "PRE_TOOL", "POST_TOOL"],
+        "LOCAL_PROXY": ["PRE_UPSTREAM_DISPATCH", "POST_UPSTREAM_RESPONSE"],
+        "BROWSER_COMPOSER": ["PRE_SUBMIT", "POST_SUBMIT"],
+        "BROWSER_UPLOAD": ["PRE_UPLOAD_DISPATCH", "POST_UPLOAD_DISPATCH"]
+      }
+    },
+    "orderedTuples": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["surfaces", "checkpoints", "failures", "impacts", "outcomes", "recoveryActions"],
+      "properties": {
+        "surfaces": { "const": ["RUNTIME_ADAPTER", "LOCAL_PROXY", "BROWSER_COMPOSER", "BROWSER_UPLOAD"] },
+        "checkpoints": { "const": ["PRE_PROMPT", "PRE_TOOL", "POST_TOOL", "PRE_UPSTREAM_DISPATCH", "POST_UPSTREAM_RESPONSE", "PRE_SUBMIT", "POST_SUBMIT", "PRE_UPLOAD_DISPATCH", "POST_UPLOAD_DISPATCH"] },
+        "failures": { "const": ["POLICY_UNAVAILABLE", "POLICY_INVALID", "POLICY_EXPIRED", "PARTIAL", "UNSUPPORTED", "BUDGET_EXCEEDED", "PARSER_FAILED", "ENCRYPTED", "TIMED_OUT", "EFFECT_EXTRACTION_INCOMPLETE", "UNSUPPORTED_EFFECT", "TRANSLATION_FAILED", "RUNTIME_ACK_MISSING", "INTERVENTION_UNAVAILABLE"] },
+        "impacts": { "const": ["LOW_IMPACT", "SENSITIVE_DATA", "ACTIVE_SECRET", "FORBIDDEN_DESTINATION", "DESTRUCTIVE_OR_PRIVILEGED", "APPROVAL_REQUIRED", "TRUST_INTEGRITY"] },
+        "outcomes": { "const": ["PROCEED_OBSERVED_ONLY", "RESTRICT_CAPABILITY", "REQUIRE_CONFIRMATION", "HOLD", "DENY"] },
+        "recoveryActions": { "const": ["RETRY_AFTER_PROTECTION_RESTORED", "RESTORE_TRUSTED_POLICY", "USE_TRUSTED_CONFIRMATION", "REQUEST_DELEGATED_APPROVAL", "REMOVE_ACTIVE_SECRET", "CHANGE_FORBIDDEN_DESTINATION", "REDUCE_CAPABILITY_AND_RETRY", "USE_SUPPORTED_SURFACE", "START_NEW_PROPOSAL"] }
+      }
+    },
+    "invariants": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unknownOrUnsupportedMayRankAllow",
+        "lowImpactFailOpenRequiresExplicitPolicy",
+        "hardImpactPreOutcomes",
+        "postCheckpointOutcomes",
+        "postCheckpointMayClaimRetroactivePrevention",
+        "runtimeAckMissing"
+      ],
+      "properties": {
+        "unknownOrUnsupportedMayRankAllow": { "const": false },
+        "lowImpactFailOpenRequiresExplicitPolicy": { "const": true },
+        "hardImpactPreOutcomes": { "const": ["HOLD", "DENY"] },
+        "postCheckpointOutcomes": { "const": ["PROCEED_OBSERVED_ONLY", "RESTRICT_CAPABILITY"] },
+        "postCheckpointMayClaimRetroactivePrevention": { "const": false },
+        "runtimeAckMissing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requestedEffect",
+            "adapterExpressedEffect",
+            "translationDisposition",
+            "observedActualEffect",
+            "actualEffectObserver",
+            "securityOutcome"
+          ],
+          "properties": {
+            "requestedEffect": { "const": "PRESERVE_DECISION_REQUEST" },
+            "adapterExpressedEffect": { "const": "PRESERVE_VALID_ADAPTER_OUTPUT_OR_NULL" },
+            "translationDisposition": { "const": "PRESERVE_EMITTER_TRANSLATION_FACT" },
+            "observedActualEffect": { "type": "null" },
+            "actualEffectObserver": { "const": "NONE" },
+            "securityOutcome": { "const": "UNKNOWN" }
+          }
+        }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 882,
+      "maxItems": 882,
+      "uniqueItems": true,
+      "items": { "$ref": "#/definitions/row" }
+    }
+  },
+  "definitions": {
+    "surface": { "enum": ["RUNTIME_ADAPTER", "LOCAL_PROXY", "BROWSER_COMPOSER", "BROWSER_UPLOAD"] },
+    "checkpoint": { "enum": ["PRE_PROMPT", "PRE_TOOL", "POST_TOOL", "PRE_UPSTREAM_DISPATCH", "POST_UPSTREAM_RESPONSE", "PRE_SUBMIT", "POST_SUBMIT", "PRE_UPLOAD_DISPATCH", "POST_UPLOAD_DISPATCH"] },
+    "failure": { "enum": ["POLICY_UNAVAILABLE", "POLICY_INVALID", "POLICY_EXPIRED", "PARTIAL", "UNSUPPORTED", "BUDGET_EXCEEDED", "PARSER_FAILED", "ENCRYPTED", "TIMED_OUT", "EFFECT_EXTRACTION_INCOMPLETE", "UNSUPPORTED_EFFECT", "TRANSLATION_FAILED", "RUNTIME_ACK_MISSING", "INTERVENTION_UNAVAILABLE"] },
+    "impact": { "enum": ["LOW_IMPACT", "SENSITIVE_DATA", "ACTIVE_SECRET", "FORBIDDEN_DESTINATION", "DESTRUCTIVE_OR_PRIVILEGED", "APPROVAL_REQUIRED", "TRUST_INTEGRITY"] },
+    "outcome": { "enum": ["PROCEED_OBSERVED_ONLY", "RESTRICT_CAPABILITY", "REQUIRE_CONFIRMATION", "HOLD", "DENY"] },
+    "primaryState": { "enum": ["SCANNING", "CONTINUED_SAFELY", "SANITIZED_AND_CONTINUED", "CONTINUED_WITH_RESTRICTION", "NEEDS_CONFIRMATION", "APPROVAL_REQUESTED", "BLOCKED_BEFORE_EFFECT", "PROTECTION_DEGRADED"] },
+    "requestedEffect": { "enum": ["deny-prompt", "deny-tool", "rewrite-input", "replace-output", "stop-continuation", "audit-only", "none", "add-developer-context", "deny-escalation", "allow-escalation", "replace-tool-result-with-feedback-and-continue", "restrict-capability"] },
+    "recoveryAction": { "enum": ["RETRY_AFTER_PROTECTION_RESTORED", "RESTORE_TRUSTED_POLICY", "USE_TRUSTED_CONFIRMATION", "REQUEST_DELEGATED_APPROVAL", "REMOVE_ACTIVE_SECRET", "CHANGE_FORBIDDEN_DESTINATION", "REDUCE_CAPABILITY_AND_RETRY", "USE_SUPPORTED_SURFACE", "START_NEW_PROPOSAL"] },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "surface",
+        "checkpoint",
+        "failure",
+        "impact",
+        "outcome",
+        "primaryState",
+        "requestedEffect",
+        "copyKey",
+        "recoveryAction",
+        "policyFailOpenRequired",
+        "nonGrantable"
+      ],
+      "properties": {
+        "surface": { "$ref": "#/definitions/surface" },
+        "checkpoint": { "$ref": "#/definitions/checkpoint" },
+        "failure": { "$ref": "#/definitions/failure" },
+        "impact": { "$ref": "#/definitions/impact" },
+        "outcome": { "$ref": "#/definitions/outcome" },
+        "primaryState": { "$ref": "#/definitions/primaryState" },
+        "requestedEffect": { "$ref": "#/definitions/requestedEffect" },
+        "copyKey": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$" },
+        "recoveryAction": { "$ref": "#/definitions/recoveryAction" },
+        "policyFailOpenRequired": { "type": "boolean" },
+        "nonGrantable": { "type": "boolean" }
+      },
+      "allOf": [
+        {
+          "oneOf": [
+            { "properties": { "surface": { "const": "RUNTIME_ADAPTER" }, "checkpoint": { "enum": ["PRE_PROMPT", "PRE_TOOL", "POST_TOOL"] } } },
+            { "properties": { "surface": { "const": "LOCAL_PROXY" }, "checkpoint": { "enum": ["PRE_UPSTREAM_DISPATCH", "POST_UPSTREAM_RESPONSE"] } } },
+            { "properties": { "surface": { "const": "BROWSER_COMPOSER" }, "checkpoint": { "enum": ["PRE_SUBMIT", "POST_SUBMIT"] } } },
+            { "properties": { "surface": { "const": "BROWSER_UPLOAD" }, "checkpoint": { "enum": ["PRE_UPLOAD_DISPATCH", "POST_UPLOAD_DISPATCH"] } } }
+          ]
+        },
+        {
+          "if": { "properties": { "outcome": { "const": "PROCEED_OBSERVED_ONLY" } } },
+          "then": {
+            "properties": {
+              "impact": { "const": "LOW_IMPACT" },
+              "policyFailOpenRequired": { "const": true },
+              "nonGrantable": { "const": false }
+            }
+          },
+          "else": { "properties": { "policyFailOpenRequired": { "const": false } } }
+        },
+        {
+          "if": { "properties": { "impact": { "enum": ["ACTIVE_SECRET", "FORBIDDEN_DESTINATION", "DESTRUCTIVE_OR_PRIVILEGED", "APPROVAL_REQUIRED", "TRUST_INTEGRITY"] } } },
+          "then": { "properties": { "nonGrantable": { "const": true } } }
+        },
+        {
+          "if": { "properties": { "checkpoint": { "enum": ["POST_TOOL", "POST_UPSTREAM_RESPONSE", "POST_SUBMIT", "POST_UPLOAD_DISPATCH"] } } },
+          "then": {
+            "properties": {
+              "outcome": { "enum": ["PROCEED_OBSERVED_ONLY", "RESTRICT_CAPABILITY"] },
+              "primaryState": { "const": "PROTECTION_DEGRADED" },
+              "requestedEffect": { "enum": ["audit-only", "restrict-capability"] }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "checkpoint": { "enum": ["PRE_PROMPT", "PRE_TOOL", "PRE_UPSTREAM_DISPATCH", "PRE_SUBMIT", "PRE_UPLOAD_DISPATCH"] },
+              "impact": { "enum": ["ACTIVE_SECRET", "FORBIDDEN_DESTINATION", "DESTRUCTIVE_OR_PRIVILEGED", "APPROVAL_REQUIRED", "TRUST_INTEGRITY"] }
+            }
+          },
+          "then": { "properties": { "outcome": { "enum": ["HOLD", "DENY"] } } }
+        }
+      ]
+    }
+  }
+}

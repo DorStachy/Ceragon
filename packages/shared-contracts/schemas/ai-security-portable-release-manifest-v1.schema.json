@@ -37,7 +37,7 @@
     "sourcePackageName": { "const": "@ceragon/shared-contracts" },
     "sourcePackageVersion": { "const": "0.3.0" },
     "generatorName": { "const": "ceragon-ai-security-artifact" },
-    "generatorVersion": { "const": "1.1.0" },
+    "generatorVersion": { "const": "1.2.0" },
     "runtimeActivatable": { "const": false },
     "signedRuntimePolicyBundle": { "const": false },
     "v2WriterEligible": { "const": false },

@@ -1,0 +1,352 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.ceragon.ai/ai-security/obligation-contract-v1.schema.json",
+  "title": "Ceragon AI security P0-O01 obligation contract catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "formatVersion",
+    "protocolVersion",
+    "productionV2WriterEnabled",
+    "orderedTuples",
+    "obligationUnionCases",
+    "combiner",
+    "combinerCases",
+    "v2ToV1DownConversion",
+    "legacyWarnByCheckpoint",
+    "unsupportedMatrix"
+  ],
+  "properties": {
+    "format": { "const": "ceragon.ai-security.obligation-contract" },
+    "formatVersion": { "const": 1 },
+    "protocolVersion": { "const": "2" },
+    "productionV2WriterEnabled": { "const": false },
+    "orderedTuples": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["obligationKinds", "obligationStates", "primaryStates", "inspectionStatuses"],
+      "properties": {
+        "obligationKinds": { "const": ["AUDIT", "NOTIFY", "SANITIZE", "RESTRICT_CAPABILITY", "REQUIRE_CONFIRMATION", "REQUIRE_DELEGATED_APPROVAL", "DENY", "QUARANTINE"] },
+        "obligationStates": { "const": ["REQUIRED", "SATISFIED", "UNSATISFIED", "UNSUPPORTED", "SUPERSEDED", "FAILED"] },
+        "primaryStates": { "const": ["SCANNING", "CONTINUED_SAFELY", "SANITIZED_AND_CONTINUED", "CONTINUED_WITH_RESTRICTION", "NEEDS_CONFIRMATION", "APPROVAL_REQUESTED", "BLOCKED_BEFORE_EFFECT", "PROTECTION_DEGRADED"] },
+        "inspectionStatuses": { "const": ["COMPLETE", "PARTIAL", "UNSUPPORTED", "BUDGET_EXCEEDED", "PARSER_FAILED", "ENCRYPTED", "TIMED_OUT", "NOT_APPLICABLE"] }
+      }
+    },
+    "obligationUnionCases": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": { "$ref": "#/definitions/obligation" }
+    },
+    "combiner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phaseOrder",
+        "scopeOrder",
+        "transformOrder",
+        "hardFloorsFirst",
+        "lowerScopeMayRemove",
+        "grantDischargesOnlyListedGrantableIds",
+        "nonGrantableHardFloorClasses",
+        "incompatibleTransforms",
+        "denySupersession"
+      ],
+      "properties": {
+        "phaseOrder": { "const": ["HARD_FLOORS", "AUDIT_NOTIFY_RESTRICTION_UNION", "TRANSFORM_ACCUMULATION", "CONFIRMATION_APPROVAL_PRESERVATION", "NON_GRANTABLE_DENY"] },
+        "scopeOrder": { "const": ["org", "site", "team"] },
+        "transformOrder": { "const": ["SCOPE_ORDER", "SOURCE_RULE_ID_ASCII", "SOURCE_ORDINAL"] },
+        "hardFloorsFirst": { "const": true },
+        "lowerScopeMayRemove": { "const": false },
+        "grantDischargesOnlyListedGrantableIds": { "const": true },
+        "nonGrantableHardFloorClasses": { "const": ["IDENTITY", "AUDIENCE", "TENANT_ISOLATION", "TAMPER", "TRUST_SIGNATURE", "FORBIDDEN_DESTINATION", "POLICY_HARD_FLOOR"] },
+        "incompatibleTransforms": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["retainAll", "resultState", "resolution", "mayDrop"],
+          "properties": {
+            "retainAll": { "const": true },
+            "resultState": { "const": "UNSUPPORTED" },
+            "resolution": { "const": "FAILURE_ORACLE" },
+            "mayDrop": { "const": false }
+          }
+        },
+        "denySupersession": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["onlyImpossibleEffects", "auditAndNotifyStillExecute", "recordSupersessionEdges"],
+          "properties": {
+            "onlyImpossibleEffects": { "const": true },
+            "auditAndNotifyStillExecute": { "const": true },
+            "recordSupersessionEdges": { "const": true }
+          }
+        }
+      }
+    },
+    "combinerCases": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "inputObligationIds",
+          "grantObligationIds",
+          "expectedOrderedObligationIds",
+          "expectedUnsatisfiedObligationIds",
+          "supersessionEdges",
+          "actionResolution"
+        ],
+        "properties": {
+          "id": { "enum": ["monotonic-scope-union", "grant-listed-only", "incompatible-transform-pair", "deny-selective-supersession"] },
+          "inputObligationIds": { "$ref": "#/definitions/slugSet" },
+          "grantObligationIds": { "$ref": "#/definitions/slugSet" },
+          "expectedOrderedObligationIds": { "$ref": "#/definitions/slugSet" },
+          "expectedUnsatisfiedObligationIds": { "$ref": "#/definitions/slugSet" },
+          "supersessionEdges": {
+            "type": "array",
+            "maxItems": 32,
+            "uniqueItems": true,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["obligationId", "supersededByObligationId"],
+              "properties": {
+                "obligationId": { "$ref": "#/definitions/slug" },
+                "supersededByObligationId": { "$ref": "#/definitions/slug" }
+              }
+            }
+          },
+          "actionResolution": { "enum": ["CONTINUE", "FAILURE_ORACLE", "DENY"] }
+        }
+      }
+    },
+    "v2ToV1DownConversion": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["terminalRequirement", "v1Decision", "requiredBehavior", "mayProceedBeforeRequirement", "trustedSurfaceRequired", "onUnsupported"],
+        "properties": {
+          "terminalRequirement": { "enum": ["NON_GRANTABLE_DENY", "QUARANTINE_OR_DELEGATED_APPROVAL", "LOCAL_CONFIRMATION", "SATISFIABLE_SANITIZE", "SATISFIABLE_RESTRICTION", "AUDIT_NOTIFY_ONLY", "INSPECTION_OR_EFFECT_INCOMPLETE", "POLICY_AWAITING_AUTHORITY"] },
+          "v1Decision": { "enum": ["ALLOW", "ALLOW_FAST", "PROMPT", "HOLD", "BLOCK", "PENDING", "INCONCLUSIVE"] },
+          "requiredBehavior": { "enum": ["CERTIFIED_DENY_BEFORE_EFFECT", "HOLD_UNTIL_ORACLE_RESOLUTION", "TRUSTED_CONFIRMATION_ONLY", "TRANSFORM_PARSE_RESCAN_BEFORE_ALLOW", "RESTRICTION_PROOF_BEFORE_ALLOW", "AUDIT_NOTIFY_WITHOUT_EFFECT_CLAIM", "FAILURE_ORACLE_BEFORE_RANKING", "HOLD_PENDING_AUTHORITY"] },
+          "mayProceedBeforeRequirement": { "type": "boolean" },
+          "trustedSurfaceRequired": { "type": "boolean" },
+          "onUnsupported": { "enum": ["FAILURE_ORACLE", "NOT_APPLICABLE"] }
+        }
+      }
+    },
+    "legacyWarnByCheckpoint": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "uniqueItems": true,
+      "items": { "$ref": "#/definitions/legacyWarnRow" }
+    },
+    "unsupportedMatrix": {
+      "type": "array",
+      "minItems": 12,
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "obligationKind", "trigger", "resultState", "includeInUnsatisfiedIds", "mayDrop", "mayRankAllow", "resolution"],
+        "properties": {
+          "id": { "$ref": "#/definitions/slug" },
+          "obligationKind": { "anyOf": [{ "$ref": "#/definitions/obligationKind" }, { "type": "null" }] },
+          "trigger": { "enum": ["NO_CERTIFIED_AUDIT_SINK", "NO_CERTIFIED_NOTIFICATION_SINK", "TRANSFORM_OR_PROOF_PLAN_UNAVAILABLE", "RESTRICTION_HANDLER_OR_PROOF_PLAN_UNAVAILABLE", "TRUSTED_CONFIRMATION_SURFACE_UNAVAILABLE", "DELEGATED_APPROVAL_AUTHORITY_UNAVAILABLE", "DENY_EFFECT_UNAVAILABLE", "QUARANTINE_OR_ZERO_RELEASE_UNAVAILABLE", "TRANSFORM_COMPOSITION_CONFLICT", "UNKNOWN_V2_TOKEN", "CODEX_PRE_TOOL_WARN_OR_HOLD_UNSUPPORTED", "POST_CHECKPOINT_RETROACTIVE_PREVENTION_CLAIM"] },
+          "resultState": { "const": "UNSUPPORTED" },
+          "includeInUnsatisfiedIds": { "const": true },
+          "mayDrop": { "const": false },
+          "mayRankAllow": { "const": false },
+          "resolution": { "const": "FAILURE_ORACLE" }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "slug": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._:-]{0,127}$" },
+    "copyKey": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$" },
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "hmac": { "type": "string", "pattern": "^hmac-sha256:v[1-9][0-9]{0,4}:[a-z0-9][a-z0-9._:-]{0,127}:[0-9a-f]{64}$" },
+    "slugSet": {
+      "type": "array",
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": { "$ref": "#/definitions/slug" }
+    },
+    "smallSlugSet": {
+      "type": "array",
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": { "$ref": "#/definitions/slug" }
+    },
+    "hmacSet": {
+      "type": "array",
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": { "$ref": "#/definitions/hmac" }
+    },
+    "obligationKind": { "enum": ["AUDIT", "NOTIFY", "SANITIZE", "RESTRICT_CAPABILITY", "REQUIRE_CONFIRMATION", "REQUIRE_DELEGATED_APPROVAL", "DENY", "QUARANTINE"] },
+    "scopeRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id"],
+      "properties": {
+        "type": { "enum": ["org", "site", "team"] },
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 }
+      }
+    },
+    "obligation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["obligationId", "kind", "sourceRuleId", "sourceScope", "grantable", "hardFloor", "reasonCode", "parameters", "parametersDigest"],
+      "properties": {
+        "obligationId": { "$ref": "#/definitions/slug" },
+        "kind": { "$ref": "#/definitions/obligationKind" },
+        "sourceRuleId": { "$ref": "#/definitions/slug" },
+        "sourceScope": { "$ref": "#/definitions/scopeRef" },
+        "grantable": { "type": "boolean" },
+        "hardFloor": { "type": "boolean" },
+        "reasonCode": { "$ref": "#/definitions/slug" },
+        "parameters": { "type": "object" },
+        "parametersDigest": { "$ref": "#/definitions/digest" }
+      },
+      "oneOf": [
+        { "properties": { "kind": { "const": "AUDIT" }, "parameters": { "$ref": "#/definitions/auditParameters" } } },
+        { "properties": { "kind": { "const": "NOTIFY" }, "parameters": { "$ref": "#/definitions/notifyParameters" } } },
+        { "properties": { "kind": { "const": "SANITIZE" }, "parameters": { "$ref": "#/definitions/sanitizeParameters" } } },
+        { "properties": { "kind": { "const": "RESTRICT_CAPABILITY" }, "parameters": { "$ref": "#/definitions/restrictParameters" } } },
+        { "properties": { "kind": { "const": "REQUIRE_CONFIRMATION" }, "parameters": { "$ref": "#/definitions/confirmationParameters" } } },
+        { "properties": { "kind": { "const": "REQUIRE_DELEGATED_APPROVAL" }, "parameters": { "$ref": "#/definitions/approvalParameters" } } },
+        { "properties": { "kind": { "const": "DENY" }, "parameters": { "$ref": "#/definitions/denyParameters" } } },
+        { "properties": { "kind": { "const": "QUARANTINE" }, "parameters": { "$ref": "#/definitions/quarantineParameters" } } }
+      ]
+    },
+    "auditParameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eventClass", "retentionClass"],
+      "properties": {
+        "eventClass": { "$ref": "#/definitions/slug" },
+        "retentionClass": { "$ref": "#/definitions/slug" }
+      }
+    },
+    "notifyParameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["copyKey", "audience"],
+      "properties": {
+        "copyKey": { "$ref": "#/definitions/copyKey" },
+        "audience": { "enum": ["USER", "ADMIN", "SOC"] }
+      }
+    },
+    "sanitizeParameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transformIds", "targetFieldPathHmacs", "requireParse", "requireRescan", "requireStatePreservation"],
+      "properties": {
+        "transformIds": { "type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true, "items": { "$ref": "#/definitions/slug" } },
+        "targetFieldPathHmacs": { "type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true, "items": { "$ref": "#/definitions/hmac" } },
+        "requireParse": { "type": "boolean" },
+        "requireRescan": { "type": "boolean" },
+        "requireStatePreservation": { "type": "boolean" }
+      }
+    },
+    "restrictParameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capabilities", "resourceRefs", "destinationRefs"],
+      "properties": {
+        "capabilities": { "$ref": "#/definitions/smallSlugSet" },
+        "resourceRefs": { "$ref": "#/definitions/hmacSet" },
+        "destinationRefs": { "$ref": "#/definitions/hmacSet" }
+      },
+      "anyOf": [
+        { "properties": { "capabilities": { "type": "array", "minItems": 1 } } },
+        { "properties": { "resourceRefs": { "type": "array", "minItems": 1 } } },
+        { "properties": { "destinationRefs": { "type": "array", "minItems": 1 } } }
+      ]
+    },
+    "confirmationParameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["confirmationClass", "trustedSurface", "ttlSeconds"],
+      "properties": {
+        "confirmationClass": { "$ref": "#/definitions/slug" },
+        "trustedSurface": { "enum": ["BROWSER_EXTENSION", "MANAGEMENT_CONSOLE"] },
+        "ttlSeconds": { "type": "integer", "minimum": 1, "maximum": 900 }
+      }
+    },
+    "approvalParameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approvalClass", "reviewerRoles", "ttlSeconds", "maxUses"],
+      "properties": {
+        "approvalClass": { "$ref": "#/definitions/slug" },
+        "reviewerRoles": { "type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true, "items": { "$ref": "#/definitions/slug" } },
+        "ttlSeconds": { "type": "integer", "minimum": 1, "maximum": 900 },
+        "maxUses": { "type": "integer", "minimum": 1, "maximum": 10 }
+      }
+    },
+    "denyParameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["invariantId", "copyKey", "nonGrantable"],
+      "properties": {
+        "invariantId": { "$ref": "#/definitions/slug" },
+        "copyKey": { "$ref": "#/definitions/copyKey" },
+        "nonGrantable": { "const": true }
+      }
+    },
+    "quarantineParameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["until", "ttlSeconds"],
+      "properties": {
+        "until": { "enum": ["INSPECTION_COMPLETE", "USER_RESUME", "ADMIN_DECISION"] },
+        "ttlSeconds": { "type": "integer", "minimum": 1, "maximum": 86400 }
+      }
+    },
+    "legacyWarnRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["surface", "checkpoint", "semantic", "v1Decision", "requestedEffect", "trustedSurface", "onUnsupported"],
+      "properties": {
+        "surface": { "enum": ["RUNTIME_ADAPTER", "LOCAL_PROXY", "BROWSER_COMPOSER", "BROWSER_UPLOAD"] },
+        "checkpoint": { "enum": ["PRE_PROMPT", "PRE_TOOL", "POST_TOOL", "PRE_UPSTREAM_DISPATCH", "POST_UPSTREAM_RESPONSE", "PRE_SUBMIT", "POST_SUBMIT", "PRE_UPLOAD_DISPATCH", "POST_UPLOAD_DISPATCH"] },
+        "semantic": { "enum": ["NOTIFY_ONLY", "CONFIRM", "HOLD", "UNSUPPORTED"] },
+        "v1Decision": { "enum": ["ALLOW", "PROMPT", "HOLD", "INCONCLUSIVE"] },
+        "requestedEffect": {
+          "anyOf": [
+            { "enum": ["deny-prompt", "deny-tool", "stop-continuation", "audit-only"] },
+            { "type": "null" }
+          ]
+        },
+        "trustedSurface": {
+          "anyOf": [
+            { "enum": ["BROWSER_EXTENSION", "MANAGEMENT_CONSOLE"] },
+            { "type": "null" }
+          ]
+        },
+        "onUnsupported": { "const": "FAILURE_ORACLE" }
+      },
+      "oneOf": [
+        { "properties": { "surface": { "const": "RUNTIME_ADAPTER" }, "checkpoint": { "enum": ["PRE_PROMPT", "PRE_TOOL", "POST_TOOL"] } } },
+        { "properties": { "surface": { "const": "LOCAL_PROXY" }, "checkpoint": { "enum": ["PRE_UPSTREAM_DISPATCH", "POST_UPSTREAM_RESPONSE"] } } },
+        { "properties": { "surface": { "const": "BROWSER_COMPOSER" }, "checkpoint": { "enum": ["PRE_SUBMIT", "POST_SUBMIT"] } } },
+        { "properties": { "surface": { "const": "BROWSER_UPLOAD" }, "checkpoint": { "enum": ["PRE_UPLOAD_DISPATCH", "POST_UPLOAD_DISPATCH"] } } }
+      ]
+    }
+  }
+}

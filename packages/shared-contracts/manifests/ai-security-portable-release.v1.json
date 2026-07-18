@@ -4,7 +4,7 @@
   "packageName": "@ceragon/shared-contracts",
   "packageVersion": "0.3.0",
   "generatorName": "ceragon-ai-security-artifact",
-  "generatorVersion": "1.1.0",
+  "generatorVersion": "1.2.0",
   "authority": {
     "decisionId": "G-CONTRACT-AUTHORITY",
     "decisionSha256": "sha256:0667406e1ccc23439e2fb48d0bb2faee1abe4f5d5e0ad9c4e82fabd3b73c415a",
@@ -52,7 +52,20 @@
     "AI_TRANSLATION_DISPOSITIONS",
     "AI_SECURITY_OUTCOMES",
     "AI_RECEIPT_ASSURANCE",
-    "AI_ACTUAL_EFFECT_OBSERVERS"
+    "AI_ACTUAL_EFFECT_OBSERVERS",
+    "AI_OBLIGATION_KINDS",
+    "AI_OBLIGATION_STATES",
+    "AI_PRIMARY_STATES",
+    "AI_INSPECTION_STATUSES",
+    "AI_NOTIFY_AUDIENCES",
+    "AI_TRUSTED_CONFIRMATION_SURFACES",
+    "AI_QUARANTINE_UNTIL_STATES",
+    "AI_FAILURE_ORACLE_SURFACES",
+    "AI_FAILURE_ORACLE_CHECKPOINTS",
+    "AI_FAILURE_ORACLE_FAILURES",
+    "AI_FAILURE_ORACLE_IMPACTS",
+    "AI_FAILURE_ORACLE_OUTCOMES",
+    "AI_FAILURE_ORACLE_RECOVERY_ACTIONS"
   ],
   "sources": {
     "definitionsSchema": "schemas/ai-security-policy-v1.defs.schema.json",
@@ -61,7 +74,11 @@
     "schemaCases": "vectors/ai-security-policy-v1-schema-cases.json",
     "jcsConformanceVectors": "vectors/rfc8785-conformance.v1.json",
     "strictJsonRejectionVectors": "vectors/rfc8785-rejections.v1.json",
-    "authorityFixture": "fixtures/ai-security-policy-v1-authority.json"
+    "authorityFixture": "fixtures/ai-security-policy-v1-authority.json",
+    "obligationSchema": "schemas/ai-security-obligation-contract-v1.schema.json",
+    "obligationCatalog": "fixtures/ai-security-obligation-contract.v1.json",
+    "failureOracleSchema": "schemas/ai-security-failure-oracle-v1.schema.json",
+    "failureOracleCatalog": "fixtures/ai-security-failure-oracle.v1.json"
   },
   "runtimeActivatable": false,
   "signedRuntimePolicyBundle": false,
