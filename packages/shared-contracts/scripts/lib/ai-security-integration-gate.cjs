@@ -964,19 +964,19 @@ const APPROVED_INPUTS = deepFreeze({
     },
     installer: {
       repository: 'Installers',
-      commit: 'd971db653e62ed111941912f73d7f6db59b5d3d9',
-      tree: '3a09ac7567b3ad222b174e6a689e4e3334d12494',
+      commit: 'c8f8c3785709be63592c73d84a5976dd0c5ea6f0',
+      tree: '121ce1a991b02dcdead0dda568eb5345a26210a6',
       profile: 'INSTALLER_C04_V1',
       pin: {
         path: 'internal/aipolicycontract/consumer-pin.v1.json',
-        bytes: 1_077,
-        sha256: 'sha256:a6973676c551e7b09b1ebebd06e4b5370970ae8baa3f8eb54ed81d3a9fc28c13',
+        bytes: 1_112,
+        sha256: 'sha256:72917820ceb167817f9ad159e0c38c314f07e5a6b0fa2740c0b36510800a9f0c',
       },
     },
     browser: {
       repository: 'Installers/browser-extension',
-      commit: 'd971db653e62ed111941912f73d7f6db59b5d3d9',
-      tree: '3a09ac7567b3ad222b174e6a689e4e3334d12494',
+      commit: 'c8f8c3785709be63592c73d84a5976dd0c5ea6f0',
+      tree: '121ce1a991b02dcdead0dda568eb5345a26210a6',
       profile: 'BROWSER_C05_V1',
       pin: {
         path: 'browser-extension/ai-security-browser-consumer-pin.v1.json',
@@ -1658,7 +1658,7 @@ const REVIEWED_SEMANTIC_DRIVER_DESCRIPTORS = deepFreeze({
   installer: {
     path: 'scripts/c07-drivers/installer-semantic-driver/main.go',
     bytes: 21_060,
-    sha256: 'sha256:2cdbf7f0199497fedbf649e7fd90b59f6ac0f0c1ffadc233c4e9948aef11ab2b',
+    sha256: 'sha256:801a90fa470ebb827141407e8b6a94bc7751283debdf8d56572e7ed9a2d2c090',
     driverId: 'C07_INSTALLER_SEMANTIC_V1',
     contextPath: 'c07/installer-semantic-driver.go',
     containerPath: '/workspace/cmd/c07semanticdriver/main.go',
@@ -4816,7 +4816,7 @@ const INTEGRATION_SCHEMA_DESCRIPTOR = deepFreeze({
 const REVIEWED_FINAL_MANIFEST_DESCRIPTOR = deepFreeze({
   path: 'fixtures/ai-security-integration-input-manifest-v1.accepted.json',
   bytes: 3_824,
-  sha256: 'sha256:2027dbf98ab58088c7a813323f6b033ca9aeb681bf2bbfb6e7f85bd32cdad334',
+  sha256: 'sha256:f87569a89de6378351f8ae86f94d307aae1aba3ba9f17864760a38053b0f1e77',
 });
 
 function verifyCanonicalSource(root, canonical) {
