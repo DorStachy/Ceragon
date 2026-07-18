@@ -953,8 +953,8 @@ const APPROVED_INPUTS = deepFreeze({
   consumers: {
     backend: {
       repository: 'Backend',
-      commit: '911202ec24f13bfa30200504e02dfc6898197001',
-      tree: 'c509a87cd190883bf7e6aa6fb811d5c148abc30d',
+      commit: '90c9c1905334cbe186877bc76bf34471d2ffa3d1',
+      tree: '4d0e277a2b235ecdbd8f123c051cee2161cecec6',
       profile: 'BACKEND_C03_V1',
       pin: {
         path: 'packages/shared-contracts/ai-security-consumer-pin.v1.json',
@@ -4816,7 +4816,7 @@ const INTEGRATION_SCHEMA_DESCRIPTOR = deepFreeze({
 const REVIEWED_FINAL_MANIFEST_DESCRIPTOR = deepFreeze({
   path: 'fixtures/ai-security-integration-input-manifest-v1.accepted.json',
   bytes: 3_824,
-  sha256: 'sha256:cc5b4903dc2432b4ab891c9e94bdb2a86a076b18223714dc8ea3701e53a77dd8',
+  sha256: 'sha256:2027dbf98ab58088c7a813323f6b033ca9aeb681bf2bbfb6e7f85bd32cdad334',
 });
 
 function verifyCanonicalSource(root, canonical) {
