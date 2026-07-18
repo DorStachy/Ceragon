@@ -8,7 +8,7 @@ const path = require('node:path');
 const CONSUMER = 'backend';
 const DRIVER_ID = 'C07_BACKEND_SEMANTIC_V1';
 const ARTIFACT_SHA256 =
-  'sha256:30100c7efb9050102be9ff1c9d14181dd829667ecbc7378de6ae60c3c453e2a1';
+  'sha256:1bb9aed7553750f0161dadaba531583101d34eef2b35110e326d4d4a20153826';
 const EXPECTED_MODULE_SHA256 = Object.freeze({
   reader: 'sha256:0d89e3eea3fd5ae5e158d878fad61f0d4595ee8d2c2cd11297c565202c11dadb',
   strictest: 'sha256:bbbd6e9fdcb021114146000d0978e92b35aae8f41b8587e9b006429baa8dc428',

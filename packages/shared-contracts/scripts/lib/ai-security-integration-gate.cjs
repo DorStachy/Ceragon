@@ -923,27 +923,27 @@ const AUTHORITY = deepFreeze({
 
 const CANONICAL_FILES = deepFreeze({
   artifact: {
-    path: 'packages/shared-contracts/generated/ai-security/0.2.0/portable-contract.v1.jcs.json',
-    bytes: 46_083,
-    sha256: 'sha256:30100c7efb9050102be9ff1c9d14181dd829667ecbc7378de6ae60c3c453e2a1',
+    path: 'packages/shared-contracts/generated/ai-security/0.3.0/portable-contract.v1.jcs.json',
+    bytes: 46_707,
+    sha256: 'sha256:1bb9aed7553750f0161dadaba531583101d34eef2b35110e326d4d4a20153826',
   },
   releaseManifest: {
-    path: 'packages/shared-contracts/generated/ai-security/0.2.0/portable-contract-release.v1.jcs.json',
+    path: 'packages/shared-contracts/generated/ai-security/0.3.0/portable-contract-release.v1.jcs.json',
     bytes: 536,
-    sha256: 'sha256:1a36403ce9e1260c78e20271643ffe3fb0fe2616d24e2e63bcc33421004b7bd6',
+    sha256: 'sha256:91d95d99ec2d916260be4afd360e482d938419b871831d6757f66476523d5686',
   },
   digestSidecar: {
-    path: 'packages/shared-contracts/generated/ai-security/0.2.0/portable-contract.v1.jcs.json.sha256',
+    path: 'packages/shared-contracts/generated/ai-security/0.3.0/portable-contract.v1.jcs.json.sha256',
     bytes: 72,
-    sha256: 'sha256:85dd8feef5328bd809e1ea83c2d524db0d7d9ecb729c434efdba0c396645f29e',
+    sha256: 'sha256:bb1949874d3da79c204c4e76dc8abd08a0a29753a773b79c02642dc80c49d5dc',
   },
 });
 
 const APPROVED_INPUTS = deepFreeze({
   canonical: {
     repository: 'Workspace',
-    commit: '21297272829ac8f0cb50cf96bb7e6dca685bf3cb',
-    tree: 'ffab530e674ce6e42866f9e690e45bbf8ec55e4a',
+    commit: '4eefa8cee1633b0062584a886f8e564dbe99719a',
+    tree: '8dc90d72c8dcba747ab8cb92f675ac5c4f7a290b',
   },
   priorCanonical: {
     repository: 'Workspace',
@@ -1098,7 +1098,7 @@ function validateIntegrationManifest(manifest) {
   );
   assert.deepStrictEqual(manifest.canonical.package, {
     name: '@ceragon/shared-contracts',
-    version: '0.2.0',
+    version: '0.3.0',
     generatorName: 'ceragon-ai-security-artifact',
     generatorVersion: '1.0.0',
     policySchemaVersion: 1,
@@ -1644,29 +1644,29 @@ const REVIEWED_SEMANTIC_DRIVER_DESCRIPTORS = deepFreeze({
   backend: {
     path: 'scripts/c07-drivers/backend-semantic-driver.cjs',
     bytes: 18_623,
-    sha256: 'sha256:c7b7c94b5d2efd1b25f2473dfb04ae5db58ce5c748de9294aed9da5631468ab5',
+    sha256: 'sha256:07ad7574c074e99e245f0d77740d613db441b8c6cf10a2ba51234dd2c07025fe',
     driverId: 'C07_BACKEND_SEMANTIC_V1',
     containerPath: '/c07/backend-semantic-driver.cjs',
   },
   browser: {
     path: 'scripts/c07-drivers/browser-semantic-driver.mjs',
-    bytes: 18_807,
-    sha256: 'sha256:ab3bd7fc3cc7d5fb5d4b87a53414970c53ef66319eeddaf5d909cb4d37daceb6',
+    bytes: 18_806,
+    sha256: 'sha256:0770a0bfea74f8f893773abd0ae14046a022fa798a9de48202ecc13375384983',
     driverId: 'C07_BROWSER_SEMANTIC_V1',
     containerPath: '/c07/browser-semantic-driver.mjs',
   },
   installer: {
     path: 'scripts/c07-drivers/installer-semantic-driver/main.go',
     bytes: 21_060,
-    sha256: 'sha256:9e1edb41fcbe8ab922d83fcc5317b125a483d58c86cf4ab2179b2e907a271f41',
+    sha256: 'sha256:68222ae8bef94a28938a3caa7be70929fdafd367ce89777ebe7b4e4eb2e19e30',
     driverId: 'C07_INSTALLER_SEMANTIC_V1',
     contextPath: 'c07/installer-semantic-driver.go',
     containerPath: '/workspace/cmd/c07semanticdriver/main.go',
   },
   frontend: {
     path: 'scripts/c07-drivers/frontend-semantic-driver.test.cjs',
-    bytes: 24_262,
-    sha256: 'sha256:6796ef1b2823cf2c48411d72147c833281c08cb2458ff44c5b0a7d4f20153a24',
+    bytes: 24_261,
+    sha256: 'sha256:a2abaf956471e1afde046226b55c893cc8b1cc82b2a7ec6909cf9fc573d71241',
     driverId: 'C07_FRONTEND_SEMANTIC_V1',
     containerPath: '/c07/frontend-semantic-driver.test.cjs',
   },
@@ -3781,7 +3781,7 @@ function verifyPinnedConsumer(root, manifestEntry, consumerKey) {
   assert.equal(pin.formatVersion, 1, `${consumerKey} pin format version mismatch`);
   assert.equal(pin.consumer, profile.consumer, `${consumerKey} pin consumer mismatch`);
   assert.equal(pin.sourceCommit, APPROVED_INPUTS.canonical.commit, `${consumerKey} source commit mismatch`);
-  assert.deepStrictEqual(pin.sourcePackage, { name: '@ceragon/shared-contracts', version: '0.2.0' });
+  assert.deepStrictEqual(pin.sourcePackage, { name: '@ceragon/shared-contracts', version: '0.3.0' });
   assert.equal(pin.policySchemaVersion, 1, `${consumerKey} policy schema version mismatch`);
   assert.deepStrictEqual(pin.canonicalGenerator, {
     name: 'ceragon-ai-security-artifact',
@@ -4030,7 +4030,7 @@ const CONTAINED_SEMANTIC_PROFILES = deepFreeze({
     cwd: '.',
     args: [
       '/c07/backend-semantic-driver.cjs',
-      '/workspace/packages/shared-contracts/generated/ai-security/0.2.0/portable-contract.v1.jcs.json',
+      '/workspace/packages/shared-contracts/generated/ai-security/0.3.0/portable-contract.v1.jcs.json',
       '/workspace/src/ai-security-policy/ai-security-portable-reader.ts',
       '/app/dist/ai-security-policy/resolve-strictest-policy.js',
       '/workspace/packages/shared-contracts/dist/generated/ai-security-portable.generated.js',
@@ -4043,7 +4043,7 @@ const CONTAINED_SEMANTIC_PROFILES = deepFreeze({
     args: [
       'run',
       '/workspace/cmd/c07semanticdriver/main.go',
-      '/workspace/internal/aipolicycontract/embedded/0.2.0/portable-contract.v1.jcs.json',
+      '/workspace/internal/aipolicycontract/embedded/0.3.0/portable-contract.v1.jcs.json',
       '/workspace/cmd/c07semanticdriver/main.go',
     ],
   },
@@ -4053,7 +4053,7 @@ const CONTAINED_SEMANTIC_PROFILES = deepFreeze({
     cwd: '.',
     args: [
       '/c07/browser-semantic-driver.mjs',
-      '/workspace/browser-extension/generated/ai-security/0.2.0/portable-contract.v1.jcs.json',
+      '/workspace/browser-extension/generated/ai-security/0.3.0/portable-contract.v1.jcs.json',
       '/workspace/browser-extension/src/ai-security-policy-v1-reader.js',
       '/workspace/browser-extension/src/generated/ai-security-portable.generated.js',
     ],
@@ -4760,7 +4760,7 @@ function buildContentFreeEvidence({
     repositories: repositoryEvidence,
     canonical: {
       packageName: '@ceragon/shared-contracts',
-      packageVersion: '0.2.0',
+      packageVersion: '0.3.0',
       policySchemaVersion: 1,
       files: canonicalFileEvidence,
       byteEqualityAcrossAllConsumers: true,
@@ -4808,7 +4808,7 @@ function serializeContentFreeEvidence(evidence) {
 const INTEGRATION_SCHEMA_DESCRIPTOR = deepFreeze({
   path: 'schemas/ai-security-integration-input-manifest-v1.schema.json',
   bytes: 6_047,
-  sha256: 'sha256:53bc9cc5816aefbd3fc2bfe8bb65fd2aaeaed53f5ac0abc426301d34d1094049',
+  sha256: 'sha256:2786ea9729013832e1506c904ef2ff7b92264eae08e15c59eba11a71f17f5376',
 });
 
 // This exact accepted manifest is the only promotable C07 input. Caller-supplied
@@ -4816,21 +4816,21 @@ const INTEGRATION_SCHEMA_DESCRIPTOR = deepFreeze({
 const REVIEWED_FINAL_MANIFEST_DESCRIPTOR = deepFreeze({
   path: 'fixtures/ai-security-integration-input-manifest-v1.accepted.json',
   bytes: 3_823,
-  sha256: 'sha256:7750987cf35b817b2af37621c0f1be6820a961a2bd2e7788100ae20a19e5a790',
+  sha256: 'sha256:ae06b5e163e46f1fc41d2a4d9e1dbdffed5aaafcf693f489c205ac023503e419',
 });
 
 function verifyCanonicalSource(root, canonical) {
   const snapshotter = createProtectedSnapshotter(root);
-  const artifact = snapshotter.snapshot(canonical.artifact, 'canonical C02 artifact');
+  const artifact = snapshotter.snapshot(canonical.artifact, 'canonical E01 artifact');
   const releaseManifest = snapshotter.snapshot(
     canonical.releaseManifest,
-    'canonical C02 release manifest',
+    'canonical E01 release manifest',
   );
-  const digestSidecar = snapshotter.snapshot(canonical.digestSidecar, 'canonical C02 digest sidecar');
+  const digestSidecar = snapshotter.snapshot(canonical.digestSidecar, 'canonical E01 digest sidecar');
   assert.equal(
     digestSidecar.bytes.toString('utf8'),
     `${CANONICAL_FILES.artifact.sha256}\n`,
-    'canonical C02 digest sidecar does not name the artifact digest',
+    'canonical E01 digest sidecar does not name the artifact digest',
   );
   const artifactValue = parseStrictJsonBytes(artifact.bytes);
   const releaseValue = parseStrictJsonBytes(releaseManifest.bytes);
@@ -4874,17 +4874,17 @@ function assertCanonicalByteEquality(canonical, consumers) {
     assert.equal(
       consumer.artifactBytes.equals(canonical.artifactBytes),
       true,
-      `${key} artifact differs byte-for-byte from canonical C02`,
+      `${key} artifact differs byte-for-byte from canonical E01`,
     );
     assert.equal(
       consumer.releaseBytes.equals(canonical.releaseBytes),
       true,
-      `${key} release manifest differs byte-for-byte from canonical C02`,
+      `${key} release manifest differs byte-for-byte from canonical E01`,
     );
     assert.equal(
       consumer.sidecarBytes.equals(canonical.sidecarBytes),
       true,
-      `${key} digest sidecar differs byte-for-byte from canonical C02`,
+      `${key} digest sidecar differs byte-for-byte from canonical E01`,
     );
   }
   return true;

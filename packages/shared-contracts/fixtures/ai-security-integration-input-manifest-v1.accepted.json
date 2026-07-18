@@ -14,12 +14,12 @@
     "amendments": []
   },
   "canonical": {
-    "source": { "repository": "Workspace", "commit": "21297272829ac8f0cb50cf96bb7e6dca685bf3cb", "tree": "ffab530e674ce6e42866f9e690e45bbf8ec55e4a" },
+    "source": { "repository": "Workspace", "commit": "4eefa8cee1633b0062584a886f8e564dbe99719a", "tree": "8dc90d72c8dcba747ab8cb92f675ac5c4f7a290b" },
     "priorSource": { "repository": "Workspace", "commit": "288da9535cca5e60394334e35674d33a930351a4", "tree": "49a68113a4625c6dfa9d518949604088195673f1" },
-    "package": { "name": "@ceragon/shared-contracts", "version": "0.2.0", "generatorName": "ceragon-ai-security-artifact", "generatorVersion": "1.0.0", "policySchemaVersion": 1 },
-    "artifact": { "path": "packages/shared-contracts/generated/ai-security/0.2.0/portable-contract.v1.jcs.json", "bytes": 46083, "sha256": "sha256:30100c7efb9050102be9ff1c9d14181dd829667ecbc7378de6ae60c3c453e2a1" },
-    "releaseManifest": { "path": "packages/shared-contracts/generated/ai-security/0.2.0/portable-contract-release.v1.jcs.json", "bytes": 536, "sha256": "sha256:1a36403ce9e1260c78e20271643ffe3fb0fe2616d24e2e63bcc33421004b7bd6" },
-    "digestSidecar": { "path": "packages/shared-contracts/generated/ai-security/0.2.0/portable-contract.v1.jcs.json.sha256", "bytes": 72, "sha256": "sha256:85dd8feef5328bd809e1ea83c2d524db0d7d9ecb729c434efdba0c396645f29e" },
+    "package": { "name": "@ceragon/shared-contracts", "version": "0.3.0", "generatorName": "ceragon-ai-security-artifact", "generatorVersion": "1.0.0", "policySchemaVersion": 1 },
+    "artifact": { "path": "packages/shared-contracts/generated/ai-security/0.3.0/portable-contract.v1.jcs.json", "bytes": 46707, "sha256": "sha256:1bb9aed7553750f0161dadaba531583101d34eef2b35110e326d4d4a20153826" },
+    "releaseManifest": { "path": "packages/shared-contracts/generated/ai-security/0.3.0/portable-contract-release.v1.jcs.json", "bytes": 536, "sha256": "sha256:91d95d99ec2d916260be4afd360e482d938419b871831d6757f66476523d5686" },
+    "digestSidecar": { "path": "packages/shared-contracts/generated/ai-security/0.3.0/portable-contract.v1.jcs.json.sha256", "bytes": 72, "sha256": "sha256:bb1949874d3da79c204c4e76dc8abd08a0a29753a773b79c02642dc80c49d5dc" },
     "protocol": { "minimumReadable": "1", "maximumReadable": "2", "readableVersions": ["1", "2"], "writableVersions": ["1"], "nMinusOneShape": "V1_LEGACY_ORG", "runtimeActivatable": false, "signedRuntimePolicyBundle": false, "v2WriterEnabled": false }
   },
   "consumers": {

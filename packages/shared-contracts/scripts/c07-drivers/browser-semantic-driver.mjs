@@ -6,7 +6,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const CONSUMER = 'browser';
 const DRIVER_ID = 'C07_BROWSER_SEMANTIC_V1';
 const ARTIFACT_SHA256 =
-  'sha256:30100c7efb9050102be9ff1c9d14181dd829667ecbc7378de6ae60c3c453e2a1';
+  'sha256:1bb9aed7553750f0161dadaba531583101d34eef2b35110e326d4d4a20153826';
 const EXPECTED_FILE_SHA256 = Object.freeze({
   reader: 'sha256:35c974ec897b9ffdf5ac2e60f628b42c5745585665ef6fb9d5beff024890d880',
   tokens: 'sha256:c0005d05a9c66e5e1f14105f08713fe787dba012bce55e4137d99a44cddbd9e8',

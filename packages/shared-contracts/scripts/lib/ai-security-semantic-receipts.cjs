@@ -5,7 +5,7 @@ const crypto = require('node:crypto');
 const { parseStrictJsonBytes } = require('./strict-json.cjs');
 
 const PORTABLE_ARTIFACT_SHA256 =
-  'sha256:30100c7efb9050102be9ff1c9d14181dd829667ecbc7378de6ae60c3c453e2a1';
+  'sha256:1bb9aed7553750f0161dadaba531583101d34eef2b35110e326d4d4a20153826';
 
 const READER_SEMANTIC_CASE_IDS = Object.freeze([
   'CURRENT_V1_ACCEPTED_RANKABLE',

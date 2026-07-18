@@ -7,12 +7,12 @@ const { spawnSync } = require('node:child_process');
 
 const CONSUMER = 'frontend';
 const DRIVER_ID = 'C07_FRONTEND_SEMANTIC_V1';
-const ARTIFACT_SHA256 = 'sha256:30100c7efb9050102be9ff1c9d14181dd829667ecbc7378de6ae60c3c453e2a1';
+const ARTIFACT_SHA256 = 'sha256:1bb9aed7553750f0161dadaba531583101d34eef2b35110e326d4d4a20153826';
 const SOURCE_COMMIT = 'b78460df7134d0d4f70915006242473b16e8ac82';
 const SOURCE_TREE = 'b0488302be097af466f599d8608f7fa43b425ac5';
 const SNAPSHOT_MANIFEST_SHA256 = 'sha256:6e52daf56866a928dfa85379c90da875b81594e9dfba6dc09551169b8e3dd0b0';
 const SOURCE_ROOT = '/workspace';
-const ARTIFACT_PATH = '/workspace/contracts/ai-security/0.2.0/portable-contract.v1.jcs.json';
+const ARTIFACT_PATH = '/workspace/contracts/ai-security/0.3.0/portable-contract.v1.jcs.json';
 const DRIVER_PATH = '/c07/frontend-semantic-driver.test.cjs';
 const NODE_PATH = '/usr/local/bin/node';
 const NODE_MODULES_ROOT = '/opt/ceragon-c07-frontend/node_modules';
