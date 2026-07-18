@@ -27,7 +27,7 @@
       "required": ["name", "version"],
       "properties": {
         "name": { "const": "@ceragon/shared-contracts" },
-        "version": { "const": "0.2.0" }
+        "version": { "const": "0.3.0" }
       }
     },
     "generator": {
@@ -36,7 +36,7 @@
       "required": ["name", "version"],
       "properties": {
         "name": { "const": "ceragon-ai-security-artifact" },
-        "version": { "const": "1.0.0" }
+        "version": { "const": "1.1.0" }
       }
     },
     "authority": {
@@ -72,9 +72,8 @@
     "deferredContractSections": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["fourAxisRuntimeTruth", "obligationUnion", "failureOracle", "signingAndTrust"],
+      "required": ["obligationUnion", "failureOracle", "signingAndTrust"],
       "properties": {
-        "fourAxisRuntimeTruth": { "const": "P0-E01" },
         "obligationUnion": { "const": "P0-O01" },
         "failureOracle": { "const": "P0-F01" },
         "signingAndTrust": { "const": "P0-S01" }
@@ -112,8 +111,8 @@
       "properties": {
         "orderedTuples": {
           "type": "object",
-          "minProperties": 37,
-          "maxProperties": 37,
+          "minProperties": 41,
+          "maxProperties": 41,
           "propertyNames": { "pattern": "^[A-Z][A-Z0-9_]+$" },
           "additionalProperties": {
             "type": "array",

@@ -15,9 +15,9 @@ const DIGEST_FILE = `${ARTIFACT_FILE}.sha256`;
 const RELEASE_FILE = 'portable-contract-release.v1.jcs.json';
 const EXPECTED_FILES = Object.freeze([RELEASE_FILE, ARTIFACT_FILE, DIGEST_FILE].sort());
 const EXPECTED_TUPLE_SYMBOLS_DIGEST =
-  'sha256:733cf741f72e76aac944359590c7b37aa457933623ce8b2db334350847df9a45';
+  'sha256:867c91f2d844142916bb20203a6a1316045c03a3338fed01da85044eb1a5328e';
 const EXPECTED_PORTABLE_ARTIFACT_DIGEST =
-  'sha256:30100c7efb9050102be9ff1c9d14181dd829667ecbc7378de6ae60c3c453e2a1';
+  'sha256:1bb9aed7553750f0161dadaba531583101d34eef2b35110e326d4d4a20153826';
 const EXPECTED_SOURCE_PATHS = Object.freeze({
   definitionsSchema: 'schemas/ai-security-policy-v1.defs.schema.json',
   strictWriteSchema: 'schemas/ai-security-policy-v1.strict-write.schema.json',
@@ -29,13 +29,13 @@ const EXPECTED_SOURCE_PATHS = Object.freeze({
 });
 const REVIEWED_SOURCE_DIGESTS = Object.freeze({
   'manifests/ai-security-portable-release.v1.json':
-    'sha256:dfc96deee75f2930175fd4abe175bce86df3254ebff30e079eb93408908a036c',
+    'sha256:c51a5db74f69674972b18e041a51f7c54dc4a6c427d536c1ba89862363a4d108',
   'schemas/ai-security-portable-source-manifest-v1.schema.json':
-    'sha256:5180dede4c13b7bfb2d14e61631c6e199950f6af9d71e8e6a6cfd7c4a85fdd57',
+    'sha256:295c35cdb931e4742024b1560d81f0cf508504303155fcb1e3416464ac91e8d0',
   'schemas/ai-security-portable-artifact-v1.schema.json':
-    'sha256:a3f58729018a00937c35e6f7609bccadd303dd55e3661288749dce5c2a770b9e',
+    'sha256:23b92d829672535604e2c5e52f271366159960dcc76f964fc862698ddb80fadf',
   'schemas/ai-security-portable-release-manifest-v1.schema.json':
-    'sha256:33998168de6914c907bf1a35c057a448c24e86f6f514c73faa62b1b2e778d596',
+    'sha256:402f06380274d1c16a941d135aaad8bcb8e403e720f0860b758a4c2489f889e5',
   'schemas/ai-security-policy-v1.defs.schema.json':
     'sha256:b111a9bde263b06714eba61ed7b0928a198fece15b949f58b5828acd17d593ec',
   'schemas/ai-security-policy-v1.strict-write.schema.json':
@@ -55,9 +55,9 @@ const EXPECTED_MANIFEST_SCALARS = Object.freeze({
   format: 'ceragon.ai-security.portable-source',
   formatVersion: 1,
   packageName: '@ceragon/shared-contracts',
-  packageVersion: '0.2.0',
+  packageVersion: '0.3.0',
   generatorName: 'ceragon-ai-security-artifact',
-  generatorVersion: '1.0.0',
+  generatorVersion: '1.1.0',
   runtimeActivatable: false,
   signedRuntimePolicyBundle: false,
   v2WriterEligible: false,
@@ -291,7 +291,7 @@ function buildPortableArtifact(packageRoot) {
   assertSourceManifestInvariants(sourceManifest);
   assertCondition(packageJson.name === sourceManifest.packageName, 'source manifest package name mismatch');
   assertCondition(packageJson.version === sourceManifest.packageVersion, 'source manifest package version mismatch');
-  assertCondition(packageJson.version === '0.2.0', 'C02 portable package must be exactly 0.2.0');
+  assertCondition(packageJson.version === '0.3.0', 'P0-E01 portable package must be exactly 0.3.0');
   assertCondition(sourceManifest.runtimeActivatable === false, 'portable source must remain inert');
   assertCondition(sourceManifest.signedRuntimePolicyBundle === false, 'C02 cannot claim a signed runtime bundle');
   assertCondition(sourceManifest.v2WriterEligible === false, 'C02 cannot enable a V2 writer');
@@ -303,7 +303,7 @@ function buildPortableArtifact(packageRoot) {
     'compiled contract module',
   ));
   const tupleSymbols = sourceManifest.orderedTupleSymbols;
-  assertCondition(Array.isArray(tupleSymbols) && tupleSymbols.length === 37, 'portable tuple manifest must contain exactly 37 symbols');
+  assertCondition(Array.isArray(tupleSymbols) && tupleSymbols.length === 41, 'portable tuple manifest must contain exactly 41 symbols');
   assertCondition(new Set(tupleSymbols).size === tupleSymbols.length, 'portable tuple manifest has duplicate symbols');
   assertCondition(
     sha256Digest(Buffer.from(JSON.stringify(tupleSymbols), 'utf8')) === EXPECTED_TUPLE_SYMBOLS_DIGEST,
@@ -316,7 +316,11 @@ function buildPortableArtifact(packageRoot) {
     if (
       symbol.startsWith('AI_SECURITY_POLICY_V1_') ||
       symbol === 'AI_ENFORCEMENT_PROTOCOL_VERSIONS' ||
-      symbol === 'AI_SECURITY_WRITABLE_PROTOCOL_VERSIONS'
+      symbol === 'AI_SECURITY_WRITABLE_PROTOCOL_VERSIONS' ||
+      symbol === 'AI_TRANSLATION_DISPOSITIONS' ||
+      symbol === 'AI_SECURITY_OUTCOMES' ||
+      symbol === 'AI_RECEIPT_ASSURANCE' ||
+      symbol === 'AI_ACTUAL_EFFECT_OBSERVERS'
     ) {
       assertCondition(Object.isFrozen(tuple), `new ordered tuple ${symbol} must be runtime-frozen`);
     }
@@ -392,7 +396,7 @@ function buildPortableArtifact(packageRoot) {
   const artifactDigest = sha256Digest(artifactBytes);
   assertCondition(
     artifactDigest === EXPECTED_PORTABLE_ARTIFACT_DIGEST,
-    'portable artifact digest differs from the reviewed immutable 0.2.0 release',
+    `portable artifact digest differs from reviewed immutable 0.3.0 release; got ${artifactDigest}`,
   );
   const release = {
     format: 'ceragon.ai-security.portable-release',

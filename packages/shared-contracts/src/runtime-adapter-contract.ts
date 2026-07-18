@@ -94,6 +94,11 @@ export type CoverageDepth = (typeof COVERAGE_DEPTHS)[number];
  * injection), `deny-escalation` / `allow-escalation` (SC6 PermissionRequest
  * escalation branches), and `replace-tool-result-with-feedback-and-continue`
  * (SC2 deny that swaps the tool result for feedback and continues the loop).
+ *
+ * M4.7 (P0-E01) APPEND — `restrict-capability` is the portable V2 effect for a
+ * proven capability-set reduction. Runtime adapters must return
+ * `UNSUPPORTED_EFFECT` until they have a certified mapping; this token never
+ * authorizes an adapter to invent one.
  */
 export const ENFORCEMENT_EFFECTS = [
   'deny-prompt',
@@ -107,6 +112,7 @@ export const ENFORCEMENT_EFFECTS = [
   'deny-escalation',
   'allow-escalation',
   'replace-tool-result-with-feedback-and-continue',
+  'restrict-capability',
 ] as const;
 
 export type EnforcementEffect = (typeof ENFORCEMENT_EFFECTS)[number];
@@ -191,6 +197,10 @@ export type CanonicalHookEvent = (typeof CANONICAL_HOOK_EVENTS)[number];
  * `hook-failed-original-action-proceeded` (a native hook errored/timed out and
  * the runtime proceeded with the original action, so it was NOT mediated), and
  * `native-hook-unverified` (a native hook is claimed but not certified/attested).
+ *
+ * M4.7 (P0-E01) APPEND — the four-axis transition tokens keep adapter
+ * expression, unsupported translation, translation failure, and authenticated
+ * runtime acknowledgment distinct. They are facts, not outcome claims.
  */
 export const GOVERNANCE_DISPOSITIONS = [
   'devoid-mediated',
@@ -201,6 +211,10 @@ export const GOVERNANCE_DISPOSITIONS = [
   'wire-observed-after-dispatch',
   'hook-failed-original-action-proceeded',
   'native-hook-unverified',
+  'effect-expressed-runtime-unverified',
+  'effect-unsupported-original-action-proceeded',
+  'translation-failed-original-action-proceeded',
+  'runtime-acknowledged-effect',
 ] as const;
 
 export type GovernanceDisposition = (typeof GOVERNANCE_DISPOSITIONS)[number];

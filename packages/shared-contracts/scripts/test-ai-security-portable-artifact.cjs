@@ -13,7 +13,7 @@ const packageRoot = path.resolve(__dirname, '..');
 const generator = path.join(__dirname, 'generate-ai-security-artifact.cjs');
 const checker = path.join(__dirname, 'check-ai-security-generated.cjs');
 const exporter = path.join(__dirname, 'export-ai-security-artifact.cjs');
-const generatedRoot = path.join(packageRoot, 'generated', 'ai-security', '0.2.0');
+const generatedRoot = path.join(packageRoot, 'generated', 'ai-security', '0.3.0');
 const {
   buildPortableArtifact,
   compareGeneratedDirectory,
@@ -545,7 +545,7 @@ try {
   assert.equal(artifact.runtimeActivatable, false);
   assert.equal(artifact.signedRuntimePolicyBundle, false);
   assert.equal(artifact.requiredIntegrationGate, 'P0-C07');
-  assert.equal(artifact.deferredContractSections.fourAxisRuntimeTruth, 'P0-E01');
+  assert.equal(Object.hasOwn(artifact.deferredContractSections, 'fourAxisRuntimeTruth'), false);
   assert.equal(artifact.deferredContractSections.obligationUnion, 'P0-O01');
   assert.equal(artifact.deferredContractSections.failureOracle, 'P0-F01');
   assert.equal(artifact.deferredContractSections.signingAndTrust, 'P0-S01');
@@ -562,10 +562,14 @@ try {
   assert.equal('expiresAt' in release, false);
 
   const packageJson = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
-  assert.equal(packageJson.version, '0.2.0');
+  assert.equal(packageJson.version, '0.3.0');
   const packageExports = require(packageRoot);
   assert.deepEqual(packageExports.AI_ENFORCEMENT_PROTOCOL_VERSIONS, ['1', '2']);
   assert.equal(packageExports.AI_SECURITY_V2_WRITER_ENABLED, false);
+  assert.deepEqual(packageExports.AI_TRANSLATION_DISPOSITIONS, ['EXPRESSED', 'UNSUPPORTED_EFFECT', 'TRANSLATION_FAILED', 'NOT_APPLICABLE']);
+  assert.deepEqual(packageExports.AI_SECURITY_OUTCOMES, ['PREVENTED', 'SANITIZED', 'RESTRICTED_COMPLETION', 'AUTHORIZED_COMPLETION', 'UNAUTHORIZED_EFFECT', 'UNKNOWN', 'NOT_APPLICABLE']);
+  assert.deepEqual(packageExports.AI_RECEIPT_ASSURANCE, ['UNVERIFIED_LEGACY', 'VERIFIED_ENDPOINT_REPORT', 'INDEPENDENTLY_OBSERVED']);
+  assert.deepEqual(packageExports.AI_ACTUAL_EFFECT_OBSERVERS, ['NONE', 'RUNTIME_ACK', 'BROWSER_CHECKPOINT', 'PROXY_CHECKPOINT', 'MCP_BROKER', 'FINAL_STATE_GRADER']);
   assert.deepEqual(artifact.v1Policy.policyCatalog, packageExports.AI_SECURITY_POLICY_V1_CATALOG);
   assert.deepEqual(artifact.v1Policy.directOmissionDefaults, packageExports.AI_SECURITY_POLICY_V1_DIRECT_OMISSION_DEFAULTS);
   assert.deepEqual(artifact.v1Policy.readerFallbacks, packageExports.AI_SECURITY_POLICY_V1_READER_FALLBACKS);
@@ -590,7 +594,7 @@ try {
     'dist/index.js',
     'dist/sqs-signer.d.ts',
     'dist/sqs-signer.js',
-    ...expectedFiles.map((relative) => `generated/ai-security/0.2.0/${relative}`),
+    ...expectedFiles.map((relative) => `generated/ai-security/0.3.0/${relative}`),
   ]) {
     assert.equal(packedPaths.includes(required), true, `packed artifact is missing ${required}`);
   }
@@ -624,7 +628,7 @@ try {
   const installedExports = require(installedRoot);
   assert.deepEqual(installedExports.AI_ENFORCEMENT_PROTOCOL_VERSIONS, ['1', '2']);
   assert.deepEqual(
-    filesUnder(path.join(installedRoot, 'generated', 'ai-security', '0.2.0')),
+    filesUnder(path.join(installedRoot, 'generated', 'ai-security', '0.3.0')),
     expectedFiles,
   );
 

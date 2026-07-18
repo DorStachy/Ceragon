@@ -2,9 +2,9 @@
   "format": "ceragon.ai-security.portable-source",
   "formatVersion": 1,
   "packageName": "@ceragon/shared-contracts",
-  "packageVersion": "0.2.0",
+  "packageVersion": "0.3.0",
   "generatorName": "ceragon-ai-security-artifact",
-  "generatorVersion": "1.0.0",
+  "generatorVersion": "1.1.0",
   "authority": {
     "decisionId": "G-CONTRACT-AUTHORITY",
     "decisionSha256": "sha256:0667406e1ccc23439e2fb48d0bb2faee1abe4f5d5e0ad9c4e82fabd3b73c415a",
@@ -48,7 +48,11 @@
     "AI_SECURITY_POLICY_V1_PROXY_FAIL_MODES",
     "AI_SECURITY_POLICY_V1_INGRESS_ACTIONS",
     "AI_ENFORCEMENT_PROTOCOL_VERSIONS",
-    "AI_SECURITY_WRITABLE_PROTOCOL_VERSIONS"
+    "AI_SECURITY_WRITABLE_PROTOCOL_VERSIONS",
+    "AI_TRANSLATION_DISPOSITIONS",
+    "AI_SECURITY_OUTCOMES",
+    "AI_RECEIPT_ASSURANCE",
+    "AI_ACTUAL_EFFECT_OBSERVERS"
   ],
   "sources": {
     "definitionsSchema": "schemas/ai-security-policy-v1.defs.schema.json",

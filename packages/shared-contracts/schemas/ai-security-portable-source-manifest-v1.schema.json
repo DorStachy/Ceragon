@@ -23,9 +23,9 @@
     "format": { "const": "ceragon.ai-security.portable-source" },
     "formatVersion": { "const": 1 },
     "packageName": { "const": "@ceragon/shared-contracts" },
-    "packageVersion": { "const": "0.2.0" },
+    "packageVersion": { "const": "0.3.0" },
     "generatorName": { "const": "ceragon-ai-security-artifact" },
-    "generatorVersion": { "const": "1.0.0" },
+    "generatorVersion": { "const": "1.1.0" },
     "authority": {
       "type": "object",
       "additionalProperties": false,
@@ -39,8 +39,8 @@
     },
     "orderedTupleSymbols": {
       "type": "array",
-      "minItems": 37,
-      "maxItems": 37,
+      "minItems": 41,
+      "maxItems": 41,
       "uniqueItems": true,
       "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]+$" }
     },

@@ -17,10 +17,10 @@ const DIST_CONTRACT_DTS_PATH = path.join(
 );
 
 const EXPECTED_SOURCE_LF_SHA256 =
-  '03cd249adf1b0c920c8eb2aec78ea879a58c39989b296fce5b58b28fe8ed7503';
+  '62cbba9f0f629970c102ee086bf416c61cad3342355453fe1f04b9dfbe10821a';
 const EXPECTED_SEMANTIC_SHA256 =
-  '359f677a2f5e1876741cca145b931c1e969afd182af2eb5da8ac84acca59a602';
-const EXPECTED_SEMANTIC_JSON_BYTES = 10118;
+  'f4cbb69431d099da53a7e6cc655270313628b6b7509bee1b1c2d8e281de40709';
+const EXPECTED_SEMANTIC_JSON_BYTES = 10302;
 const EXPECTED_TYPESCRIPT_VERSION = '5.9.3';
 
 const property = (name, optional, type) => ({
@@ -71,6 +71,7 @@ const EXPECTED_SEMANTIC_MANIFEST = [
       'deny-escalation',
       'allow-escalation',
       'replace-tool-result-with-feedback-and-continue',
+      'restrict-capability',
     ],
   },
   {
@@ -122,6 +123,10 @@ const EXPECTED_SEMANTIC_MANIFEST = [
       'wire-observed-after-dispatch',
       'hook-failed-original-action-proceeded',
       'native-hook-unverified',
+      'effect-expressed-runtime-unverified',
+      'effect-unsupported-original-action-proceeded',
+      'translation-failed-original-action-proceeded',
+      'runtime-acknowledged-effect',
     ],
   },
   {
@@ -561,3 +566,4 @@ if (mode !== '--public-export-only') verifySourceContract();
 if (mode !== '--source-only') verifyPublicBuildExports();
 
 console.log('runtime-adapter contract tests: PASS');
+if (mode === '--all') require('./test-ai-enforcement-four-axis-contract.cjs');
