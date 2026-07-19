@@ -685,6 +685,7 @@ function buildCanonicalDockerContext(
     );
   }
   let driverBinding = null;
+  let projectBackendPackage = false;
   if (driver !== null) {
     assertExactKeys(driver, ['artifact', 'witness'], 'canonical driver context');
     assertExactKeys(
@@ -747,6 +748,21 @@ function buildCanonicalDockerContext(
       contextPath: reviewedDescriptor.contextPath || driver.witness.containerPath.slice(1),
       exactBytes: driver.witness.exactBytes,
     });
+    projectBackendPackage = driver.artifact.consumer === 'backend';
+    if (projectBackendPackage) {
+      const committedPaths = new Set(entries.map(({ path: committedPath }) => committedPath));
+      for (const requiredPath of [
+        'packages/shared-contracts/package.json',
+        'packages/shared-contracts/dist/index.js',
+        'packages/shared-contracts/generated/ai-security/0.3.0/portable-contract.v1.jcs.json',
+      ]) {
+        assert.equal(
+          committedPaths.has(requiredPath),
+          true,
+          `backend accepted package projection is missing ${requiredPath}`,
+        );
+      }
+    }
   }
   const instructions = [
     `FROM ${baseImage.repositoryDigest}`,
@@ -767,6 +783,11 @@ function buildCanonicalDockerContext(
     );
   }
   instructions.push('COPY --chown=65534:65534 snapshot/ /workspace/');
+  if (projectBackendPackage) {
+    instructions.push(
+      'COPY --chown=65534:65534 snapshot/packages/shared-contracts/ /workspace/node_modules/@ceragon/shared-contracts/',
+    );
+  }
   if (driverBinding) {
     instructions.push(
       `COPY --chown=65534:65534 ${driverBinding.contextPath} ${driverBinding.containerPath}`,
@@ -2182,7 +2203,8 @@ function buildImmutableInputImage(snapshot, baseImageKey, driver = null) {
   const driverContextPath = driverDescriptor === null
     ? null
     : (driverDescriptor.contextPath || driverDescriptor.containerPath.slice(1));
-  const addedCopyLayerCount = driver === null ? 1 : 2;
+  const projectsBackendPackage = context.driver?.id === DRIVER_IDS.backend;
+  const addedCopyLayerCount = 1 + (driver === null ? 0 : 1) + (projectsBackendPackage ? 1 : 0);
   const attestationWorkspace = createBuildAttestationWorkspace();
   const candidateImageIds = new Set();
   let built = null;
@@ -2343,6 +2365,9 @@ function buildImmutableInputImage(snapshot, baseImageKey, driver = null) {
     const expectedAddedHistory = [
       ...(context.driver ? [
         `COPY --chown=65534:65534 ${driverContextPath} ${context.driver.containerPath} # buildkit`,
+      ] : []),
+      ...(projectsBackendPackage ? [
+        'COPY --chown=65534:65534 snapshot/packages/shared-contracts/ /workspace/node_modules/@ceragon/shared-contracts/ # buildkit',
       ] : []),
       `COPY --chown=65534:65534 snapshot/ /workspace/ # buildkit`,
       ...(context.driver ? [
@@ -2651,7 +2676,6 @@ function validateContainedContainerInspection(inspected, expected, label, option
   assert.deepStrictEqual(config.Cmd, expected.args, `${label} command changed`);
   assert.equal(config.User, '65534:65534', `${label} user changed`);
   assert.equal(config.WorkingDir, expected.cwd, `${label} working directory changed`);
-  assert.deepStrictEqual(config.Env, expected.environment, label + ' exact environment changed');
   assert.deepStrictEqual(config.Labels, expected.labels, `${label} labels changed`);
   assert.equal(config.OpenStdin, false, `${label} stdin must remain closed`);
   assert.equal(config.StdinOnce, false, `${label} stdin-once must remain disabled`);
@@ -2668,10 +2692,14 @@ function validateContainedContainerInspection(inspected, expected, label, option
     assert.equal(environment.has(folded), false, `${label} environment repeats a case-insensitive key`);
     environment.set(folded, value);
   }
+  assert.equal(environment.size, expected.environment.length, `${label} exact environment changed`);
   for (const value of expected.environment) {
     const key = value.slice(0, value.indexOf('=')).toLowerCase();
     assert.equal(environment.get(key), value, `${label} protected environment value changed`);
   }
+  const canonicalEnvironment = [...environment.entries()]
+    .sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0))
+    .map(([, value]) => value);
 
   const host = inspected.hostConfig;
   assert.deepStrictEqual(host.LogConfig, { Type: 'none', Config: {} }, label + ' log driver must remain none');
@@ -2730,7 +2758,7 @@ function validateContainedContainerInspection(inspected, expected, label, option
       stdinOnce: config.StdinOnce,
       tty: config.Tty,
       volumes: config.Volumes || {},
-      environment: config.Env,
+      environment: canonicalEnvironment,
     },
     hostConfig: {
       privileged: host.Privileged,
@@ -2917,6 +2945,56 @@ function cleanupUnacceptedContainedProcess(name, containerId, label) {
     identity,
     verifiedContainedCleanupOperations(name, label),
   );
+}
+
+function runContainedCleanupRecovery(primaryCleanup, emergencyCleanup, initialConfigurationSha256) {
+  assert.equal(typeof primaryCleanup, 'function', 'primary contained cleanup must be a function');
+  assert.equal(typeof emergencyCleanup, 'function', 'emergency contained cleanup must be a function');
+  assert.match(
+    initialConfigurationSha256,
+    /^sha256:[0-9a-f]{64}$/,
+    'initial contained configuration digest is invalid',
+  );
+  try {
+    return Object.freeze({
+      cleanup: primaryCleanup(),
+      cleanupError: null,
+      recoveredCleanupInvariantId: null,
+      recoveredCleanupDiagnosticSha256: null,
+    });
+  } catch (primaryCleanupError) {
+    const recoveredCleanupInvariantId = containedCleanupInvariantId(primaryCleanupError);
+    const recoveredCleanupDiagnosticSha256 = sha256(
+      Buffer.from(String(primaryCleanupError?.message || ''), 'utf8'),
+    );
+    try {
+      const emergency = emergencyCleanup();
+      assertRecord(emergency, 'emergency contained cleanup proof');
+      assert.equal(emergency.containerRemoved, true, 'emergency cleanup did not prove removal');
+      assert.equal(emergency.exactContainerIdsAbsent, true, 'emergency cleanup did not prove exact IDs absent');
+      assert.equal(emergency.exactContainerNameAbsent, true, 'emergency cleanup did not prove exact name absent');
+      assert.equal(emergency.survivorCount, 0, 'emergency cleanup retained a survivor');
+      assert.equal(Array.isArray(emergency.removals), true, 'emergency cleanup removal receipts are invalid');
+      return Object.freeze({
+        cleanup: deepFreeze({
+          ...emergency,
+          exitCode: null,
+          emergency: true,
+          configurationSha256: initialConfigurationSha256,
+        }),
+        cleanupError: null,
+        recoveredCleanupInvariantId,
+        recoveredCleanupDiagnosticSha256,
+      });
+    } catch (cleanupError) {
+      return Object.freeze({
+        cleanup: null,
+        cleanupError,
+        recoveredCleanupInvariantId,
+        recoveredCleanupDiagnosticSha256,
+      });
+    }
+  }
 }
 
 function cleanupContainedProcess(identity, expected, initialInspection) {
@@ -3283,30 +3361,18 @@ function runContainedProcess(spec, limits, semanticRequest = null) {
       child?.stdout?.destroy();
       child?.stderr?.destroy();
       terminationController?.cancel();
-      let cleanup;
       let inputRemoval;
-      let cleanupError = null;
-      try {
-        cleanup = cleanupContainedProcess(identity, expectedContainer, initialInspection);
-      } catch (error) {
-        cleanupError = error;
-        try {
-          const emergency = cleanupUnacceptedContainedProcess(
-            name,
-            containerId,
-            `profile command ${spec.id} emergency cleanup`,
-          );
-          cleanup = deepFreeze({
-            ...emergency,
-            exitCode: null,
-            emergency: true,
-            configurationSha256: initialInspection.configurationSha256,
-          });
-        } catch (emergencyError) {
-          cleanup = null;
-          cleanupError = emergencyError;
-        }
-      }
+      const cleanupResolution = runContainedCleanupRecovery(
+        () => cleanupContainedProcess(identity, expectedContainer, initialInspection),
+        () => cleanupUnacceptedContainedProcess(
+          name,
+          containerId,
+          `profile command ${spec.id} emergency cleanup`,
+        ),
+        initialInspection.configurationSha256,
+      );
+      const cleanup = cleanupResolution.cleanup;
+      let cleanupError = cleanupResolution.cleanupError;
       try {
         inputRemoval = removeImmutableInputImage(inputImage);
       } catch (error) {
@@ -3341,6 +3407,8 @@ function runContainedProcess(spec, limits, semanticRequest = null) {
         inputImageRemovalScope: inputRemoval.inputImageRemovalScope,
         buildCacheRetention: inputRemoval.buildCacheRetention,
         cacheInfluenceOnExecution: inputRemoval.cacheInfluenceOnExecution,
+        recoveredCleanupInvariantId: cleanupResolution.recoveredCleanupInvariantId,
+        recoveredCleanupDiagnosticSha256: cleanupResolution.recoveredCleanupDiagnosticSha256,
       };
       if (terminationError) {
         return rejectAfterSemanticWipe(new IntegrationGateError(
@@ -5077,6 +5145,7 @@ const testing = Object.freeze({
   createOneShotSemanticRunAuthority,
   registerFrontendDependencyImage,
   validateContainedSemanticEnvelopeBytes,
+  runContainedCleanupRecovery,
   trustedGitFileModeSetting,
   parseTreeEntries,
   validateBuildxAttestationBytes,

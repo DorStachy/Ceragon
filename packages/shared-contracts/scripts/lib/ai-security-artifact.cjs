@@ -15,9 +15,9 @@ const DIGEST_FILE = `${ARTIFACT_FILE}.sha256`;
 const RELEASE_FILE = 'portable-contract-release.v1.jcs.json';
 const EXPECTED_FILES = Object.freeze([RELEASE_FILE, ARTIFACT_FILE, DIGEST_FILE].sort());
 const EXPECTED_TUPLE_SYMBOLS_DIGEST =
-  'sha256:24aa6b53a3d1552bb446510ed7ce4fe37f70ea0ef102a5630e86c35cd2de62bd';
+  'sha256:abe21415066c160627d934cf502da82b0df76494fd55665b6c264a2500a6ddaa';
 const EXPECTED_PORTABLE_ARTIFACT_DIGEST =
-  'sha256:bb172d0d535530fba9ade9648c2a5f9784ccd4fb9b1a08535f0172188aadca67';
+  'sha256:096d6c8f181408bb60a1440173f04efdd99764736d97d01169decdecad0c6feb';
 const EXPECTED_SOURCE_PATHS = Object.freeze({
   definitionsSchema: 'schemas/ai-security-policy-v1.defs.schema.json',
   strictWriteSchema: 'schemas/ai-security-policy-v1.strict-write.schema.json',
@@ -33,27 +33,27 @@ const EXPECTED_SOURCE_PATHS = Object.freeze({
 });
 const REVIEWED_SOURCE_DIGESTS = Object.freeze({
   'manifests/ai-security-portable-release.v1.json':
-    'sha256:7bad153e0d4c5f67d1598d59a92023516a75f8eda2d27592dd48539f2f6eee0e',
+    'sha256:97d328d29bc779edd2426e75d257a1f729e152283e665300870a05b38cc17d9e',
   'schemas/ai-security-portable-source-manifest-v1.schema.json':
-    'sha256:33008d29c2deee39c2214675274dbf33f448dc7766f27677b2508873ba4c6836',
+    'sha256:119b6e1c0bda5387b48292859eb0b1c8538f4db25de3156ad0c3aaf2aed88126',
   'schemas/ai-security-portable-artifact-v1.schema.json':
-    'sha256:ba2798a62b903c477b5e3b464b907ad2dd3c9cc2a13ae283e18c39bdbdaf4f17',
+    'sha256:1768212d60c9c396cf82911324fe88f9db604931656c3ac0c37e1f1f79541269',
   'schemas/ai-security-portable-release-manifest-v1.schema.json':
-    'sha256:73b68e434fa19720ddef865143452280b30c6edcd2e587a578f0ac1ed50b6800',
+    'sha256:fced673dab1542380e639bc477f31f96b373a5f6424442b50fca231e6ebccf69',
   'schemas/ai-security-policy-v1.defs.schema.json':
-    'sha256:b111a9bde263b06714eba61ed7b0928a198fece15b949f58b5828acd17d593ec',
+    'sha256:c1881d501bcf3ebf861259a4b108ce5707b2a47c15fda63ff5286808c2abb7f8',
   'schemas/ai-security-policy-v1.strict-write.schema.json':
     'sha256:dc69065526a81efbf0c3daabb58b00afbb5b21049eb4347bdcd362c272474d52',
   'schemas/ai-security-policy-v1.tolerant-read.schema.json':
     'sha256:a4df8843fd448f31c142f26c987583b12bfd8c7fa3d3af1d1756330dbb75d7a1',
   'vectors/ai-security-policy-v1-schema-cases.json':
-    'sha256:00ca8842aaa6eb19c29debfa2530afd6a11e7eff00e8b65f5f1973ca8b0c808a',
+    'sha256:aa90b88650cae50a11e20a1ba549265f360b183cb9bf50e850033bf4adbc5b9e',
   'vectors/rfc8785-conformance.v1.json':
     'sha256:5304b3362dffe965385d1b91a0068fcb349d600b167c0faf18dfda02c0cac284',
   'vectors/rfc8785-rejections.v1.json':
     'sha256:95f35aa37efb36684fabbec794c73146053b84c5500b2df9e3be5cf79a8e1346',
   'fixtures/ai-security-policy-v1-authority.json':
-    'sha256:18ff07ab942a5ff4b816254cab6585ce9cf288e096dbcdafa3f3a0f4352b2e16',
+    'sha256:73aeac38b2f61172a22a2539fac2c9b1829ad60393dbd5091b594813b4e486bd',
   'schemas/ai-security-obligation-contract-v1.schema.json':
     'sha256:29b4247238dc7dc4631db987c9692a7b3d9a25a77086ce35b59e4ccd1e760bb4',
   'schemas/ai-security-failure-oracle-v1.schema.json':
@@ -67,9 +67,9 @@ const EXPECTED_MANIFEST_SCALARS = Object.freeze({
   format: 'ceragon.ai-security.portable-source',
   formatVersion: 1,
   packageName: '@ceragon/shared-contracts',
-  packageVersion: '0.3.0',
+  packageVersion: '0.4.0',
   generatorName: 'ceragon-ai-security-artifact',
-  generatorVersion: '1.2.0',
+  generatorVersion: '1.3.0',
   runtimeActivatable: false,
   signedRuntimePolicyBundle: false,
   v2WriterEligible: false,
@@ -303,7 +303,7 @@ function buildPortableArtifact(packageRoot) {
   assertSourceManifestInvariants(sourceManifest);
   assertCondition(packageJson.name === sourceManifest.packageName, 'source manifest package name mismatch');
   assertCondition(packageJson.version === sourceManifest.packageVersion, 'source manifest package version mismatch');
-  assertCondition(packageJson.version === '0.3.0', 'P0-E01 portable package must be exactly 0.3.0');
+  assertCondition(packageJson.version === '0.4.0', 'portable package must be exactly 0.4.0');
   assertCondition(sourceManifest.runtimeActivatable === false, 'portable source must remain inert');
   assertCondition(sourceManifest.signedRuntimePolicyBundle === false, 'C02 cannot claim a signed runtime bundle');
   assertCondition(sourceManifest.v2WriterEligible === false, 'C02 cannot enable a V2 writer');
@@ -315,7 +315,7 @@ function buildPortableArtifact(packageRoot) {
     'compiled contract module',
   ));
   const tupleSymbols = sourceManifest.orderedTupleSymbols;
-  assertCondition(Array.isArray(tupleSymbols) && tupleSymbols.length === 54, 'portable tuple manifest must contain exactly 54 symbols');
+  assertCondition(Array.isArray(tupleSymbols) && tupleSymbols.length === 55, 'portable tuple manifest must contain exactly 55 symbols');
   assertCondition(new Set(tupleSymbols).size === tupleSymbols.length, 'portable tuple manifest has duplicate symbols');
   assertCondition(
     sha256Digest(Buffer.from(JSON.stringify(tupleSymbols), 'utf8')) === EXPECTED_TUPLE_SYMBOLS_DIGEST,
@@ -449,7 +449,7 @@ function buildPortableArtifact(packageRoot) {
   const artifactDigest = sha256Digest(artifactBytes);
   assertCondition(
     artifactDigest === EXPECTED_PORTABLE_ARTIFACT_DIGEST,
-    `portable artifact digest differs from reviewed immutable 0.3.0 release; got ${artifactDigest}`,
+    `portable artifact digest differs from reviewed immutable 0.4.0 release; got ${artifactDigest}`,
   );
   const release = {
     format: 'ceragon.ai-security.portable-release',

@@ -1,13 +1,14 @@
 {
   "name": "@ceragon/shared-contracts",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "description": "Shared type contracts for Ceragon package intelligence (Ingestion + Backend)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
-    "generated/ai-security/0.3.0"
+    "generated/ai-security/0.3.0",
+    "generated/ai-security/0.4.0"
   ],
   "scripts": {
     "build": "tsc",
@@ -16,7 +17,7 @@
     "validate:ai-security-sources": "node scripts/test-ai-security-policy-schemas.cjs && node scripts/test-jcs-conformance.cjs",
     "generate:ai-security-o01-f01": "node scripts/generate-ai-security-o01-f01-fixtures.cjs --write",
     "check:ai-security-o01-f01": "node scripts/generate-ai-security-o01-f01-fixtures.cjs --check && node scripts/test-ai-security-o01-f01-contracts.cjs",
-    "generate:ai-security": "npm run build && npm run validate:ai-security-sources && npm run generate:ai-security-o01-f01 && npm run check:ai-security-o01-f01 && node scripts/generate-ai-security-artifact.cjs --output generated/ai-security/0.3.0",
+    "generate:ai-security": "npm run build && npm run validate:ai-security-sources && npm run generate:ai-security-o01-f01 && npm run check:ai-security-o01-f01 && node scripts/generate-ai-security-artifact.cjs --output generated/ai-security/0.4.0",
     "check:ai-security-generated": "npm run build && npm run validate:ai-security-sources && npm run check:ai-security-o01-f01 && node scripts/check-ai-security-generated.cjs",
     "test:ai-security-integration-harness": "node --test --test-concurrency=1 scripts/test-ai-security-semantic-receipts.cjs scripts/test-ai-security-integration-gate.cjs",
     "run:ai-security-integration-gate": "node scripts/run-ai-security-integration-gate.cjs",

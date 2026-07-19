@@ -29,7 +29,7 @@
       "required": ["name", "version"],
       "properties": {
         "name": { "const": "@ceragon/shared-contracts" },
-        "version": { "const": "0.3.0" }
+        "version": { "const": "0.4.0" }
       }
     },
     "generator": {
@@ -38,7 +38,7 @@
       "required": ["name", "version"],
       "properties": {
         "name": { "const": "ceragon-ai-security-artifact" },
-        "version": { "const": "1.2.0" }
+        "version": { "const": "1.3.0" }
       }
     },
     "authority": {
@@ -129,8 +129,8 @@
       "properties": {
         "orderedTuples": {
           "type": "object",
-          "minProperties": 54,
-          "maxProperties": 54,
+          "minProperties": 55,
+          "maxProperties": 55,
           "propertyNames": { "pattern": "^[A-Z][A-Z0-9_]+$" },
           "additionalProperties": {
             "type": "array",

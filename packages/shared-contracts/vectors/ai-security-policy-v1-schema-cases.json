@@ -26,10 +26,10 @@
         "enabled": true,
         "actions": {
           "private-key": "block",
-          "aws-secret-key": "block",
+          "aws-secret-key": "warn",
           "aws-access-key": "redact",
           "gcp-key": "redact",
-          "azure-key": "redact",
+          "azure-key": "warn",
           "generic-api-key": "redact",
           "jwt": "redact",
           "slack-token": "redact",
@@ -47,7 +47,14 @@
           "google-oauth-secret": "redact",
           "high-entropy": "warn",
           "kubeconfig": "warn",
-          "db-connection-string": "warn"
+          "db-connection-string": "redact",
+          "aws-credential-pair": "block",
+          "gcp-service-account": "block",
+          "azure-connection-string": "redact",
+          "bearer-auth-token": "warn",
+          "payment-card": "redact",
+          "iban": "redact",
+          "national-id": "warn"
         },
         "blockClasses": ["private-key", "aws-secret-key"],
         "redactClasses": ["aws-access-key"],
@@ -64,8 +71,16 @@
           "jailbreak-persona": "warn",
           "jailbreak-restriction-removal": "warn",
           "jailbreak-role-reassign": "warn",
+          "injection-credential-exfil": "warn",
+          "injection-authority-escalation": "warn",
+          "injection-decoded-payload": "warn",
+          "ingress-tool-instruction-injection": "warn",
+          "ingress-exfil-instruction": "warn",
+          "ingress-sensitive-path-read": "warn",
           "injection-override-exfil": "block",
-          "jailbreak-persona-unrestricted": "block"
+          "jailbreak-persona-unrestricted": "block",
+          "injection-override-credexfil": "block",
+          "ingress-secret-exfil-combo": "block"
         }
       },
       "exclusions": {
@@ -126,13 +141,15 @@
         "dlp": {
           "enabled": true,
           "actions": {
-            "private-key": "block"
+            "private-key": "block",
+            "aws-credential-pair": "block"
           }
         },
         "promptRisk": {
           "enabled": true,
           "actions": {
-            "injection-override-exfil": "block"
+            "injection-override-exfil": "block",
+            "injection-authority-escalation": "warn"
           },
           "obfuscationEscalates": false
         },
@@ -182,7 +199,8 @@
         "ingress": {
           "enabled": true,
           "actions": {
-            "future-ingress-class": "hold"
+            "future-ingress-class": "hold",
+            "ingress-secret-exfil-combo": "redact"
           },
           "taintHold": true
         }
@@ -484,7 +502,8 @@
           "agents.enforcementTier": "detect",
           "ingress.enabled": true,
           "ingress.taintHold": true,
-          "ingress.actionForUnlistedClass": "redact"
+          "ingress.actionForUnlistedClass": "redact",
+          "ingress.builtInClassOverrides.ingress-exfil-verb": "warn"
         }
       }
     }

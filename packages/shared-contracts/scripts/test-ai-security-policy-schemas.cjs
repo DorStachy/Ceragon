@@ -247,6 +247,13 @@ const expectedDlpClasses = [
   'high-entropy',
   'kubeconfig',
   'db-connection-string',
+  'aws-credential-pair',
+  'gcp-service-account',
+  'azure-connection-string',
+  'bearer-auth-token',
+  'payment-card',
+  'iban',
+  'national-id',
 ];
 const expectedPromptClasses = [
   'injection-instruction-override',
@@ -257,13 +264,21 @@ const expectedPromptClasses = [
   'jailbreak-persona',
   'jailbreak-restriction-removal',
   'jailbreak-role-reassign',
+  'injection-credential-exfil',
+  'injection-authority-escalation',
+  'injection-decoded-payload',
+  'ingress-tool-instruction-injection',
+  'ingress-exfil-instruction',
+  'ingress-sensitive-path-read',
   'injection-override-exfil',
   'jailbreak-persona-unrestricted',
+  'injection-override-credexfil',
+  'ingress-secret-exfil-combo',
 ];
 assert.deepEqual(dlpClasses, expectedDlpClasses);
 assert.deepEqual(promptClasses, expectedPromptClasses);
-assert.equal(dlpClasses.length, 23, 'strict DLP catalog must contain 23 classes');
-assert.equal(promptClasses.length, 10, 'strict prompt catalog must contain 10 classes');
+assert.equal(dlpClasses.length, 30, 'strict DLP catalog must contain 30 classes');
+assert.equal(promptClasses.length, 18, 'strict prompt catalog must contain 18 classes');
 const expectedEnums = {
   dlpAction: ['block', 'redact', 'warn', 'allow'],
   promptAction: ['block', 'warn', 'allow'],
@@ -454,6 +469,7 @@ assert.deepEqual(omissionRule.fixture.expectedSemantics, {
   'ingress.enabled': true,
   'ingress.taintHold': true,
   'ingress.actionForUnlistedClass': 'redact',
+  'ingress.builtInClassOverrides.ingress-exfil-verb': 'warn',
 });
 
 const effective = vectors.baseDocuments.effective;

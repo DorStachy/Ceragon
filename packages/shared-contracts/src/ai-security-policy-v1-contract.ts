@@ -57,11 +57,19 @@ export const AI_SECURITY_POLICY_V1_PROMPT_CONFIGURABLE_CLASSES = deepFreeze([
   'jailbreak-persona',
   'jailbreak-restriction-removal',
   'jailbreak-role-reassign',
+  'injection-credential-exfil',
+  'injection-authority-escalation',
+  'injection-decoded-payload',
+  'ingress-tool-instruction-injection',
+  'ingress-exfil-instruction',
+  'ingress-sensitive-path-read',
 ] as const);
 
 export const AI_SECURITY_POLICY_V1_PROMPT_DERIVED_CLASSES = deepFreeze([
   'injection-override-exfil',
   'jailbreak-persona-unrestricted',
+  'injection-override-credexfil',
+  'ingress-secret-exfil-combo',
 ] as const);
 
 export const AI_SECURITY_POLICY_V1_PROMPT_CLASSES = deepFreeze([
@@ -156,30 +164,44 @@ export type AiSecurityPolicyV1IngressAction =
   (typeof AI_SECURITY_POLICY_V1_INGRESS_ACTIONS)[number];
 
 /**
- * This is deliberately a policy-addressable catalog, not a detector catalog.
- * The named non-policy signals document current exclusions from the 23-class
- * map without implying completeness or making ingress keys a closed enum.
+ * Every class the ingress evaluator accepts as a first-class admin action.
+ *
+ * Prompt-risk findings can originate inside untrusted tool output, so the
+ * ingress map deliberately includes the complete prompt class catalog plus the
+ * two ingress-only classes. Keys remain open on the wire for forward-compatible
+ * readers; this ordered tuple is the known UI/default catalog.
+ */
+export const AI_SECURITY_POLICY_V1_INGRESS_CONFIGURABLE_CLASSES = deepFreeze([
+  ...AI_SECURITY_POLICY_V1_PROMPT_CLASSES,
+  'ingress-exfil-verb',
+  'ingress-tool-poisoning',
+] as const);
+export type AiSecurityPolicyV1IngressClass =
+  (typeof AI_SECURITY_POLICY_V1_INGRESS_CONFIGURABLE_CLASSES)[number];
+
+/**
+ * This is deliberately a policy-addressable catalog, not a claim that V1 owns
+ * every detector in the product. Phase-D coverage is complete while the broader
+ * detector inventory remains open and ingress wire keys remain forward-compatible.
  */
 export const AI_SECURITY_POLICY_V1_CATALOG = deepFreeze({
   schemaVersion: 1,
   scope: 'v1-policy-addressable',
   completeDetectorInventory: false,
+  phaseDPolicyAddressableInventoryComplete: true,
   dlpClasses: [...AI_DLP_CLASSES],
   promptRiskConfigurableClasses: [
     ...AI_SECURITY_POLICY_V1_PROMPT_CONFIGURABLE_CLASSES,
   ],
   promptRiskDerivedClasses: [...AI_SECURITY_POLICY_V1_PROMPT_DERIVED_CLASSES],
+  ingressConfigurableClasses: [
+    ...AI_SECURITY_POLICY_V1_INGRESS_CONFIGURABLE_CLASSES,
+  ],
   browserProviderKeys: [...AI_SECURITY_POLICY_V1_BROWSER_PROVIDER_KEYS],
   toolProviderKeys: [...AI_SECURITY_POLICY_V1_TOOL_PROVIDER_KEYS],
   knownNonPolicyAddressableSignals: {
-    engineEmittedDlp: ['base64-wrapped-secret'],
     policySynthesized: ['custom-blocklist'],
-    ingressEngineClasses: [
-      'ingress-exfil-instruction',
-      'ingress-exfil-verb',
-      'ingress-sensitive-path-read',
-      'ingress-tool-poisoning',
-    ],
+    degradedRuleIds: ['injection-decoded-payload-budget-exceeded'],
   },
 } as const);
 
@@ -195,6 +217,7 @@ export const AI_SECURITY_POLICY_V1_DIRECT_OMISSION_DEFAULTS = deepFreeze({
     enabled: true,
     taintHold: true,
     actionForUnlistedClass: 'redact',
+    builtInClassOverrides: { 'ingress-exfil-verb': 'warn' },
   },
   agents: { enforcementTier: 'detect' },
   proxy: { failMode: 'closed', failClosedUnlessLiteralOpen: true },
@@ -257,7 +280,9 @@ export const AI_SECURITY_POLICY_V1_READER_FALLBACKS = deepFreeze({
       enabled: true,
       taintHold: true,
       actionForUnlistedClass: 'redact',
+      builtInClassOverrides: { 'ingress-exfil-verb': 'warn' },
     },
+    actionResolutionOrder: ['configured-actions', 'built-in-default'],
   },
   proxy: {
     failClosedUnlessLiteralOpen: true,
@@ -462,9 +487,15 @@ function buildRecommendedDlpActions(): Record<
   AiSecurityPolicyV1DlpAction
 > {
   const actions = {} as Record<AiDlpClass, AiSecurityPolicyV1DlpAction>;
-  for (const name of AI_DLP_DEFAULT_POLICY.blockClasses) actions[name] = 'block';
-  for (const name of AI_DLP_DEFAULT_POLICY.redactClasses) actions[name] = 'redact';
-  for (const name of AI_DLP_DEFAULT_POLICY.warnClasses) actions[name] = 'warn';
+  for (const name of AI_DLP_CLASSES) {
+    if (AI_DLP_DEFAULT_POLICY.blockClasses.includes(name)) {
+      actions[name] = 'block';
+    } else if (AI_DLP_DEFAULT_POLICY.redactClasses.includes(name)) {
+      actions[name] = 'redact';
+    } else {
+      actions[name] = 'warn';
+    }
+  }
   return actions;
 }
 
@@ -485,7 +516,21 @@ function buildRecommendedPromptActions(): Record<
   return actions;
 }
 
-/** Exact executable Backend recommended preset; optional default-on keys omit. */
+function buildRecommendedIngressActions(): Record<
+  AiSecurityPolicyV1IngressClass,
+  AiSecurityPolicyV1IngressAction
+> {
+  const actions = {} as Record<
+    AiSecurityPolicyV1IngressClass,
+    AiSecurityPolicyV1IngressAction
+  >;
+  for (const name of AI_SECURITY_POLICY_V1_INGRESS_CONFIGURABLE_CLASSES) {
+    actions[name] = name === 'ingress-exfil-verb' ? 'warn' : 'redact';
+  }
+  return actions;
+}
+
+/** Exact executable Backend recommended preset; known ingress defaults are explicit. */
 export const RECOMMENDED_AI_SECURITY_POLICY_V1: DeepReadonly<
   AiSecurityPolicyStoredConfigV1
 > = deepFreeze<AiSecurityPolicyStoredConfigV1>({
@@ -529,6 +574,11 @@ export const RECOMMENDED_AI_SECURITY_POLICY_V1: DeepReadonly<
     includeDefaults: true,
   },
   proxy: { failMode: 'closed' },
+  ingress: {
+    enabled: true,
+    actions: buildRecommendedIngressActions(),
+    taintHold: true,
+  },
 });
 
 export function cloneRecommendedAiSecurityPolicyV1(): AiSecurityPolicyStoredConfigV1 {

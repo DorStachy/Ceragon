@@ -13,7 +13,8 @@ const packageRoot = path.resolve(__dirname, '..');
 const generator = path.join(__dirname, 'generate-ai-security-artifact.cjs');
 const checker = path.join(__dirname, 'check-ai-security-generated.cjs');
 const exporter = path.join(__dirname, 'export-ai-security-artifact.cjs');
-const generatedRoot = path.join(packageRoot, 'generated', 'ai-security', '0.3.0');
+const priorGeneratedRoot = path.join(packageRoot, 'generated', 'ai-security', '0.3.0');
+const generatedRoot = path.join(packageRoot, 'generated', 'ai-security', '0.4.0');
 const {
   buildPortableArtifact,
   compareGeneratedDirectory,
@@ -584,7 +585,7 @@ try {
   assert.equal('expiresAt' in release, false);
 
   const packageJson = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
-  assert.equal(packageJson.version, '0.3.0');
+  assert.equal(packageJson.version, '0.4.0');
   const packageExports = require(packageRoot);
   assert.deepEqual(packageExports.AI_ENFORCEMENT_PROTOCOL_VERSIONS, ['1', '2']);
   assert.equal(packageExports.AI_SECURITY_V2_WRITER_ENABLED, false);
@@ -617,6 +618,7 @@ try {
     'dist/sqs-signer.d.ts',
     'dist/sqs-signer.js',
     ...expectedFiles.map((relative) => `generated/ai-security/0.3.0/${relative}`),
+    ...expectedFiles.map((relative) => `generated/ai-security/0.4.0/${relative}`),
   ]) {
     assert.equal(packedPaths.includes(required), true, `packed artifact is missing ${required}`);
   }
@@ -653,7 +655,12 @@ try {
     filesUnder(path.join(installedRoot, 'generated', 'ai-security', '0.3.0')),
     expectedFiles,
   );
+  assert.deepEqual(
+    filesUnder(path.join(installedRoot, 'generated', 'ai-security', '0.4.0')),
+    expectedFiles,
+  );
 
+  assert.deepEqual(filesUnder(priorGeneratedRoot), expectedFiles);
   assert.deepEqual(filesUnder(generatedRoot), expectedFiles);
   for (const relative of expectedFiles) {
     assert.deepEqual(

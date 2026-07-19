@@ -20,15 +20,35 @@ const DLP_CLASSES = [
   'openai-key', 'anthropic-key', 'stripe-live', 'slack-webhook', 'sendgrid-key',
   'twilio-key', 'npm-token', 'pypi-token', 'gitlab-token', 'google-oauth-secret',
   'high-entropy', 'kubeconfig', 'db-connection-string',
+  'aws-credential-pair', 'gcp-service-account', 'azure-connection-string',
+  'bearer-auth-token', 'payment-card', 'iban', 'national-id',
+];
+const DLP_BLOCK = [
+  'private-key', 'aws-credential-pair', 'gcp-service-account',
+];
+const DLP_REDACT = [
+  'aws-access-key', 'gcp-key', 'generic-api-key', 'jwt', 'slack-token',
+  'github-token', 'internal-url', 'openai-key', 'anthropic-key', 'stripe-live',
+  'slack-webhook', 'sendgrid-key', 'twilio-key', 'npm-token', 'pypi-token',
+  'gitlab-token', 'google-oauth-secret', 'db-connection-string',
+  'azure-connection-string', 'payment-card', 'iban',
+];
+const DLP_WARN = [
+  'aws-secret-key', 'azure-key', 'high-entropy', 'kubeconfig',
+  'bearer-auth-token', 'national-id',
 ];
 const PROMPT_CONFIGURABLE = [
   'injection-instruction-override', 'injection-system-exfil',
   'injection-role-marker', 'injection-obfuscation-unicode',
   'injection-encoded-payload', 'jailbreak-persona',
   'jailbreak-restriction-removal', 'jailbreak-role-reassign',
+  'injection-credential-exfil', 'injection-authority-escalation',
+  'injection-decoded-payload', 'ingress-tool-instruction-injection',
+  'ingress-exfil-instruction', 'ingress-sensitive-path-read',
 ];
 const PROMPT_DERIVED = [
   'injection-override-exfil', 'jailbreak-persona-unrestricted',
+  'injection-override-credexfil', 'ingress-secret-exfil-combo',
 ];
 const BROWSER_PROVIDERS = [
   'openai', 'anthropic', 'google', 'github', 'perplexity', 'poe',
@@ -38,8 +58,8 @@ const TOOL_PROVIDERS = [
   'gemini-cli', 'codex',
 ];
 const INGRESS_CLASSES = [
-  'ingress-exfil-instruction', 'ingress-exfil-verb',
-  'ingress-sensitive-path-read', 'ingress-tool-poisoning',
+  ...PROMPT_CONFIGURABLE, ...PROMPT_DERIVED,
+  'ingress-exfil-verb', 'ingress-tool-poisoning',
 ];
 
 const EXPECTED_TUPLES = {
@@ -60,17 +80,20 @@ const EXPECTED_TUPLES = {
   AI_SECURITY_POLICY_V1_ENFORCEMENT_TIERS: ['detect', 'strict'],
   AI_SECURITY_POLICY_V1_PROXY_FAIL_MODES: ['closed', 'open'],
   AI_SECURITY_POLICY_V1_INGRESS_ACTIONS: ['redact', 'warn', 'hold', 'off'],
+  AI_SECURITY_POLICY_V1_INGRESS_CONFIGURABLE_CLASSES: INGRESS_CLASSES,
 };
 
-const dlpActions = Object.fromEntries([
-  ...DLP_CLASSES.slice(0, 2).map((name) => [name, 'block']),
-  ...DLP_CLASSES.slice(2, 20).map((name) => [name, 'redact']),
-  ...DLP_CLASSES.slice(20).map((name) => [name, 'warn']),
-]);
+const dlpActions = Object.fromEntries(DLP_CLASSES.map((name) => [
+  name,
+  DLP_BLOCK.includes(name) ? 'block' : DLP_REDACT.includes(name) ? 'redact' : 'warn',
+]));
 const promptActions = Object.fromEntries([
   ...PROMPT_CONFIGURABLE.map((name) => [name, 'warn']),
   ...PROMPT_DERIVED.map((name) => [name, 'block']),
 ]);
+const ingressActions = Object.fromEntries(
+  INGRESS_CLASSES.map((name) => [name, name === 'ingress-exfil-verb' ? 'warn' : 'redact']),
+);
 const RECOMMENDED = {
   dlp: { enabled: true, actions: dlpActions },
   promptRisk: { enabled: true, actions: promptActions },
@@ -82,10 +105,16 @@ const RECOMMENDED = {
   agents: { allowed: [], mode: '', enforcementTier: 'detect' },
   egress: { mode: '', allowed: [], blocked: [], includeDefaults: true },
   proxy: { failMode: 'closed' },
+  ingress: { enabled: true, actions: ingressActions, taintHold: true },
 };
 const DIRECT_OMISSION_DEFAULTS = {
   promptRisk: { obfuscationEscalates: true },
-  ingress: { enabled: true, taintHold: true, actionForUnlistedClass: 'redact' },
+  ingress: {
+    enabled: true,
+    taintHold: true,
+    actionForUnlistedClass: 'redact',
+    builtInClassOverrides: { 'ingress-exfil-verb': 'warn' },
+  },
   agents: { enforcementTier: 'detect' },
   proxy: { failMode: 'closed', failClosedUnlessLiteralOpen: true },
 };
@@ -136,7 +165,9 @@ const READER_FALLBACKS = {
       enabled: true,
       taintHold: true,
       actionForUnlistedClass: 'redact',
+      builtInClassOverrides: { 'ingress-exfil-verb': 'warn' },
     },
+    actionResolutionOrder: ['configured-actions', 'built-in-default'],
   },
   proxy: {
     failClosedUnlessLiteralOpen: true,
@@ -309,46 +340,56 @@ assert.ok(
 const authorityBytes = fs.readFileSync(authorityFixturePath);
 assert.equal(
   sha256(authorityBytes),
-  '18ff07ab942a5ff4b816254cab6585ce9cf288e096dbcdafa3f3a0f4352b2e16',
+  '73aeac38b2f61172a22a2539fac2c9b1829ad60393dbd5091b594813b4e486bd',
   'authority fixture changed without an explicit source-truth recapture',
 );
 const authority = deepFreezeFixture(JSON.parse(authorityBytes.toString('utf8')));
 assertDeepFrozen(authority, 'authority fixture');
+assert.equal(
+  authority.captureAlgorithm,
+  'SHA256_JCS_AUTHORITATIVE_SOURCE_DIGEST_MAP',
+);
+const { canonicalizeJcs } = require(path.join(root, 'dist', 'sqs-signer.js'));
+assert.equal(
+  sha256(Buffer.from(canonicalizeJcs(authority.authoritativeSources), 'utf8')),
+  authority.capturedControlPlaneSotSha256,
+  'authority source capture digest is not derived from the exact digest map',
+);
 assert.deepEqual(authority.authoritativeSources, {
   'Workspace/packages/shared-contracts/src/ai-governance-contract.ts':
-    'a2bc438b0b6f08b14fc56948b0104bb70e35cc69ec63d23aa6b753a8e805e2cc',
+    '42ebb31718598e6ce883802ced9de3f9be1734a9d8b923db803ab183b1a9ceff',
   'Backend/src/ai-security-policy/ai-security-policy.constants.ts':
-    '49d077c7b62b74751c5515d2f56deeea78f15f913cecad848957c2469aff346b',
+    'bb49c02117eda886ce95c1a33b4bfa99524aa67e196736b0b242ffbd54f9289a',
   'Backend/src/ai-security-policy/dto/ai-security-policy.dto.ts':
-    '724fcea622ac37f3739b4bd8b2d140b370a4009d1b18ceadecf8c7deeb5a25df',
+    '4dd22fc819e2092470f634845f09741b8f1136250ce917cc72d3a2a277a1c5bf',
   'Backend/src/ai-security-policy/ai-security-policy.service.ts':
-    '92ca68f437c4e46946bbbb91a4b0ae895d8cfaf39cdb21804c04ef9e76af78d8',
+    'c8616c6b00b71aa3fac3d49ea5cb88ab88e482498c5fb804a8e954cb8df4435f',
   'Backend/src/ai-governance/services/ai-policy.service.ts':
-    'f77bc6f7651af0db23cb57aa306ea976852413adbe24c1cb86008e7255b223b6',
+    '7e5e2dc6440a4e24063ca9b44f72b08d4f5fa64456d4b6de313b54a1939b4d39',
   'Installers/internal/core/backend/ai_prompt.go':
-    '756368f5906778e04674566d401b6ed8898ee5f7b2a8cdfdcaabd5f09a8a18cb',
+    '4190232fb22fa9b8c9b4b114c6ba87653664a40ee0b3dac5bab301475fa03da5',
   'Installers/internal/policyeval/policyeval.go':
-    '22ff2a1fa1e2d7d2d8b01d55455af0b8119fdc231e09b598974b4cd1e5099fb2',
+    '790ff7fedc7c0f21713bc6253130ec1abb800910c6e73d04265a3b548d953c43',
   'Installers/internal/aiagent/aiagent.go':
     '1732b70eb3cf9d28af7a700bb1a6a320c3c97c7fe30e619f229052e5827b28aa',
   'Installers/internal/proxy/ai_egress.go':
     '7f43bbdc601619db83313b131088b3a00add5ffe6c0636100a92fc21ec70b105',
   'Installers/internal/daemon/ai_ingress.go':
-    '7d9873f17cfb614e6812a9735796d056584f2c035ceedd6688a063d4c033b61c',
+    'd5ae0c5d7912c6ab0ee3a6cd66e88d349fa2ea9994995bac0b5aa722af47f113',
   'Installers/internal/policybundle/bundle.go':
     '82284e569afcf68c28d5d6a9f6f2c5cc321027fcf765c41986d892a84ea174d2',
   'Installers/internal/proxy/ai_proxy.go':
-    'cec5a784028104ce35321944e4f092ee615b427a460738b8f494f19857939276',
+    'fe8f113289296920f63c3a06e7aa1de0fa79774a2a1ef53fac3912dde9431161',
   'Installers/internal/proxy/ai_ingress.go':
-    'e903e8a9bb4495beb25f8fc324d531378fb0b6635fe8830336299af9bf5e52fc',
+    'f5cd46db0882844c65ddcc8c95c7e5aee8f59e868aa07a22e8b6b5c9db6ebcdd',
   'Installers/internal/proxy/openai_decision.go':
-    '40810cb67e3eac6dd3c0f600a1be2473428a0b887bdd0ad1aec924d76c00d393',
+    'e5daf1b4614a4f3ca5adcd49ad898262aef62a66542fde5cdad6c5a1fc79d026',
   'Installers/internal/daemon/ai_handlers.go':
-    'fe64d5e877ed46ae1a6d11d650a729b294c3223d52f283b467d0bfeb1ce08115',
+    '11606e0a74613369b892ad58b850155a8bf4139109213522d7be18364012dfec',
   'Installers/internal/daemon/server.go':
-    '8bc9ab82d0e79f4feace67ce14e4fedeec6bc02d39f23a5f01dceb7a309db6ad',
+    'e63ce45f02b25af7c9663b12b000a208b05dcd843d52169adc0c896591b272d8',
   'Installers/internal/daemon/openai_wire.go':
-    '0d2335a69a277755897154755458cc089575e9d209362ada7aef2366e5d8075b',
+    'cac5272e47ad0e93ca4b61281be22c93f0ed1f328d14cc6955b042b3619b63ec',
 });
 const { legacyOrg, effectiveNoTeam } = authority.wireFixtures;
 assert.deepEqual(Object.keys(legacyOrg), [
@@ -370,15 +411,16 @@ assert.deepEqual(contract.AI_SECURITY_POLICY_V1_CATALOG, {
   schemaVersion: 1,
   scope: 'v1-policy-addressable',
   completeDetectorInventory: false,
+  phaseDPolicyAddressableInventoryComplete: true,
   dlpClasses: DLP_CLASSES,
   promptRiskConfigurableClasses: PROMPT_CONFIGURABLE,
   promptRiskDerivedClasses: PROMPT_DERIVED,
+  ingressConfigurableClasses: INGRESS_CLASSES,
   browserProviderKeys: BROWSER_PROVIDERS,
   toolProviderKeys: TOOL_PROVIDERS,
   knownNonPolicyAddressableSignals: {
-    engineEmittedDlp: ['base64-wrapped-secret'],
     policySynthesized: ['custom-blocklist'],
-    ingressEngineClasses: INGRESS_CLASSES,
+    degradedRuleIds: ['injection-decoded-payload-budget-exceeded'],
   },
 });
 assert.deepEqual(
@@ -411,7 +453,7 @@ assert.throws(
 );
 assert.throws(
   () => contract.AI_SECURITY_POLICY_V1_CATALOG
-    .knownNonPolicyAddressableSignals.ingressEngineClasses.push('fixture'),
+    .ingressConfigurableClasses.push('fixture'),
   TypeError,
 );
 assert.throws(
@@ -442,7 +484,7 @@ assert.equal(
   false,
 );
 assert.equal(
-  Object.hasOwn(contract.RECOMMENDED_AI_SECURITY_POLICY_V1, 'ingress'), false,
+  Object.hasOwn(contract.RECOMMENDED_AI_SECURITY_POLICY_V1, 'ingress'), true,
 );
 const clone = contract.cloneRecommendedAiSecurityPolicyV1();
 assert.deepEqual(clone, contract.RECOMMENDED_AI_SECURITY_POLICY_V1);
@@ -459,15 +501,15 @@ assert.deepEqual(
   'source and emitted public type surfaces drifted',
 );
 const serializedTypeManifest = JSON.stringify(sourceTypeManifest);
-assert.equal(sourceTypeManifest.length, 34, 'pin final exported type count');
+assert.equal(sourceTypeManifest.length, 35, 'pin final exported type count');
 assert.equal(
   Buffer.byteLength(serializedTypeManifest, 'utf8'),
-  12322,
+  12475,
   'pin final exported type manifest byte length',
 );
 assert.equal(
   sha256(serializedTypeManifest),
-  'abb6e55df6d411e8a321e82c04f0998239e32203867a73b76f5477e727b24d01',
+  '975c9607636197eada3dfea7529aca2b5f2592b31fc3d09de0cb8f96c41cb084',
   'pin final exported type manifest digest',
 );
 
@@ -582,7 +624,7 @@ const invalidNullUpdate: AiSecurityPolicyUpdateV1 = { dlp: null };
 // @ts-expect-error tuple is deeply readonly
 AI_SECURITY_POLICY_V1_DLP_ACTIONS.push('allow');
 // @ts-expect-error nested catalog arrays are deeply readonly
-AI_SECURITY_POLICY_V1_CATALOG.knownNonPolicyAddressableSignals.ingressEngineClasses.push('fixture');
+AI_SECURITY_POLICY_V1_CATALOG.ingressConfigurableClasses.push('fixture');
 // @ts-expect-error direct defaults are deeply readonly
 AI_SECURITY_POLICY_V1_DIRECT_OMISSION_DEFAULTS.ingress.enabled = false;
 // @ts-expect-error reader fallbacks are deeply readonly

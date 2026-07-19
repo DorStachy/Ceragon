@@ -1122,6 +1122,70 @@ test('name-swap cleanup controls exact IDs and proves exact ID plus name absence
   );
 });
 
+test('verified emergency cleanup supersedes only the primary cleanup error and cannot mint command success', () => {
+  const configurationSha256 = `sha256:${'c'.repeat(64)}`;
+  const primaryFailure = Object.assign(new Error('injected primary inspection race'), {
+    code: 'EPRIMARY',
+  });
+  const emergencyProof = {
+    containerRemoved: true,
+    exactContainerIdsAbsent: true,
+    exactContainerNameAbsent: true,
+    survivorCount: 0,
+    removals: [],
+  };
+  const recovered = testing.runContainedCleanupRecovery(
+    () => { throw primaryFailure; },
+    () => emergencyProof,
+    configurationSha256,
+  );
+  assert.equal(recovered.cleanupError, null);
+  assert.equal(recovered.cleanup.emergency, true);
+  assert.equal(recovered.cleanup.configurationSha256, configurationSha256);
+  assert.equal(recovered.cleanup.exitCode, null);
+  assert.equal(recovered.recoveredCleanupInvariantId, 'UNCLASSIFIED_ASSERTION');
+  assert.match(recovered.recoveredCleanupDiagnosticSha256, /^sha256:[0-9a-f]{64}$/);
+  assert.equal(
+    recovered.cleanup.exitCode !== 0,
+    true,
+    'emergency absence proof must not turn the original command into PASS',
+  );
+  assert.equal(Object.isFrozen(recovered.cleanup), true);
+
+  let emergencyCalls = 0;
+  const primaryProof = Object.freeze({ exitCode: 0 });
+  const primary = testing.runContainedCleanupRecovery(
+    () => primaryProof,
+    () => { emergencyCalls += 1; return emergencyProof; },
+    configurationSha256,
+  );
+  assert.equal(primary.cleanup, primaryProof);
+  assert.equal(primary.cleanupError, null);
+  assert.equal(primary.recoveredCleanupInvariantId, null);
+  assert.equal(primary.recoveredCleanupDiagnosticSha256, null);
+  assert.equal(emergencyCalls, 0, 'emergency cleanup ran after primary cleanup succeeded');
+
+  const emergencyFailure = Object.assign(new Error('injected emergency listing failure'), {
+    code: 'EEMERGENCY',
+  });
+  const failed = testing.runContainedCleanupRecovery(
+    () => { throw primaryFailure; },
+    () => { throw emergencyFailure; },
+    configurationSha256,
+  );
+  assert.equal(failed.cleanup, null);
+  assert.equal(failed.cleanupError, emergencyFailure);
+  assert.equal(failed.recoveredCleanupInvariantId, 'UNCLASSIFIED_ASSERTION');
+
+  const unproven = testing.runContainedCleanupRecovery(
+    () => { throw primaryFailure; },
+    () => ({ ...emergencyProof, survivorCount: 1 }),
+    configurationSha256,
+  );
+  assert.equal(unproven.cleanup, null);
+  assert.match(unproven.cleanupError.message, /retained a survivor/);
+});
+
 test('container authority accepts one full create ID and every control operation targets only that ID', () => {
   const id = 'c'.repeat(64);
   assert.equal(parseCreatedContainerId(Buffer.from(`${id}\n`, 'ascii'), 'fixture ID'), id);
@@ -1244,6 +1308,20 @@ test('full container inspection rejects ID/name swaps, mounts, and weakened isol
   const proof = validateContainedContainerInspection(inspected, expected, 'fixture inspection');
   assert.match(proof.configurationSha256, /^sha256:[0-9a-f]{64}$/);
 
+  const permutedEnvironmentProof = validateContainedContainerInspection(
+    {
+      ...inspected,
+      config: { ...inspected.config, Env: [...inspected.config.Env].reverse() },
+    },
+    expected,
+    'environment order permutation',
+  );
+  assert.equal(
+    permutedEnvironmentProof.securityConfigurationSha256,
+    proof.securityConfigurationSha256,
+    'environment order must not change the semantic security-configuration digest',
+  );
+
   assert.throws(
     () => validateContainedContainerInspection(
       { ...inspected, id: '0'.repeat(64) },
@@ -1287,6 +1365,39 @@ test('full container inspection rejects ID/name swaps, mounts, and weakened isol
       { ...inspected, config: { ...inspected.config, Env: [...inspected.config.Env, 'LD_PRELOAD=/attacker.so'] } },
       expected,
       'environment injection',
+    ),
+    /exact environment changed/,
+  );
+  assert.throws(
+    () => validateContainedContainerInspection(
+      {
+        ...inspected,
+        config: { ...inspected.config, Env: [...inspected.config.Env, 'node_options=--require=/attacker.js'] },
+      },
+      expected,
+      'case-insensitive environment duplicate',
+    ),
+    /environment repeats a case-insensitive key/,
+  );
+  assert.throws(
+    () => validateContainedContainerInspection(
+      {
+        ...inspected,
+        config: { ...inspected.config, Env: ['NODE_OPTIONS=--require=/attacker.js', inspected.config.Env[1]] },
+      },
+      expected,
+      'environment value drift',
+    ),
+    /protected environment value changed/,
+  );
+  assert.throws(
+    () => validateContainedContainerInspection(
+      {
+        ...inspected,
+        config: { ...inspected.config, Env: inspected.config.Env.slice(0, 1) },
+      },
+      expected,
+      'missing environment entry',
     ),
     /exact environment changed/,
   );
@@ -1753,6 +1864,102 @@ test('canonical Docker context injects exactly one digest-bound read-only C07 dr
     containerPath: installerWitness.containerPath,
     tarMode: '0444',
   });
+});
+
+test('backend canonical context resolves the accepted shared-contracts package before the base image dependency', () => {
+  const driverBytes = fs.readFileSync(path.join(
+    __dirname,
+    'c07-drivers',
+    'backend-semantic-driver.cjs',
+  ));
+  const artifact = {
+    consumer: 'backend',
+    driverId: DRIVER_IDS.backend,
+    bytes: driverBytes.length,
+    sha256: digest(driverBytes),
+  };
+  const witness = {
+    exactBytes: driverBytes,
+    containerPath: '/c07/backend-semantic-driver.cjs',
+  };
+  const requiredPackageFiles = [
+    ['packages/shared-contracts/package.json', Buffer.from('{"name":"@ceragon/shared-contracts"}\n')],
+    ['packages/shared-contracts/dist/index.js', Buffer.from("'use strict';\n")],
+    [
+      'packages/shared-contracts/generated/ai-security/0.3.0/portable-contract.v1.jcs.json',
+      Buffer.from('{}\n'),
+    ],
+  ];
+  const entries = requiredPackageFiles.map(([committedPath, bytes], index) => ({
+    mode: '100644',
+    oid: String(index).repeat(40),
+    path: committedPath,
+    size: bytes.length,
+  }));
+  const proof = {
+    commit: '1'.repeat(40),
+    tree: '2'.repeat(40),
+    manifestSha256: `sha256:${'3'.repeat(64)}`,
+  };
+  const build = (candidateEntries = entries, candidateFiles = requiredPackageFiles) => (
+    buildCanonicalDockerContext(
+      candidateEntries,
+      candidateFiles.map(([, bytes]) => bytes),
+      proof,
+      FIXED_CONTAINER_IMAGES.backend,
+      { artifact, witness },
+    )
+  );
+  const context = build();
+  const dockerfileSize = Number.parseInt(
+    context.bytes.subarray(124, 136).toString('ascii').replace(/\0.*$/, ''),
+    8,
+  );
+  const dockerfile = context.bytes.subarray(512, 512 + dockerfileSize).toString('utf8');
+  const snapshotCopy = 'COPY --chown=65534:65534 snapshot/ /workspace/';
+  const packageProjection = 'COPY --chown=65534:65534 snapshot/packages/shared-contracts/ /workspace/node_modules/@ceragon/shared-contracts/';
+  const driverCopy = 'COPY --chown=65534:65534 c07/backend-semantic-driver.cjs /c07/backend-semantic-driver.cjs';
+  assert.equal(dockerfile.split(packageProjection).length - 1, 1);
+  assert.equal(dockerfile.indexOf(snapshotCopy) < dockerfile.indexOf(packageProjection), true);
+  assert.equal(dockerfile.indexOf(packageProjection) < dockerfile.indexOf(driverCopy), true);
+
+  for (const [missingPath] of requiredPackageFiles) {
+    const retainedFiles = requiredPackageFiles.filter(([committedPath]) => committedPath !== missingPath);
+    const retainedEntries = entries.filter(({ path: committedPath }) => committedPath !== missingPath);
+    assert.throws(
+      () => build(retainedEntries, retainedFiles),
+      new RegExp(`backend accepted package projection is missing ${missingPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`),
+    );
+  }
+
+  const browserBytes = fs.readFileSync(path.join(
+    __dirname,
+    'c07-drivers',
+    'browser-semantic-driver.mjs',
+  ));
+  const browserContext = buildCanonicalDockerContext(
+    [{ mode: '100644', oid: '0'.repeat(40), path: 'input.txt', size: 1 }],
+    [Buffer.from('x')],
+    proof,
+    FIXED_CONTAINER_IMAGES.node,
+    {
+      artifact: {
+        consumer: 'browser',
+        driverId: DRIVER_IDS.browser,
+        bytes: browserBytes.length,
+        sha256: digest(browserBytes),
+      },
+      witness: { exactBytes: browserBytes, containerPath: '/c07/browser-semantic-driver.mjs' },
+    },
+  );
+  const browserDockerfileSize = Number.parseInt(
+    browserContext.bytes.subarray(124, 136).toString('ascii').replace(/\0.*$/, ''),
+    8,
+  );
+  const browserDockerfile = browserContext.bytes
+    .subarray(512, 512 + browserDockerfileSize)
+    .toString('utf8');
+  assert.equal(browserDockerfile.includes(packageProjection), false);
 });
 
 test('contained semantic dispatch is fixed for all four accepted consumers', () => {

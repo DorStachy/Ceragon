@@ -61,7 +61,14 @@
         "google-oauth-secret": { "$ref": "#/definitions/dlpAction" },
         "high-entropy": { "$ref": "#/definitions/dlpAction" },
         "kubeconfig": { "$ref": "#/definitions/dlpAction" },
-        "db-connection-string": { "$ref": "#/definitions/dlpAction" }
+        "db-connection-string": { "$ref": "#/definitions/dlpAction" },
+        "aws-credential-pair": { "$ref": "#/definitions/dlpAction" },
+        "gcp-service-account": { "$ref": "#/definitions/dlpAction" },
+        "azure-connection-string": { "$ref": "#/definitions/dlpAction" },
+        "bearer-auth-token": { "$ref": "#/definitions/dlpAction" },
+        "payment-card": { "$ref": "#/definitions/dlpAction" },
+        "iban": { "$ref": "#/definitions/dlpAction" },
+        "national-id": { "$ref": "#/definitions/dlpAction" }
       }
     },
     "strictPromptActionsPartial": {
@@ -76,8 +83,16 @@
         "jailbreak-persona": { "$ref": "#/definitions/promptAction" },
         "jailbreak-restriction-removal": { "$ref": "#/definitions/promptAction" },
         "jailbreak-role-reassign": { "$ref": "#/definitions/promptAction" },
+        "injection-credential-exfil": { "$ref": "#/definitions/promptAction" },
+        "injection-authority-escalation": { "$ref": "#/definitions/promptAction" },
+        "injection-decoded-payload": { "$ref": "#/definitions/promptAction" },
+        "ingress-tool-instruction-injection": { "$ref": "#/definitions/promptAction" },
+        "ingress-exfil-instruction": { "$ref": "#/definitions/promptAction" },
+        "ingress-sensitive-path-read": { "$ref": "#/definitions/promptAction" },
         "injection-override-exfil": { "$ref": "#/definitions/promptAction" },
-        "jailbreak-persona-unrestricted": { "$ref": "#/definitions/promptAction" }
+        "jailbreak-persona-unrestricted": { "$ref": "#/definitions/promptAction" },
+        "injection-override-credexfil": { "$ref": "#/definitions/promptAction" },
+        "ingress-secret-exfil-combo": { "$ref": "#/definitions/promptAction" }
       }
     },
     "providerListWrite": {
@@ -279,7 +294,14 @@
         "google-oauth-secret",
         "high-entropy",
         "kubeconfig",
-        "db-connection-string"
+        "db-connection-string",
+        "aws-credential-pair",
+        "gcp-service-account",
+        "azure-connection-string",
+        "bearer-auth-token",
+        "payment-card",
+        "iban",
+        "national-id"
       ],
       "properties": {
         "private-key": { "type": "string" },
@@ -304,7 +326,14 @@
         "google-oauth-secret": { "type": "string" },
         "high-entropy": { "type": "string" },
         "kubeconfig": { "type": "string" },
-        "db-connection-string": { "type": "string" }
+        "db-connection-string": { "type": "string" },
+        "aws-credential-pair": { "type": "string" },
+        "gcp-service-account": { "type": "string" },
+        "azure-connection-string": { "type": "string" },
+        "bearer-auth-token": { "type": "string" },
+        "payment-card": { "type": "string" },
+        "iban": { "type": "string" },
+        "national-id": { "type": "string" }
       }
     },
     "tolerantEffectiveDlp": {
@@ -331,8 +360,16 @@
         "jailbreak-persona",
         "jailbreak-restriction-removal",
         "jailbreak-role-reassign",
+        "injection-credential-exfil",
+        "injection-authority-escalation",
+        "injection-decoded-payload",
+        "ingress-tool-instruction-injection",
+        "ingress-exfil-instruction",
+        "ingress-sensitive-path-read",
         "injection-override-exfil",
-        "jailbreak-persona-unrestricted"
+        "jailbreak-persona-unrestricted",
+        "injection-override-credexfil",
+        "ingress-secret-exfil-combo"
       ],
       "properties": {
         "injection-instruction-override": { "type": "string" },
@@ -343,8 +380,16 @@
         "jailbreak-persona": { "type": "string" },
         "jailbreak-restriction-removal": { "type": "string" },
         "jailbreak-role-reassign": { "type": "string" },
+        "injection-credential-exfil": { "type": "string" },
+        "injection-authority-escalation": { "type": "string" },
+        "injection-decoded-payload": { "type": "string" },
+        "ingress-tool-instruction-injection": { "type": "string" },
+        "ingress-exfil-instruction": { "type": "string" },
+        "ingress-sensitive-path-read": { "type": "string" },
         "injection-override-exfil": { "type": "string" },
-        "jailbreak-persona-unrestricted": { "type": "string" }
+        "jailbreak-persona-unrestricted": { "type": "string" },
+        "injection-override-credexfil": { "type": "string" },
+        "ingress-secret-exfil-combo": { "type": "string" }
       }
     },
     "tolerantPromptRisk": {

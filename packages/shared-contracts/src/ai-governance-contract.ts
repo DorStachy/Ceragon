@@ -126,15 +126,64 @@ export type POLICY_DECISION = AiPolicyDecision;
  * tiers by the default policy below; the union of all three is exported as
  * `AI_DLP_CLASSES` so both sides validate against one closed set.
  */
-export const AI_DLP_BLOCK_CLASSES = ['private-key', 'aws-secret-key'] as const;
+export const AI_DLP_BLOCK_CLASSES = [
+  'private-key',
+  'aws-credential-pair',
+  'gcp-service-account',
+] as const;
 
-// The redact tier: the last 10 (openai-key … google-oauth-secret) are the M4
-// (WS-C) structured provider/service credential classes the daemon + browser
-// engines detect. Redact (mask + let the prompt through) matches the
-// sibling-secret tier; an admin can escalate to block or relax to warn/allow.
+// The redact tier contains provider credentials and validated structured data
+// that can be masked without breaking the surrounding AI workflow. Mixed-tier
+// Phase-D classes are listed at their Tier-A intent; on-box evidence eligibility
+// still caps Tier-B evidence to warn and Tier-C/D evidence to allow.
 // NOTE: entries here MUST be bare string literals (no inline comments) — the
 // contract-parity spec extracts this tuple by a text regex.
 export const AI_DLP_REDACT_CLASSES = [
+  'aws-access-key',
+  'gcp-key',
+  'generic-api-key',
+  'jwt',
+  'slack-token',
+  'github-token',
+  'internal-url',
+  'openai-key',
+  'anthropic-key',
+  'stripe-live',
+  'slack-webhook',
+  'sendgrid-key',
+  'twilio-key',
+  'npm-token',
+  'pypi-token',
+  'gitlab-token',
+  'google-oauth-secret',
+  'db-connection-string',
+  'azure-connection-string',
+  'payment-card',
+  'iban',
+] as const;
+
+// The warn tier contains heuristic or Tier-B-only shapes. They stay visible to
+// users and admins without interrupting work by default. Validated paired /
+// structured forms have their own stronger Phase-D class above.
+export const AI_DLP_WARN_CLASSES = [
+  'aws-secret-key',
+  'azure-key',
+  'high-entropy',
+  'kubeconfig',
+  'bearer-auth-token',
+  'national-id',
+] as const;
+
+/**
+ * The union of every policy-addressable DLP class.
+ *
+ * Keep the deployed 23-class prefix byte-for-byte stable. New classes append so
+ * readers that render in tuple order do not reshuffle existing admin policy rows
+ * merely because a class moved to a safer default action.
+ */
+export const AI_DLP_CLASSES = [
+  'private-key',
+  'aws-secret-key',
   'aws-access-key',
   'gcp-key',
   'azure-key',
@@ -153,27 +202,16 @@ export const AI_DLP_REDACT_CLASSES = [
   'pypi-token',
   'gitlab-token',
   'google-oauth-secret',
-] as const;
-
-// The warn tier. kubeconfig / db-connection-string are M4 (WS-C) ambiguous
-// shapes — a redacted sample kubeconfig / a connection string is common in
-// benign context, so they WARN rather than mask by default; an admin can
-// escalate per class. Matches the browser-extension DEFAULT_POLICY tiers
-// exactly (Installers/browser-extension/src/dlp.js). NOTE: the daemon's
-// `base64-wrapped-secret` detector is deliberately NOT tiered here — like the
-// browser default it falls to the built-in WARN default (policyeval), keeping
-// this heuristic out of the configurable closed set.
-export const AI_DLP_WARN_CLASSES = [
   'high-entropy',
   'kubeconfig',
   'db-connection-string',
-] as const;
-
-/** The union of every DLP class across block/redact/warn tiers. */
-export const AI_DLP_CLASSES = [
-  ...AI_DLP_BLOCK_CLASSES,
-  ...AI_DLP_REDACT_CLASSES,
-  ...AI_DLP_WARN_CLASSES,
+  'aws-credential-pair',
+  'gcp-service-account',
+  'azure-connection-string',
+  'bearer-auth-token',
+  'payment-card',
+  'iban',
+  'national-id',
 ] as const;
 
 export type AiDlpClass = (typeof AI_DLP_CLASSES)[number];
