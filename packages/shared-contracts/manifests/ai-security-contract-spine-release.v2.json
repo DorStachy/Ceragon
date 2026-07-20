@@ -1,0 +1,18 @@
+{
+  "format": "ceragon.ai-security.contract-spine-source",
+  "formatVersion": 2,
+  "packageVersion": "0.6.0",
+  "generatorVersion": "1.0.0",
+  "runtimeActivatable": false,
+  "signedRuntimePolicyBundle": false,
+  "v2WriterEligible": false,
+  "requiredIntegrationGate": "P1-GATE",
+  "sources": {
+    "wireSchema": "schemas/ai-security-v2-wire-v1.schema.json",
+    "hmacCatalog": "fixtures/ai-security-hmac-domain-catalog.v1.json",
+    "detectorSchema": "schemas/ai-security-detector-catalog-v2.schema.json",
+    "detectorCatalog": "fixtures/ai-security-detector-catalog.v2.json",
+    "neutralSchema": "schemas/ai-security-neutral-evaluation-v1.schema.json",
+    "neutralFixture": "fixtures/ai-security-neutral-evaluation.v1.json"
+  }
+}

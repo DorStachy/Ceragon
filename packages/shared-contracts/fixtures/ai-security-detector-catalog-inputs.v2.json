@@ -1,0 +1,16 @@
+{
+  "format": "ceragon.ai-security.detector-catalog-inputs",
+  "formatVersion": 2,
+  "sourceAudit": {
+    "go": "Installers/internal/dlp",
+    "browser": "Installers/browser-extension/src/dlp.js",
+    "policy": "packages/shared-contracts/src/generated/ai-security-portable.generated.ts"
+  },
+  "currentEmitterClassIds": [
+    "base64-wrapped-secret",
+    "custom-blocklist",
+    "high-risk-file-type",
+    "image-upload",
+    "private-key-candidate"
+  ]
+}

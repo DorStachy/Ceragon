@@ -1,0 +1,98 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.ceragon.ai/ai-security/detector-catalog-v2.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "formatVersion", "catalogVersion", "productionWriterEnabled", "classes"],
+  "properties": {
+    "format": { "const": "ceragon.ai-security.detector-catalog" },
+    "formatVersion": { "const": 2 },
+    "catalogVersion": { "const": "detector-catalog-v2" },
+    "productionWriterEnabled": { "const": false },
+    "classes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/class" }
+    }
+  },
+  "definitions": {
+    "slug": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._:-]{0,127}$" },
+    "action": { "enum": ["BLOCK", "REDACT", "WARN", "ALLOW", "DEGRADED"] },
+    "tier": { "enum": ["A", "B", "C", "D"] },
+    "class": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "classId", "owner", "family", "evidence", "credential", "representations", "surfaces",
+        "validators", "transforms", "hardStopEligible", "defaults", "benignLookalikes", "budgets",
+        "securityCardId", "limitations", "lifecycle"
+      ],
+      "properties": {
+        "classId": { "$ref": "#/definitions/slug" },
+        "owner": { "enum": ["DETECTOR", "POLICY"] },
+        "family": {
+          "enum": [
+            "CREDENTIAL", "PRIVATE_KEY", "DATABASE_URI", "PERSONAL_DATA", "FINANCIAL_DATA",
+            "TOPOLOGY", "CONFIGURATION", "HEURISTIC", "PROMPT_INJECTION", "JAILBREAK",
+            "INGRESS_RISK", "UPLOAD", "POLICY_SYNTHESIZED"
+          ]
+        },
+        "evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["possibleTiers", "defaultTier"],
+          "properties": {
+            "possibleTiers": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/tier" } },
+            "defaultTier": { "$ref": "#/definitions/tier" }
+          }
+        },
+        "credential": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["role", "exploitability"],
+          "properties": {
+            "role": { "enum": ["STANDALONE_BEARER", "SECRET_COMPONENT", "IDENTIFIER_COMPONENT", "PRIVATE_KEY", "CAPABILITY_URL", "NONCREDENTIAL_SENSITIVE", "UNKNOWN"] },
+            "exploitability": { "enum": ["STANDALONE", "PAIRED", "CONTEXTUAL", "UNKNOWN", "NOT_APPLICABLE"] }
+          }
+        },
+        "representations": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/slug" } },
+        "surfaces": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/slug" } },
+        "validators": { "type": "array", "items": { "$ref": "#/definitions/slug" } },
+        "transforms": { "type": "array", "items": { "$ref": "#/definitions/slug" } },
+        "hardStopEligible": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["eligibleEvidenceTiers", "rationale"],
+          "properties": {
+            "eligibleEvidenceTiers": { "type": "array", "items": { "$ref": "#/definitions/tier" } },
+            "rationale": { "$ref": "#/definitions/slug" }
+          }
+        },
+        "defaults": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["recommended", "restricted", "unsupported"],
+          "properties": {
+            "recommended": { "$ref": "#/definitions/action" },
+            "restricted": { "$ref": "#/definitions/action" },
+            "unsupported": { "$ref": "#/definitions/action" }
+          }
+        },
+        "benignLookalikes": { "type": "array", "items": { "$ref": "#/definitions/slug" } },
+        "budgets": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["maxInputBytes", "maxMatches", "maxDecodeDepth"],
+          "properties": {
+            "maxInputBytes": { "type": "integer", "minimum": 1 },
+            "maxMatches": { "type": "integer", "minimum": 1 },
+            "maxDecodeDepth": { "type": "integer", "minimum": 0, "maximum": 4 }
+          }
+        },
+        "securityCardId": { "$ref": "#/definitions/slug" },
+        "limitations": { "type": "array", "items": { "$ref": "#/definitions/slug" } },
+        "lifecycle": { "enum": ["CURRENT", "DEPRECATED", "RETIRED"] }
+      }
+    }
+  }
+}

@@ -34,3 +34,4 @@ export * from './ai-security-portable-contract';
 export * from './ai-enforcement-contract';
 export * from './ai-security-v2-contract';
 export * from './ai-failure-oracle-contract';
+export * from './generated/ai-security-detector-catalog.generated';
