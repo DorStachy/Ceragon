@@ -6,13 +6,13 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const CONSUMER = 'browser';
 const DRIVER_ID = 'C07_BROWSER_SEMANTIC_V1';
 const ARTIFACT_SHA256 =
-  'sha256:bb172d0d535530fba9ade9648c2a5f9784ccd4fb9b1a08535f0172188aadca67';
+  'sha256:096d6c8f181408bb60a1440173f04efdd99764736d97d01169decdecad0c6feb';
 const EXPECTED_FILE_SHA256 = Object.freeze({
   reader: 'sha256:35c974ec897b9ffdf5ac2e60f628b42c5745585665ef6fb9d5beff024890d880',
   tokens: 'sha256:c0005d05a9c66e5e1f14105f08713fe787dba012bce55e4137d99a44cddbd9e8',
   forwardInspection: 'sha256:9fcb373792d67bb9a0319fd37f38feaf5193a8f5b0c29e137a5e720c3d3f0ae6',
-  metadata: 'sha256:641471d85fca3d730ecf8d417ac3d6538249b514975fb394e3941e5cb36f3323',
-  validators: 'sha256:2a525792ef104e358c8e765e68e26b8aa85b170db87c1bc0452b05f28b95aa3d',
+  metadata: 'sha256:e7fee78c0a74b03a126369122af9f011a5cf75e7e244e04de36f0f7c7f3909a9',
+  validators: 'sha256:059ac53b67145a7030470d64a4ce80e5be4e0ebe4adb221925ac98195a910a80',
   packageJson: 'sha256:774dd24135f8fd34d829080a39b3c94c9dddbbbb20dfe988f2d1cbb865199d16',
 });
 const ENVELOPE_ENV_KEYS = Object.freeze([

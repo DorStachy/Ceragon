@@ -10,11 +10,11 @@ const DRIVER_ID = 'C07_BACKEND_SEMANTIC_V1';
 const REVIEWED_PACKAGE_ROOT = '/workspace/node_modules';
 const REVIEWED_DEPENDENCY_ROOT = '/app/node_modules';
 const ARTIFACT_SHA256 =
-  'sha256:bb172d0d535530fba9ade9648c2a5f9784ccd4fb9b1a08535f0172188aadca67';
+  'sha256:096d6c8f181408bb60a1440173f04efdd99764736d97d01169decdecad0c6feb';
 const EXPECTED_MODULE_SHA256 = Object.freeze({
-  reader: 'sha256:3e638b3fccff7b377746deb6058bc7c72d473adca3ed61e333100a898064c177',
+  reader: 'sha256:405b7cdd118ad0e2e930b0eb264099234da448e3d50aae4dd0a8b32a350ab174',
   strictest: 'sha256:bbbd6e9fdcb021114146000d0978e92b35aae8f41b8587e9b006429baa8dc428',
-  metadata: 'sha256:81c52b21a11cdd68b6d50dd424091cbf804c4aeecf92e263e29ba176bf99855f',
+  metadata: 'sha256:ad98b3cd82f42d446409a45e17711b5b5009290159e4058fc8c183a6a692e2ab',
 });
 const ENVELOPE_ENV_KEYS = Object.freeze([
   'CERAGON_C07_CONSUMER',

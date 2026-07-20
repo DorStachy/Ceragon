@@ -570,13 +570,13 @@ test('consumer pins bind every described byte and cannot activate a writer or ru
   const packageRoot = path.resolve(__dirname, '..');
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ceragon-c07-pin-'));
   try {
-    const sourceDirectory = path.join(packageRoot, 'generated', 'ai-security', '0.3.0');
+    const sourceDirectory = path.join(packageRoot, 'generated', 'ai-security', '0.4.0');
     const artifactBytes = fs.readFileSync(path.join(sourceDirectory, 'portable-contract.v1.jcs.json'));
     const releaseBytes = fs.readFileSync(path.join(sourceDirectory, 'portable-contract-release.v1.jcs.json'));
     const sidecarBytes = fs.readFileSync(path.join(sourceDirectory, 'portable-contract.v1.jcs.json.sha256'));
-    const artifact = writeFixtureFile(root, 'contracts/ai-security/0.3.0/portable-contract.v1.jcs.json', artifactBytes);
-    const releaseManifest = writeFixtureFile(root, 'contracts/ai-security/0.3.0/portable-contract-release.v1.jcs.json', releaseBytes);
-    const digestSidecar = writeFixtureFile(root, 'contracts/ai-security/0.3.0/portable-contract.v1.jcs.json.sha256', sidecarBytes);
+    const artifact = writeFixtureFile(root, 'contracts/ai-security/0.4.0/portable-contract.v1.jcs.json', artifactBytes);
+    const releaseManifest = writeFixtureFile(root, 'contracts/ai-security/0.4.0/portable-contract-release.v1.jcs.json', releaseBytes);
+    const digestSidecar = writeFixtureFile(root, 'contracts/ai-security/0.4.0/portable-contract.v1.jcs.json.sha256', sidecarBytes);
     const projectionSource = writeFixtureFile(root, 'scripts/lib/frontend-projection.cjs', Buffer.from('module.exports = {};\n'));
     const generatedProjection = writeFixtureFile(root, 'types/generated/frontend-projection.ts', Buffer.from('export {};\n'));
 
@@ -584,16 +584,16 @@ test('consumer pins bind every described byte and cannot activate a writer or ru
       format: 'ceragon.ai-security.frontend-consumer-pin',
       formatVersion: 1,
       consumer: 'Frontend',
-      sourceCommit: '781685f69bc7760df732612030b7e25af6223ff3',
-      sourcePackage: { name: '@ceragon/shared-contracts', version: '0.3.0' },
+      sourceCommit: 'c311b71e945e2098beabfa6df619be2c6ee9e5fd',
+      sourcePackage: { name: '@ceragon/shared-contracts', version: '0.4.0' },
       policySchemaVersion: 1,
-      canonicalGenerator: { name: 'ceragon-ai-security-artifact', version: '1.2.0' },
+      canonicalGenerator: { name: 'ceragon-ai-security-artifact', version: '1.3.0' },
       projectionGenerator: {
         name: 'ceragon-ai-security-frontend-projection',
         version: 'fixture.1',
         source: projectionSource,
       },
-      artifact: { directory: 'contracts/ai-security/0.3.0', ...artifact },
+      artifact: { directory: 'contracts/ai-security/0.4.0', ...artifact },
       releaseManifest,
       digestSidecar,
       generatedProjection,
@@ -1938,7 +1938,7 @@ test('backend canonical context resolves the accepted shared-contracts package b
     ['packages/shared-contracts/package.json', Buffer.from('{"name":"@ceragon/shared-contracts"}\n')],
     ['packages/shared-contracts/dist/index.js', Buffer.from("'use strict';\n")],
     [
-      'packages/shared-contracts/generated/ai-security/0.3.0/portable-contract.v1.jcs.json',
+      'packages/shared-contracts/generated/ai-security/0.4.0/portable-contract.v1.jcs.json',
       Buffer.from('{}\n'),
     ],
   ];

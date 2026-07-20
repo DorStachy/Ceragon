@@ -7,12 +7,12 @@ const { spawnSync } = require('node:child_process');
 
 const CONSUMER = 'frontend';
 const DRIVER_ID = 'C07_FRONTEND_SEMANTIC_V1';
-const ARTIFACT_SHA256 = 'sha256:bb172d0d535530fba9ade9648c2a5f9784ccd4fb9b1a08535f0172188aadca67';
-const SOURCE_COMMIT = 'a6ae5dcd4ead53c22f8b1e2a103a89ff54ceb844';
-const SOURCE_TREE = '819c6029b0f6a8d023eec14393048dbbbf8dc036';
-const SNAPSHOT_MANIFEST_SHA256 = 'sha256:c8c5018cec7e734e329fce4e0377c8128561a362f4922e33626a4b701f671e40';
+const ARTIFACT_SHA256 = 'sha256:096d6c8f181408bb60a1440173f04efdd99764736d97d01169decdecad0c6feb';
+const SOURCE_COMMIT = 'dc66d52c4cf835e33d15ddb9181422bc359e78ad';
+const SOURCE_TREE = '3c10a1b9750d85daa99f5ab0c2491af9a02f0fc1';
+const SNAPSHOT_MANIFEST_SHA256 = 'sha256:71e7976ec192648f833bd3018f633790015ab71399302ddd2383c6d53d6d4680';
 const SOURCE_ROOT = '/workspace';
-const ARTIFACT_PATH = '/workspace/contracts/ai-security/0.3.0/portable-contract.v1.jcs.json';
+const ARTIFACT_PATH = '/workspace/contracts/ai-security/0.4.0/portable-contract.v1.jcs.json';
 const DRIVER_PATH = '/c07/frontend-semantic-driver.test.cjs';
 const NODE_PATH = '/usr/local/bin/node';
 const NODE_MODULES_ROOT = '/opt/ceragon-c07-frontend/node_modules';
@@ -37,16 +37,16 @@ const ENVELOPE_ENV_KEYS = Object.freeze([
 ]);
 
 const SOURCE_FILES = Object.freeze({
-  'ai-security-frontend-consumer-pin.v1.json': 'sha256:81a0c2124a90ae1fc8236c6fa545506a0395e0874c63cebf1910a1e0fa9d4696',
-  'package.json': 'sha256:7bdde5f48652c854a044eec19697b1aa24305bb0f7d3b98ad1dc592483ba7f66',
-  'package-lock.json': 'sha256:71295d8dd2f746757745af55f2493b0f417aaafa74d57d50ca11b02ed9703a75',
-  'jest.config.js': 'sha256:17861d62ed522c17d9f500916156dadd17e9181c5938274ce968d7e14316a09c',
-  'tsconfig.json': 'sha256:ade792ac49a413ce131af2cc78b029a54509205f17b8c7c1571c5834334d1fb8',
-  'lib/ai-security-display.ts': 'sha256:7c164aef96a048bd4853303141a82c910c5ce5b17ac2bec52624b6c25bcb2a6f',
-  'lib/api/site-scope.ts': 'sha256:e1717b1e0660379dcefdf48b99d07d2eeb52f6bce5dc8a473ebb82163aafcdae',
-  'types/ai-governance.ts': 'sha256:6cc4555590abe12e34357747b78ca65d66c3865b46e0801c15f1555d3d1c416a',
-  'types/generated/ai-security-portable.generated.ts': 'sha256:d63a9092bb79b0f5bbed4b03be06e76c5f5acb5774fb492050324f886892b788',
-  'components/admin/ai-security-policy-section.tsx': 'sha256:5d683045305eff7a05cd7e6579ae7745c87740df17175c8787908e5575dad0d3',
+  'ai-security-frontend-consumer-pin.v1.json': 'sha256:129999fe0c94aba7b5f3bb29f0e9a9032b9d7773594cfc386d517ae82c636a69',
+  'package.json': 'sha256:f8a79fbb56cf96c7d5eda5ff9aee7ba014041bf98c33cfe1c4e4d1e8d963f899',
+  'package-lock.json': 'sha256:f579c1981c3c0da66c62421f983855c199f147ba399643f43954a07f203a3324',
+  'jest.config.js': 'sha256:5c132d7306bbb7c0d3c9ac170e79ac6ae0587d8ab03a1494699827619ef73abc',
+  'tsconfig.json': 'sha256:17bb7ca2d05d82bcea082b83e7558e03b45f8e0a5ce5f8827194ee75fb78cd55',
+  'lib/ai-security-display.ts': 'sha256:3cfadea24f26433e4de8debec732c5ba8a5126135075b6a99876cca4c7ee9876',
+  'lib/api/site-scope.ts': 'sha256:98c3e440f2c76ce1408d90f5c7485d2bbcb236edff85f457c37c7d3101870908',
+  'types/ai-governance.ts': 'sha256:4252a81cab2865dc1e7c0129f82ea6ee3d9b754d71fad0256cbe017d5e501fb9',
+  'types/generated/ai-security-portable.generated.ts': 'sha256:29cb17dbfad22117775105ed36ffd9ae2cb7fdefd11e89f50f21a8d20face68b',
+  'components/admin/ai-security-policy-section.tsx': 'sha256:d696707a65096394c55acc1d9c6a338f075b98488fc5d0cc4f3341375e632ac9',
 });
 
 const RUNTIME_VERSIONS = Object.freeze({

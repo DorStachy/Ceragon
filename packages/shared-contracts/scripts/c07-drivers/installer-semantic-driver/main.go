@@ -18,7 +18,7 @@ import (
 const (
 	consumer       = "installer"
 	driverID       = "C07_INSTALLER_SEMANTIC_V1"
-	artifactSHA256 = "sha256:bb172d0d535530fba9ade9648c2a5f9784ccd4fb9b1a08535f0172188aadca67"
+	artifactSHA256 = "sha256:096d6c8f181408bb60a1440173f04efdd99764736d97d01169decdecad0c6feb"
 )
 
 var (
@@ -40,18 +40,18 @@ var (
 
 	consumerFiles = map[string]string{
 		"go.mod":                                                                         "sha256:c2d38eebd5e2c2e8ec03d26b6c942461bb5bff3ac69e8e02e8b8265fa9177ea2",
-		"internal/aipolicycontract/accessors.go":                                         "sha256:7d77784bfce79cdc22a518726a43daacc46ceecf6d1090e8c5fcd9ff318cd807",
-		"internal/aipolicycontract/contract.go":                                          "sha256:4f003294b6086f2582ae0061943404333fe9062b791dcfbd46c545aaa7848126",
+		"internal/aipolicycontract/accessors.go":                                         "sha256:5f853f6a66a661777877bc14b15ac8c52275d42888983e9091022e3c0d0ca662",
+		"internal/aipolicycontract/contract.go":                                          "sha256:8964a08db2c2c34f13010bd47b39dbe587bbe6188ca267b7630ebaeb929fef44",
 		"internal/aipolicycontract/findings.go":                                          "sha256:f9076509f2c0c93cd728644fc4bc31cf581740cbd4baffe4e203b279dd2fa156",
 		"internal/aipolicycontract/ranks.go":                                             "sha256:9c8cb90c5564314ef2546354cf2ff0985a98b92de50a8cf132a508da3d82e812",
 		"internal/aipolicycontract/reader.go":                                            "sha256:12a4f0e3def5ea555197fe142df3d6668f57e80b2701ba70022a055f4735bfd2",
 		"internal/aipolicycontract/runtime_schema.go":                                    "sha256:dbbae3d31ab851774d799419f58188efa5570373f4e3cc33eed2fa255a02ee94",
 		"internal/aipolicycontract/tokens.go":                                            "sha256:0a32f6bda7c52c3faace41f6616ffb6f566a49f8cf0e1a7d9a05992333725322",
-		"internal/aipolicycontract/trust_anchor.go":                                      "sha256:ecd4037276a0a09a0126e50735ee61bd055333dba96011cfaed21ffb100e34fd",
-		"internal/aipolicycontract/consumer-pin.v1.json":                                 "sha256:72917820ceb167817f9ad159e0c38c314f07e5a6b0fa2740c0b36510800a9f0c",
-		"internal/aipolicycontract/embedded/0.3.0/portable-contract.v1.jcs.json":         "sha256:bb172d0d535530fba9ade9648c2a5f9784ccd4fb9b1a08535f0172188aadca67",
-		"internal/aipolicycontract/embedded/0.3.0/portable-contract-release.v1.jcs.json": "sha256:ddc485a8f057855ce56d3cf3828393718661d2405060cfd693b14b4361f6d932",
-		"internal/aipolicycontract/embedded/0.3.0/portable-contract.v1.jcs.json.sha256":  "sha256:d82272a06fb5918fcd6423fadd5bc14fb59a9ce7f96f9dbebe006ba6c5a3bfda",
+		"internal/aipolicycontract/trust_anchor.go":                                      "sha256:a920e8d0f87768605da7e85f1bafad24667dcad645e5fa28abab034240a84c38",
+		"internal/aipolicycontract/consumer-pin.v1.json":                                 "sha256:7cf2b6fedc6de297a7d0a68026795df5f296be55effa8ca202015c01502a75ce",
+		"internal/aipolicycontract/embedded/0.4.0/portable-contract.v1.jcs.json":         "sha256:096d6c8f181408bb60a1440173f04efdd99764736d97d01169decdecad0c6feb",
+		"internal/aipolicycontract/embedded/0.4.0/portable-contract-release.v1.jcs.json": "sha256:27bfa74347ba846919c70870ce1cd276be8b4cba7f181b3c8f6b28cd80f9ea60",
+		"internal/aipolicycontract/embedded/0.4.0/portable-contract.v1.jcs.json.sha256":  "sha256:072ec5fd0018a107bfcd4ea8948d074f01126a3c230094e0dcb4e1286e3d882a",
 	}
 )
 

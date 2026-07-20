@@ -783,7 +783,7 @@ function buildCanonicalDockerContext(
       for (const requiredPath of [
         'packages/shared-contracts/package.json',
         'packages/shared-contracts/dist/index.js',
-        'packages/shared-contracts/generated/ai-security/0.3.0/portable-contract.v1.jcs.json',
+        'packages/shared-contracts/generated/ai-security/0.4.0/portable-contract.v1.jcs.json',
       ]) {
         assert.equal(
           committedPaths.has(requiredPath),
@@ -989,76 +989,76 @@ const AUTHORITY = deepFreeze({
 
 const CANONICAL_FILES = deepFreeze({
   artifact: {
-    path: 'packages/shared-contracts/generated/ai-security/0.3.0/portable-contract.v1.jcs.json',
-    bytes: 768_554,
-    sha256: 'sha256:bb172d0d535530fba9ade9648c2a5f9784ccd4fb9b1a08535f0172188aadca67',
+    path: 'packages/shared-contracts/generated/ai-security/0.4.0/portable-contract.v1.jcs.json',
+    bytes: 776_486,
+    sha256: 'sha256:096d6c8f181408bb60a1440173f04efdd99764736d97d01169decdecad0c6feb',
   },
   releaseManifest: {
-    path: 'packages/shared-contracts/generated/ai-security/0.3.0/portable-contract-release.v1.jcs.json',
+    path: 'packages/shared-contracts/generated/ai-security/0.4.0/portable-contract-release.v1.jcs.json',
     bytes: 537,
-    sha256: 'sha256:ddc485a8f057855ce56d3cf3828393718661d2405060cfd693b14b4361f6d932',
+    sha256: 'sha256:27bfa74347ba846919c70870ce1cd276be8b4cba7f181b3c8f6b28cd80f9ea60',
   },
   digestSidecar: {
-    path: 'packages/shared-contracts/generated/ai-security/0.3.0/portable-contract.v1.jcs.json.sha256',
+    path: 'packages/shared-contracts/generated/ai-security/0.4.0/portable-contract.v1.jcs.json.sha256',
     bytes: 72,
-    sha256: 'sha256:d82272a06fb5918fcd6423fadd5bc14fb59a9ce7f96f9dbebe006ba6c5a3bfda',
+    sha256: 'sha256:072ec5fd0018a107bfcd4ea8948d074f01126a3c230094e0dcb4e1286e3d882a',
   },
 });
 
 const APPROVED_INPUTS = deepFreeze({
   canonical: {
     repository: 'Workspace',
-    commit: '781685f69bc7760df732612030b7e25af6223ff3',
-    tree: '106cab4a9a35dab5b9f2a1230aff86de2980bfc6',
+    commit: 'c311b71e945e2098beabfa6df619be2c6ee9e5fd',
+    tree: '7719c7c8508223823f59141a05fb4b930e9b3dbb',
   },
   priorCanonical: {
     repository: 'Workspace',
-    commit: '288da9535cca5e60394334e35674d33a930351a4',
-    tree: '49a68113a4625c6dfa9d518949604088195673f1',
+    commit: '781685f69bc7760df732612030b7e25af6223ff3',
+    tree: '106cab4a9a35dab5b9f2a1230aff86de2980bfc6',
   },
   consumers: {
     backend: {
       repository: 'Backend',
-      commit: '90c9c1905334cbe186877bc76bf34471d2ffa3d1',
-      tree: '4d0e277a2b235ecdbd8f123c051cee2161cecec6',
+      commit: '48b6fc970ea9ed5bb8a5e8c78ce2673ec25ade0d',
+      tree: '3130229082a97f19323c5aca32727ff08b17431c',
       profile: 'BACKEND_C03_V1',
       pin: {
         path: 'packages/shared-contracts/ai-security-consumer-pin.v1.json',
-        bytes: 3_199,
-        sha256: 'sha256:e039a06284096608e8642a540aa21f47f2cedb950e9f86286f64b81e7449614c',
+        bytes: 3_200,
+        sha256: 'sha256:33f59820f41cabae663bc03a23b9947f820d274b16cb3bf835d53bcbd62a6657',
       },
     },
     installer: {
       repository: 'Installers',
-      commit: 'c8f8c3785709be63592c73d84a5976dd0c5ea6f0',
-      tree: '121ce1a991b02dcdead0dda568eb5345a26210a6',
+      commit: '88420ab41d67ad846991e70f2b9157cf79d32df7',
+      tree: '599f0ae487237ca596729bd1d7426226b6342b40',
       profile: 'INSTALLER_C04_V1',
       pin: {
         path: 'internal/aipolicycontract/consumer-pin.v1.json',
         bytes: 1_112,
-        sha256: 'sha256:72917820ceb167817f9ad159e0c38c314f07e5a6b0fa2740c0b36510800a9f0c',
+        sha256: 'sha256:7cf2b6fedc6de297a7d0a68026795df5f296be55effa8ca202015c01502a75ce',
       },
     },
     browser: {
       repository: 'Installers/browser-extension',
-      commit: 'c8f8c3785709be63592c73d84a5976dd0c5ea6f0',
-      tree: '121ce1a991b02dcdead0dda568eb5345a26210a6',
+      commit: '88420ab41d67ad846991e70f2b9157cf79d32df7',
+      tree: '599f0ae487237ca596729bd1d7426226b6342b40',
       profile: 'BROWSER_C05_V1',
       pin: {
         path: 'browser-extension/ai-security-browser-consumer-pin.v1.json',
         bytes: 2_123,
-        sha256: 'sha256:909fc218efdf7c3431bcae206f78f779d74ccf2e83574e9675e2794f6bdac52a',
+        sha256: 'sha256:ada8d743ee91a0704e4861785476fa6814b9c61f08ed0406c5b70a85267e417f',
       },
     },
     frontend: {
       repository: 'Frontend',
-      commit: 'a6ae5dcd4ead53c22f8b1e2a103a89ff54ceb844',
-      tree: '819c6029b0f6a8d023eec14393048dbbbf8dc036',
+      commit: 'dc66d52c4cf835e33d15ddb9181422bc359e78ad',
+      tree: '3c10a1b9750d85daa99f5ab0c2491af9a02f0fc1',
       profile: 'FRONTEND_C06_V1',
       pin: {
         path: 'ai-security-frontend-consumer-pin.v1.json',
         bytes: 1_674,
-        sha256: 'sha256:81a0c2124a90ae1fc8236c6fa545506a0395e0874c63cebf1910a1e0fa9d4696',
+        sha256: 'sha256:129999fe0c94aba7b5f3bb29f0e9a9032b9d7773594cfc386d517ae82c636a69',
       },
     },
   },
@@ -1164,9 +1164,9 @@ function validateIntegrationManifest(manifest) {
   );
   assert.deepStrictEqual(manifest.canonical.package, {
     name: '@ceragon/shared-contracts',
-    version: '0.3.0',
+    version: '0.4.0',
     generatorName: 'ceragon-ai-security-artifact',
-    generatorVersion: '1.2.0',
+    generatorVersion: '1.3.0',
     policySchemaVersion: 1,
   });
   for (const key of ['artifact', 'releaseManifest', 'digestSidecar']) {
@@ -1710,21 +1710,21 @@ const REVIEWED_SEMANTIC_DRIVER_DESCRIPTORS = deepFreeze({
   backend: {
     path: 'scripts/c07-drivers/backend-semantic-driver.cjs',
     bytes: 18_969,
-    sha256: 'sha256:9858267f267192165c84ecc52f6accd0f3ec2db9eb92cdb4cdaa8b921a80cac6',
+    sha256: 'sha256:01bfbf77f914a85a7942cb704382999194d161df347d36d56baa163a2a1e28d7',
     driverId: 'C07_BACKEND_SEMANTIC_V1',
     containerPath: '/c07/backend-semantic-driver.cjs',
   },
   browser: {
     path: 'scripts/c07-drivers/browser-semantic-driver.mjs',
     bytes: 19_327,
-    sha256: 'sha256:1576ad1296fec1cc9b854497923d65575643da697317fb72c8bccd4847beb466',
+    sha256: 'sha256:32eeb4cf6636e3f8f07d837c6e3db58aa134a5c4f5cce8085aac53811a0603c6',
     driverId: 'C07_BROWSER_SEMANTIC_V1',
     containerPath: '/c07/browser-semantic-driver.mjs',
   },
   installer: {
     path: 'scripts/c07-drivers/installer-semantic-driver/main.go',
     bytes: 21_491,
-    sha256: 'sha256:51d4dff154f837c93c40540e479544b0c96c090280d62a884a808285383c7378',
+    sha256: 'sha256:f74081322d04a37b0ff360889667ac0198838a87b6201571e20f742e916589c7',
     driverId: 'C07_INSTALLER_SEMANTIC_V1',
     contextPath: 'c07/installer-semantic-driver.go',
     containerPath: '/workspace/cmd/c07semanticdriver/main.go',
@@ -1732,7 +1732,7 @@ const REVIEWED_SEMANTIC_DRIVER_DESCRIPTORS = deepFreeze({
   frontend: {
     path: 'scripts/c07-drivers/frontend-semantic-driver.test.cjs',
     bytes: 24_299,
-    sha256: 'sha256:0febbcff1d262924b4f7a80b9532cf0111fccb03d8df490574991dae54e0d39a',
+    sha256: 'sha256:7d30f0a50a67b09f9bdad472b612b74ede9fc6807078b5abdc347c794634c505',
     driverId: 'C07_FRONTEND_SEMANTIC_V1',
     containerPath: '/c07/frontend-semantic-driver.test.cjs',
   },
@@ -3922,11 +3922,11 @@ function verifyPinnedConsumer(root, manifestEntry, consumerKey) {
   assert.equal(pin.formatVersion, 1, `${consumerKey} pin format version mismatch`);
   assert.equal(pin.consumer, profile.consumer, `${consumerKey} pin consumer mismatch`);
   assert.equal(pin.sourceCommit, APPROVED_INPUTS.canonical.commit, `${consumerKey} source commit mismatch`);
-  assert.deepStrictEqual(pin.sourcePackage, { name: '@ceragon/shared-contracts', version: '0.3.0' });
+  assert.deepStrictEqual(pin.sourcePackage, { name: '@ceragon/shared-contracts', version: '0.4.0' });
   assert.equal(pin.policySchemaVersion, 1, `${consumerKey} policy schema version mismatch`);
   assert.deepStrictEqual(pin.canonicalGenerator, {
     name: 'ceragon-ai-security-artifact',
-    version: '1.2.0',
+    version: '1.3.0',
   });
   assert.equal(pin.requiredIntegrationGate, 'P0-C07', `${consumerKey} integration gate mismatch`);
   assert.equal(pin.runtimeActivatable, false, `${consumerKey} runtimeActivatable must remain false`);
@@ -4171,7 +4171,7 @@ const CONTAINED_SEMANTIC_PROFILES = deepFreeze({
     cwd: '.',
     args: [
       '/c07/backend-semantic-driver.cjs',
-      '/workspace/packages/shared-contracts/generated/ai-security/0.3.0/portable-contract.v1.jcs.json',
+      '/workspace/packages/shared-contracts/generated/ai-security/0.4.0/portable-contract.v1.jcs.json',
       '/workspace/src/ai-security-policy/ai-security-portable-reader.ts',
       '/app/dist/ai-security-policy/resolve-strictest-policy.js',
       '/workspace/packages/shared-contracts/dist/generated/ai-security-portable.generated.js',
@@ -4184,7 +4184,7 @@ const CONTAINED_SEMANTIC_PROFILES = deepFreeze({
     args: [
       'run',
       '/workspace/cmd/c07semanticdriver/main.go',
-      '/workspace/internal/aipolicycontract/embedded/0.3.0/portable-contract.v1.jcs.json',
+      '/workspace/internal/aipolicycontract/embedded/0.4.0/portable-contract.v1.jcs.json',
       '/workspace/cmd/c07semanticdriver/main.go',
     ],
   },
@@ -4194,7 +4194,7 @@ const CONTAINED_SEMANTIC_PROFILES = deepFreeze({
     cwd: '.',
     args: [
       '/c07/browser-semantic-driver.mjs',
-      '/workspace/browser-extension/generated/ai-security/0.3.0/portable-contract.v1.jcs.json',
+      '/workspace/browser-extension/generated/ai-security/0.4.0/portable-contract.v1.jcs.json',
       '/workspace/browser-extension/src/ai-security-policy-v1-reader.js',
       '/workspace/browser-extension/src/generated/ai-security-portable.generated.js',
     ],
@@ -4901,7 +4901,7 @@ function buildContentFreeEvidence({
     repositories: repositoryEvidence,
     canonical: {
       packageName: '@ceragon/shared-contracts',
-      packageVersion: '0.3.0',
+      packageVersion: '0.4.0',
       policySchemaVersion: 1,
       files: canonicalFileEvidence,
       byteEqualityAcrossAllConsumers: true,
@@ -4948,8 +4948,8 @@ function serializeContentFreeEvidence(evidence) {
 }
 const INTEGRATION_SCHEMA_DESCRIPTOR = deepFreeze({
   path: 'schemas/ai-security-integration-input-manifest-v1.schema.json',
-  bytes: 6_047,
-  sha256: 'sha256:57d2bde7cce294c1f8c67d508b8e660f2c416f5b3b5ee3b827372fec8d46b831',
+  bytes: 6_048,
+  sha256: 'sha256:0ff2a19430999006525075cb042aaf6dbd17a0815c6b71e6f209bedcca650423',
 });
 
 // This exact accepted manifest is the only promotable C07 input. Caller-supplied
@@ -4957,7 +4957,7 @@ const INTEGRATION_SCHEMA_DESCRIPTOR = deepFreeze({
 const REVIEWED_FINAL_MANIFEST_DESCRIPTOR = deepFreeze({
   path: 'fixtures/ai-security-integration-input-manifest-v1.accepted.json',
   bytes: 3_824,
-  sha256: 'sha256:f87569a89de6378351f8ae86f94d307aae1aba3ba9f17864760a38053b0f1e77',
+  sha256: 'sha256:23ed34231866ed498085cee01ef99286de41c1616ba18cf795e799802495eee6',
 });
 
 function verifyCanonicalSource(root, canonical) {
