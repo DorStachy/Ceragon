@@ -322,6 +322,9 @@ test('trusted Git treats unrepresentable Windows file modes as clean but preserv
   assert.equal(testing.trustedGitFileModeSetting('win32'), 'false');
   assert.equal(testing.trustedGitFileModeSetting('linux'), 'true');
   assert.equal(testing.trustedGitFileModeSetting('darwin'), 'true');
+  assert.equal(testing.trustedGitAutoCrLfSetting('win32'), 'true');
+  assert.equal(testing.trustedGitAutoCrLfSetting('linux'), 'false');
+  assert.equal(testing.trustedGitAutoCrLfSetting('darwin'), 'false');
   if (process.platform !== 'win32') return;
 
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ceragon-c07-filemode-'));

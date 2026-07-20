@@ -396,6 +396,11 @@ function trustedGitFileModeSetting(platform = process.platform) {
   return platform === 'win32' ? 'false' : 'true';
 }
 
+function trustedGitAutoCrLfSetting(platform = process.platform) {
+  assert.equal(typeof platform === 'string' && platform.length >= 1, true, 'Git platform is invalid');
+  return platform === 'win32' ? 'true' : 'false';
+}
+
 function runGitBytes(root, args, label, options = {}) {
   const {
     input = null,
@@ -415,6 +420,7 @@ function runGitBytes(root, args, label, options = {}) {
     '-c', 'core.fsmonitor=false',
     '-c', 'core.untrackedCache=false',
     '-c', `core.fileMode=${trustedGitFileModeSetting()}`,
+    '-c', `core.autocrlf=${trustedGitAutoCrLfSetting()}`,
     '-c', 'core.hooksPath=',
     ...args,
   ], {
@@ -5196,6 +5202,7 @@ const testing = Object.freeze({
   validateContainedSemanticEnvelopeBytes,
   runContainedCleanupRecovery,
   trustedGitFileModeSetting,
+  trustedGitAutoCrLfSetting,
   parseTreeEntries,
   validateBuildxAttestationBytes,
 });
