@@ -23,7 +23,7 @@ const artifactBytes = fs.readFileSync(path.join(
   packageRoot,
   'generated',
   'ai-security',
-  '0.3.0',
+  '0.4.0',
   'portable-contract.v1.jcs.json',
 ));
 const backendReceiptFixture = Buffer.from(

@@ -52,7 +52,7 @@ const SEMANTIC_TEST_ARTIFACT_BYTES = fs.readFileSync(path.join(
   SEMANTIC_TEST_PACKAGE_ROOT,
   'generated',
   'ai-security',
-  '0.3.0',
+  '0.4.0',
   'portable-contract.v1.jcs.json',
 ));
 const SEMANTIC_TEST_RECEIPT = JSON.parse(fs.readFileSync(path.join(
