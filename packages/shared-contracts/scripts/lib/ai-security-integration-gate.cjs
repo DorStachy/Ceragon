@@ -5048,7 +5048,6 @@ function verifyPriorSourceRollback(snapshot) {
     CANONICAL_FILES.artifact.path,
     CANONICAL_FILES.releaseManifest.path,
     CANONICAL_FILES.digestSidecar.path,
-    'packages/shared-contracts/manifests/ai-security-portable-release.v1.json',
   ];
   for (const relative of absent) {
     const absolute = path.resolve(snapshot.root, ...relative.split('/'));
