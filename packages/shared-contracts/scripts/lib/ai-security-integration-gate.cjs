@@ -201,8 +201,8 @@ const FIXED_CONTAINER_IMAGES = deepFreeze({
   },
   backend: {
     id: 'sha256:07c58374a1a2f0556c5fd46a64e078a8866e652d05b31bcf49d2acb82bba629c',
-    repositoryDigest: 'codesec-e2e/backend@sha256:07c58374a1a2f0556c5fd46a64e078a8866e652d05b31bcf49d2acb82bba629c',
-    buildReference: 'codesec-e2e/backend:m47-final',
+    repositoryDigest: 'ceragon-m47-backend-c03@sha256:07c58374a1a2f0556c5fd46a64e078a8866e652d05b31bcf49d2acb82bba629c',
+    localBuildReference: 'ceragon-m47-backend-c03:m47',
     os: 'linux',
     architecture: 'amd64',
     entrypoint: '/usr/local/bin/node',
