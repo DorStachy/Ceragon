@@ -1014,8 +1014,8 @@ const CANONICAL_FILES = deepFreeze({
 const APPROVED_INPUTS = deepFreeze({
   canonical: {
     repository: 'Workspace',
-    commit: 'c311b71e945e2098beabfa6df619be2c6ee9e5fd',
-    tree: '7719c7c8508223823f59141a05fb4b930e9b3dbb',
+    commit: '93bf85b67c69e1aff176151dbc9274691b5ac128',
+    tree: '1ec7d6ac3a7de3fe84b110d84c29583368e56909',
   },
   priorCanonical: {
     repository: 'Workspace',
@@ -4963,7 +4963,7 @@ const INTEGRATION_SCHEMA_DESCRIPTOR = deepFreeze({
 const REVIEWED_FINAL_MANIFEST_DESCRIPTOR = deepFreeze({
   path: 'fixtures/ai-security-integration-input-manifest-v1.accepted.json',
   bytes: 3_824,
-  sha256: 'sha256:23ed34231866ed498085cee01ef99286de41c1616ba18cf795e799802495eee6',
+  sha256: 'sha256:f763f53bdf2900f199f61dab120576dce57ecf7916da059b4a5bac331caba8ca',
 });
 
 function verifyCanonicalSource(root, canonical) {
