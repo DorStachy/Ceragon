@@ -1,16 +1,18 @@
+import { AI_SECURITY_PORTABLE_ORDERED_TUPLES } from './generated/ai-security-portable.generated';
+
 /**
  * AI Control Plane — Wave 1 shared contract.
  *
  * Canonical shapes for AI session/event tracking. Consumed by:
- *   - Backend (`src/ai-governance/*`) — mirrored via a snapshot + parity
- *     test rather than a runtime import (same inlined-with-parity pattern
- *     as `decision-contract.ts` → `check-packages-response.dto.ts`).
+ *   - Backend (`src/ai-governance/*`) — consumes this repository-local generated
+ *     shared contract; always-on parity binds it to the digest-pinned artifact.
+ *     No optional workspace checkout or manually maintained enum owns it.
  *   - Frontend AI Control Plane views (Wave 2+).
  *
- * These are DATA-SHAPE contracts only — no NestJS/TypeORM coupling. The
- * `AIEventType` and `PROMPT_EVIDENCE_MODES` tuples are `as const` so both
- * the TypeScript union and the runtime array are exported (the parity test
- * on the Backend side extracts them by regex).
+ * These are DATA-SHAPE contracts only — no NestJS/TypeORM coupling. Closed
+ * vocabularies alias generated `as const` tuples so both the TypeScript union
+ * and runtime array remain exported; the deterministic generator/checker
+ * enforces exact values and order.
  */
 
 /**
@@ -36,40 +38,10 @@
  * Metadata for all five stays redaction-safe (class / count / disposition /
  * reason-slug only — NEVER raw prompt/file content).
  *
- * NOTE: keep this tuple free of in-array comments — the Backend parity test
- * regex-extracts it by splitting on commas.
+ * NOTE: this append-only order is owned by the digest-pinned generated tuple;
+ * change it only through the portable authority and deterministic generator.
  */
-export const AI_EVENT_TYPES = [
-  'PROMPT_SUBMITTED',
-  'PROMPT_REDACTED',
-  'PROMPT_BLOCKED',
-  'AI_RESPONSE_RECEIVED',
-  'TOOL_CALL_REQUESTED',
-  'TOOL_CALL_BLOCKED',
-  'MCP_SERVER_ADDED',
-  'MCP_SERVER_APPROVED',
-  'MCP_SERVER_BLOCKED',
-  'MCP_QUARANTINE_APPLIED',
-  'MCP_QUARANTINE_RESTORED',
-  'MCP_TOOL_INVOKED',
-  'PACKAGE_INSTALL_REQUESTED',
-  'PACKAGE_INSTALL_BLOCKED',
-  'PACKAGE_INSTALL_ALLOWED',
-  'FILE_WRITE_OBSERVED',
-  'DIFF_SCAN_COMPLETED',
-  'GIT_PUSH_BLOCKED',
-  'POLICY_EXCEPTION_REQUESTED',
-  'POSTURE_DRIFT',
-  'CODE_DIFF_SCANNED',
-  'CODE_DIFF_FLAGGED',
-  'EXCEPTION_REQUESTED',
-  'AGENT_CONTROL_TAMPER',
-  'INGRESS_REDACTED',
-  'CONTEXT_TAINTED',
-  'TOOL_CALL_HELD',
-  'UPLOAD_BLOCKED',
-  'UPLOAD_NOT_INSPECTED',
-] as const;
+export const AI_EVENT_TYPES = AI_SECURITY_PORTABLE_ORDERED_TUPLES.AI_EVENT_TYPES;
 
 export type AIEventType = (typeof AI_EVENT_TYPES)[number];
 
@@ -84,12 +56,7 @@ export type AIEventType = (typeof AI_EVENT_TYPES)[number];
  *                            never the raw text.
  *   - FULL_WITH_APPROVAL   — persist the raw text (only mode that does).
  */
-export const PROMPT_EVIDENCE_MODES = [
-  'OFF',
-  'HASH_ONLY',
-  'REDACTED',
-  'FULL_WITH_APPROVAL',
-] as const;
+export const PROMPT_EVIDENCE_MODES = AI_SECURITY_PORTABLE_ORDERED_TUPLES.PROMPT_EVIDENCE_MODES;
 
 export type PromptEvidenceMode = (typeof PROMPT_EVIDENCE_MODES)[number];
 
@@ -100,15 +67,7 @@ export type PromptEvidenceMode = (typeof PROMPT_EVIDENCE_MODES)[number];
  * package decision contract, and so the AI-plane can add plane-specific
  * decisions later without widening the package verdict surface.
  */
-export const AI_POLICY_DECISIONS = [
-  'ALLOW',
-  'ALLOW_FAST',
-  'PROMPT',
-  'HOLD',
-  'BLOCK',
-  'PENDING',
-  'INCONCLUSIVE',
-] as const;
+export const AI_POLICY_DECISIONS = AI_SECURITY_PORTABLE_ORDERED_TUPLES.AI_POLICY_DECISIONS;
 
 export type AiPolicyDecision = (typeof AI_POLICY_DECISIONS)[number];
 
@@ -126,93 +85,28 @@ export type POLICY_DECISION = AiPolicyDecision;
  * tiers by the default policy below; the union of all three is exported as
  * `AI_DLP_CLASSES` so both sides validate against one closed set.
  */
-export const AI_DLP_BLOCK_CLASSES = [
-  'private-key',
-  'aws-credential-pair',
-  'gcp-service-account',
-] as const;
+export const AI_DLP_BLOCK_CLASSES = AI_SECURITY_PORTABLE_ORDERED_TUPLES.AI_DLP_BLOCK_CLASSES;
 
-// The redact tier contains provider credentials and validated structured data
-// that can be masked without breaking the surrounding AI workflow. Mixed-tier
-// Phase-D classes are listed at their Tier-A intent; on-box evidence eligibility
-// still caps Tier-B evidence to warn and Tier-C/D evidence to allow.
-// NOTE: entries here MUST be bare string literals (no inline comments) — the
-// contract-parity spec extracts this tuple by a text regex.
-export const AI_DLP_REDACT_CLASSES = [
-  'aws-access-key',
-  'gcp-key',
-  'generic-api-key',
-  'jwt',
-  'slack-token',
-  'github-token',
-  'internal-url',
-  'openai-key',
-  'anthropic-key',
-  'stripe-live',
-  'slack-webhook',
-  'sendgrid-key',
-  'twilio-key',
-  'npm-token',
-  'pypi-token',
-  'gitlab-token',
-  'google-oauth-secret',
-  'db-connection-string',
-  'azure-connection-string',
-  'payment-card',
-  'iban',
-] as const;
+// The redact tier: the last 10 (openai-key … google-oauth-secret) are the M4
+// (WS-C) structured provider/service credential classes the daemon + browser
+// engines detect. Redact (mask + let the prompt through) matches the
+// sibling-secret tier; an admin can escalate to block or relax to warn/allow.
+// NOTE: entries and order are owned by the digest-pinned generated tuple; the
+// deterministic checker rejects a stale or manually divergent projection.
+export const AI_DLP_REDACT_CLASSES = AI_SECURITY_PORTABLE_ORDERED_TUPLES.AI_DLP_REDACT_CLASSES;
 
-// The warn tier contains heuristic or Tier-B-only shapes. They stay visible to
-// users and admins without interrupting work by default. Validated paired /
-// structured forms have their own stronger Phase-D class above.
-export const AI_DLP_WARN_CLASSES = [
-  'aws-secret-key',
-  'azure-key',
-  'high-entropy',
-  'kubeconfig',
-  'bearer-auth-token',
-  'national-id',
-] as const;
+// The warn tier. kubeconfig / db-connection-string are M4 (WS-C) ambiguous
+// shapes — a redacted sample kubeconfig / a connection string is common in
+// benign context, so they WARN rather than mask by default; an admin can
+// escalate per class. Matches the browser-extension DEFAULT_POLICY tiers
+// exactly (Installers/browser-extension/src/dlp.js). NOTE: the daemon's
+// `base64-wrapped-secret` detector is deliberately NOT tiered here — like the
+// browser default it falls to the built-in WARN default (policyeval), keeping
+// this heuristic out of the configurable closed set.
+export const AI_DLP_WARN_CLASSES = AI_SECURITY_PORTABLE_ORDERED_TUPLES.AI_DLP_WARN_CLASSES;
 
-/**
- * The union of every policy-addressable DLP class.
- *
- * Keep the deployed 23-class prefix byte-for-byte stable. New classes append so
- * readers that render in tuple order do not reshuffle existing admin policy rows
- * merely because a class moved to a safer default action.
- */
-export const AI_DLP_CLASSES = [
-  'private-key',
-  'aws-secret-key',
-  'aws-access-key',
-  'gcp-key',
-  'azure-key',
-  'generic-api-key',
-  'jwt',
-  'slack-token',
-  'github-token',
-  'internal-url',
-  'openai-key',
-  'anthropic-key',
-  'stripe-live',
-  'slack-webhook',
-  'sendgrid-key',
-  'twilio-key',
-  'npm-token',
-  'pypi-token',
-  'gitlab-token',
-  'google-oauth-secret',
-  'high-entropy',
-  'kubeconfig',
-  'db-connection-string',
-  'aws-credential-pair',
-  'gcp-service-account',
-  'azure-connection-string',
-  'bearer-auth-token',
-  'payment-card',
-  'iban',
-  'national-id',
-] as const;
+/** The union of every DLP class across block/redact/warn tiers. */
+export const AI_DLP_CLASSES = AI_SECURITY_PORTABLE_ORDERED_TUPLES.AI_DLP_CLASSES;
 
 export type AiDlpClass = (typeof AI_DLP_CLASSES)[number];
 
@@ -221,7 +115,7 @@ export type AiDlpClass = (typeof AI_DLP_CLASSES)[number];
  * upgrade). Maps onto AI event types: allow/warn→PROMPT_SUBMITTED,
  * redact→PROMPT_REDACTED, block→PROMPT_BLOCKED.
  */
-export const AI_PROMPT_DECISIONS = ['allow', 'warn', 'redact', 'block'] as const;
+export const AI_PROMPT_DECISIONS = AI_SECURITY_PORTABLE_ORDERED_TUPLES.AI_PROMPT_DECISIONS;
 
 export type AiPromptDecision = (typeof AI_PROMPT_DECISIONS)[number];
 
@@ -245,15 +139,7 @@ export type AiPromptDecision = (typeof AI_PROMPT_DECISIONS)[number];
  * Additive-only: emitters may omit it (older events carry `null`), and the read
  * model derives the first three from existing backend fields when absent.
  */
-export const AI_DATA_DISPOSITIONS = [
-  'SENT_ALLOWED',
-  'REDACTED_THEN_SENT',
-  'BLOCKED_BEFORE_EGRESS',
-  'HELD',
-  'NEVER_LEFT',
-  'BLOCKED_EGRESS_HOST',
-  'RELEASED_ONCE',
-] as const;
+export const AI_DATA_DISPOSITIONS = AI_SECURITY_PORTABLE_ORDERED_TUPLES.AI_DATA_DISPOSITIONS;
 
 export type AiDataDisposition = (typeof AI_DATA_DISPOSITIONS)[number];
 
@@ -370,7 +256,7 @@ export interface AiSessionShape {
  *   - 'ai-tool' — a detected AI coding agent (cursor, claude-code, ...).
  *   - 'ai-rule' — a detected AI-agent rule/config file (CLAUDE.md, .cursor/rules, ...).
  */
-export const AI_INVENTORY_KINDS = ['ai-tool', 'ai-rule'] as const;
+export const AI_INVENTORY_KINDS = AI_SECURITY_PORTABLE_ORDERED_TUPLES.AI_INVENTORY_KINDS;
 
 export type AiInventoryKind = (typeof AI_INVENTORY_KINDS)[number];
 
@@ -379,15 +265,10 @@ export type AiInventoryKind = (typeof AI_INVENTORY_KINDS)[number];
  * when no explicit policy row exists; approved / tolerated / blocked are set
  * by an admin via `PATCH /api/v1/ai/providers/:providerKey/policy`.
  */
-export const AI_PROVIDER_POLICY_STATUSES = [
-  'approved',
-  'tolerated',
-  'blocked',
-  'observed',
-] as const;
+export const AI_PROVIDER_POLICY_STATUSES =
+  AI_SECURITY_PORTABLE_ORDERED_TUPLES.AI_PROVIDER_POLICY_STATUSES;
 
-export type AiProviderPolicyStatus =
-  (typeof AI_PROVIDER_POLICY_STATUSES)[number];
+export type AiProviderPolicyStatus = (typeof AI_PROVIDER_POLICY_STATUSES)[number];
 
 /**
  * A single AI-inventory item as SENT by the daemon/extension in an ingestion
@@ -493,6 +374,12 @@ export interface AiWebCoverageEndpointShape {
   version: string | null;
   lastSeen: string | null;
   online: boolean;
+  // Wave A (coverage drift truth) — control-coverage staleness/health forwarded
+  // from the daemon's `metadata.webCoverage` beacon. "Control coverage, not
+  // usage": no prompt/page content, only per-site selector-drift markers.
+  policyAgeMs: number | null;
+  drifted: boolean;
+  driftedSites: { host: string; provider: string; selectors: string[] }[];
 }
 
 /**
@@ -505,6 +392,8 @@ export interface AiWebCoverageResponseShape {
     installed: number;
     online: number;
     stale: number;
+    /** Count of installed endpoints reporting selector drift (degraded coverage). */
+    degraded: number;
   };
 }
 
@@ -573,11 +462,7 @@ export interface AiEventShape {
  *   - 'approved' — an account admin explicitly allowed it.
  *   - 'blocked'  — an account admin explicitly disallowed it.
  */
-export const MCP_APPROVAL_STATUSES = [
-  'pending',
-  'approved',
-  'blocked',
-] as const;
+export const MCP_APPROVAL_STATUSES = AI_SECURITY_PORTABLE_ORDERED_TUPLES.MCP_APPROVAL_STATUSES;
 
 export type McpApprovalStatus = (typeof MCP_APPROVAL_STATUSES)[number];
 
@@ -587,7 +472,7 @@ export type McpApprovalStatus = (typeof MCP_APPROVAL_STATUSES)[number];
  * the verdict is what the scanner concluded, the approval is what the admin
  * decided.
  */
-export const MCP_STATIC_VERDICTS = ['allow', 'warn', 'block'] as const;
+export const MCP_STATIC_VERDICTS = AI_SECURITY_PORTABLE_ORDERED_TUPLES.MCP_STATIC_VERDICTS;
 
 export type McpStaticVerdict = (typeof MCP_STATIC_VERDICTS)[number];
 
@@ -639,10 +524,10 @@ export interface McpServerRowShape {
  * (byte-identical to today); a team-governed endpoint folds in the strictest
  * team tier and resolves at 'team'.
  *
- * Appended (never re-ordered) so the Backend parity regex + the append-only
- * tuple discipline (LOCK-8) hold.
+ * Appended (never re-ordered) so the generated artifact, always-on parity, and
+ * append-only tuple discipline (LOCK-8) remain aligned.
  */
-export const AI_POLICY_SCOPES = ['org', 'site', 'team'] as const;
+export const AI_POLICY_SCOPES = AI_SECURITY_PORTABLE_ORDERED_TUPLES.AI_POLICY_SCOPES;
 
 export type AiPolicyScope = (typeof AI_POLICY_SCOPES)[number];
 
@@ -658,3 +543,58 @@ export interface AiPolicyScopeSummaryShape {
   appliedProfileId: string | null;
   updatedAt: string | null;
 }
+
+/**
+ * Console plane scoping (IA v3, 2026-07-17; constants verified vs prod DISTINCT
+ * values 2026-07-17).
+ *
+ * The three self-contained console planes each carry their OWN scoped
+ * Sessions/Events. These read APIs (`GET /api/v1/ai/sessions`,
+ * `GET /api/v1/ai/activity`) accept `?plane=` and resolve rows to at most one
+ * plane via the DISJOINT rule below.
+ *
+ * NOTE: the Backend RUNTIME imports a byte-identical local mirror
+ * (`src/ai-governance/ai-plane.constants.ts`) rather than this specifier, because
+ * `@ceragon/shared-contracts` resolves to a pre-built `dist` and would not surface
+ * a freshly-added export. This copy is the contract home; keep them in lockstep.
+ * Appended (never re-ordered) so the Backend parity regex + the append-only tuple
+ * discipline hold.
+ */
+export const AI_PLANES = ['web', 'coding', 'autonomous'] as const;
+export type AiPlane = (typeof AI_PLANES)[number];
+
+/** Web plane by agent identity (rows whose agent IS the browser/web guard, whatever surface recorded them). */
+export const WEB_AGENT_TYPES = ['browser', 'chat', 'web-ai'] as const;
+
+/** Web plane by observation surface (employees using browser AI). */
+export const WEB_SURFACES = ['browser', 'browser-composer', 'browser-upload'] as const;
+
+export const CODING_AGENT_TYPES = [
+  'claude-code',
+  'codex',
+  'cursor',
+  'cli',
+  'bench',
+  'manual-test',
+] as const;
+
+/**
+ * mcp            → cera mcp serve tool calls (Installers/internal/mcpserve/executor.go:101; flag-gated, near-zero today)
+ * mcp-governance → real MCP block/quarantine enforcement events (Installers/internal/daemon/mcp_governance_event.go:57)
+ * NOTE: "automation" was removed — zero producers exist anywhere (M4.8 will add the agent gateway; extend then).
+ */
+export const AUTONOMOUS_AGENT_TYPES = ['mcp', 'mcp-governance'] as const;
+
+/**
+ * DISJOINT plane resolution rule (planes are mutually exclusive — a row belongs
+ * to at most one plane). ALL matching is case-INSENSITIVE (prod has both `CLI`
+ * and `cli`) and NULL-safe. The surface column differs per table:
+ * `ai_sessions.source_surface` vs `ai_events.surface`.
+ *
+ *   1. web         when surface ∈ WEB_SURFACES OR agent_type ∈ WEB_AGENT_TYPES.
+ *   2. autonomous  when agent_type ∈ AUTONOMOUS_AGENT_TYPES AND NOT web.
+ *   3. coding      when agent_type ∈ CODING_AGENT_TYPES AND NOT web (deliberately
+ *                  includes surface='web-ai-proxy' rows — coding agents seen at the
+ *                  provider-egress wire proxy).
+ *   4. else        EXCLUDED from plane-scoped views (all-planes views only).
+ */

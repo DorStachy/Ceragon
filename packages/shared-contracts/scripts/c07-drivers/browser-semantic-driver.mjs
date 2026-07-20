@@ -326,6 +326,19 @@ function rankOracle(reader) {
       representative: 'hold',
     },
   ];
+  const sources = [
+    {
+      family: 'protocol',
+      readName: 'readAiSecurityProtocolVersionToken',
+      representative: '2',
+    },
+    ...families.map(({ family, readName, representative }) => ({
+      family,
+      readName,
+      representative,
+    })),
+  ];
+  invariant(families.length === 8 && sources.length === 9);
   const knownRanks = {};
   const unknownRanks = [];
   const forgedRanks = [];
@@ -354,13 +367,14 @@ function rankOracle(reader) {
       value: target.representative,
     }));
     crossFamilyRanks[target.family] = {};
-    for (const source of families) {
+    for (const source of sources) {
       if (source.family === target.family) continue;
       const sourceToken = reader[source.readName](source.representative);
       exactKeys(sourceToken, ['state', 'rawToken', 'value']);
       invariant(Object.isFrozen(sourceToken));
       crossFamilyRanks[target.family][source.family] = reader[target.rankName](sourceToken);
     }
+    invariant(Object.keys(crossFamilyRanks[target.family]).length === 8);
   }
   invariant(unknownRanks.every((rank) => rank === null));
   invariant(forgedRanks.every((rank) => rank === null));
@@ -368,6 +382,8 @@ function rankOracle(reader) {
     Object.values(crossFamilyRanks)
       .every((row) => Object.values(row).every((rank) => rank === null)),
   );
+  invariant(Object.values(crossFamilyRanks)
+    .reduce((count, row) => count + Object.keys(row).length, 0) === 64);
   return {
     familyCount: families.length,
     knownRanks,

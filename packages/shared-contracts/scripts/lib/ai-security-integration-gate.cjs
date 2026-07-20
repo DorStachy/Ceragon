@@ -196,7 +196,7 @@ const FIXED_CONTAINER_IMAGES = deepFreeze({
     os: 'linux',
     architecture: 'amd64',
     entrypoint: '/usr/local/go/bin/go',
-    tmpfs: 'rw,nosuid,nodev,size=536870912,mode=1777',
+    tmpfs: 'rw,nosuid,nodev,exec,size=536870912,mode=1777',
     configSha256: 'sha256:525fe9847fb48b18cf6cd079d40fd66ea5cf81dcbbbe31fe050a663a8e446568',
   },
   backend: {
@@ -223,6 +223,7 @@ function registerFrontendDependencyImage(input) {
   const descriptor = deepFreeze({
     id: input.id,
     repositoryDigest: 'ceragon-c07-frontend-deps@' + input.id,
+    localBuildReference: 'ceragon-c07-frontend-deps:m47',
     os: 'linux',
     architecture: 'amd64',
     entrypoint: '/usr/local/bin/node',
@@ -246,6 +247,34 @@ function containerImage(key) {
 
 function containerImageValues() {
   return [...runtimeContainerImages.values()];
+}
+
+function imageBuildReference(image) {
+  assert.ok(containerImageValues().includes(image), 'Docker build reference image is not reviewed');
+  if (!Object.hasOwn(image, 'localBuildReference')) return image.repositoryDigest;
+  assert.match(
+    image.localBuildReference,
+    /^[a-z0-9]+(?:[._/-][a-z0-9]+)*:[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$/,
+    'local Docker build reference is invalid',
+  );
+  const repository = image.repositoryDigest.slice(0, image.repositoryDigest.indexOf('@'));
+  assert.equal(
+    image.localBuildReference,
+    `${repository}:m47`,
+    'local Docker build reference repository or release tag changed',
+  );
+  return image.localBuildReference;
+}
+
+function buildxBaseMaterialUri(image) {
+  const reference = imageBuildReference(image);
+  if (!Object.hasOwn(image, 'localBuildReference')) {
+    const repository = image.repositoryDigest.slice(0, image.repositoryDigest.indexOf('@'));
+    return 'pkg:docker/' + repository + '?digest=' + image.id + '&platform=linux%2Famd64';
+  }
+  const separator = reference.lastIndexOf(':');
+  return 'pkg:docker/' + reference.slice(0, separator) + '@' + reference.slice(separator + 1)
+    + '?platform=linux%2Famd64';
 }
 const fixedSystemToolCache = new Map();
 
@@ -765,7 +794,7 @@ function buildCanonicalDockerContext(
     }
   }
   const instructions = [
-    `FROM ${baseImage.repositoryDigest}`,
+    `FROM ${imageBuildReference(baseImage)}`,
     `LABEL ceragon.c07.snapshot.commit=${snapshotProof.commit}`,
     `LABEL ceragon.c07.snapshot.tree=${snapshotProof.tree}`,
     `LABEL ceragon.c07.snapshot.manifest=${snapshotProof.manifestSha256}`,
@@ -1680,30 +1709,30 @@ const reviewedDriverArtifactWitnesses = new WeakMap();
 const REVIEWED_SEMANTIC_DRIVER_DESCRIPTORS = deepFreeze({
   backend: {
     path: 'scripts/c07-drivers/backend-semantic-driver.cjs',
-    bytes: 18_623,
-    sha256: 'sha256:8b9c7241a0826ffb3714f35906df6fa2a8523f5ae5c6cb79cc106a0588bd63d3',
+    bytes: 18_969,
+    sha256: 'sha256:9858267f267192165c84ecc52f6accd0f3ec2db9eb92cdb4cdaa8b921a80cac6',
     driverId: 'C07_BACKEND_SEMANTIC_V1',
     containerPath: '/c07/backend-semantic-driver.cjs',
   },
   browser: {
     path: 'scripts/c07-drivers/browser-semantic-driver.mjs',
-    bytes: 18_806,
-    sha256: 'sha256:89a251f46d0cc98d4c0bd287016ee41d3d64562c445099e910af02c6747b4f9e',
+    bytes: 19_327,
+    sha256: 'sha256:1576ad1296fec1cc9b854497923d65575643da697317fb72c8bccd4847beb466',
     driverId: 'C07_BROWSER_SEMANTIC_V1',
     containerPath: '/c07/browser-semantic-driver.mjs',
   },
   installer: {
     path: 'scripts/c07-drivers/installer-semantic-driver/main.go',
-    bytes: 21_060,
-    sha256: 'sha256:801a90fa470ebb827141407e8b6a94bc7751283debdf8d56572e7ed9a2d2c090',
+    bytes: 21_491,
+    sha256: 'sha256:51d4dff154f837c93c40540e479544b0c96c090280d62a884a808285383c7378',
     driverId: 'C07_INSTALLER_SEMANTIC_V1',
     contextPath: 'c07/installer-semantic-driver.go',
     containerPath: '/workspace/cmd/c07semanticdriver/main.go',
   },
   frontend: {
     path: 'scripts/c07-drivers/frontend-semantic-driver.test.cjs',
-    bytes: 24_261,
-    sha256: 'sha256:4501b61652f94330a0fc821c238cbf672806de51d2c55b38133a3c8eeff70bb5',
+    bytes: 24_299,
+    sha256: 'sha256:0febbcff1d262924b4f7a80b9532cf0111fccb03d8df490574991dae54e0d39a',
     driverId: 'C07_FRONTEND_SEMANTIC_V1',
     containerPath: '/c07/frontend-semantic-driver.test.cjs',
   },
@@ -1989,7 +2018,7 @@ function removeImmutableInputImage(inputImage) {
 }
 function verifyLocalBuildReference(baseImage, label, options = {}) {
   const { timeoutMs = 10_000 } = options;
-  const reference = baseImage.repositoryDigest;
+  const reference = imageBuildReference(baseImage);
   const inspected = parseDockerJson(
     runDockerSync(
       ['image', 'inspect', reference, '--format', '{"id":"{{.Id}}"}'],
@@ -2002,7 +2031,9 @@ function verifyLocalBuildReference(baseImage, label, options = {}) {
   return Object.freeze({
     reference,
     id: inspected.id,
-    referencePolicy: 'REPOSITORY_DIGEST_PLUS_EXACT_CHILD_BASE_PROOF',
+    referencePolicy: Object.hasOwn(baseImage, 'localBuildReference')
+      ? 'LOCAL_RELEASE_TAG_PRE_POST_BOUND_TO_EXACT_ID_PLUS_CHILD_BASE_PROOF'
+      : 'REPOSITORY_DIGEST_PLUS_EXACT_CHILD_BASE_PROOF',
   });
 }
 function readDirectBoundedFile(root, fileName, maxBytes, label) {
@@ -2126,11 +2157,10 @@ function validateBuildxAttestationBytes(iidBytes, metadataBytes, expected) {
   assert.equal(provenance.buildType, 'https://mobyproject.org/buildkit@v1', 'Buildx provenance build type changed');
   assert.equal(Array.isArray(provenance.materials) && provenance.materials.length === 2, true, 'Buildx provenance materials changed');
   for (const material of provenance.materials) assertExactKeys(material, ['uri', 'digest'], 'Buildx provenance material');
-  const repository = baseImage.repositoryDigest.slice(0, baseImage.repositoryDigest.indexOf('@'));
   const baseHex = baseImage.id.slice('sha256:'.length);
   assert.equal(
     provenance.materials[0].uri,
-    'pkg:docker/' + repository + '?digest=' + baseImage.id + '&platform=linux%2Famd64',
+    buildxBaseMaterialUri(baseImage),
     'Buildx provenance base material changed',
   );
   assertBuildxDigestRecord(provenance.materials[0].digest, baseHex, 'Buildx base material digest');
@@ -2461,7 +2491,9 @@ function buildImmutableInputImage(snapshot, baseImageKey, driver = null) {
     historyPolicy: context.driver
       ? 'EXACT_BASE_SUFFIX_NINE_FIXED_LABELS_TWO_COPIES'
       : 'EXACT_BASE_SUFFIX_FIVE_FIXED_LABELS_ONE_COPY',
-    dockerfilePolicy: 'FROM_EXACT_DIGEST_FIXED_LABELS_COPY_ONLY_NO_RUN_NO_ADD',
+    dockerfilePolicy: Object.hasOwn(baseImage, 'localBuildReference')
+      ? 'FROM_LOCAL_RELEASE_TAG_PRE_POST_BOUND_EXACT_ID_FIXED_LABELS_COPY_ONLY_NO_RUN_NO_ADD'
+      : 'FROM_EXACT_DIGEST_FIXED_LABELS_COPY_ONLY_NO_RUN_NO_ADD',
     buildNetwork: 'NONE',
     buildPull: false,
     buildCache: false,
@@ -2586,8 +2618,12 @@ function validateNoContainerNetworkEndpoints(networkSettings, label) {
   assertExactKeys(networkSettings.networks, ['none'], label + ' networks');
   const none = networkSettings.networks.none;
   assertRecord(none, label + ' none network');
+  assert.equal(
+    none.NetworkID === '' || /^[0-9a-f]{64}$/.test(none.NetworkID),
+    true,
+    label + ' none network ID must be empty or an exact engine network ID',
+  );
   for (const field of [
-    'NetworkID',
     'EndpointID',
     'Gateway',
     'IPAddress',
@@ -5086,16 +5122,15 @@ async function runIntegrationGate(manifest, roots, runtimeInputs) {
     }
     const rollback = verifyPriorSourceRollback(snapshots.priorCanonical);
     const consumerKeys = ['backend', 'installer', 'browser', 'frontend'];
-    const profileSettlements = await Promise.allSettled(
-      consumerKeys.map((key) => runFixedProfile(key, snapshots[key], {
+    const profileValues = await mapSequentially(
+      consumerKeys,
+      (key) => runFixedProfile(key, snapshots[key], {
         rollback,
         artifactBytes: canonical.artifactBytes,
-      })),
+      }),
     );
-    const failedProfile = profileSettlements.find((result) => result.status === 'rejected');
-    if (failedProfile) throw failedProfile.reason;
     const profiles = Object.fromEntries(
-      profileSettlements.map((result, index) => [consumerKeys[index], result.value]),
+      profileValues.map((value, index) => [consumerKeys[index], value]),
     );
     buildCompatibilityMatrix({ profiles, rollback });
 
@@ -5124,6 +5159,17 @@ async function runIntegrationGate(manifest, roots, runtimeInputs) {
   }
 }
 
+async function mapSequentially(values, operation) {
+  assert.equal(Array.isArray(values), true, 'sequential values must be an array');
+  assert.equal(values.length >= 1 && values.length <= 16, true, 'sequential values count is invalid');
+  assert.equal(typeof operation, 'function', 'sequential operation must be a function');
+  const results = [];
+  for (let index = 0; index < values.length; index += 1) {
+    results.push(await operation(values[index], index));
+  }
+  return Object.freeze(results);
+}
+
 function loadReviewedIntegrationManifest(packageRoot) {
   const snapshotter = createProtectedSnapshotter(packageRoot);
   snapshotter.snapshot(INTEGRATION_SCHEMA_DESCRIPTOR, 'integration manifest schema');
@@ -5141,8 +5187,11 @@ async function runReviewedIntegrationGate(packageRoot, roots, runtimeInputs) {
 // These isolated transport primitives cannot seed this module's private gate authority.
 // They exist only so the exact one-shot and canonical-transport algorithms are adversarially tested.
 const testing = Object.freeze({
+  buildxBaseMaterialUri,
   containedSemanticProfiles: CONTAINED_SEMANTIC_PROFILES,
   createOneShotSemanticRunAuthority,
+  imageBuildReference,
+  mapSequentially,
   registerFrontendDependencyImage,
   validateContainedSemanticEnvelopeBytes,
   runContainedCleanupRecovery,

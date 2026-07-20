@@ -410,7 +410,17 @@ func buildRankOracle() map[string]any {
 		reconstructedRank, reconstructedRankable := target.rank(reconstructed)
 		failUnless(!reconstructedRankable && reconstructedRank == 0)
 
-		crossRanks := make(map[string]any, len(families)-1)
+		crossRanks := make(map[string]any, len(families))
+		protocolToken := aipolicycontract.ReadProtocolVersion("2")
+		failUnless(
+			protocolToken.State == aipolicycontract.TokenKnown &&
+				protocolToken.RawToken == "2" &&
+				protocolToken.Value == "2" &&
+				protocolToken.Reason == "",
+		)
+		protocolRank, protocolRankable := target.rank(protocolToken)
+		failUnless(!protocolRankable && protocolRank == 0)
+		crossRanks["protocol"] = nil
 		for _, source := range families {
 			if source.name == target.name {
 				continue
@@ -420,6 +430,7 @@ func buildRankOracle() map[string]any {
 			failUnless(!crossRankable && crossRank == 0)
 			crossRanks[source.name] = nil
 		}
+		failUnless(len(crossRanks) == len(families))
 		crossFamilyRanks[target.name] = crossRanks
 	}
 	return map[string]any{

@@ -7,11 +7,13 @@ const path = require('node:path');
 
 const CONSUMER = 'backend';
 const DRIVER_ID = 'C07_BACKEND_SEMANTIC_V1';
+const REVIEWED_PACKAGE_ROOT = '/workspace/node_modules';
+const REVIEWED_DEPENDENCY_ROOT = '/app/node_modules';
 const ARTIFACT_SHA256 =
   'sha256:bb172d0d535530fba9ade9648c2a5f9784ccd4fb9b1a08535f0172188aadca67';
 const EXPECTED_MODULE_SHA256 = Object.freeze({
   reader: 'sha256:3e638b3fccff7b377746deb6058bc7c72d473adca3ed61e333100a898064c177',
-  strictest: 'sha256:99a2655adb5afaac262be6a01d969182075763ce8e94d7087b18d8648f7c5efc',
+  strictest: 'sha256:bbbd6e9fdcb021114146000d0978e92b35aae8f41b8587e9b006429baa8dc428',
   metadata: 'sha256:81c52b21a11cdd68b6d50dd424091cbf804c4aeecf92e263e29ba176bf99855f',
 });
 const ENVELOPE_ENV_KEYS = Object.freeze([
@@ -116,7 +118,12 @@ function readDigestBoundFile(filePath, expectedSha256) {
 
 function loadReviewedTypescriptModule(filePath, sourceBytes) {
   invariant(Buffer.isBuffer(sourceBytes) && sourceBytes.length >= 1);
-  const typescript = require('/app/node_modules/typescript');
+  for (const root of [REVIEWED_PACKAGE_ROOT, REVIEWED_DEPENDENCY_ROOT]) {
+    const stat = fs.lstatSync(root);
+    invariant(stat.isDirectory() && !stat.isSymbolicLink());
+    invariant(fs.realpathSync(root) === root);
+  }
+  const typescript = require(REVIEWED_DEPENDENCY_ROOT + '/typescript');
   invariant(typescript.version === '5.9.3');
   const compiled = typescript.transpileModule(sourceBytes.toString('utf8'), {
     fileName: filePath,
@@ -131,7 +138,7 @@ function loadReviewedTypescriptModule(filePath, sourceBytes) {
   invariant((compiled.diagnostics || []).length === 0 && typeof compiled.outputText === 'string');
   const loaded = new Module(filePath, module);
   loaded.filename = filePath;
-  loaded.paths = Module._nodeModulePaths(path.dirname(filePath));
+  loaded.paths = [REVIEWED_PACKAGE_ROOT, REVIEWED_DEPENDENCY_ROOT];
   loaded._compile(compiled.outputText, filePath);
   return loaded.exports;
 }

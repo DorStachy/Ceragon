@@ -25,6 +25,8 @@
  * the Backend parity spec extracts them by regex.
  */
 
+import type { RuntimeAdapterReport } from './runtime-adapter-contract';
+
 /**
  * The attestable control set. Each key is one protection the daemon can report
  * on. FROZEN at P0 — Go conforms to this exact key list by convention.
@@ -107,6 +109,17 @@ export interface EndpointControlsAttestation {
   /** Daemon-advisory evidence-chain integrity (server re-verify is authoritative — BN6). */
   evidenceIntact?: boolean;
   enforcementTier?: EndpointEnforcementTier;
+  /**
+   * M4.5 (Gate-0 #3, PRD D9) — ADDITIVE, OPTIONAL: the AI runtime adapters the
+   * daemon attests on this endpoint (Claude Code across its hosts, later
+   * Codex/Cursor). Orthogonal to the frozen 6 {@link ENDPOINT_CONTROL_KEYS} —
+   * this does NOT touch them. A legacy daemon omits it entirely; a newer one
+   * reports only the runtimes it detected. The Backend's VALIDATED/normalized
+   * ingest of this array (per-element allowlist rebuild) is Phase 1 — this Phase
+   * 0 change is the wire-shape contract only; {@link normalizeControls} does not
+   * yet promote it (older + newer consumers stay byte-valid either way).
+   */
+  runtimeAdapters?: RuntimeAdapterReport[];
   /** RFC3339 timestamp the daemon computed the attestation at. */
   attestedAt: string;
 }

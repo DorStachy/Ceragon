@@ -1186,6 +1186,29 @@ test('verified emergency cleanup supersedes only the primary cleanup error and c
   assert.match(unproven.cleanupError.message, /retained a survivor/);
 });
 
+test('immutable semantic profiles are scheduled in order without Docker build overlap', async () => {
+  const consumers = ['backend', 'installer', 'browser', 'frontend'];
+  const starts = [];
+  const finishes = [];
+  let active = 0;
+  let maximumActive = 0;
+  const values = await testing.mapSequentially(consumers, async (consumer, index) => {
+    starts.push(consumer);
+    active += 1;
+    maximumActive = Math.max(maximumActive, active);
+    await new Promise((resolve) => setImmediate(resolve));
+    finishes.push(consumer);
+    active -= 1;
+    return `${index}:${consumer}`;
+  });
+
+  assert.deepStrictEqual(starts, consumers);
+  assert.deepStrictEqual(finishes, consumers);
+  assert.deepStrictEqual(values, consumers.map((consumer, index) => `${index}:${consumer}`));
+  assert.equal(maximumActive, 1, 'immutable Docker profiles must never overlap');
+  assert.equal(Object.isFrozen(values), true);
+});
+
 test('container authority accepts one full create ID and every control operation targets only that ID', () => {
   const id = 'c'.repeat(64);
   assert.equal(parseCreatedContainerId(Buffer.from(`${id}\n`, 'ascii'), 'fixture ID'), id);
@@ -1421,7 +1444,36 @@ test('full container inspection rejects ID/name swaps, mounts, and weakened isol
       expected,
       'network endpoint injection',
     ),
-    /NetworkID must be empty/,
+    /none network ID must be empty or an exact engine network ID/,
+  );
+  assert.doesNotThrow(() => validateContainedContainerInspection(
+    {
+      ...inspected,
+      networkSettings: {
+        ...inspected.networkSettings,
+        networks: {
+          none: { ...inspected.networkSettings.networks.none, NetworkID: 'a'.repeat(64) },
+        },
+      },
+    },
+    expected,
+    'materialized none network namespace',
+  ));
+  assert.throws(
+    () => validateContainedContainerInspection(
+      {
+        ...inspected,
+        networkSettings: {
+          ...inspected.networkSettings,
+          networks: {
+            none: { ...inspected.networkSettings.networks.none, EndpointID: 'a'.repeat(64) },
+          },
+        },
+      },
+      expected,
+      'network endpoint injection',
+    ),
+    /EndpointID must be empty/,
   );
 });
 test('termination watchdog bounds a stuck attach even when container kill fails or returns', async () => {
@@ -1980,4 +2032,52 @@ test('contained semantic dispatch is fixed for all four accepted consumers', () 
     }),
     /Frontend dependency image ID invalid/,
   );
+});
+
+test('only the Go semantic profile receives an executable ephemeral workspace', () => {
+  assert.match(FIXED_CONTAINER_IMAGES.go.tmpfs, /(?:^|,)exec(?:,|$)/);
+  assert.match(FIXED_CONTAINER_IMAGES.go.tmpfs, /(?:^|,)nosuid(?:,|$)/);
+  assert.match(FIXED_CONTAINER_IMAGES.go.tmpfs, /(?:^|,)nodev(?:,|$)/);
+  for (const key of ['backend', 'node']) {
+    assert.match(FIXED_CONTAINER_IMAGES[key].tmpfs, /(?:^|,)noexec(?:,|$)/);
+    assert.doesNotMatch(FIXED_CONTAINER_IMAGES[key].tmpfs, /(?:^|,)exec(?:,|$)/);
+  }
+});
+
+test('frontend immutable builds use one fixed local release tag with exact-ID binding proofs', () => {
+  const id = `sha256:${'f'.repeat(64)}`;
+  const image = testing.registerFrontendDependencyImage({
+    id,
+    configSha256: `sha256:${'e'.repeat(64)}`,
+  });
+  assert.equal(testing.imageBuildReference(image), 'ceragon-c07-frontend-deps:m47');
+  assert.equal(
+    testing.buildxBaseMaterialUri(image),
+    'pkg:docker/ceragon-c07-frontend-deps@m47?platform=linux%2Famd64',
+  );
+  assert.throws(
+    () => testing.imageBuildReference({ ...image }),
+    /Docker build reference image is not reviewed/,
+  );
+
+  const input = Buffer.from('frontend snapshot');
+  const context = buildCanonicalDockerContext(
+    [{ mode: '100644', oid: '0'.repeat(40), path: 'input.txt', size: input.length }],
+    [input],
+    {
+      commit: '1'.repeat(40),
+      tree: '2'.repeat(40),
+      manifestSha256: `sha256:${'3'.repeat(64)}`,
+    },
+    image,
+  );
+  const dockerfileSize = Number.parseInt(
+    context.bytes.subarray(124, 136).toString('ascii').replace(/\0.*$/, ''),
+    8,
+  );
+  const dockerfile = context.bytes.subarray(512, 512 + dockerfileSize).toString('utf8');
+  assert.equal(dockerfile.startsWith('FROM ceragon-c07-frontend-deps:m47\n'), true);
+  assert.equal(dockerfile.includes(`FROM ceragon-c07-frontend-deps@${id}`), false);
+  assert.match(dockerfile, new RegExp(`LABEL ceragon\\.c07\\.base\\.image=${id}`));
+  assert.doesNotMatch(dockerfile, /(?:^|\n)(?:RUN|ADD)\s/);
 });
