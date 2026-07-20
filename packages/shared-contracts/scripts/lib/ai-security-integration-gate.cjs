@@ -200,14 +200,14 @@ const FIXED_CONTAINER_IMAGES = deepFreeze({
     configSha256: 'sha256:525fe9847fb48b18cf6cd079d40fd66ea5cf81dcbbbe31fe050a663a8e446568',
   },
   backend: {
-    id: 'sha256:3a25d3d0bb0fac97354fbae9d9941a06621dc41fab3e49b0be5bdfed642ad89f',
-    repositoryDigest: 'ceragon-m47-backend-c03@sha256:3a25d3d0bb0fac97354fbae9d9941a06621dc41fab3e49b0be5bdfed642ad89f',
-    buildReference: 'ceragon-m47-backend-c03:c41c248',
+    id: 'sha256:07c58374a1a2f0556c5fd46a64e078a8866e652d05b31bcf49d2acb82bba629c',
+    repositoryDigest: 'codesec-e2e/backend@sha256:07c58374a1a2f0556c5fd46a64e078a8866e652d05b31bcf49d2acb82bba629c',
+    buildReference: 'codesec-e2e/backend:m47-final',
     os: 'linux',
     architecture: 'amd64',
     entrypoint: '/usr/local/bin/node',
     tmpfs: 'rw,nosuid,nodev,noexec,size=536870912,mode=1777',
-    configSha256: 'sha256:c295af6e493734d4a3c8f7cd1c3880f990ed685ddbe077ca66c2ae350edd989d',
+    configSha256: 'sha256:b42cac23ea21b0d45e8c0fce21729a742a9b97bbe5287d6921c6a3088fac28ac',
   },
 });
 const runtimeContainerImages = new Map(Object.entries(FIXED_CONTAINER_IMAGES));
@@ -1716,7 +1716,7 @@ const REVIEWED_SEMANTIC_DRIVER_DESCRIPTORS = deepFreeze({
   backend: {
     path: 'scripts/c07-drivers/backend-semantic-driver.cjs',
     bytes: 18_969,
-    sha256: 'sha256:01bfbf77f914a85a7942cb704382999194d161df347d36d56baa163a2a1e28d7',
+    sha256: 'sha256:0ca84e99aaa15770cbd7c14071c73f1e46073c1a68b13d84a016a22c0528f9d8',
     driverId: 'C07_BACKEND_SEMANTIC_V1',
     containerPath: '/c07/backend-semantic-driver.cjs',
   },
