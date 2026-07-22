@@ -31,9 +31,11 @@
     "generate:ai-security-neutral-contract": "npm run build && node scripts/generate-ai-security-neutral-contract-v2.cjs && node scripts/generate-ai-security-contract-spine-v3.cjs",
     "check:ai-security-neutral-contract": "npm run build && node scripts/generate-ai-security-neutral-contract-v2.cjs --check && node scripts/test-ai-security-neutral-scorer.cjs && node scripts/generate-ai-security-contract-spine-v3.cjs --check && node scripts/test-ai-security-contract-spine-v3.cjs",
     "score:ai-security-neutral": "node scripts/score-ai-security-neutral-evaluation.cjs",
+    "score:ai-security-neutral-differential": "node scripts/score-ai-security-neutral-differential.cjs",
+    "test:ai-security-neutral-differential": "node scripts/test-ai-security-neutral-differential.cjs",
     "test:ai-security-integration-harness": "node --test --test-concurrency=1 scripts/test-ai-security-semantic-receipts.cjs scripts/test-ai-security-integration-gate.cjs",
     "run:ai-security-integration-gate": "node scripts/run-ai-security-integration-gate.cjs",
-    "test": "npm run build && node scripts/test-security-taxonomy.cjs && node scripts/test-vulnerability-applicability.cjs && node scripts/test-m3-contracts.cjs && node scripts/test-governance-profile.cjs && node scripts/test-runtime-adapter-contract.cjs && node scripts/test-ai-security-policy-v1-contract.cjs && npm run validate:ai-security-sources && node scripts/test-ai-security-portable-artifact.cjs && npm run check:ai-security-contract-spine && npm run check:ai-security-detector-catalog && npm run check:ai-security-contract-spine-v2 && npm run check:ai-security-neutral-contract && npm run test:ai-security-integration-harness"
+    "test": "npm run build && node scripts/test-security-taxonomy.cjs && node scripts/test-vulnerability-applicability.cjs && node scripts/test-m3-contracts.cjs && node scripts/test-governance-profile.cjs && node scripts/test-runtime-adapter-contract.cjs && node scripts/test-ai-security-policy-v1-contract.cjs && npm run validate:ai-security-sources && node scripts/test-ai-security-portable-artifact.cjs && npm run check:ai-security-contract-spine && npm run check:ai-security-detector-catalog && npm run check:ai-security-contract-spine-v2 && npm run check:ai-security-neutral-contract && npm run test:ai-security-neutral-differential && npm run test:ai-security-integration-harness"
   },
   "devDependencies": {
     "@types/node": "24.13.2",
