@@ -197,12 +197,34 @@ export interface AiPromptCheckResponseShape {
   reason?: string;
 }
 
+/**
+ * F01 failure-oracle admin action set (M4.7 owner direction #6). Governs ONLY
+ * the failure-oracle path — unverifiable / parser-failed / partial secret-shaped
+ * material that bounded local inspection could not turn into enforcement-eligible
+ * evidence. It is policy config, NOT a detection catalog; it never grants a
+ * bypass. Absent / empty / unknown → treated as 'block' (the conservative DENY).
+ */
+export const AI_FAILURE_ORACLE_ACTIONS = ['block', 'warn', 'confirm', 'audit'] as const;
+export type AiFailureOracleAction = (typeof AI_FAILURE_ORACLE_ACTIONS)[number];
+
+/** F01 failure-oracle sub-policy shape carried on `GET /api/v1/ai/policy`. */
+export interface AiFailureOraclePolicyShape {
+  /** block (default) | warn | confirm | audit. Absent / unknown → 'block'. */
+  action: AiFailureOracleAction;
+}
+
 /** Response shape for `GET /api/v1/ai/policy`. */
 export interface AiPolicyShape {
   evidenceMode: PromptEvidenceMode;
   blockedProviders: string[];
   toleratedProviders: string[];
   dlp: AiDlpPolicyShape;
+  /**
+   * M4.7 (owner direction #6) — F01 failure-oracle admin action. Additive +
+   * optional so a pre-M4.7 consumer reads byte-identically; absent → the daemon
+   * applies the conservative DENY ('block') default.
+   */
+  failureOracle?: AiFailureOraclePolicyShape;
   updatedAt: string;
   /**
    * M3 (LOCK-4) — team-scoped policy resolution, all additive + optional so a
