@@ -1,4 +1,4 @@
-# AI Security Policy Redesign — Publication Checkpoint
+# AI Security Policy Redesign — Merged Checkpoint
 
 Date: 2026-07-26
 
@@ -14,27 +14,27 @@ The first two documents remain the source of truth for the problem, locked decis
 
 ## Published work
 
-| Repository | Base | Pull request | Key commits |
-|---|---|---|---|
-| `DorStachy/Ceragon` | `master` | https://github.com/DorStachy/Ceragon/pull/6 | `d366f5f`, `c659d95`, `7b2d5b9` |
-| `Ceragon-Prod/Backend` | `main` | https://github.com/Ceragon-Prod/Backend/pull/210 | `dee5d22`, `84da767`, `71f026a`, `f3d609a` |
-| `Ceragon-Prod/Installers` | `main` | https://github.com/Ceragon-Prod/Installers/pull/133 | `738c50a`, `9365a43` |
+| Repository | Base | Pull request | Merge commit | Key commits |
+|---|---|---|---|---|
+| `DorStachy/Ceragon` | `master` | https://github.com/DorStachy/Ceragon/pull/6 | `62ee341` | `d366f5f`, `c659d95`, `7b2d5b9` |
+| `Ceragon-Prod/Backend` | `main` | https://github.com/Ceragon-Prod/Backend/pull/210 | `a5c1ebbc` | `dee5d22`, `84da767`, `71f026a`, `f3d609a`, `11cb0ea`, `ee94a89` |
+| `Ceragon-Prod/Installers` | `main` | https://github.com/Ceragon-Prod/Installers/pull/133 | `7e98d47b` | `738c50a`, `9365a43`, `8ef8348` |
 
 The contract publishes immutable portable artifact `0.4.1`, digest `sha256:29006c25daa64c557a21bd35f43f011a2de2502eeeb373219f818b86884f96d3`, and append-only event type `INGRESS_MONITORED`. Backend accepts that event, removing the production-400 blocker. Installer implements consistent Warn interruption/release semantics and Monitor evidence across the CLI, daemon, and browser extension.
 
 ## Verified evidence
 
 - Contracts: portable artifact generation/digest verification and append-only tuple regression passed.
-- Backend: TypeScript typecheck passed; pre-rebase AI-security suite 26 suites / 810 tests and governance 2 suites / 20 tests passed; post-rebase contract/DTO/portable-reader integration 409 / 409 passed; consumer and adversarial packed-consumer checks passed. The broader current-main governance run has five stale assertions in three files outside this PR diff (privacy metadata, Warn policyDecision, and CSV evidence permission).
-- Installer: post-rebase browser 969 / 969, browser consumer check, and production build passed. Full `go test ./... -count=1` passed every package except one transient Windows file-lock race in `cmd/devoid-msi-handle-holder`; the isolated retry passed.
+- Backend: TypeScript typecheck passed; pre-rebase AI-security suite 26 suites / 810 tests and governance 2 suites / 20 tests passed; post-rebase contract/DTO/portable-reader integration 409 / 409 passed; consumer and adversarial packed-consumer checks passed. All 6 / 6 required PR checks passed, including both live-Postgres integrations and the SQL/TS drift guard. The broader current-main governance run has five stale assertions in three files outside this PR diff (privacy metadata, Warn policyDecision, and CSV evidence permission).
+- Installer: post-rebase browser 969 / 969, browser consumer check, and production build passed. Full `go test ./... -count=1` passed every package except one transient Windows file-lock race in `cmd/devoid-msi-handle-holder`; the isolated retry passed. All 121 / 121 PR checks passed across Linux, macOS, Windows, WSL, anti-tamper, packaging, uninstall, drift-latency, Go wire/proxy, and browser scanner-parity lanes.
 - Worktrees were clean at publication. No dependency installation was run in a worktree.
 
 ## Hard release gate — D6
 
-Code merge is safe because Backend deployment and Installer release workflows are manual. Do not build or release an agent that emits `INGRESS_MONITORED` until:
+All three code changes are merged. Backend deployment and Installer release workflows are manual, so merging did not deploy or release anything. Do not build or release an agent that emits `INGRESS_MONITORED` until:
 
-1. the contract is merged;
-2. Backend is merged and deployed to production;
+1. the contract is merged — complete;
+2. Backend is merged — complete — and deployed to production — not yet evidenced;
 3. an authenticated production ingress probe proves `INGRESS_MONITORED` is accepted and persisted without a 400.
 
 Only then may an Installer release/candidate be built. Record the Backend deployment identifier and probe evidence in the next handoff.
@@ -52,10 +52,10 @@ The redesign is not yet deploy-ready end to end. The commits above are verified 
 
 ## Exact next steps
 
-1. Confirm all three pull requests are merged and the default branches contain the key commits.
-2. Deploy Backend from merged `main`; run and preserve the authenticated ingress probe required by D6.
-3. Begin section 6.3 in fresh isolated worktrees created from updated default branches.
-4. Do not cut an Installer candidate until step 2 is evidenced.
+1. Deploy Backend from merge commit `a5c1ebbc` (or a known descendant on `main`); record the deployment identifier.
+2. Run and preserve the authenticated production ingress probe required by D6, proving `INGRESS_MONITORED` is accepted and persisted without a 400.
+3. Only after steps 1–2 are evidenced, permit an Installer candidate that can emit `INGRESS_MONITORED`.
+4. Begin section 6.3 in fresh isolated worktrees created from updated default branches.
 5. Re-run repository-local focused and full suites after each vertical slice; finish with the live E2E matrix in the plan.
 
 ## Environment traps
