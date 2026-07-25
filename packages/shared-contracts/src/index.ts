@@ -28,3 +28,11 @@ export * from './console-roles-contract';
 export * from './rollout-strictness-contract';
 // M4.1 Core Trust & Capability Truth
 export * from './governance-profile-contract';
+export * from './runtime-adapter-contract';
+export * from './ai-security-policy-v1-contract';
+export * from './ai-security-portable-contract';
+export * from './ai-enforcement-contract';
+export * from './ai-security-v2-contract';
+export * from './ai-security-neutral-evaluation-contract';
+export * from './ai-failure-oracle-contract';
+export * from './generated/ai-security-detector-catalog.generated';

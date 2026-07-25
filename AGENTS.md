@@ -38,4 +38,4 @@ History mostly uses conventional-style messages such as `feat(mcp-governance): .
 
 ## Security & Configuration Tips
 
-Do not commit `.env`, credentials, generated output, or installer artifacts. Most services depend on AWS, database, queue, and API secrets; check each component README or `CLAUDE.md` before running live integrations.
+Do not commit `.env`, credentials, ordinary/transient generated output, or installer artifacts. The narrow exception is reviewed, immutable, digest-pinned release material under `packages/shared-contracts/generated/ai-security/<version>/` authorized by `G-CONTRACT-AUTHORITY`; it must ship with its generator inputs, stale-output gate, and evidence. Most services depend on AWS, database, queue, and API secrets; check each component README or `CLAUDE.md` before running live integrations.

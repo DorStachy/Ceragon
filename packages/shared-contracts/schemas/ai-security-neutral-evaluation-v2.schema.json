@@ -1,0 +1,3703 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.ceragon.ai/ai-security/neutral-evaluation-v2.schema.json",
+  "definitions": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "slug": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,127}$"
+    },
+    "safeToken": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:+-]{0,127}$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 40
+    }
+  },
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "formatVersion",
+        "caseDigest",
+        "caseId",
+        "caseVersion",
+        "semanticBaseCaseId",
+        "clusterId",
+        "label",
+        "split",
+        "threatIds",
+        "controlIds",
+        "provenance",
+        "task",
+        "subject",
+        "context",
+        "input",
+        "representation",
+        "statistics",
+        "expected",
+        "governance"
+      ],
+      "properties": {
+        "format": {
+          "const": "ceragon.ai-security.neutral-evaluation-case"
+        },
+        "formatVersion": {
+          "const": 2
+        },
+        "caseDigest": {
+          "$ref": "#/definitions/digest"
+        },
+        "caseId": {
+          "$ref": "#/definitions/uuid"
+        },
+        "caseVersion": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "semanticBaseCaseId": {
+          "$ref": "#/definitions/uuid"
+        },
+        "clusterId": {
+          "$ref": "#/definitions/slug"
+        },
+        "label": {
+          "enum": [
+            "ATTACK",
+            "BENIGN",
+            "BOUNDARY",
+            "DEGRADED"
+          ]
+        },
+        "split": {
+          "enum": [
+            "PUBLIC_SYNTHETIC",
+            "PRIVATE_INCIDENT",
+            "SEALED_HOLDOUT",
+            "TENANT_LOCAL",
+            "ISSUER_SANDBOX"
+          ]
+        },
+        "threatIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/slug"
+          },
+          "maxItems": 64,
+          "uniqueItems": true
+        },
+        "controlIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/slug"
+          },
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sourcePlane",
+            "sourceId",
+            "sourceVersion",
+            "sourceDigest",
+            "licenseId",
+            "trust",
+            "admittedAt",
+            "reviewerIds"
+          ],
+          "properties": {
+            "sourcePlane": {
+              "enum": [
+                "PUBLIC_SYNTHETIC",
+                "PRIVATE_INCIDENT",
+                "SEALED_HOLDOUT",
+                "TENANT_LOCAL",
+                "ISSUER_SANDBOX"
+              ]
+            },
+            "sourceId": {
+              "$ref": "#/definitions/slug"
+            },
+            "sourceVersion": {
+              "$ref": "#/definitions/safeToken"
+            },
+            "sourceDigest": {
+              "$ref": "#/definitions/digest"
+            },
+            "licenseId": {
+              "enum": [
+                "CC0-1.0",
+                "Apache-2.0",
+                "MIT",
+                "BSD-3-Clause",
+                "PROPRIETARY-APPROVED",
+                "TENANT-LOCAL-NO-EXPORT",
+                "ISSUER-SANDBOX"
+              ]
+            },
+            "trust": {
+              "enum": [
+                "SYNTHETIC",
+                "MAINTAINER_REVIEWED",
+                "INDEPENDENT_REVIEWED",
+                "SEALED",
+                "TENANT_LOCAL",
+                "ATTESTED_ISSUER"
+              ]
+            },
+            "admittedAt": {
+              "$ref": "#/definitions/timestamp"
+            },
+            "reviewerIds": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/slug"
+              },
+              "minItems": 1,
+              "maxItems": 16,
+              "uniqueItems": true
+            }
+          }
+        },
+        "task": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "taskId",
+            "family",
+            "expectedUtility"
+          ],
+          "properties": {
+            "taskId": {
+              "$ref": "#/definitions/slug"
+            },
+            "family": {
+              "$ref": "#/definitions/slug"
+            },
+            "expectedUtility": {
+              "enum": [
+                "PRESERVED",
+                "DEGRADED",
+                "NOT_APPLICABLE"
+              ]
+            }
+          }
+        },
+        "subject": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "asset",
+            "destination",
+            "action"
+          ],
+          "properties": {
+            "asset": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "classId",
+                "sensitivity",
+                "ownership",
+                "assetRef"
+              ],
+              "properties": {
+                "classId": {
+                  "$ref": "#/definitions/slug"
+                },
+                "sensitivity": {
+                  "$ref": "#/definitions/slug"
+                },
+                "ownership": {
+                  "enum": [
+                    "TENANT",
+                    "PUBLIC",
+                    "THIRD_PARTY",
+                    "UNKNOWN"
+                  ]
+                },
+                "assetRef": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/digest"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "destination": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "zone",
+                "classId",
+                "destinationRef"
+              ],
+              "properties": {
+                "zone": {
+                  "$ref": "#/definitions/slug"
+                },
+                "classId": {
+                  "$ref": "#/definitions/slug"
+                },
+                "destinationRef": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/digest"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "action": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "actionId",
+                "kind",
+                "checkpoint",
+                "reversibility",
+                "blastRadius",
+                "capabilities"
+              ],
+              "properties": {
+                "actionId": {
+                  "$ref": "#/definitions/uuid"
+                },
+                "kind": {
+                  "$ref": "#/definitions/slug"
+                },
+                "checkpoint": {
+                  "$ref": "#/definitions/slug"
+                },
+                "reversibility": {
+                  "enum": [
+                    "REVERSIBLE",
+                    "COMPENSATABLE",
+                    "IRREVERSIBLE",
+                    "UNKNOWN"
+                  ]
+                },
+                "blastRadius": {
+                  "enum": [
+                    "LOCAL",
+                    "TEAM",
+                    "TENANT",
+                    "EXTERNAL",
+                    "UNKNOWN"
+                  ]
+                },
+                "capabilities": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/slug"
+                  },
+                  "maxItems": 64,
+                  "uniqueItems": true
+                }
+              }
+            }
+          }
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "surface",
+            "runtime",
+            "provider",
+            "language",
+            "modality",
+            "format"
+          ],
+          "properties": {
+            "surface": {
+              "$ref": "#/definitions/slug"
+            },
+            "runtime": {
+              "$ref": "#/definitions/slug"
+            },
+            "provider": {
+              "$ref": "#/definitions/slug"
+            },
+            "language": {
+              "$ref": "#/definitions/slug"
+            },
+            "modality": {
+              "$ref": "#/definitions/slug"
+            },
+            "format": {
+              "$ref": "#/definitions/slug"
+            }
+          }
+        },
+        "input": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "fixtureRef",
+            "artifactDigest",
+            "byteLength",
+            "mediaType",
+            "encoding"
+          ],
+          "properties": {
+            "fixtureRef": {
+              "$ref": "#/definitions/slug"
+            },
+            "artifactDigest": {
+              "$ref": "#/definitions/digest"
+            },
+            "byteLength": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "mediaType": {
+              "$ref": "#/definitions/slug"
+            },
+            "encoding": {
+              "enum": [
+                "UTF8",
+                "BINARY",
+                "STRUCTURED"
+              ]
+            }
+          }
+        },
+        "representation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "representationId",
+            "lineage"
+          ],
+          "properties": {
+            "representationId": {
+              "$ref": "#/definitions/slug"
+            },
+            "lineage": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "stepId",
+                  "transformId",
+                  "parentDigest",
+                  "outputDigest"
+                ],
+                "properties": {
+                  "stepId": {
+                    "$ref": "#/definitions/slug"
+                  },
+                  "transformId": {
+                    "$ref": "#/definitions/slug"
+                  },
+                  "parentDigest": {
+                    "$ref": "#/definitions/digest"
+                  },
+                  "outputDigest": {
+                    "$ref": "#/definitions/digest"
+                  }
+                }
+              },
+              "maxItems": 32
+            }
+          }
+        },
+        "statistics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "tenantClusterId",
+            "userClusterId",
+            "strata",
+            "weight",
+            "claimIds"
+          ],
+          "properties": {
+            "tenantClusterId": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/slug"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "userClusterId": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/slug"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "strata": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/slug"
+              },
+              "maxItems": 32,
+              "uniqueItems": true
+            },
+            "weight": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1000000
+            },
+            "claimIds": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/slug"
+              },
+              "minItems": 1,
+              "maxItems": 32,
+              "uniqueItems": true
+            }
+          }
+        },
+        "expected": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "findings",
+            "obligations",
+            "decision",
+            "effects",
+            "transforms",
+            "completeness",
+            "intervention",
+            "finalState",
+            "resourceBudget"
+          ],
+          "properties": {
+            "findings": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "findingRef",
+                  "classId",
+                  "ruleId",
+                  "detectorId",
+                  "detectorVersion",
+                  "severity",
+                  "evidenceTier",
+                  "enforcementEligible",
+                  "credentialRole",
+                  "exploitability",
+                  "validation",
+                  "representationId",
+                  "canonicalizationPathIds",
+                  "source",
+                  "span",
+                  "normalizedOnly",
+                  "limitations"
+                ],
+                "properties": {
+                  "findingRef": {
+                    "$ref": "#/definitions/slug"
+                  },
+                  "classId": {
+                    "$ref": "#/definitions/slug"
+                  },
+                  "ruleId": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/definitions/slug"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "detectorId": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/definitions/slug"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "detectorVersion": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/definitions/safeToken"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "severity": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/definitions/slug"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "evidenceTier": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "A",
+                          "B",
+                          "C",
+                          "D"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "enforcementEligible": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "credentialRole": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "STANDALONE_BEARER",
+                          "SECRET_COMPONENT",
+                          "IDENTIFIER_COMPONENT",
+                          "PRIVATE_KEY",
+                          "CAPABILITY_URL",
+                          "NONCREDENTIAL_SENSITIVE",
+                          "UNKNOWN"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "exploitability": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "STANDALONE",
+                          "PAIRED",
+                          "CONTEXTUAL",
+                          "UNKNOWN",
+                          "NOT_APPLICABLE"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "validation": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "syntax",
+                          "cryptography",
+                          "issuerAudienceType",
+                          "active",
+                          "tenantOwned",
+                          "revokedOrExpired",
+                          "publicTest",
+                          "paired"
+                        ],
+                        "properties": {
+                          "syntax": {
+                            "enum": [
+                              "VALID",
+                              "INVALID",
+                              "UNKNOWN",
+                              "NOT_APPLICABLE"
+                            ]
+                          },
+                          "cryptography": {
+                            "enum": [
+                              "VALID",
+                              "INVALID",
+                              "UNKNOWN",
+                              "NOT_APPLICABLE"
+                            ]
+                          },
+                          "issuerAudienceType": {
+                            "enum": [
+                              "VALID",
+                              "INVALID",
+                              "UNKNOWN",
+                              "NOT_APPLICABLE"
+                            ]
+                          },
+                          "active": {
+                            "enum": [
+                              "YES",
+                              "NO",
+                              "UNKNOWN",
+                              "NOT_APPLICABLE"
+                            ]
+                          },
+                          "tenantOwned": {
+                            "enum": [
+                              "YES",
+                              "NO",
+                              "UNKNOWN",
+                              "NOT_APPLICABLE"
+                            ]
+                          },
+                          "revokedOrExpired": {
+                            "enum": [
+                              "YES",
+                              "NO",
+                              "UNKNOWN",
+                              "NOT_APPLICABLE"
+                            ]
+                          },
+                          "publicTest": {
+                            "enum": [
+                              "YES",
+                              "NO",
+                              "UNKNOWN",
+                              "NOT_APPLICABLE"
+                            ]
+                          },
+                          "paired": {
+                            "enum": [
+                              "YES",
+                              "NO",
+                              "UNKNOWN",
+                              "NOT_APPLICABLE"
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "representationId": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/definitions/slug"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "canonicalizationPathIds": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/slug"
+                    },
+                    "maxItems": 32,
+                    "uniqueItems": true
+                  },
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "pathId",
+                      "pathDigest"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "enum": [
+                          "CONTENT",
+                          "FILE_METADATA"
+                        ]
+                      },
+                      "pathId": {
+                        "$ref": "#/definitions/slug"
+                      },
+                      "pathDigest": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/definitions/digest"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "span": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "start",
+                          "end",
+                          "unit"
+                        ],
+                        "properties": {
+                          "start": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          "end": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          "unit": {
+                            "const": "UTF8_BYTE"
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "normalizedOnly": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "limitations": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/slug"
+                    },
+                    "maxItems": 32,
+                    "uniqueItems": true
+                  }
+                },
+                "allOf": [
+                  {
+                    "if": {
+                      "type": "object",
+                      "properties": {
+                        "source": {
+                          "type": "object",
+                          "properties": {
+                            "kind": {
+                              "const": "CONTENT"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "type": "object",
+                      "properties": {
+                        "span": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "start",
+                            "end",
+                            "unit"
+                          ],
+                          "properties": {
+                            "start": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991
+                            },
+                            "end": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991
+                            },
+                            "unit": {
+                              "const": "UTF8_BYTE"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "if": {
+                      "type": "object",
+                      "properties": {
+                        "source": {
+                          "type": "object",
+                          "properties": {
+                            "kind": {
+                              "const": "FILE_METADATA"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "type": "object",
+                      "properties": {
+                        "span": {
+                          "const": null
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              "maxItems": 256
+            },
+            "obligations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "obligationId",
+                  "kind",
+                  "state",
+                  "detailCode"
+                ],
+                "properties": {
+                  "obligationId": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/definitions/slug"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "kind": {
+                    "enum": [
+                      "AUDIT",
+                      "NOTIFY",
+                      "SANITIZE",
+                      "RESTRICT_CAPABILITY",
+                      "REQUIRE_CONFIRMATION",
+                      "REQUIRE_DELEGATED_APPROVAL",
+                      "DENY",
+                      "QUARANTINE"
+                    ]
+                  },
+                  "state": {
+                    "enum": [
+                      "REQUIRED",
+                      "SATISFIED",
+                      "UNSATISFIED",
+                      "UNSUPPORTED",
+                      "SUPERSEDED",
+                      "FAILED"
+                    ]
+                  },
+                  "detailCode": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/definitions/slug"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              "maxItems": 128
+            },
+            "decision": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "verdict",
+                "alert",
+                "reasons",
+                "primaryState"
+              ],
+              "properties": {
+                "verdict": {
+                  "$ref": "#/definitions/slug"
+                },
+                "alert": {
+                  "type": "boolean"
+                },
+                "reasons": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/slug"
+                  },
+                  "maxItems": 64,
+                  "uniqueItems": true
+                },
+                "primaryState": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "SCANNING",
+                        "CONTINUED_SAFELY",
+                        "SANITIZED_AND_CONTINUED",
+                        "CONTINUED_WITH_RESTRICTION",
+                        "NEEDS_CONFIRMATION",
+                        "APPROVAL_REQUESTED",
+                        "BLOCKED_BEFORE_EFFECT",
+                        "PROTECTION_DEGRADED"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "effects": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "requestedEffect",
+                "adapterExpressedEffect",
+                "translationDisposition",
+                "observedActualEffect",
+                "actualEffectObserver",
+                "governanceDisposition",
+                "dataDisposition",
+                "securityOutcome",
+                "certifiedSecurityOutcome",
+                "receiptAssurance"
+              ],
+              "properties": {
+                "requestedEffect": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "deny-prompt",
+                        "deny-tool",
+                        "rewrite-input",
+                        "replace-output",
+                        "stop-continuation",
+                        "audit-only",
+                        "none",
+                        "add-developer-context",
+                        "deny-escalation",
+                        "allow-escalation",
+                        "replace-tool-result-with-feedback-and-continue",
+                        "restrict-capability"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "adapterExpressedEffect": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "deny-prompt",
+                        "deny-tool",
+                        "rewrite-input",
+                        "replace-output",
+                        "stop-continuation",
+                        "audit-only",
+                        "none",
+                        "add-developer-context",
+                        "deny-escalation",
+                        "allow-escalation",
+                        "replace-tool-result-with-feedback-and-continue",
+                        "restrict-capability"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "translationDisposition": {
+                  "enum": [
+                    "EXPRESSED",
+                    "UNSUPPORTED_EFFECT",
+                    "TRANSLATION_FAILED",
+                    "NOT_APPLICABLE"
+                  ]
+                },
+                "observedActualEffect": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "deny-prompt",
+                        "deny-tool",
+                        "rewrite-input",
+                        "replace-output",
+                        "stop-continuation",
+                        "audit-only",
+                        "none",
+                        "add-developer-context",
+                        "deny-escalation",
+                        "allow-escalation",
+                        "replace-tool-result-with-feedback-and-continue",
+                        "restrict-capability"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "actualEffectObserver": {
+                  "enum": [
+                    "NONE",
+                    "RUNTIME_ACK",
+                    "BROWSER_CHECKPOINT",
+                    "PROXY_CHECKPOINT",
+                    "MCP_BROKER",
+                    "FINAL_STATE_GRADER"
+                  ]
+                },
+                "governanceDisposition": {
+                  "enum": [
+                    "devoid-mediated",
+                    "delegated-and-attested",
+                    "restricted-intent-unverified",
+                    "observed-only",
+                    "not-governed",
+                    "wire-observed-after-dispatch",
+                    "hook-failed-original-action-proceeded",
+                    "native-hook-unverified",
+                    "effect-expressed-runtime-unverified",
+                    "effect-unsupported-original-action-proceeded",
+                    "translation-failed-original-action-proceeded",
+                    "runtime-acknowledged-effect"
+                  ]
+                },
+                "dataDisposition": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "SENT_ALLOWED",
+                        "REDACTED_THEN_SENT",
+                        "BLOCKED_BEFORE_EGRESS",
+                        "HELD",
+                        "NEVER_LEFT",
+                        "BLOCKED_EGRESS_HOST",
+                        "RELEASED_ONCE"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "securityOutcome": {
+                  "enum": [
+                    "PREVENTED",
+                    "SANITIZED",
+                    "RESTRICTED_COMPLETION",
+                    "AUTHORIZED_COMPLETION",
+                    "UNAUTHORIZED_EFFECT",
+                    "UNKNOWN",
+                    "NOT_APPLICABLE"
+                  ]
+                },
+                "certifiedSecurityOutcome": {
+                  "enum": [
+                    "PREVENTED",
+                    "SANITIZED",
+                    "RESTRICTED_COMPLETION",
+                    "AUTHORIZED_COMPLETION",
+                    "UNAUTHORIZED_EFFECT",
+                    "UNKNOWN",
+                    "NOT_APPLICABLE"
+                  ]
+                },
+                "receiptAssurance": {
+                  "enum": [
+                    "UNVERIFIED_LEGACY",
+                    "VERIFIED_ENDPOINT_REPORT",
+                    "INDEPENDENTLY_OBSERVED"
+                  ]
+                }
+              }
+            },
+            "transforms": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "transformId",
+                  "transformType",
+                  "targetFindingRefs",
+                  "inputDigest",
+                  "outputDigest",
+                  "sourceMap",
+                  "parseStatus",
+                  "rescanStatus",
+                  "syntaxPreserved",
+                  "taskUtilityPreserved",
+                  "statePreserved",
+                  "limitations"
+                ],
+                "properties": {
+                  "transformId": {
+                    "$ref": "#/definitions/slug"
+                  },
+                  "transformType": {
+                    "enum": [
+                      "MASK_MINIMUM_UNIT",
+                      "REMOVE_FIELD",
+                      "REWRITE_VALUE",
+                      "REWRITE_URI",
+                      "REPLACE_OUTPUT",
+                      "RESTRICT_CAPABILITY"
+                    ]
+                  },
+                  "targetFindingRefs": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/slug"
+                    },
+                    "minItems": 1,
+                    "maxItems": 64,
+                    "uniqueItems": true
+                  },
+                  "inputDigest": {
+                    "$ref": "#/definitions/digest"
+                  },
+                  "outputDigest": {
+                    "$ref": "#/definitions/digest"
+                  },
+                  "sourceMap": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "original",
+                        "transformed"
+                      ],
+                      "properties": {
+                        "original": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "start",
+                            "end",
+                            "unit"
+                          ],
+                          "properties": {
+                            "start": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991
+                            },
+                            "end": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991
+                            },
+                            "unit": {
+                              "const": "UTF8_BYTE"
+                            }
+                          }
+                        },
+                        "transformed": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "start",
+                            "end",
+                            "unit"
+                          ],
+                          "properties": {
+                            "start": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991
+                            },
+                            "end": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991
+                            },
+                            "unit": {
+                              "const": "UTF8_BYTE"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "maxItems": 128
+                  },
+                  "parseStatus": {
+                    "enum": [
+                      "VALID",
+                      "INVALID",
+                      "UNKNOWN",
+                      "NOT_APPLICABLE"
+                    ]
+                  },
+                  "rescanStatus": {
+                    "enum": [
+                      "CLEAN",
+                      "FINDING_REMAINS",
+                      "UNKNOWN",
+                      "NOT_APPLICABLE"
+                    ]
+                  },
+                  "syntaxPreserved": {
+                    "enum": [
+                      "YES",
+                      "NO",
+                      "UNKNOWN",
+                      "NOT_APPLICABLE"
+                    ]
+                  },
+                  "taskUtilityPreserved": {
+                    "enum": [
+                      "YES",
+                      "NO",
+                      "UNKNOWN",
+                      "NOT_APPLICABLE"
+                    ]
+                  },
+                  "statePreserved": {
+                    "enum": [
+                      "YES",
+                      "NO",
+                      "UNKNOWN",
+                      "NOT_APPLICABLE"
+                    ]
+                  },
+                  "limitations": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/slug"
+                    },
+                    "maxItems": 32,
+                    "uniqueItems": true
+                  }
+                }
+              },
+              "maxItems": 128
+            },
+            "completeness": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "contentInspectionStatus",
+                "effectExtractionStatus",
+                "limitations"
+              ],
+              "properties": {
+                "contentInspectionStatus": {
+                  "enum": [
+                    "COMPLETE",
+                    "PARTIAL",
+                    "UNSUPPORTED",
+                    "BUDGET_EXCEEDED",
+                    "PARSER_FAILED",
+                    "ENCRYPTED",
+                    "TIMED_OUT",
+                    "NOT_APPLICABLE"
+                  ]
+                },
+                "effectExtractionStatus": {
+                  "enum": [
+                    "COMPLETE",
+                    "PARTIAL",
+                    "UNSUPPORTED",
+                    "BUDGET_EXCEEDED",
+                    "PARSER_FAILED",
+                    "ENCRYPTED",
+                    "TIMED_OUT",
+                    "NOT_APPLICABLE"
+                  ]
+                },
+                "limitations": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/slug"
+                  },
+                  "maxItems": 32,
+                  "uniqueItems": true
+                }
+              }
+            },
+            "intervention": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "visible",
+                "hardStop",
+                "socIncident"
+              ],
+              "properties": {
+                "visible": {
+                  "type": "boolean"
+                },
+                "hardStop": {
+                  "type": "boolean"
+                },
+                "socIncident": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "finalState": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "graderId",
+                "required",
+                "outcome",
+                "observationRef",
+                "assertions"
+              ],
+              "properties": {
+                "graderId": {
+                  "$ref": "#/definitions/slug"
+                },
+                "required": {
+                  "type": "boolean"
+                },
+                "outcome": {
+                  "enum": [
+                    "PREVENTED",
+                    "SANITIZED",
+                    "RESTRICTED_COMPLETION",
+                    "AUTHORIZED_COMPLETION",
+                    "UNAUTHORIZED_EFFECT",
+                    "UNKNOWN",
+                    "NOT_APPLICABLE"
+                  ]
+                },
+                "observationRef": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/digest"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "assertions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "assertionId",
+                      "resourceType",
+                      "state",
+                      "valueDigest"
+                    ],
+                    "properties": {
+                      "assertionId": {
+                        "$ref": "#/definitions/slug"
+                      },
+                      "resourceType": {
+                        "enum": [
+                          "NETWORK",
+                          "RECIPIENT",
+                          "FILESYSTEM",
+                          "PROCESS",
+                          "PRIVILEGE",
+                          "MCP",
+                          "MEMORY",
+                          "DURABLE_RESOURCE"
+                        ]
+                      },
+                      "state": {
+                        "$ref": "#/definitions/slug"
+                      },
+                      "valueDigest": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/definitions/digest"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "maxItems": 128
+                }
+              }
+            },
+            "resourceBudget": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "maxCpuMs",
+                "maxWallMs",
+                "maxMemoryBytes",
+                "maxInputBytes",
+                "maxOutputBytes",
+                "maxFindings",
+                "expectExhaustion"
+              ],
+              "properties": {
+                "maxCpuMs": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "maxWallMs": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "maxMemoryBytes": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "maxInputBytes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "maxOutputBytes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "maxFindings": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 65536
+                },
+                "expectExhaustion": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        },
+        "governance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ownerId",
+            "labelers",
+            "adjudication",
+            "correction"
+          ],
+          "properties": {
+            "ownerId": {
+              "$ref": "#/definitions/slug"
+            },
+            "labelers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "labelerId",
+                  "role"
+                ],
+                "properties": {
+                  "labelerId": {
+                    "$ref": "#/definitions/slug"
+                  },
+                  "role": {
+                    "enum": [
+                      "AUTHOR",
+                      "SECURITY_REVIEWER",
+                      "PRIVACY_REVIEWER",
+                      "ADJUDICATOR"
+                    ]
+                  }
+                }
+              },
+              "minItems": 1,
+              "maxItems": 16
+            },
+            "adjudication": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "adjudicatorIds",
+                "reasonCode",
+                "decidedAt"
+              ],
+              "properties": {
+                "status": {
+                  "enum": [
+                    "NOT_REQUIRED",
+                    "AGREED",
+                    "THIRD_REVIEW",
+                    "UNRESOLVED"
+                  ]
+                },
+                "adjudicatorIds": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/slug"
+                  },
+                  "maxItems": 8,
+                  "uniqueItems": true
+                },
+                "reasonCode": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/slug"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "decidedAt": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/timestamp"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "correction": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "supersedesCaseDigest",
+                "reasonCode"
+              ],
+              "properties": {
+                "supersedesCaseDigest": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/digest"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "reasonCode": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/slug"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "formatVersion",
+        "resultDigest",
+        "semanticDigest",
+        "caseId",
+        "semanticBaseCaseId",
+        "clusterId",
+        "runner",
+        "provenance",
+        "findings",
+        "decision",
+        "obligations",
+        "effects",
+        "transforms",
+        "completeness",
+        "intervention",
+        "finalState",
+        "resourceUsage",
+        "errors"
+      ],
+      "properties": {
+        "format": {
+          "const": "ceragon.ai-security.neutral-evaluation-result"
+        },
+        "formatVersion": {
+          "const": 2
+        },
+        "resultDigest": {
+          "$ref": "#/definitions/digest"
+        },
+        "semanticDigest": {
+          "$ref": "#/definitions/digest"
+        },
+        "caseId": {
+          "$ref": "#/definitions/uuid"
+        },
+        "semanticBaseCaseId": {
+          "$ref": "#/definitions/uuid"
+        },
+        "clusterId": {
+          "$ref": "#/definitions/slug"
+        },
+        "runner": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "runnerId",
+            "engineId",
+            "engineVersion",
+            "contractVersion",
+            "artifactDigest"
+          ],
+          "properties": {
+            "runnerId": {
+              "$ref": "#/definitions/slug"
+            },
+            "engineId": {
+              "$ref": "#/definitions/slug"
+            },
+            "engineVersion": {
+              "$ref": "#/definitions/safeToken"
+            },
+            "contractVersion": {
+              "const": "0.7.0"
+            },
+            "artifactDigest": {
+              "$ref": "#/definitions/digest"
+            }
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "inputArtifactDigest",
+            "environmentDigest",
+            "startedAt",
+            "finishedAt"
+          ],
+          "properties": {
+            "inputArtifactDigest": {
+              "$ref": "#/definitions/digest"
+            },
+            "environmentDigest": {
+              "$ref": "#/definitions/digest"
+            },
+            "startedAt": {
+              "$ref": "#/definitions/timestamp"
+            },
+            "finishedAt": {
+              "$ref": "#/definitions/timestamp"
+            }
+          }
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "findingRef",
+              "classId",
+              "ruleId",
+              "detectorId",
+              "detectorVersion",
+              "severity",
+              "evidenceTier",
+              "enforcementEligible",
+              "credentialRole",
+              "exploitability",
+              "validation",
+              "representationId",
+              "canonicalizationPathIds",
+              "source",
+              "span",
+              "normalizedOnly",
+              "limitations"
+            ],
+            "properties": {
+              "findingRef": {
+                "$ref": "#/definitions/slug"
+              },
+              "classId": {
+                "$ref": "#/definitions/slug"
+              },
+              "ruleId": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/slug"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "detectorId": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/slug"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "detectorVersion": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/safeToken"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "severity": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/slug"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "evidenceTier": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "A",
+                      "B",
+                      "C",
+                      "D"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "enforcementEligible": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "credentialRole": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "STANDALONE_BEARER",
+                      "SECRET_COMPONENT",
+                      "IDENTIFIER_COMPONENT",
+                      "PRIVATE_KEY",
+                      "CAPABILITY_URL",
+                      "NONCREDENTIAL_SENSITIVE",
+                      "UNKNOWN"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "exploitability": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "STANDALONE",
+                      "PAIRED",
+                      "CONTEXTUAL",
+                      "UNKNOWN",
+                      "NOT_APPLICABLE"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "validation": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "syntax",
+                      "cryptography",
+                      "issuerAudienceType",
+                      "active",
+                      "tenantOwned",
+                      "revokedOrExpired",
+                      "publicTest",
+                      "paired"
+                    ],
+                    "properties": {
+                      "syntax": {
+                        "enum": [
+                          "VALID",
+                          "INVALID",
+                          "UNKNOWN",
+                          "NOT_APPLICABLE"
+                        ]
+                      },
+                      "cryptography": {
+                        "enum": [
+                          "VALID",
+                          "INVALID",
+                          "UNKNOWN",
+                          "NOT_APPLICABLE"
+                        ]
+                      },
+                      "issuerAudienceType": {
+                        "enum": [
+                          "VALID",
+                          "INVALID",
+                          "UNKNOWN",
+                          "NOT_APPLICABLE"
+                        ]
+                      },
+                      "active": {
+                        "enum": [
+                          "YES",
+                          "NO",
+                          "UNKNOWN",
+                          "NOT_APPLICABLE"
+                        ]
+                      },
+                      "tenantOwned": {
+                        "enum": [
+                          "YES",
+                          "NO",
+                          "UNKNOWN",
+                          "NOT_APPLICABLE"
+                        ]
+                      },
+                      "revokedOrExpired": {
+                        "enum": [
+                          "YES",
+                          "NO",
+                          "UNKNOWN",
+                          "NOT_APPLICABLE"
+                        ]
+                      },
+                      "publicTest": {
+                        "enum": [
+                          "YES",
+                          "NO",
+                          "UNKNOWN",
+                          "NOT_APPLICABLE"
+                        ]
+                      },
+                      "paired": {
+                        "enum": [
+                          "YES",
+                          "NO",
+                          "UNKNOWN",
+                          "NOT_APPLICABLE"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "representationId": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/slug"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "canonicalizationPathIds": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/slug"
+                },
+                "maxItems": 32,
+                "uniqueItems": true
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "pathId",
+                  "pathDigest"
+                ],
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "CONTENT",
+                      "FILE_METADATA"
+                    ]
+                  },
+                  "pathId": {
+                    "$ref": "#/definitions/slug"
+                  },
+                  "pathDigest": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/definitions/digest"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              "span": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "start",
+                      "end",
+                      "unit"
+                    ],
+                    "properties": {
+                      "start": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "end": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "unit": {
+                        "const": "UTF8_BYTE"
+                      }
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "normalizedOnly": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "limitations": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/slug"
+                },
+                "maxItems": 32,
+                "uniqueItems": true
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "type": "object",
+                  "properties": {
+                    "source": {
+                      "type": "object",
+                      "properties": {
+                        "kind": {
+                          "const": "CONTENT"
+                        }
+                      }
+                    }
+                  }
+                },
+                "then": {
+                  "type": "object",
+                  "properties": {
+                    "span": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "start",
+                        "end",
+                        "unit"
+                      ],
+                      "properties": {
+                        "start": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "end": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "unit": {
+                          "const": "UTF8_BYTE"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "type": "object",
+                  "properties": {
+                    "source": {
+                      "type": "object",
+                      "properties": {
+                        "kind": {
+                          "const": "FILE_METADATA"
+                        }
+                      }
+                    }
+                  }
+                },
+                "then": {
+                  "type": "object",
+                  "properties": {
+                    "span": {
+                      "const": null
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "maxItems": 256
+        },
+        "decision": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "verdict",
+            "alert",
+            "reasons",
+            "primaryState"
+          ],
+          "properties": {
+            "verdict": {
+              "$ref": "#/definitions/slug"
+            },
+            "alert": {
+              "type": "boolean"
+            },
+            "reasons": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/slug"
+              },
+              "maxItems": 64,
+              "uniqueItems": true
+            },
+            "primaryState": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "SCANNING",
+                    "CONTINUED_SAFELY",
+                    "SANITIZED_AND_CONTINUED",
+                    "CONTINUED_WITH_RESTRICTION",
+                    "NEEDS_CONFIRMATION",
+                    "APPROVAL_REQUESTED",
+                    "BLOCKED_BEFORE_EFFECT",
+                    "PROTECTION_DEGRADED"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "obligations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "obligationId",
+              "kind",
+              "state",
+              "detailCode"
+            ],
+            "properties": {
+              "obligationId": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/slug"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "kind": {
+                "enum": [
+                  "AUDIT",
+                  "NOTIFY",
+                  "SANITIZE",
+                  "RESTRICT_CAPABILITY",
+                  "REQUIRE_CONFIRMATION",
+                  "REQUIRE_DELEGATED_APPROVAL",
+                  "DENY",
+                  "QUARANTINE"
+                ]
+              },
+              "state": {
+                "enum": [
+                  "REQUIRED",
+                  "SATISFIED",
+                  "UNSATISFIED",
+                  "UNSUPPORTED",
+                  "SUPERSEDED",
+                  "FAILED"
+                ]
+              },
+              "detailCode": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/slug"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "maxItems": 128
+        },
+        "effects": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requestedEffect",
+            "adapterExpressedEffect",
+            "translationDisposition",
+            "observedActualEffect",
+            "actualEffectObserver",
+            "governanceDisposition",
+            "dataDisposition",
+            "securityOutcome",
+            "certifiedSecurityOutcome",
+            "receiptAssurance"
+          ],
+          "properties": {
+            "requestedEffect": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "deny-prompt",
+                    "deny-tool",
+                    "rewrite-input",
+                    "replace-output",
+                    "stop-continuation",
+                    "audit-only",
+                    "none",
+                    "add-developer-context",
+                    "deny-escalation",
+                    "allow-escalation",
+                    "replace-tool-result-with-feedback-and-continue",
+                    "restrict-capability"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "adapterExpressedEffect": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "deny-prompt",
+                    "deny-tool",
+                    "rewrite-input",
+                    "replace-output",
+                    "stop-continuation",
+                    "audit-only",
+                    "none",
+                    "add-developer-context",
+                    "deny-escalation",
+                    "allow-escalation",
+                    "replace-tool-result-with-feedback-and-continue",
+                    "restrict-capability"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "translationDisposition": {
+              "enum": [
+                "EXPRESSED",
+                "UNSUPPORTED_EFFECT",
+                "TRANSLATION_FAILED",
+                "NOT_APPLICABLE"
+              ]
+            },
+            "observedActualEffect": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "deny-prompt",
+                    "deny-tool",
+                    "rewrite-input",
+                    "replace-output",
+                    "stop-continuation",
+                    "audit-only",
+                    "none",
+                    "add-developer-context",
+                    "deny-escalation",
+                    "allow-escalation",
+                    "replace-tool-result-with-feedback-and-continue",
+                    "restrict-capability"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "actualEffectObserver": {
+              "enum": [
+                "NONE",
+                "RUNTIME_ACK",
+                "BROWSER_CHECKPOINT",
+                "PROXY_CHECKPOINT",
+                "MCP_BROKER",
+                "FINAL_STATE_GRADER"
+              ]
+            },
+            "governanceDisposition": {
+              "enum": [
+                "devoid-mediated",
+                "delegated-and-attested",
+                "restricted-intent-unverified",
+                "observed-only",
+                "not-governed",
+                "wire-observed-after-dispatch",
+                "hook-failed-original-action-proceeded",
+                "native-hook-unverified",
+                "effect-expressed-runtime-unverified",
+                "effect-unsupported-original-action-proceeded",
+                "translation-failed-original-action-proceeded",
+                "runtime-acknowledged-effect"
+              ]
+            },
+            "dataDisposition": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "SENT_ALLOWED",
+                    "REDACTED_THEN_SENT",
+                    "BLOCKED_BEFORE_EGRESS",
+                    "HELD",
+                    "NEVER_LEFT",
+                    "BLOCKED_EGRESS_HOST",
+                    "RELEASED_ONCE"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "securityOutcome": {
+              "enum": [
+                "PREVENTED",
+                "SANITIZED",
+                "RESTRICTED_COMPLETION",
+                "AUTHORIZED_COMPLETION",
+                "UNAUTHORIZED_EFFECT",
+                "UNKNOWN",
+                "NOT_APPLICABLE"
+              ]
+            },
+            "certifiedSecurityOutcome": {
+              "enum": [
+                "PREVENTED",
+                "SANITIZED",
+                "RESTRICTED_COMPLETION",
+                "AUTHORIZED_COMPLETION",
+                "UNAUTHORIZED_EFFECT",
+                "UNKNOWN",
+                "NOT_APPLICABLE"
+              ]
+            },
+            "receiptAssurance": {
+              "enum": [
+                "UNVERIFIED_LEGACY",
+                "VERIFIED_ENDPOINT_REPORT",
+                "INDEPENDENTLY_OBSERVED"
+              ]
+            }
+          }
+        },
+        "transforms": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "transformId",
+              "transformType",
+              "targetFindingRefs",
+              "inputDigest",
+              "outputDigest",
+              "sourceMap",
+              "parseStatus",
+              "rescanStatus",
+              "syntaxPreserved",
+              "taskUtilityPreserved",
+              "statePreserved",
+              "limitations"
+            ],
+            "properties": {
+              "transformId": {
+                "$ref": "#/definitions/slug"
+              },
+              "transformType": {
+                "enum": [
+                  "MASK_MINIMUM_UNIT",
+                  "REMOVE_FIELD",
+                  "REWRITE_VALUE",
+                  "REWRITE_URI",
+                  "REPLACE_OUTPUT",
+                  "RESTRICT_CAPABILITY"
+                ]
+              },
+              "targetFindingRefs": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/slug"
+                },
+                "minItems": 1,
+                "maxItems": 64,
+                "uniqueItems": true
+              },
+              "inputDigest": {
+                "$ref": "#/definitions/digest"
+              },
+              "outputDigest": {
+                "$ref": "#/definitions/digest"
+              },
+              "sourceMap": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "original",
+                    "transformed"
+                  ],
+                  "properties": {
+                    "original": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "start",
+                        "end",
+                        "unit"
+                      ],
+                      "properties": {
+                        "start": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "end": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "unit": {
+                          "const": "UTF8_BYTE"
+                        }
+                      }
+                    },
+                    "transformed": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "start",
+                        "end",
+                        "unit"
+                      ],
+                      "properties": {
+                        "start": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "end": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "unit": {
+                          "const": "UTF8_BYTE"
+                        }
+                      }
+                    }
+                  }
+                },
+                "maxItems": 128
+              },
+              "parseStatus": {
+                "enum": [
+                  "VALID",
+                  "INVALID",
+                  "UNKNOWN",
+                  "NOT_APPLICABLE"
+                ]
+              },
+              "rescanStatus": {
+                "enum": [
+                  "CLEAN",
+                  "FINDING_REMAINS",
+                  "UNKNOWN",
+                  "NOT_APPLICABLE"
+                ]
+              },
+              "syntaxPreserved": {
+                "enum": [
+                  "YES",
+                  "NO",
+                  "UNKNOWN",
+                  "NOT_APPLICABLE"
+                ]
+              },
+              "taskUtilityPreserved": {
+                "enum": [
+                  "YES",
+                  "NO",
+                  "UNKNOWN",
+                  "NOT_APPLICABLE"
+                ]
+              },
+              "statePreserved": {
+                "enum": [
+                  "YES",
+                  "NO",
+                  "UNKNOWN",
+                  "NOT_APPLICABLE"
+                ]
+              },
+              "limitations": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/slug"
+                },
+                "maxItems": 32,
+                "uniqueItems": true
+              }
+            }
+          },
+          "maxItems": 128
+        },
+        "completeness": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "contentInspectionStatus",
+            "effectExtractionStatus",
+            "limitations"
+          ],
+          "properties": {
+            "contentInspectionStatus": {
+              "enum": [
+                "COMPLETE",
+                "PARTIAL",
+                "UNSUPPORTED",
+                "BUDGET_EXCEEDED",
+                "PARSER_FAILED",
+                "ENCRYPTED",
+                "TIMED_OUT",
+                "NOT_APPLICABLE"
+              ]
+            },
+            "effectExtractionStatus": {
+              "enum": [
+                "COMPLETE",
+                "PARTIAL",
+                "UNSUPPORTED",
+                "BUDGET_EXCEEDED",
+                "PARSER_FAILED",
+                "ENCRYPTED",
+                "TIMED_OUT",
+                "NOT_APPLICABLE"
+              ]
+            },
+            "limitations": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/slug"
+              },
+              "maxItems": 32,
+              "uniqueItems": true
+            }
+          }
+        },
+        "intervention": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "visible",
+            "hardStop",
+            "socIncident"
+          ],
+          "properties": {
+            "visible": {
+              "type": "boolean"
+            },
+            "hardStop": {
+              "type": "boolean"
+            },
+            "socIncident": {
+              "type": "boolean"
+            }
+          }
+        },
+        "finalState": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "graderId",
+            "required",
+            "outcome",
+            "observationRef",
+            "assertions"
+          ],
+          "properties": {
+            "graderId": {
+              "$ref": "#/definitions/slug"
+            },
+            "required": {
+              "type": "boolean"
+            },
+            "outcome": {
+              "enum": [
+                "PREVENTED",
+                "SANITIZED",
+                "RESTRICTED_COMPLETION",
+                "AUTHORIZED_COMPLETION",
+                "UNAUTHORIZED_EFFECT",
+                "UNKNOWN",
+                "NOT_APPLICABLE"
+              ]
+            },
+            "observationRef": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/digest"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "assertions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "assertionId",
+                  "resourceType",
+                  "state",
+                  "valueDigest"
+                ],
+                "properties": {
+                  "assertionId": {
+                    "$ref": "#/definitions/slug"
+                  },
+                  "resourceType": {
+                    "enum": [
+                      "NETWORK",
+                      "RECIPIENT",
+                      "FILESYSTEM",
+                      "PROCESS",
+                      "PRIVILEGE",
+                      "MCP",
+                      "MEMORY",
+                      "DURABLE_RESOURCE"
+                    ]
+                  },
+                  "state": {
+                    "$ref": "#/definitions/slug"
+                  },
+                  "valueDigest": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/definitions/digest"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              "maxItems": 128
+            }
+          }
+        },
+        "resourceUsage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "cpuMs",
+            "wallMs",
+            "memoryBytes",
+            "inputBytes",
+            "outputBytes",
+            "findingCount",
+            "exhausted"
+          ],
+          "properties": {
+            "cpuMs": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "wallMs": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "memoryBytes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "inputBytes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "outputBytes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "findingCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 65536
+            },
+            "exhausted": {
+              "type": "boolean"
+            }
+          }
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/slug"
+          },
+          "maxItems": 64,
+          "uniqueItems": true
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "formatVersion",
+        "reportDigest",
+        "contractVersion",
+        "scorerVersion",
+        "caseSetDigest",
+        "resultSetDigest",
+        "analysis",
+        "validation",
+        "summary",
+        "clusters",
+        "metrics",
+        "differential",
+        "failures",
+        "pass"
+      ],
+      "properties": {
+        "format": {
+          "const": "ceragon.ai-security.neutral-evaluation-scorer-report"
+        },
+        "formatVersion": {
+          "const": 1
+        },
+        "reportDigest": {
+          "$ref": "#/definitions/digest"
+        },
+        "contractVersion": {
+          "const": "0.7.0"
+        },
+        "scorerVersion": {
+          "const": "1.0.0"
+        },
+        "caseSetDigest": {
+          "$ref": "#/definitions/digest"
+        },
+        "resultSetDigest": {
+          "$ref": "#/definitions/digest"
+        },
+        "analysis": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "confidenceLevel",
+            "alpha",
+            "clusterUnit",
+            "effectiveSizeFormula",
+            "intervalMethod",
+            "adjustmentMethod"
+          ],
+          "properties": {
+            "confidenceLevel": {
+              "const": 0.95
+            },
+            "alpha": {
+              "const": 0.05
+            },
+            "clusterUnit": {
+              "const": "semantic-cluster"
+            },
+            "effectiveSizeFormula": {
+              "const": "(sum(w)^2)/sum(w^2),equal-total-weight-per-cluster,floor-for-intervals"
+            },
+            "intervalMethod": {
+              "const": "EXACT_ONE_SIDED_CLOPPER_PEARSON"
+            },
+            "adjustmentMethod": {
+              "const": "HOLM_CONSERVATIVE_FIRST_STEP"
+            }
+          }
+        },
+        "validation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "acceptedCases",
+            "rejectedCases",
+            "acceptedResults",
+            "rejectedResults"
+          ],
+          "properties": {
+            "acceptedCases": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "rejectedCases": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "acceptedResults": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "rejectedResults": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "summary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "exactResults",
+            "missedFindings",
+            "falseFindings",
+            "falseInterventions",
+            "falseHardStops",
+            "falseSocIncidents",
+            "wrongSpans",
+            "wrongRules",
+            "wrongEvidenceTiers",
+            "wrongEligibility",
+            "wrongCredentialRoles",
+            "wrongExploitability",
+            "wrongRepresentations",
+            "decisionFailures",
+            "obligationFailures",
+            "transformFailures",
+            "outcomeFailures",
+            "completenessFailures",
+            "finalStateFailures",
+            "resourceFailures",
+            "differentialFailures",
+            "validationFailures"
+          ],
+          "properties": {
+            "exactResults": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "missedFindings": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "falseFindings": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "falseInterventions": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "falseHardStops": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "falseSocIncidents": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "wrongSpans": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "wrongRules": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "wrongEvidenceTiers": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "wrongEligibility": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "wrongCredentialRoles": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "wrongExploitability": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "wrongRepresentations": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "decisionFailures": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "obligationFailures": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "transformFailures": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "outcomeFailures": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "completenessFailures": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "finalStateFailures": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "resourceFailures": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "differentialFailures": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "validationFailures": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "clusters": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "caseCount",
+            "semanticBaseCaseCount",
+            "clusterCount",
+            "duplicateVariantCount",
+            "effectiveClusterSize",
+            "stats"
+          ],
+          "properties": {
+            "caseCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "semanticBaseCaseCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "clusterCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "duplicateVariantCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "effectiveClusterSize": {
+              "type": "number",
+              "minimum": 0
+            },
+            "stats": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "clusterId",
+                  "caseCount",
+                  "semanticBaseCaseCount",
+                  "resultCount",
+                  "exact",
+                  "weight"
+                ],
+                "properties": {
+                  "clusterId": {
+                    "$ref": "#/definitions/slug"
+                  },
+                  "caseCount": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "semanticBaseCaseCount": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "resultCount": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "exact": {
+                    "type": "boolean"
+                  },
+                  "weight": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "overall",
+            "byClassRepresentationSurface"
+          ],
+          "properties": {
+            "overall": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "classId",
+                "representationId",
+                "surface",
+                "sampleCases",
+                "independentClusters",
+                "effectiveClusterSize",
+                "truePositiveClusters",
+                "falsePositiveClusters",
+                "falseNegativeClusters",
+                "trueNegativeClusters",
+                "benignClusters",
+                "benignFalsePositiveClusters",
+                "falseHardStopClusters",
+                "precision",
+                "precisionLowerBound",
+                "recall",
+                "recallLowerBound",
+                "missRate",
+                "missRateUpperBound",
+                "falsePositiveRate",
+                "falsePositiveRateUpperBound",
+                "falseHardStopRate",
+                "falseHardStopRateUpperBound",
+                "unadjustedAlpha",
+                "adjustedAlpha",
+                "adjustmentMethod"
+              ],
+              "properties": {
+                "classId": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/slug"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "representationId": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/slug"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "surface": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/slug"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "sampleCases": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "independentClusters": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "effectiveClusterSize": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "truePositiveClusters": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "falsePositiveClusters": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "falseNegativeClusters": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "trueNegativeClusters": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "benignClusters": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "benignFalsePositiveClusters": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "falseHardStopClusters": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "precision": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "precisionLowerBound": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "recall": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "recallLowerBound": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "missRate": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "missRateUpperBound": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "falsePositiveRate": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "falsePositiveRateUpperBound": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "falseHardStopRate": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "falseHardStopRateUpperBound": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "unadjustedAlpha": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 0.5
+                },
+                "adjustedAlpha": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 0.5
+                },
+                "adjustmentMethod": {
+                  "const": "HOLM_CONSERVATIVE_FIRST_STEP"
+                }
+              }
+            },
+            "byClassRepresentationSurface": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "classId",
+                  "representationId",
+                  "surface",
+                  "sampleCases",
+                  "independentClusters",
+                  "effectiveClusterSize",
+                  "truePositiveClusters",
+                  "falsePositiveClusters",
+                  "falseNegativeClusters",
+                  "trueNegativeClusters",
+                  "benignClusters",
+                  "benignFalsePositiveClusters",
+                  "falseHardStopClusters",
+                  "precision",
+                  "precisionLowerBound",
+                  "recall",
+                  "recallLowerBound",
+                  "missRate",
+                  "missRateUpperBound",
+                  "falsePositiveRate",
+                  "falsePositiveRateUpperBound",
+                  "falseHardStopRate",
+                  "falseHardStopRateUpperBound",
+                  "unadjustedAlpha",
+                  "adjustedAlpha",
+                  "adjustmentMethod"
+                ],
+                "properties": {
+                  "classId": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/definitions/slug"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "representationId": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/definitions/slug"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "surface": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/definitions/slug"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "sampleCases": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "independentClusters": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "effectiveClusterSize": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "truePositiveClusters": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "falsePositiveClusters": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "falseNegativeClusters": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "trueNegativeClusters": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "benignClusters": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "benignFalsePositiveClusters": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "falseHardStopClusters": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "precision": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "precisionLowerBound": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "recall": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "recallLowerBound": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "missRate": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "missRateUpperBound": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "falsePositiveRate": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "falsePositiveRateUpperBound": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "falseHardStopRate": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "falseHardStopRateUpperBound": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "unadjustedAlpha": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 0.5
+                  },
+                  "adjustedAlpha": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 0.5
+                  },
+                  "adjustmentMethod": {
+                    "const": "HOLM_CONSERVATIVE_FIRST_STEP"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "differential": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "comparedCases",
+            "mismatches"
+          ],
+          "properties": {
+            "comparedCases": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "mismatches": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "failures": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "caseId",
+              "runnerId",
+              "classId",
+              "fieldPath",
+              "expectedDigest",
+              "observedDigest",
+              "inputIndex"
+            ],
+            "properties": {
+              "code": {
+                "enum": [
+                  "SCHEMA_INVALID_CASE",
+                  "SCHEMA_INVALID_RESULT",
+                  "CASE_DIGEST_MISMATCH",
+                  "RESULT_DIGEST_MISMATCH",
+                  "SEMANTIC_DIGEST_MISMATCH",
+                  "DUPLICATE_CASE",
+                  "DUPLICATE_RESULT",
+                  "RESULT_CASE_MISMATCH",
+                  "UNKNOWN_CASE_RESULT",
+                  "PROVENANCE_REJECTED",
+                  "LICENSE_REJECTED",
+                  "CLUSTER_SPLIT_DRIFT",
+                  "MISSING_RESULT",
+                  "MISSED_FINDING",
+                  "FALSE_FINDING",
+                  "WRONG_RULE",
+                  "WRONG_SPAN",
+                  "WRONG_EVIDENCE_TIER",
+                  "WRONG_ELIGIBILITY",
+                  "WRONG_CREDENTIAL_ROLE",
+                  "WRONG_EXPLOITABILITY",
+                  "WRONG_REPRESENTATION",
+                  "DECISION_MISMATCH",
+                  "OBLIGATION_MISMATCH",
+                  "EFFECT_MISMATCH",
+                  "OUTCOME_MISMATCH",
+                  "TRANSFORM_MISMATCH",
+                  "COMPLETENESS_MISMATCH",
+                  "FALSE_INTERVENTION",
+                  "MISSED_INTERVENTION",
+                  "FALSE_HARD_STOP",
+                  "MISSED_HARD_STOP",
+                  "FALSE_SOC_INCIDENT",
+                  "MISSED_SOC_INCIDENT",
+                  "FINAL_STATE_MISMATCH",
+                  "RESOURCE_BUDGET_EXCEEDED",
+                  "RESOURCE_EXHAUSTION_MISMATCH",
+                  "DIFFERENTIAL_MISMATCH"
+                ]
+              },
+              "caseId": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/uuid"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "runnerId": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/slug"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "classId": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/slug"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "fieldPath": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^/(?:[A-Za-z0-9_.~:-]+(?:/[A-Za-z0-9_.~:-]+)*)?$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "expectedDigest": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/digest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "observedDigest": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/digest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "inputIndex": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "pass": {
+          "type": "boolean"
+        }
+      }
+    }
+  ]
+}

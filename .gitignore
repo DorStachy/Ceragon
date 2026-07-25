@@ -67,9 +67,6 @@ packages/shared-contracts/dist/
 **/.next/
 **/build/
 
-# Lockfiles for ad-hoc workspace package.json experiments (component
-# repos manage their own lockfiles inside their git remotes).
-packages/shared-contracts/package-lock.json
 
 # Codex adversarial-review prompt scratch files (per-batch / per-iteration).
 # Working-directory artifacts captured during the iterative review cycle.

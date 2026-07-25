@@ -16,6 +16,7 @@ param(
   [string]$SandboxWorkerRoot,
   [string]$StackDir,
   [string[]]$ComposeFiles,
+  [string]$BackendImage,
   [string]$NpmCommand = 'npm',
   [switch]$FullRebuild,
   [switch]$KeepContainers,
@@ -52,6 +53,11 @@ $SandboxWorkerRoot = (Resolve-Path -LiteralPath $SandboxWorkerRoot).Path
 $StackDir = (Resolve-Path -LiteralPath $StackDir).Path
 $env:CERAGON_E2E_BACKEND_ROOT = $BackendRoot.Replace('\', '/')
 $env:CERAGON_E2E_FRONTEND_ROOT = $FrontendRoot.Replace('\', '/')
+if ($BackendImage) {
+  $env:CERAGON_E2E_BACKEND_IMAGE = $BackendImage
+  docker image inspect $BackendImage | Out-Null
+  if ($LASTEXITCODE -ne 0) { throw "Backend image not found: $BackendImage" }
+}
 
 if (-not $ComposeFiles -or $ComposeFiles.Count -eq 0) {
   $ComposeFiles = @(Join-Path $StackDir 'docker-compose.yml')
@@ -65,7 +71,7 @@ foreach ($file in $ComposeFiles) {
 # Default: full rebuild ON. Operators opt OUT with -FullRebuild:$false.
 if (-not $PSBoundParameters.ContainsKey('FullRebuild')) { $FullRebuild = $true }
 
-Write-Host "==> local-e2e-reset: RepoRoot=$RepoRoot FullRebuild=$FullRebuild WithGhsaMock=$WithGhsaMock"
+Write-Host "==> local-e2e-reset: RepoRoot=$RepoRoot FullRebuild=$FullRebuild WithGhsaMock=$WithGhsaMock BackendImage=$BackendImage"
 Write-Host "    Backend=$BackendRoot Frontend=$FrontendRoot Scanner=$ScannerRoot Stack=$StackDir"
 
 $composeDir = $StackDir
@@ -123,7 +129,7 @@ function Invoke-EmulatorBootstrap {
     -v "$(Join-Path $BackendRoot 'node_modules'):/nm" `
     -e NODE_PATH=/nm `
     -w /work `
-    node:20-bookworm-slim `
+    node:24-bookworm-slim `
     node bootstrap-emulators.cjs
   if ($LASTEXITCODE -ne 0) { throw 'bootstrap-emulators failed' }
 }
@@ -136,15 +142,24 @@ function Invoke-SchemaSync {
     docker rm -f $syncName | Out-Null
     if ($LASTEXITCODE -ne 0) { throw 'stale schema-sync container removal failed' }
   }
-  docker run -d `
-    --name $syncName `
-    --network container:codesec-e2e-postgres `
-    --env-file (Join-Path $composeDir 'backend.sync.env') `
-    -v "${BackendRoot}:/app" `
-    -v "$(Join-Path $BackendRoot 'packages\shared-contracts'):/app/node_modules/@ceragon/shared-contracts" `
-    -w /app `
-    node:20-bookworm-slim `
-    sh -lc "node dist/src/main.js"
+  if ($BackendImage) {
+    docker run -d `
+      --name $syncName `
+      --network container:codesec-e2e-postgres `
+      --env-file (Join-Path $composeDir 'backend.sync.env') `
+      $BackendImage `
+      node dist/main.js
+  } else {
+    docker run -d `
+      --name $syncName `
+      --network container:codesec-e2e-postgres `
+      --env-file (Join-Path $composeDir 'backend.sync.env') `
+      -v "${BackendRoot}:/app" `
+      -v "$(Join-Path $BackendRoot 'packages\shared-contracts'):/app/node_modules/@ceragon/shared-contracts" `
+      -w /app `
+      node:24-bookworm-slim `
+      sh -lc "node dist/main.js"
+  }
   if ($LASTEXITCODE -ne 0) { throw 'schema-sync container failed to start' }
 
   $schemaReady = $false
@@ -235,6 +250,31 @@ function Wait-BackendHealthy {
   throw "backend health did not become ready within ${TimeoutSeconds}s: $finalLogs"
 }
 
+function Wait-FrontendHealthy {
+  param([int]$TimeoutSeconds = 600)
+
+  $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
+  while ((Get-Date) -lt $deadline) {
+    try {
+      $resp = Invoke-WebRequest -Uri 'http://127.0.0.1:3001' -TimeoutSec 5 -UseBasicParsing
+      if ($resp.StatusCode -ge 200 -and $resp.StatusCode -lt 400) {
+        Write-Host "==> Frontend health OK"
+        return
+      }
+    } catch {
+      $state = docker inspect -f "{{.State.Status}}" codesec-e2e-frontend 2>$null
+      if ($LASTEXITCODE -eq 0 -and $state.Trim() -ne 'running') {
+        $logs = (cmd /c "docker logs --tail 200 codesec-e2e-frontend 2>&1") -join [Environment]::NewLine
+        throw "frontend exited before health became ready: $logs"
+      }
+    }
+    Start-Sleep -Seconds 2
+  }
+
+  $finalLogs = (cmd /c "docker logs --tail 200 codesec-e2e-frontend 2>&1") -join [Environment]::NewLine
+  throw "frontend health did not become ready within ${TimeoutSeconds}s: $finalLogs"
+}
+
 try {
   if ($FullRebuild) {
     Write-Host "==> Phase 1: rebuild artifacts/images..."
@@ -318,6 +358,7 @@ try {
   Write-Host "==> Phase 7: verifying clean post-reset state..."
   Assert-CleanPostResetState
   Wait-BackendHealthy
+  Wait-FrontendHealthy
 
   Write-Host "==> local-e2e-reset COMPLETE."
   $resetComplete = $true

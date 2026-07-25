@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.ceragon.ai/ai-security-policy/v1/strict-write.schema.json",
+  "title": "Ceragon AI Security Policy V1 strict section-level PUT",
+  "description": "Strict syntax contract for PUT /api/v1/ai/security-policy. Omitted top-level sections retain the base policy; supplied sections are internally complete except documented default-on fields and partial action maps.",
+  "$comment": "Semantic invariants and merge/default behavior that Draft-07 cannot express are cataloged in ai-security-policy-v1-schema-cases.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "dlp": {
+      "$ref": "defs.schema.json#/definitions/strictDlpSection"
+    },
+    "promptRisk": {
+      "$ref": "defs.schema.json#/definitions/strictPromptRiskSection"
+    },
+    "providers": {
+      "$ref": "defs.schema.json#/definitions/strictProvidersSection"
+    },
+    "exclusions": {
+      "$ref": "defs.schema.json#/definitions/strictExclusionsSection"
+    },
+    "mcp": {
+      "$ref": "defs.schema.json#/definitions/strictMcpSection"
+    },
+    "uploads": {
+      "$ref": "defs.schema.json#/definitions/strictUploadsSection"
+    },
+    "paths": {
+      "$ref": "defs.schema.json#/definitions/strictPathsSection"
+    },
+    "agents": {
+      "$ref": "defs.schema.json#/definitions/strictAgentsSection"
+    },
+    "egress": {
+      "$ref": "defs.schema.json#/definitions/strictEgressSection"
+    },
+    "proxy": {
+      "$ref": "defs.schema.json#/definitions/strictProxySection"
+    },
+    "ingress": {
+      "$ref": "defs.schema.json#/definitions/strictIngressSection"
+    }
+  }
+}

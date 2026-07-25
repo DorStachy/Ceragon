@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.ceragon.ai/ai-security-policy/v1/tolerant-read.schema.json",
+  "title": "Ceragon AI Security Policy V1 tolerant agent-wire reader",
+  "description": "Additive reader contract for GET /api/v1/ai/policy. Known fields remain type-checked; unknown properties and future string enum tokens are accepted for degraded handling.",
+  "$comment": "The legacy branch is selected only when siteId is absent. The full branch enforces atomic Team-resolution metadata with Draft-07 dependencies.",
+  "oneOf": [
+    {
+      "$ref": "defs.schema.json#/definitions/tolerantLegacyPolicyWire"
+    },
+    {
+      "$ref": "defs.schema.json#/definitions/tolerantEffectivePolicyWire"
+    }
+  ]
+}
