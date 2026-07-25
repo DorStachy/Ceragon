@@ -1,8 +1,8 @@
 /* eslint-disable */
 /**
  * GENERATED FILE — DO NOT EDIT.
- * Source: 93bf85b67c69e1aff176151dbc9274691b5ac128
- * Artifact: sha256:096d6c8f181408bb60a1440173f04efdd99764736d97d01169decdecad0c6feb
+ * Source: d366f5f8c76fac253d9adf7914873e97a955a16d
+ * Artifact: sha256:29006c25daa64c557a21bd35f43f011a2de2502eeeb373219f818b86884f96d3
  * Regenerate with: npm run generate:ai-security-backend-consumer
  *
  * C03 is an inert consumer projection. It enables no V2 writer, policy bundle,
@@ -15,13 +15,13 @@ function deepFreeze<T>(value: T): T {
   return Object.freeze(value);
 }
 
-export const AI_SECURITY_PORTABLE_SOURCE_COMMIT = "93bf85b67c69e1aff176151dbc9274691b5ac128" as const;
-export const AI_SECURITY_PORTABLE_ARTIFACT_DIGEST = "sha256:096d6c8f181408bb60a1440173f04efdd99764736d97d01169decdecad0c6feb" as const;
-export const AI_SECURITY_PORTABLE_ARTIFACT_BYTES = 776486 as const;
+export const AI_SECURITY_PORTABLE_SOURCE_COMMIT = "d366f5f8c76fac253d9adf7914873e97a955a16d" as const;
+export const AI_SECURITY_PORTABLE_ARTIFACT_DIGEST = "sha256:29006c25daa64c557a21bd35f43f011a2de2502eeeb373219f818b86884f96d3" as const;
+export const AI_SECURITY_PORTABLE_ARTIFACT_BYTES = 776506 as const;
 export const AI_SECURITY_PORTABLE_FORMAT_VERSION = 1 as const;
 export const AI_SECURITY_POLICY_SCHEMA_VERSION = 1 as const;
 export const AI_SECURITY_PORTABLE_GENERATOR_NAME = "ceragon-ai-security-artifact" as const;
-export const AI_SECURITY_PORTABLE_GENERATOR_VERSION = "1.3.0" as const;
+export const AI_SECURITY_PORTABLE_GENERATOR_VERSION = "1.3.1" as const;
 export const AI_SECURITY_BACKEND_PROJECTION_GENERATOR_VERSION = "1.3.0" as const;
 export const AI_SECURITY_PORTABLE_REQUIRED_INTEGRATION_GATE = "P0-C07" as const;
 export const AI_SECURITY_PORTABLE_RUNTIME_ACTIVATABLE = false as const;
