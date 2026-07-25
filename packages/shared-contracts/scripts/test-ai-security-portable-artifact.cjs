@@ -563,10 +563,13 @@ try {
   );
   assert.equal(artifact.canonicalization.conformanceVectors.numberVectors.length, 27);
   assert.equal(artifact.canonicalization.strictIngestionRejectionVectors.cases.length, 23);
+  const priorArtifact = parseStrictJsonBytes(
+    fs.readFileSync(path.join(priorGeneratedRoot, 'portable-contract.v1.jcs.json')),
+  );
   assert.deepEqual(
-    artifact.v1Policy.orderedTuples.AI_EVENT_TYPES.slice(-2),
-    ['UPLOAD_NOT_INSPECTED', 'INGRESS_MONITORED'],
-    'INGRESS_MONITORED must be append-only at the tail of AI_EVENT_TYPES',
+    artifact.v1Policy.orderedTuples.AI_EVENT_TYPES,
+    [...priorArtifact.v1Policy.orderedTuples.AI_EVENT_TYPES, 'INGRESS_MONITORED'],
+    'INGRESS_MONITORED must be the only append-only addition to AI_EVENT_TYPES',
   );
 
   assert.deepEqual(artifact.protocol.readableVersions, ['1', '2']);
