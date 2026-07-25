@@ -61,6 +61,18 @@ const INGRESS_CLASSES = [
   ...PROMPT_CONFIGURABLE, ...PROMPT_DERIVED,
   'ingress-exfil-verb', 'ingress-tool-poisoning',
 ];
+const EVENT_TYPES = [
+  'PROMPT_SUBMITTED', 'PROMPT_REDACTED', 'PROMPT_BLOCKED',
+  'AI_RESPONSE_RECEIVED', 'TOOL_CALL_REQUESTED', 'TOOL_CALL_BLOCKED',
+  'MCP_SERVER_ADDED', 'MCP_SERVER_APPROVED', 'MCP_SERVER_BLOCKED',
+  'MCP_QUARANTINE_APPLIED', 'MCP_QUARANTINE_RESTORED', 'MCP_TOOL_INVOKED',
+  'PACKAGE_INSTALL_REQUESTED', 'PACKAGE_INSTALL_BLOCKED', 'PACKAGE_INSTALL_ALLOWED',
+  'FILE_WRITE_OBSERVED', 'DIFF_SCAN_COMPLETED', 'GIT_PUSH_BLOCKED',
+  'POLICY_EXCEPTION_REQUESTED', 'POSTURE_DRIFT', 'CODE_DIFF_SCANNED',
+  'CODE_DIFF_FLAGGED', 'EXCEPTION_REQUESTED', 'AGENT_CONTROL_TAMPER',
+  'INGRESS_REDACTED', 'CONTEXT_TAINTED', 'TOOL_CALL_HELD',
+  'UPLOAD_BLOCKED', 'UPLOAD_NOT_INSPECTED', 'INGRESS_MONITORED',
+];
 
 const EXPECTED_TUPLES = {
   AI_SECURITY_POLICY_V1_DLP_ACTIONS: ['block', 'redact', 'warn', 'allow'],
@@ -401,6 +413,8 @@ assert.equal(Object.hasOwn(effectiveNoTeam, 'effective'), false);
 
 delete require.cache[require.resolve(distIndexPath)];
 const contract = require(distIndexPath);
+assert.deepEqual(Array.from(contract.AI_EVENT_TYPES), EVENT_TYPES);
+assertDeepFrozen(contract.AI_EVENT_TYPES, 'AI_EVENT_TYPES');
 for (const [name, expected] of Object.entries(EXPECTED_TUPLES)) {
   assert.ok(Object.hasOwn(contract, name), `public tuple export missing: ${name}`);
   assert.deepEqual(Array.from(contract[name]), expected, `${name} order drifted`);

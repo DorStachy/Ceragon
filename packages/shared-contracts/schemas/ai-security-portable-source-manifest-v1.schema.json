@@ -25,7 +25,7 @@
     "packageName": { "const": "@ceragon/shared-contracts" },
     "packageVersion": { "const": "0.4.0" },
     "generatorName": { "const": "ceragon-ai-security-artifact" },
-    "generatorVersion": { "const": "1.3.0" },
+    "generatorVersion": { "const": "1.3.1" },
     "authority": {
       "type": "object",
       "additionalProperties": false,

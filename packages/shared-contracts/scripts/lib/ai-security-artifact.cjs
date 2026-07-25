@@ -17,7 +17,7 @@ const EXPECTED_FILES = Object.freeze([RELEASE_FILE, ARTIFACT_FILE, DIGEST_FILE].
 const EXPECTED_TUPLE_SYMBOLS_DIGEST =
   'sha256:abe21415066c160627d934cf502da82b0df76494fd55665b6c264a2500a6ddaa';
 const EXPECTED_PORTABLE_ARTIFACT_DIGEST =
-  'sha256:096d6c8f181408bb60a1440173f04efdd99764736d97d01169decdecad0c6feb';
+  'sha256:29006c25daa64c557a21bd35f43f011a2de2502eeeb373219f818b86884f96d3';
 const EXPECTED_SOURCE_PATHS = Object.freeze({
   definitionsSchema: 'schemas/ai-security-policy-v1.defs.schema.json',
   strictWriteSchema: 'schemas/ai-security-policy-v1.strict-write.schema.json',
@@ -33,13 +33,13 @@ const EXPECTED_SOURCE_PATHS = Object.freeze({
 });
 const REVIEWED_SOURCE_DIGESTS = Object.freeze({
   'manifests/ai-security-portable-release.v1.json':
-    'sha256:97d328d29bc779edd2426e75d257a1f729e152283e665300870a05b38cc17d9e',
+    'sha256:18bcb1d9ba6812ef29e2b4372b4eda7d92b7872dafd01852c01d111ca99695b1',
   'schemas/ai-security-portable-source-manifest-v1.schema.json':
-    'sha256:119b6e1c0bda5387b48292859eb0b1c8538f4db25de3156ad0c3aaf2aed88126',
+    'sha256:3b83d602a5da26301428f5518ec85004a6bd1884c8b5ad4c7645940fc30bde19',
   'schemas/ai-security-portable-artifact-v1.schema.json':
-    'sha256:1768212d60c9c396cf82911324fe88f9db604931656c3ac0c37e1f1f79541269',
+    'sha256:c40de850b8f83e7dcee0400f002cea6042e2390eddebb852229115ac4e968dab',
   'schemas/ai-security-portable-release-manifest-v1.schema.json':
-    'sha256:fced673dab1542380e639bc477f31f96b373a5f6424442b50fca231e6ebccf69',
+    'sha256:dd6d0e2e36a5db54fd1961554625c672777bd6ffd8caa6d3862cbe5f6432e368',
   'schemas/ai-security-policy-v1.defs.schema.json':
     'sha256:c1881d501bcf3ebf861259a4b108ce5707b2a47c15fda63ff5286808c2abb7f8',
   'schemas/ai-security-policy-v1.strict-write.schema.json':
@@ -69,7 +69,7 @@ const EXPECTED_MANIFEST_SCALARS = Object.freeze({
   packageName: '@ceragon/shared-contracts',
   packageVersion: '0.4.0',
   generatorName: 'ceragon-ai-security-artifact',
-  generatorVersion: '1.3.0',
+  generatorVersion: '1.3.1',
   runtimeActivatable: false,
   signedRuntimePolicyBundle: false,
   v2WriterEligible: false,
@@ -449,7 +449,7 @@ function buildPortableArtifact(packageRoot) {
   const artifactDigest = sha256Digest(artifactBytes);
   assertCondition(
     artifactDigest === EXPECTED_PORTABLE_ARTIFACT_DIGEST,
-    `portable artifact digest differs from reviewed immutable 0.4.0 release; got ${artifactDigest}`,
+    `portable artifact digest differs from reviewed immutable 0.4.1 release; got ${artifactDigest}`,
   );
   const release = {
     format: 'ceragon.ai-security.portable-release',

@@ -29,7 +29,7 @@ function parseArgs(args) {
 
 try {
   const packageRoot = path.resolve(__dirname, '..');
-  const generatedRoot = path.join(packageRoot, 'generated', 'ai-security', '0.4.0');
+  const generatedRoot = path.join(packageRoot, 'generated', 'ai-security', '0.4.1');
   const { output, expectedDigest } = parseArgs(process.argv.slice(2));
   const built = compareGeneratedDirectory(packageRoot, generatedRoot);
   if (built.artifactDigest !== expectedDigest) {

@@ -9,6 +9,7 @@
     "dist",
     "generated/ai-security/0.3.0",
     "generated/ai-security/0.4.0",
+    "generated/ai-security/0.4.1",
     "generated/ai-security/0.5.0",
     "generated/ai-security/0.6.0",
     "generated/ai-security/0.7.0"
@@ -20,7 +21,7 @@
     "validate:ai-security-sources": "node scripts/test-ai-security-policy-schemas.cjs && node scripts/test-jcs-conformance.cjs",
     "generate:ai-security-o01-f01": "node scripts/generate-ai-security-o01-f01-fixtures.cjs --write",
     "check:ai-security-o01-f01": "node scripts/generate-ai-security-o01-f01-fixtures.cjs --check && node scripts/test-ai-security-o01-f01-contracts.cjs",
-    "generate:ai-security": "npm run build && npm run validate:ai-security-sources && npm run generate:ai-security-o01-f01 && npm run check:ai-security-o01-f01 && node scripts/generate-ai-security-artifact.cjs --output generated/ai-security/0.4.0",
+    "generate:ai-security": "npm run build && npm run validate:ai-security-sources && npm run generate:ai-security-o01-f01 && npm run check:ai-security-o01-f01 && node scripts/generate-ai-security-artifact.cjs --output generated/ai-security/0.4.1",
     "check:ai-security-generated": "npm run build && npm run validate:ai-security-sources && npm run check:ai-security-o01-f01 && node scripts/check-ai-security-generated.cjs",
     "generate:ai-security-contract-spine": "npm run build && node scripts/generate-ai-security-contract-spine.cjs",
     "check:ai-security-contract-spine": "npm run build && node scripts/generate-ai-security-contract-spine.cjs --check && node scripts/test-ai-security-contract-spine.cjs",

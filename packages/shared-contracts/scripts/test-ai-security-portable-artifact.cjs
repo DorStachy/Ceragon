@@ -13,8 +13,8 @@ const packageRoot = path.resolve(__dirname, '..');
 const generator = path.join(__dirname, 'generate-ai-security-artifact.cjs');
 const checker = path.join(__dirname, 'check-ai-security-generated.cjs');
 const exporter = path.join(__dirname, 'export-ai-security-artifact.cjs');
-const priorGeneratedRoot = path.join(packageRoot, 'generated', 'ai-security', '0.3.0');
-const generatedRoot = path.join(packageRoot, 'generated', 'ai-security', '0.4.0');
+const priorGeneratedRoot = path.join(packageRoot, 'generated', 'ai-security', '0.4.0');
+const generatedRoot = path.join(packageRoot, 'generated', 'ai-security', '0.4.1');
 const {
   buildPortableArtifact,
   compareGeneratedDirectory,
@@ -563,6 +563,11 @@ try {
   );
   assert.equal(artifact.canonicalization.conformanceVectors.numberVectors.length, 27);
   assert.equal(artifact.canonicalization.strictIngestionRejectionVectors.cases.length, 23);
+  assert.deepEqual(
+    artifact.v1Policy.orderedTuples.AI_EVENT_TYPES.slice(-2),
+    ['UPLOAD_NOT_INSPECTED', 'INGRESS_MONITORED'],
+    'INGRESS_MONITORED must be append-only at the tail of AI_EVENT_TYPES',
+  );
 
   assert.deepEqual(artifact.protocol.readableVersions, ['1', '2']);
   assert.deepEqual(artifact.protocol.writableVersions, ['1']);
@@ -619,6 +624,7 @@ try {
     'dist/sqs-signer.js',
     ...expectedFiles.map((relative) => `generated/ai-security/0.3.0/${relative}`),
     ...expectedFiles.map((relative) => `generated/ai-security/0.4.0/${relative}`),
+    ...expectedFiles.map((relative) => `generated/ai-security/0.4.1/${relative}`),
   ]) {
     assert.equal(packedPaths.includes(required), true, `packed artifact is missing ${required}`);
   }
@@ -657,6 +663,10 @@ try {
   );
   assert.deepEqual(
     filesUnder(path.join(installedRoot, 'generated', 'ai-security', '0.4.0')),
+    expectedFiles,
+  );
+  assert.deepEqual(
+    filesUnder(path.join(installedRoot, 'generated', 'ai-security', '0.4.1')),
     expectedFiles,
   );
 

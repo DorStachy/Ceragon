@@ -23,7 +23,7 @@ import { AI_SECURITY_PORTABLE_ORDERED_TUPLES } from './generated/ai-security-por
  * (prompt capture, tool-call gating, MCP governance, diff/push gating)
  * add emitters without re-touching this contract.
  *
- * M4 (WS-H) — the five untrusted-ingress + upload-governance types are APPENDED
+ * M4 (WS-H) — the untrusted-ingress + upload-governance types are APPENDED
  * at the tail (never re-ordered), emitted later by the daemon (ingress redaction,
  * context taint, tool-hold) and the browser extension (upload gating):
  *   - INGRESS_REDACTED     — untrusted ingested content (tool output / README /
@@ -35,7 +35,9 @@ import { AI_SECURITY_PORTABLE_ORDERED_TUPLES } from './generated/ai-security-por
  *   - UPLOAD_BLOCKED       — a browser file upload was blocked (file-type / secret).
  *   - UPLOAD_NOT_INSPECTED — a browser upload was allowed but could not be
  *                            inspected (honest taxonomy).
- * Metadata for all five stays redaction-safe (class / count / disposition /
+ *   - INGRESS_MONITORED    — untrusted ingress matched a monitored class and
+ *                            was recorded without mutating or tainting content.
+ * Metadata for all six stays redaction-safe (class / count / disposition /
  * reason-slug only — NEVER raw prompt/file content).
  *
  * NOTE: this append-only order is owned by the digest-pinned generated tuple;

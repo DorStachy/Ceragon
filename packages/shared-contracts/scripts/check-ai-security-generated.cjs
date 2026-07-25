@@ -5,7 +5,7 @@ const { compareGeneratedDirectory } = require('./lib/ai-security-artifact.cjs');
 
 function parseGeneratedRoot(args, packageRoot) {
   if (args.length === 0) {
-    return path.join(packageRoot, 'generated', 'ai-security', '0.4.0');
+    return path.join(packageRoot, 'generated', 'ai-security', '0.4.1');
   }
   if (args.length !== 2 || args[0] !== '--generated-root' || !args[1]) {
     throw new Error('usage: check-ai-security-generated.cjs [--generated-root <directory>]');
