@@ -17,16 +17,16 @@ The first two documents remain the source of truth for the problem, locked decis
 | Repository | Base | Pull request | Key commits |
 |---|---|---|---|
 | `DorStachy/Ceragon` | `master` | https://github.com/DorStachy/Ceragon/pull/6 | `d366f5f`, `c659d95`, `7b2d5b9` |
-| `Ceragon-Prod/Backend` | `main` | https://github.com/Ceragon-Prod/Backend/pull/210 | `edc5dc4`, `ca3e05c`, `2bf36c5` |
-| `Ceragon-Prod/Installers` | `main` | https://github.com/Ceragon-Prod/Installers/pull/133 | `b0647ec`, `1cbae95` |
+| `Ceragon-Prod/Backend` | `main` | https://github.com/Ceragon-Prod/Backend/pull/210 | `dee5d22`, `84da767`, `71f026a`, `f3d609a` |
+| `Ceragon-Prod/Installers` | `main` | https://github.com/Ceragon-Prod/Installers/pull/133 | `738c50a`, `9365a43` |
 
 The contract publishes immutable portable artifact `0.4.1`, digest `sha256:29006c25daa64c557a21bd35f43f011a2de2502eeeb373219f818b86884f96d3`, and append-only event type `INGRESS_MONITORED`. Backend accepts that event, removing the production-400 blocker. Installer implements consistent Warn interruption/release semantics and Monitor evidence across the CLI, daemon, and browser extension.
 
 ## Verified evidence
 
 - Contracts: portable artifact generation/digest verification and append-only tuple regression passed.
-- Backend: TypeScript typecheck passed; AI-security suite 26 suites / 810 tests; governance 2 suites / 20 tests; portable reader 389 / 389; consumer and adversarial packed-consumer checks passed.
-- Installer: `go test ./... -count=1` passed; browser 947 / 947; browser consumer check and production build passed.
+- Backend: TypeScript typecheck passed; pre-rebase AI-security suite 26 suites / 810 tests and governance 2 suites / 20 tests passed; post-rebase contract/DTO/portable-reader integration 409 / 409 passed; consumer and adversarial packed-consumer checks passed. The broader current-main governance run has five stale assertions in three files outside this PR diff (privacy metadata, Warn policyDecision, and CSV evidence permission).
+- Installer: post-rebase browser 969 / 969, browser consumer check, and production build passed. Full `go test ./... -count=1` passed every package except one transient Windows file-lock race in `cmd/devoid-msi-handle-holder`; the isolated retry passed.
 - Worktrees were clean at publication. No dependency installation was run in a worktree.
 
 ## Hard release gate — D6
