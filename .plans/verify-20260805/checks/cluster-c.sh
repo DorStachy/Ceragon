@@ -99,6 +99,8 @@ SQL
 
 prodsql_run() {
   [ "$PRODSQL_STATE" != absent ] && return 0
+  # A previous invocation's capture must never be readable by this one.
+  rm -f "$PRODSQL_OUT"
   if [ "${QA0802_PROD_SQL:-1}" != "1" ]; then
     PRODSQL_STATE=failed
     PRODSQL_WHY="the prod SQL lane was switched OFF for this run by QA0802_PROD_SQL=${QA0802_PROD_SQL:-} — unset it to measure production"
@@ -138,7 +140,12 @@ prodsql_run() {
   return 0
 }
 
+# THE STATE GUARD IS LOAD-BEARING. Without it a run with the lane switched off
+# still found the PREVIOUS run's capture on disk and reported its numbers as
+# though production had just been measured — a verdict over a path that did not
+# execute. Caught by running with QA0802_PROD_SQL=0 on 2026-08-07.
 prodv() { # <key> -> one line per returned row (psql result block only)
+  [ "$PRODSQL_STATE" = "ok" ] || return 0
   sed -n '/----- psql output -----/,/----- end output -----/p' "$PRODSQL_OUT" 2>/dev/null \
     | grep -oE "QA::$1::.*" | sed "s/^QA::$1:://" | sed 's/[[:space:]]*$//'
 }
