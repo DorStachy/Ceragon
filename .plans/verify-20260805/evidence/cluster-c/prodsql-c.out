@@ -1,0 +1,31 @@
+target       : postgres@codefense-postgressdb.c56akiuead81.eu-north-1.rds.amazonaws.com:5432/codefense_db (sslmode=require)
+mode         : read-only
+network      : cluster=backend subnet=subnet-043fba9d9893864a4 sg=sg-02e5e94735f154e7f
+sql          : SELECT 'QA::C38::' || seq_num::text || '|' || event_type || '|' || coalesce(runtime,'(null)') || '|' || coalesce(surface,'(null)') || '|' || coalesce(enforcement_effect,'(null)') || '|' || coalesce(policy_decision,'(null)') || '|' || coalesce(left(session_id::text,8),'(null)') AS r FROM ai_events WHERE seq_num IN (994, 2666, 2695) ORDER BY seq_num; SELECT 'QA::C38N::' || count(*)::text AS r FROM ai_events WHERE seq_num IN (994, 2666, 2695); SELECT 'QA::C38K::' || coalesce(string_agg(event_type || '=' || n::text, ',' ORDER BY event_type),'none') AS r FROM (SELECT event_type, count(*) AS n FROM ai_events WHERE event_type LIKE 'TOOL%' OR event_type LIKE 'PROMPT%' GROUP BY 1) t; SELECT 'QA::ORGS::' || count(*)::text AS r FROM orgs;
+log group    : /ecs/codefence-sql-runner (exists)
+task definition: reusing codefence-sql-runner:1 (unchanged)
+task         : c39f1957e40543c2b42c95988ea75e74
+waiting for the task to stop...
+
+----- psql output -----
+                                      r                                      
+-----------------------------------------------------------------------------
+ QA::C38::994|TOOL_CALL_BLOCKED|claude-code|desktop|deny-tool|BLOCK|9c13f9e5
+ QA::C38::2666|TOOL_CALL_BLOCKED|codex|cli|deny-tool|BLOCK|abd7495f
+ QA::C38::2695|TOOL_CALL_BLOCKED|codex|cli|deny-tool|BLOCK|abd7495f
+(3 rows)
+      r      
+-------------
+ QA::C38N::3
+(1 row)
+                                                                  r                                                                  
+-------------------------------------------------------------------------------------------------------------------------------------
+ QA::C38K::PROMPT_BLOCKED=70,PROMPT_REDACTED=9,PROMPT_SUBMITTED=845,TOOL_CALL_BLOCKED=49,TOOL_CALL_HELD=123,TOOL_CALL_REQUESTED=4968
+(1 row)
+      r      
+-------------
+ QA::ORGS::2
+(1 row)
+----- end output -----
+
+task stopped : exitCode=0 reason=Essential container in task exited
