@@ -23,6 +23,10 @@
 // (SECURITY_CATEGORIES / COVERAGE_CATEGORIES) so there is exactly one copy of
 // each label set. Backend Findings endpoint (S7), Frontend Findings facets,
 // and the Overview coverage map all key off these identical strings.
+//
+// MIRROR FILE — keep byte-identical with
+// packages/shared-contracts/src/customer-taxonomy.ts until the
+// monorepo consolidation lands. See CLAUDE.md "Shared contracts" section.
 // ════════════════════════════════════════════════════════════════════════
 
 import {

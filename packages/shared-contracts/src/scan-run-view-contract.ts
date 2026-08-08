@@ -20,6 +20,10 @@
 //
 // All fields here are ADDITIVE / OPTIONAL — older Backends omit them and
 // consumers fall back to prior behavior.
+//
+// MIRROR FILE — keep byte-identical with
+// packages/shared-contracts/src/scan-run-view-contract.ts until the
+// monorepo consolidation lands. See CLAUDE.md "Shared contracts" section.
 // ════════════════════════════════════════════════════════════════════════
 
 import type { SecuritySeverity, SecurityCategory, CoverageCategory } from './security-taxonomy';
