@@ -204,8 +204,8 @@ least-privileged per-user task writes.
 `~/.devoid/aiwire-optout/<runtime>_<hash>.json` causes reconcile to return **before** proxy health or file repair
 (`internal/airuntimeintegrity/local_disablement.go:44`, `internal/aiwire/aiwire.go:232-245`). It is honoured
 indefinitely, carries only `runtime/home/optedOutAt`, has no console surface, and no event marks the transition.
-**Live case:** written 2026-08-08T21:57:52Z by the owner running the un-brick command after a block bricked a Codex
-thread. Correct and authorized — and invisible for four hours.
+**Live case:** created during an authorized recovery after a block bricked a Codex thread. Correct and authorized —
+and invisible for hours. Exact timestamp and operator provenance remain in the private evidence set.
 
 ### What changes
 1. Render as **`SKIPPED_AUTHORIZED`** — visibly missing **and** authorized. Never green, never auto-repaired.

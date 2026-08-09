@@ -329,7 +329,7 @@ ONE CLAIM IS OVERSTATED AND IS THE RISK THAT COULD MAKE THIS FIX BACKFIRE. sessi
 
 The recorded cause ("fork and compact create DUPLICATE sessions inheriting the parent display name") is the symptom. The mechanism is a false assumption in one function plus a chain memory that is armed by only one kind of transition.
 
-`sessionStartThreadID` (Installers/cmd/devoid/ai_hook_runner.go:1314-1330) returns the INCOMING session id as the threadId for source in {resume, compact}, documented as "the runtime identity that remains stable when Claude re-fires SessionStart for resume/compaction". Live evidence disproves that for compact and fork: sid=3f6a284f source=compact and sid=c575c297 source=fork are NEW ids, distinct from the parent. So the hook sends threadId == the child's own id.
+`sessionStartThreadID` (Installers/cmd/devoid/ai_hook_runner.go:1314-1330) returns the INCOMING session id as the threadId for source in {resume, compact}, documented as "the runtime identity that remains stable when Claude re-fires SessionStart for resume/compaction". Private live evidence disproves that for compact and fork: sid=`<COMPACT_SESSION_ID>` source=compact and sid=`<FORK_SESSION_ID>` source=fork are NEW ids, distinct from the parent. So the hook sends threadId == the child's own id.
 
 That value then actively BLOCKS recovery. In handleAISessionStart the chain lookup runs only when the threadId is empty: `if threadID == "" && source == "clear" { threadID = s.aiChain.TakeCleared(...) }` (Installers/internal/daemon/ai_handlers.go:3002-3008) — a self-id is non-empty, so nothing is consulted. On the Backend, `startSessionOnRunner` skips the root stamp because `threadRootId === session.id` (Backend/src/ai-governance/services/ai-event.service.ts:798-806) and `createSession` stores thread_id = the row's own id (ai-session-correlator.service.ts:397). The parent keeps thread_id NULL. Two rows, no shared thread, no join.
 
@@ -369,7 +369,7 @@ FRONTEND: render the continuation fact on the collapsed row ("continued after co
 
 **Installers** - `cmd/devoid/ai_hook_runner.go`
 
-sessionStartThreadID (:1321-1330): return "" unconditionally and rewrite the docblock — Claude Code mints a NEW session_id on compaction and fork (measured 2026-08-08: sid 3f6a284f source=compact, sid c575c297 source=fork), so the incoming id is never the parent's; the daemon resolves continuation from its own per-client memory. Keep the call site at :1262-1264 (it simply stops setting body["threadId"]).
+sessionStartThreadID (:1321-1330): return "" unconditionally and rewrite the docblock — Claude Code mints a NEW session_id on compaction and fork (private measurement: sid `<COMPACT_SESSION_ID>` source=compact, sid `<FORK_SESSION_ID>` source=fork), so the incoming id is never the parent's; the daemon resolves continuation from its own per-client memory. Keep the call site at :1262-1264 (it simply stops setting body["threadId"]).
 
 **Installers** - `internal/daemon/ai_session_chain.go`
 

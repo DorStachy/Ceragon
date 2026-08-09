@@ -30,7 +30,7 @@ Current completed state:
 - F24 is merged in Backend PR #240, merge `cb5dbf9827a20ec826657720289e588cc5484679`.
 - F25 is merged in Backend PR #241, merge `1d9b5d15abcdc11a5b9c8e46bfe30f75bbe3a28f`.
 - The seven refreshed SOTs are merged in docs PR #145, merge `bb7a349b8dbddaa0c2015fdf93d1395ea250a026`.
-- Wave 1 is 2/13 complete. No deployment or live-production verification has been claimed.
+- Wave 1 is 2/13 complete. No application deployment or post-merge production rollout verification has been claimed; the SOT refresh did include a dated read-only AWS inventory inspection.
 
 Proceed with the remaining Wave 1 work one finding and one PR at a time. Start with **F12 build identity** unless current `origin/main`, an open PR, or the handoff shows it has already landed. After F12, the safe independent order is F19, F13, then F17. Re-read remote state before every branch so you never duplicate another person's work.
 

@@ -482,7 +482,8 @@ contentless warn is attributable.
 
 ## 7b. F43 [CRITICAL] — Codex is ungoverned RIGHT NOW, and our own availability guard is the reason
 
-Measured 2026-08-09 01:37 local on the production endpoint. This supersedes the earlier "Codex desktop is PROVEN
+Observed during an authorized read-only production inspection; the exact local timestamp remains in the private
+evidence set. This supersedes the earlier "Codex desktop is PROVEN
 COVERED via the wire lane" correction: it *was* covered, and it is not any more.
 
 **What `devoid ai status codex` reports:**
@@ -491,14 +492,14 @@ R5-provider-route    missing (managed-file-absent)
 R7-hook-cooperative  missing (hook-entry-absent)
 R8-hook-lifecycle    missing (hook-entry-absent)
 PreToolUse / PermissionRequest / SessionStart / SessionEnd :  NEVER FIRED
-wire egress route:   last carried 2026-08-08T18:33:07Z
+wire egress route:   last carried <PRIVATE_TIMESTAMP>
 [!] NEITHER Codex layer is clean.
 ```
 
 **Corroborated independently:** `~/.codex/managed_config.toml` **does not exist**. A live `codex exec` run reported
 `provider: openai` (not `devoid`), produced **zero** daemon proxy log lines, and printed `hook: SessionStart Failed`
-/ `hook: UserPromptSubmit Failed`. The daemon has recorded **no** `ai_proxy_decision` since 18:33Z yesterday — which
-is the exact minute the owner was fighting the conversation our own block had bricked.
+/ `hook: UserPromptSubmit Failed`. The daemon had recorded **no** `ai_proxy_decision` since the private evidence
+timestamp, which correlated with authorized recovery testing after our block had bricked the conversation.
 
 **Why it matters more than any other Codex finding:** the wire lane is the *only* lane that governs Codex (the hook
 lane fails on every event and fails OPEN). With the provider route absent, Codex has **no enforcement, no detection
@@ -515,7 +516,7 @@ the owner removed it to get their tool back after F22 bricked a thread, or the a
 defect is that nothing **proactively** surfaces it: you must run a CLI command to discover that your AI governance is
 off. The console shows no Codex coverage state at all.
 
-**Fix directions** (being designed by the Codex-engine deep dive; results land in `codex-deep-dive/`):
+**Fix directions** (the reviewed result is incorporated into [`fix-specs/CODEX-GOVERNANCE.md`](fix-specs/CODEX-GOVERNANCE.md); private investigation artifacts are not published):
 1. The provider route is **owned state**, not fire-and-forget — detect absence/tamper and repair it, with a bounded
    retry when the proxy is unhealthy rather than a permanent silent skip.
 2. **An ungoverned window must raise an event and a console state**, never just a log line. "Codex governance is OFF"
@@ -677,17 +678,16 @@ how we got here. Its verdict on the question the owner asked:
 
 ### It corrects five of my claims — read these before planning
 1. **"Codex is ungoverned" was too broad.** True for Windows CLI/Desktop. The active **VS Code lane runs Codex in
-   WSL**, and `/home/owner/.codex/managed_config.toml` *does* point at `127.0.0.1:19280` with a healthy probe. Our
+   WSL**, and `<USER_HOME>/.codex/managed_config.toml` *does* point at `127.0.0.1:19280` with a healthy probe. Our
    status conflates "Windows root missing" with "all Codex surfaces ungoverned" — a **wrong-namespace** bug.
 2. **The route is not absent because of the health gate — there is a second cause.**
-   `~/.devoid/aiwire-optout/codex_23ae6a2f462d7339.json` **exists** and matches the normalised Windows Codex-home
+   `~/.devoid/aiwire-optout/<AUTHORIZED_OPTOUT_MARKER>.json` **exists** and matches the normalised Windows Codex-home
    hash, with **no** corresponding managed-authority seal. In cooperative mode reconcile honours that marker and
    returns *before* proxy health or file repair (`local_disablement.go:44`, `aiwire.go:232`).
 
-   **Marker intent RESOLVED 2026-08-09 (was UNPROVEN):** written `2026-08-08T21:57:52Z` by the **owner**, running
-   the un-brick command I gave them after F22 + F23 made Codex unusable. Verified: no subagent in this session ever
-   executed the devoid binary (0 occurrences across all transcripts), and no other concurrent Claude session ran a
-   governance-mutating command. So it is **deliberate and authorized** — not residue, not a rogue self-disable.
+   **Marker intent RESOLVED (was UNPROVEN):** it was created during the authorized recovery action after F22 + F23
+   made Codex unusable. Treat it as a deliberate authorized opt-out, not residue or unexplained self-disable. The
+   exact marker, timestamp, and transcript-derived provenance remain in the private evidence set.
 
    **This is the most damning product finding in the Codex track, and it is a bigger deal than a mystery bug would
    have been.** The only remedy available to a customer whose AI tool our block had bricked was **to switch our
