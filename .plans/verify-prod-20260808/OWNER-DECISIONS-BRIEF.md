@@ -307,3 +307,93 @@ permissions is reachable only through an admin-only subcommand (`cmd/devoid/main
 mode is the one most likely to skip it — so the exposure does not heal on its own.
 
 ---
+
+## 4. C11d-2 — a queue nobody is reading, and nothing says so
+
+**The question.** The verification row for "an abandoned queue raises a signal" reports no verdict, on the correct
+reasoning that a threshold guessed from two data points would be fake. Nothing else raises either. **Is a silent
+abandoned lane acceptable?**
+
+**Why it is open.** `S10-GATE-RESULTS.md:184-188` records the verdict as `NOT_EVALUATED` with a deliberately null
+threshold, because a number from an n=2 sample would be *"a guess wearing a number's clothing"* — then adds
+*"Defensible; but nothing else raises either, so the lane is silent."* Nobody ruled on whether that silence is
+tolerable.
+
+### What is actually true
+
+**The reasoning behind the null threshold is right, and should not change.** The discriminating measurement is a
+CloudWatch metric with no local substitute, and reporting it as not-measured rather than inventing an age is exactly
+what the honesty rule requires. **Do not "fix" the verdict.**
+
+**The silence is real and complete.** The lane is `codefence-scanner-fullrepo-jobs.fifo`; its only consumer, the ECS
+service `codefence-scanner-worker-fullrepo`, is at **desired 0 / running 0**. Measured behaviour: two messages
+enqueued 2026-07-29 sat until their age reached **16.3 hours** before anything received them. And:
+
+- **No alarm covers it.** `AWS_INFRASTRUCTURE_SOURCE_OF_TRUTH.md:1067-1069`: *"There is no checked-in fullrepo DLQ
+  alarm."* `:1080`: *"No composite alarm existed."* Nothing anywhere alarms on message age.
+- **The one in-app age check is structurally dead.** `Backend/src/packages/services/fastgate.service.ts:130` has an
+  oldest-age branch, but its only producer hardcodes the value to zero
+  (`Backend/src/jobs/job-queue.service.ts:666`), and never even requests the age metric. That branch cannot fire.
+  *(Separate defect, worth fixing cheaply.)*
+- **The only liveness test in the whole path is a config fact.** `scan-dispatch.service.ts:931` asks whether a queue
+  URL string is set — never whether anything is reading it.
+
+**The customer-visible harm is worse than "delayed".** With `maxReceiveCount=3` and 96-hour retention, a message
+that is never *received* never increments its receive count, so it **never reaches the dead-letter queue**. Past 96
+hours the work is **silently discarded**. The DLQ protects against poison messages, not against an absent consumer.
+A customer's full-repo scan disappears and nothing, anywhere, says so.
+
+### The smallest change that makes an abandoned lane noisy without inventing a threshold
+
+**Alarm on the conjunction of two measured facts: messages are visible **and** the consumer's running count is zero.**
+That is not a threshold — it is a structural contradiction. "There is work queued and nothing is running to do it" is
+a fact about the system's shape, and it needs no judgement about how long is too long. It cannot be tuned wrong
+because there is nothing to tune. This is precisely the alarm `fix-specs/BACKENDOPS.md:827` already proposes, and the
+one the infrastructure record confirms was never created.
+
+One detail that matters: set it to treat missing data as **breaching**. The existing alarm set uses
+`notBreaching`, which means silence reads as health — the exact failure being discussed.
+
+### Options
+
+**Option A — Accept the silence. Change nothing.**
+Cost: none. Risk: a lane can stay abandoned indefinitely and quietly bin customer scans after four days. You would
+find out from a customer, not from us.
+
+**Option B — Add the consumer-less alarm (visible messages AND zero running consumers).**
+Cost: one CloudWatch composite alarm; ops config, no code, no capacity. Risk: essentially none — it fires only on a
+state that is unambiguously wrong. It will not tell you a *slow* lane, only a *dead* one.
+
+**Option C — Add an oldest-message-age alarm at 900 seconds.**
+Cost: one alarm, plus the metric actually being requested. Risk: 900s is a real choice, but it does **not** come from
+the n=2 sample — `BACKENDOPS.md:799` derives it as *"well under the 16.3h observed and well above normal drain"*.
+Still, it is a number someone picked, and a wrong pick either nags or sleeps.
+
+**Option D — Both B and C.**
+Cost: two alarms. Risk: B catches "nobody is home", C catches "home but not keeping up". Together they cover the
+lane properly.
+
+**Option E — Derive a threshold from the two observed messages.**
+Cost: low. Risk: the thing the gate correctly refused to do. A number with no evidence behind it reads as measurement
+and is not one.
+
+### Recommendation
+
+**Option B now, Option C when the age metric is actually being collected. The single reason: "there is work queued
+and no consumer running" is a fact, not an estimate — so it is the one signal that makes an abandoned lane loud
+without anyone inventing a number.**
+
+Keep the `NOT_EVALUATED` verdict and the null threshold exactly as they are. They are honest, and the fix belongs in
+the alerting, not in the verdict.
+
+Worth knowing before you decide: the fullrepo service **cannot scale up even if alarmed** — its scaling maximum is
+zero (`AWS_INFRASTRUCTURE_SOURCE_OF_TRUTH.md:1252`, `:1487`). The alarm tells you the lane is dead; restoring it is a
+separate ops action.
+
+### What happens if we defer
+
+**Does not block the push.** This is alerting configuration, not shipped code, and it belongs with the other
+owner-executed AWS items in section C of the register. The exposure is ongoing rather than new — the lane has already
+been silent for weeks.
+
+---
