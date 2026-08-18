@@ -116,3 +116,77 @@ It is not, and that sentence is what makes the orphan look authoritative.
 deletion* past this wave — the orphan is the mechanism, and leaving it means re-litigating this.
 
 ---
+
+## 2. F36 Stage 2 — the console panel that would show a wrong answer
+
+**The question.** F36 Stage 2 would tell you, per endpoint, whether the policy it is enforcing matches the policy you
+authored. Written as specified it computes that answer incorrectly and performs a write inside a read. Do we drop it,
+build it as written, or build the corrected version?
+
+**Why it is open.** `IMPLEMENTATION_PLAN.md:359-360` records the objection — Stage 2 calls
+`getPolicyForOrg(..., null)`, which *"drops the team fold and calls `ensureAckSigner` — a key-mint **write** — inside
+a `GET`"* — and no one ruled on what to build instead, so the item sat.
+
+### What I could and could not confirm in the current source
+
+**The team-fold defect is confirmed.** `Backend/src/ai-governance/services/ai-policy.service.ts:249-267` takes an
+`agentId` and passes it straight to `resolveEffectiveForEndpoint(orgId, siteId, agentId)`. Its own comment at
+`:254-259` says that argument is what *"fold[s] the endpoint's Team tiers strictest-wins"*, and that omitting it
+*"resolves to the site policy exactly as today"*. So passing `null` provably computes the **wrong** policy for any
+endpoint that belongs to a team — it computes the site policy and then compares it against what the endpoint is
+actually enforcing, which is the team-folded one. Those will not match, and the panel will show a mismatch that is
+not real.
+
+**The key-mint-write defect I could not verify here, and you should know that.** `ensureAckSigner` does not exist
+anywhere in `Backend/src`, `ai-policy.service.ts` is 301 lines long (the objection cites line 564), and there is no
+`protection-depth` route in this checkout. The Backend working copy sits on `fix/remote-uninstall-command-timeout`,
+so that code is presumably on one of the twelve unmerged branches. Treat that half as asserted-not-verified.
+
+**Neither is the strongest reason to change course.** The spec's own reviewer found a third problem that stands on
+its own, at `fix-specs/FRONTEND.md:281`: the digest Stage 2 would compare **is not byte-comparable** with the one the
+minter produces, because the minter resolves per-endpoint and Stage 2 resolves per-scope. The panel would therefore
+render a **permanent false red** — every endpoint reported as diverged, forever, on a fleet that is actually fine.
+And `FRONTEND.md:282` notes the spec contradicts itself on cost: the only correct form is per-endpoint, while the
+spec instructs computing it once per response.
+
+**A corrected design already exists and is fully written.** `fix-specs/FRONTEND.md:290` specifies replacing the
+digest comparison with a freshness comparison: serve each endpoint's effective-policy `updatedAt` for the scope that
+endpoint actually resolves to, and compare it against `receivedAt`, which the view already carries. It needs no
+digest, no policy re-resolution, no write, and no join — and it *"can only err toward not-proven, which is the safe
+direction under the honesty rule."*
+
+### Options
+
+**Option A — Ship Stage 1 only; drop Stage 2.**
+Cost: none beyond what is built. Risk: the console shows what each endpoint applied and when, but never answers
+"is that current?". During the normal 5–30 minute propagation window a reader cannot distinguish "still catching up"
+from "stuck", so a genuinely stuck endpoint stays invisible.
+
+**Option B — Ship Stage 1, then build the corrected Stage 2 from `FRONTEND.md:290`.**
+Cost: one backend read-model addition (`updatedAt` per endpoint's resolved scope) plus the panel copy. No new write,
+no digest computation, no per-endpoint policy resolution. Risk: a no-op policy edit that touches `updatedAt` reads as
+"not yet proven current" — an over-cautious answer, never a falsely reassuring one.
+
+**Option C — Build Stage 2 as written.**
+Cost: the spec as drafted. Risk: concrete and severe — every team-scoped endpoint renders permanently diverged
+(false red across the fleet), and a key-minting write lands inside an existing production GET.
+
+**Option D — Build Stage 2 as written but fix only the digest to be per-endpoint.**
+Cost: Stage 2 plus N policy resolutions per response on a route that previously did none. Risk: fixes the false red
+and the team fold, but keeps the write-inside-a-GET, and is the one option that spends real work per request.
+
+### Recommendation
+
+**Option B. The corrected design is already specified at `fix-specs/FRONTEND.md:290`, it answers the same customer
+question, and it is the only option that cannot produce a confidently wrong number.**
+
+One gap to close when it is built: `FRONTEND.md:284` and `:296` flag that the panel's **read gate is unstated** — say
+which roles see it, and make a reader without access see an explicit "not readable at your role" rather than an empty
+panel that looks like a clean result.
+
+### What happens if we defer
+
+**Does not block the push.** Stage 1 is additive, read-only frontend on an already-deployed route and can ship alone;
+it is described as *"the honest intermediate state"*. Stage 2 can follow in a later wave.
+
+---
