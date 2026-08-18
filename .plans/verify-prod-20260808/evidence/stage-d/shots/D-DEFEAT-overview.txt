@@ -1,0 +1,101 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+ACCOUNT
+Render QA Org
+Render QA Site
+Search…
+ctrl
+K
+RQ
+Render QA
+Admin
+OPERATIONS
+AI Control Plane
+
+One control plane across Web AI, Coding AI, and Autonomous AI: see what AI is active, govern what it can do, and prove what was enforced.
+
+UPDATED 3S AGO
+EVENTS GOVERNED
+-
+no new · 24h
+TOOL CALLS
+-
+no new · 24h
+REDACTIONS
+-
+no new · 24h
+BLOCKED
+-
+no new · 24h
+SESSIONS
+-
+- active · now
+ENDPOINTS COVERED
+0
+no reporting · 24h
+COVERAGE
+Governed = reporting and policy applied. What we cannot see reads unknown, never zero.
+CODING AI
+-
+-
+
+Unknown · readiness fields missing
+
+SUPPLY CHAIN
+-
+-
+
+Unknown · coverage aggregate unavailable
+
+Web AI coverage appears once endpoints report.
+Autonomous coverage appears once an MCP server is discovered.
+
+GOVERNANCE
+COMPOSITION
+What the control plane governed
+
+Every event class on record. Ring length is sqrt-scaled so the tail stays legible; counts are exact.
+
+Not shown: the AI rollup is unreachable. This is a source failure, not a clean result.
+Retry
+VOLUME
+Governed events over time
+
+Daily, last 7 days, stacked by what the control plane did.
+
+EVENTS
+
+No governed events yet. Once an endpoint reports, this chart shows daily volume split by what the control plane did: blocked, held, redacted, allowed.
+
+EXPOSURE
+DATA MOVEMENT
+What happened to the data
+
+Recorded dispositions, last 7 days, worst first.
+
+EVENTS
+
+Nothing moved in the last 7 days. This shows what happened to data: stopped, held, masked, sent, or never left the machine.
+
+PROVIDERS
+Providers by sessions
+
+Ranked by session count; the inset marks the blocked share.
+
+SESSIONS
+Not shown: the AI rollup is unreachable. This is a source failure, not a clean result.
+Retry
+QUEUE
+Needs attention
+
+Open critical items, failed scans, offline endpoints, and pending prompt decisions.
+
+QUEUE CLEAR
+No open critical items, failed scans, offline endpoints, or pending prompts.

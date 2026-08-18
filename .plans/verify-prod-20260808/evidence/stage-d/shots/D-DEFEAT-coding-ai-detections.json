@@ -1,0 +1,10 @@
+{
+  "url": "/coding-ai/detections",
+  "title": "Detections · Coding AI · DeVoid",
+  "overflow": null,
+  "found": {},
+  "consoleErrors": [
+    "Received NaN for the `%s` attribute. If this is expected, cast the value to a string. data-count"
+  ],
+  "failed": []
+}

@@ -1,0 +1,128 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+ACCOUNT
+Render QA Org
+Render QA Site
+Search…
+ctrl
+K
+RQ
+Render QA
+Admin
+OPERATIONS
+AI Control Plane
+
+One control plane across Web AI, Coding AI, and Autonomous AI: see what AI is active, govern what it can do, and prove what was enforced.
+
+UPDATED 2S AGO
+EVENTS GOVERNED
+-
+≥1,200 new · 24h
+TOOL CALLS
+-
+≥300 new · 24h
+REDACTIONS
+-
+no new · 24h
+BLOCKED
+-
+≥36 new · 24h
+SESSIONS
+-
+- active · now
+ENDPOINTS COVERED
+0
+no reporting · 24h
+
+24h figures and the charts below read the most recent 1,200 of 484 events in the last 7 days. The 24h window is larger than that sample, so those counts are floors (≥).
+
+COVERAGE
+Governed = reporting and policy applied. What we cannot see reads unknown, never zero.
+WEB AI
+-
+-
+
+Unknown · web coverage fields missing
+
+CODING AI
+-
+-
+
+Unknown · readiness fields missing
+
+AUTONOMOUS
+-
+-
+
+Unknown · MCP registry shape invalid
+
+SUPPLY CHAIN
+-
+-
+
+Unknown · coverage aggregate unavailable
+
+GOVERNANCE
+COMPOSITION
+What the control plane governed
+
+Every event class on record. Ring length is sqrt-scaled so the tail stays legible; counts are exact.
+
+Not shown: the AI rollup is unreachable. This is a source failure, not a clean result.
+Retry
+VOLUME
+Governed events over time
+
+Daily, last 1 fully covered day, stacked by what the control plane did.
+
+EVENTS
+
+No governed events yet. Once an endpoint reports, this chart shows daily volume split by what the control plane did: blocked, held, redacted, allowed.
+
+EXPOSURE
+DATA MOVEMENT
+What happened to the data
+
+Recorded dispositions, last 1 fully covered day, worst first.
+
+EVENTS
+allowed
+1,116
+93.0%
+blocked
+36
+3.0%
+held
+18
+1.5%
+redactedsent
+12
+1.0%
+Not recorded
+18
+1.5%
+
+1,200 events in the last 1 fully covered day. 18 carry no recorded disposition, counted here as "Not recorded", never as "stayed on the machine".
+
+PROVIDERS
+Providers by sessions
+
+Ranked by session count; the inset marks the blocked share.
+
+SESSIONS
+Not shown: the AI rollup is unreachable. This is a source failure, not a clean result.
+Retry
+QUEUE
+Needs attention
+
+Open critical items, failed scans, offline endpoints, and pending prompt decisions.
+
+QUEUE CLEAR
+No open critical items, failed scans, offline endpoints, or pending prompts.

@@ -56,10 +56,27 @@ the render surface.
 
 | Item | Surface | Entry point | Verdict |
 |---|---|---|---|
-| D-S1 | AI-governance opt-out coverage (register #18) | `/admin/endpoints?sub=coverage` | PASS |
+| D-S1 | AI-governance opt-out coverage — five states + two defeats (register #18) | `/admin/endpoints?sub=coverage` | **PASS** |
 | D-S1e | …its summary strip vs its own resolved rows | same | **FAIL** |
+| D-S2a | Web-guard nav-block ladder — the C10 `ruleCount: 0` false-red trap | `/admin/endpoints?sub=coverage` | **PASS** |
+| D-S2b | Web-guard health — absent / NOT_REPORTED / invented token | same | **PASS** |
+| D-S2c | Web-guard fleet tiles on a legacy summary (`-`, not `0`) | same | **PASS** |
+| D-S2d | Web-guard panel on a failed read | same | **FAIL** |
+| D-S2e | `STATUS` column reads `Active` beside an unmeasured guard | same | PASS (residual risk noted) |
+| D-S3a | MCP discovery — six source states + one unknown to this build | `/mcp` | **PASS** |
+| D-S3b | MCP coverage not-served vs never-reported | same | **PASS** |
+| D-S3c | MCP page on a failed read | same | **PASS** |
+| D-S3d | MCP count line vs the rows it sits above | same | **FAIL** |
+| D-S4a | F38 enforcement proof — four wire `proven`, one rendered | `/admin/endpoints?sub=coverage` | **PASS** |
+| D-S4b | F38 rollup on a pre-F38 backend (today's whole fleet) | same | **FAIL** |
+| D-S5 | D4 mobile width, 375 px, four routes + a 280 px falsifier | four routes | **PASS** |
+| D-S6 | Session row: actor absence (F31) + continuation chip (F28) | `/coding-ai/sessions` | **PASS** |
+| D-DEFEAT | Empty tenant — overview / sessions / MCP / coverage | all | **PASS** |
+| D-DEFEAT | Empty tenant — detections headline KPI | `/coding-ai/detections` | **FAIL** |
+| — | Session-detail receipt identity (F5/F32), prompt-evidence capability (F30), enforced-authority (F36), tamper render (F33), events, F27 toggle | — | **NOT_RUN** (see §2) |
+| — | Checklist phases CN-01…CN-13, UX-02…UX-07 | production tenant | **BLOCKED** (see §2) |
 
-(Table extended as each item completes.)
+**Five FAILs. Four of them are one defect class** — see §3.
 
 ---
 
@@ -601,3 +618,194 @@ per-instance rows agree — so the blank is caused by the pre-F38 shape, not by 
 
 **Fix shape (not applied):** render the `not-served` bucket, or emit a rollup-level note when
 `sum(displayed buckets) !== instances`.
+
+---
+
+## D-S5 — D4 mobile width (UX-01) — **PASS**
+
+The wave carries two UX-01 commits (`f65ea7d` top bar, `5a89810` policy page). D4 asks for phone width on
+anything in the top bar or the policy page.
+
+Measured as `document.documentElement.scrollWidth > clientWidth` after settle, at 375 px (iPhone-SE class) with
+mobile emulation on:
+
+```
+D-S5-mobile-policy               /admin/policies/ai-security   w=375   h-overflow: none
+D-S5-mobile-coding-ai-sessions   /coding-ai/sessions           w=375   h-overflow: none
+D-S5-mobile-mcp                  /mcp                          w=375   h-overflow: none
+D-S5-mobile-ai-control-plane     /ai-control-plane             w=375   h-overflow: none
+```
+
+No console errors on any of the four.
+
+**Defeat step — is the detector capable of reporting overflow at all?** Same page, same code path, 280 px:
+
+```
+D-S5-mobile-280   /admin/policies/ai-security   w=280   h-overflow: {"scrollWidth":321,"clientWidth":280}
+```
+
+It reports. So `none` at 375 px is a measurement, not an inert check. (280 px is below any shipping phone and the
+overflow there is not itself reported as a defect — it exists only to falsify the check.)
+
+**Observation, not scored:** at 375 px `/ai-control-plane` rendered only the nav chrome (112 characters of body
+text) and never left that URL within a 60 s settle window, while at 1440 px the same route redirected to `/` and
+rendered the Overview. The route is not in the customer navigation (the nav item is "Overview" → `/`), and the
+cause was not determined, so this is recorded for follow-up rather than scored.
+
+---
+
+## D-S6 — session row: actor absence (F31) and continuation chip (F28) — **PASS**
+
+Entry point `/coding-ai/sessions`.
+
+### D1
+
+```
+UNATTRIBUTED_ACTOR_TITLE -> app/ai-control-plane/ai-sessions/ai-sessions-content.tsx
+                            components/ai-console/sessions/session-actor-token.tsx
+                            components/ai-console/sessions/session-row.tsx
+                            types/ai-governance.ts
+continuationCount        -> components/ai-console/sessions/session-row.tsx · types/ai-governance.ts
+```
+
+### D3 + defeat, in one list
+
+Three rows served together, so the control and the case are on the same screen (`shots/D-S6-absence.*`):
+
+```
+sess-anon   username: null          -> "DEV-LAPTOP-07 · Unattributed · anthropic · coding"
+                                       [data-absence="actor"], title="No user was attributed to this session
+                                       by the endpoint. This is missing attribution, not an anonymous user."
+sess-cont   continuationCount: 3    -> "sess-con Untitled session +3 continuations"
+sess-plain  username: "ravi"        -> "DESIGN-MBP-11 · ravi · anthropic · coding"   (no chip, no absence)
+```
+
+The absent actor is not a blank and not a bare word: the explanation rides with the token, which is what F31
+required. The named row beside it proves the token is not printed unconditionally, and the chipless row proves
+the continuation chip is not either.
+
+Baseline control `shots/D-S6-sessions.*`: the stub's own eight sessions, all with usernames, render zero
+`[data-absence="actor"]` and zero continuation chips.
+
+---
+
+## D-STAGE-DEFEAT — point the console at a tenant with no data
+
+The stage-level defeat from the plan: *"confirm surfaces read honestly empty rather than silently green."*
+Every AI read served as a valid empty envelope simultaneously (`evidence/stage-d/empty-tenant.json`).
+
+### Overview `/` — **PASS**, and it is the best surface measured in this run
+
+`shots/D-DEFEAT-overview.txt`:
+
+```
+EVENTS GOVERNED  -     no new · 24h
+TOOL CALLS       -     no new · 24h
+REDACTIONS       -     no new · 24h
+BLOCKED          -     no new · 24h
+SESSIONS         -     - active · now
+ENDPOINTS COVERED 0    no reporting · 24h
+COVERAGE   "Governed = reporting and policy applied. What we cannot see reads unknown, never zero."
+CODING AI        -  -  "Unknown · readiness fields missing"
+SUPPLY CHAIN     -  -  "Unknown · coverage aggregate unavailable"
+Web AI coverage appears once endpoints report.
+Autonomous coverage appears once an MCP server is discovered.
+```
+
+Hyphens, not zeros, everywhere the number was not computed — and the one hard `0` is the one field the fixture
+actually carried (`endpoints: {covered: 0, total: 0}`). The rule is even written on the screen.
+
+### Sessions `/coding-ai/sessions` — **PASS**
+
+```
+NO AI SESSIONS YET
+Coding-agent sessions appear here as agents like Claude Code and Codex connect from enrolled machines.
+```
+
+Plus the standing disclosure about the hidden non-substantive rows, which stays visible on an empty list:
+
+```
+"Sessions that recorded only a start and an end are hidden. They are excluded from this view and from its
+ counts, never deleted: each stays openable by id and its lifecycle events stay in the Events feed."
+```
+
+### MCP `/mcp` and Coverage `/admin/endpoints?sub=coverage` — **PASS**
+
+Covered by `D-S3-unreported` and `D-S1-empty` / `D-S2-empty` above: each states what it does not know rather
+than reporting a clean fleet.
+
+### Detections `/coding-ai/detections` — **FAIL — the headline KPI renders `NaN`**
+
+`shots/D-DEFEAT-coding-ai-detections.*`:
+
+```
+consoleErrors: Received NaN for the `%s` attribute. If this is expected, cast the value to a string. data-count
+
+rendered:   … got through
+            NaN
+            unresolved
+```
+
+The **unresolved** KPI — one of three numbers in the detections band — prints `NaN`, and `NaN` also reaches the
+DOM as `data-count`.
+
+**Mechanism** — `app/ai-control-plane/detections/detections-content.tsx:3383`:
+
+```jsx
+unresolved={counts ? counts.new + counts.investigating : null}
+```
+
+A bare truthiness check. `counts` present but without `new`/`investigating` gives `undefined + undefined = NaN`,
+the `unresolved === null` branch in `severity-band.tsx:273` never fires, and `unresolved.toLocaleString()`
+renders the word.
+
+**This is the two-paths-one-stricter shape.** The two sibling aggregates on the same band are read through
+strict validators that return `null` on any malformed member —
+
+```js
+// detection-read-model.ts:126
+if (!isCount(blocked) || !isCount(held) || !isCount(redactedSent) || !isCount(allowed) || !isCount(unrecorded))
+  return null
+```
+
+— and the file's own comment says why: *"a zeroed outcome split renders '0 got through' on the most quoted number
+on the screen. Both are lies with a shape."* The third read on the same band skipped that discipline.
+
+**Trigger, stated honestly:** `AiDetectionStatusCounts` declares `all/new/investigating/resolved/hidden`, so the
+shape that produced this is **not** contract-valid; it is what a partial projection or a renamed triage token
+would produce. Unlike D-S3d this does not fire on a merely-newer backend. It is scored FAIL because the guard
+that exists two lines away would have caught it and this one does not, and because the failure is a visible
+`NaN` on the analyst queue's headline rather than a degraded read.
+
+**Defeat / control:** with a contract-valid `counts` the same KPI renders a number (`D-S6-sessions` run and the
+stub's native detections fixture), and with `counts` absent entirely it renders the honest absent variant
+`kpi-unresolved-absent` — *"This server didn't return triage counts for the filtered set."* So both neighbouring
+branches work; only the partial-object case falls through.
+
+---
+
+## 2. What was NOT exercised, and why
+
+| Not run | Reason |
+|---|---|
+| Session detail receipt identity (F5/F32: `receiptProtocolVersion`, `requestedEffect`, `observedActualEffect`, `adapterExpressedEffect`) | Time. The stub serves a timeline but not the receipt-bearing event shapes; a correct fixture needs the `obligation-axes` contract built out. **NOT_RUN.** |
+| Prompt-evidence deployment capability (F30: `promptEvidenceDeployment`, `missingCapabilityKeys`) on `/admin/policies/ai-security` | Rendered at 375 px with no errors, but its capability states were not driven. **NOT_RUN.** |
+| Enforced-authority panel (F36) · tamper render (F33) · events page · non-substantive toggle (F27) | **NOT_RUN.** |
+| Checklist phases CN-01…CN-13 and UX-02…UX-07 | Written for a live production tenant with an enrolled endpoint. **BLOCKED** here by construction — no enrolled endpoint, and this run is forbidden from touching production. |
+| Anything about whether a Backend actually produces these shapes | Out of scope for a render stage. Every verdict above is about the console's behaviour given a shape. |
+
+## 3. The pattern this stage found
+
+Four of the five FAILs are **one defect class**: a summary, count or rollup derived independently of the rows it
+sits above, with nothing comparing the two.
+
+| Item | Summary says | Rows directly below say |
+|---|---|---|
+| D-S1e | `NOT REPORTED 0` | two rows reading "Not reported" |
+| D-S3d | `7 OF 7 CONFIGURATION SOURCES READ` | three rows reading "could not be read / could not be parsed / config not understood" |
+| D-S4b | `8 instances · 0 · 0 · 0 · 0 · 0` | eight rows reading "NOT SERVED — an unanswered question is not a clean answer" |
+| D-DEFEAT detections | `NaN` unresolved | — (a guarded sibling two lines away returns `null` for the same class of input) |
+
+In every case **the row-level rendering is right and the number above it is wrong**. The console already knows
+the honest sentence; it just does not use it when it aggregates. The remaining FAIL (D-S2d) is the same failure
+of a different kind: the panel deletes itself rather than saying it could not read.

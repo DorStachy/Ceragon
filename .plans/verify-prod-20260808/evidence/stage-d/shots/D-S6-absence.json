@@ -1,0 +1,37 @@
+{
+  "url": "/coding-ai/sessions?siteId=11111111-1111-4111-8111-111111111111",
+  "title": "Sessions · Coding AI · DeVoid",
+  "overflow": null,
+  "found": {
+    "[data-session-row]": [
+      {
+        "text": "CRITICAL Claude Code sess-ano Untitled session 4 attempts stopped DEV-LAPTOP-07 · Unattributed · anthropic · coding 20:52 23:52 · live edge Run shape: 4 blocks and 2 holds, the first 0% into the run, all at effectively the same point in the run, Allowed and redacted traffic is sampled, so its positions are approximate. 133 allowed 1 redacted 2 held 4 blocked ≥ 3h 143 events yesterday, 3h ago Live last event 27m ago",
+        "attrs": {
+          "data-session-row": "sess-anon"
+        }
+      },
+      {
+        "text": "CRITICAL Codex (CLI) sess-con Untitled session +3 continuations BUILD-AGENT-02 · sam · openai 18:54 19:41 Run shape: 2 blocks and 1 hold, the first 0% into the run, all at effectively the same point in the run, Allowed and redacted traffic is sampled, so its positions are approximate. 92 allowed 1 redacted 1 held 2 blocked 47m 98 events yesterday, 5h ago Ended (inferred) ended yesterday, 4h ago",
+        "attrs": {
+          "data-session-row": "sess-cont"
+        }
+      },
+      {
+        "text": "CRITICAL Cursor sess-pla Untitled session DESIGN-MBP-11 · ravi · anthropic · coding 16:54 17:35 Run shape: 1 block and 1 hold, the first 0% into the run, Allowed and redacted traffic is sampled, so its positions are approximate. 74 allowed 0 redacted 1 held 1 blocked 41m 76 events yesterday, 7h ago Ended (inferred) ended yesterday, 6h ago",
+        "attrs": {
+          "data-session-row": "sess-plain"
+        }
+      }
+    ],
+    "[title^=\"No user was attributed\"]": [
+      {
+        "text": "Unattributed",
+        "attrs": {
+          "data-absence": "actor"
+        }
+      }
+    ]
+  },
+  "consoleErrors": [],
+  "failed": []
+}
