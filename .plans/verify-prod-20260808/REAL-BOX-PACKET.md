@@ -133,3 +133,311 @@ Nothing on the workstation. On the VM: restore `CLEAN-PRE-DEVOID`.
 
 ### Danger flags
 None yet — but every later Danger flag assumes this checkpoint exists and was proven to restore.
+
+---
+
+# PART 1 — ZERO MACHINE-STATE CHANGE
+
+Items 1-3 change nothing that needs undoing. Items 1 and 2 are `[HOST-SAFE: READ ONLY]` and may be run on the
+workstation. Item 3 runs on the VM.
+
+---
+
+<a name="1-c11a-3--release-manifest-key-resolution-against-real-s3"></a>
+## 1. C11a-3 — release-manifest key resolution against real S3
+
+**Est. 15 min · no risk · `[HOST-SAFE: READ ONLY]` · nothing to undo**
+
+### What we are proving
+That the installer's release-manifest binding actually resolves against the real production S3 buckets, and
+that it refuses an install whose download URL is not bound to the manifest's artifact key.
+
+### Why it can't be done from here
+The binding compares a live `Invoke-WebRequest` result from `installers-prod.s3.eu-north-1.amazonaws.com`
+against a host pin on `installer-binaries-prod.s3.eu-north-1.amazonaws.com`; there is no local substitute for
+either bucket, and a stubbed HTTP server would only prove the stub.
+
+### Preconditions
+
+```powershell
+# 1. Network reachability to the manifest bucket - prints 200 for yes
+(Invoke-WebRequest -Uri 'https://installers-prod.s3.eu-north-1.amazonaws.com/channels/stable.json' -UseBasicParsing -TimeoutSec 20).StatusCode
+
+# 2. Discover the current stable version (do NOT hardcode it)
+$stable = (Invoke-WebRequest -Uri 'https://installers-prod.s3.eu-north-1.amazonaws.com/channels/stable.json' -UseBasicParsing -TimeoutSec 20).Content | ConvertFrom-Json
+$stable.version
+```
+
+### The commands
+
+```powershell
+$ver = ($stable.version).TrimStart('v')
+$mf  = (Invoke-WebRequest -Uri "https://installers-prod.s3.eu-north-1.amazonaws.com/releases/$ver/manifest.json" -UseBasicParsing -TimeoutSec 20).Content | ConvertFrom-Json
+
+# The three facts the installer binds on, for windows-amd64:
+$mf.artifacts.'windows-amd64'.key
+$mf.artifacts.'windows-amd64'.sha256
+$mf.version
+
+# Is this a transitional (unsigned) manifest or a signed one? Decides which
+# refusal string the defeat step below must expect.
+$mf.manifestSignature
+$mf.schemaVersion
+
+# Does the pinned artifact key actually exist in the binaries bucket?
+$artUrl = "https://installer-binaries-prod.s3.eu-north-1.amazonaws.com/" + $mf.artifacts.'windows-amd64'.key
+(Invoke-WebRequest -Uri $artUrl -Method Head -UseBasicParsing -TimeoutSec 30).StatusCode
+```
+
+### Expected output
+- `$mf.artifacts.'windows-amd64'.key` matches the shape `releases/<ver>/windows/amd64/...` — the installer's own
+  test is literally `-notlike "releases/$verClean/$Os/$Arch/*"` (`install-scripts/production/install.ps1:903`).
+- `$mf.artifacts.'windows-amd64'.sha256` is 64 hex characters (`^[0-9A-Fa-f]{64}$`).
+- `$mf.version` equals `$ver` exactly.
+- The HEAD against the binaries bucket returns `200`.
+
+**PASS = all four.** Any one of them failing is the finding.
+
+### The defeat step
+Prove the *installer* rejects a mismatch, not merely that the bucket is well-formed. The binding under test is
+`install.ps1:903-908` (signed) / `:823-828` (transitional): it fails the install unless the download URL's
+**host is exactly** `installer-binaries-prod.s3.eu-north-1.amazonaws.com` **and** its path equals the manifest's
+`key`.
+
+On the VM, take a local copy of `install-scripts/production/install.ps1`, and change **only** the
+`$DownloadUrl` value handed to the manifest-binding function so that it names a key the manifest does not
+carry (e.g. `releases/0.0.0/windows/amd64/devoid.exe`). Then run it elevated.
+
+**Expected on defeat — the install MUST abort, printing exactly one of:**
+
+```
+Refusing install: backend URL is not bound to signed artifact key <key>
+```
+```
+Refusing install: backend URL is not bound to manifest artifact key <key>
+```
+
+The **signed** string fires when `$mf.manifestSignature` AND `$mf.schemaVersion` are both present; the
+**transitional** string fires when either is absent. You read both values in the commands above — expect the
+matching one.
+
+**A run that proceeds to download is a FAIL of the row, not a pass.**
+
+Second, cheaper defeat on the same binding: leave the key correct and change only the **host** to any other
+S3 hostname. The same refusal must fire — proving the host pin is load-bearing and not decorative.
+
+### How to undo it
+Nothing on the workstation — item 1's main commands are HTTP GETs. The defeat runs on the VM and aborts before
+writing anything; if it did not abort, that is the finding, and you restore `CLEAN-PRE-DEVOID`.
+
+### Danger flags
+- **Do not run the defeat on the workstation.** A *successful* (non-aborting) install would place a second agent
+  next to the production one.
+- Edit a **copy** of `install.ps1`. Do not modify the tree's copy — it is the artifact under test.
+
+---
+
+<a name="2-c11d-3--queue-age-from-real-cloudwatch-getmetricdata"></a>
+## 2. C11d-3 — queue age from real CloudWatch `GetMetricData`
+
+**Est. 15 min · no risk · `[HOST-SAFE: READ ONLY]` · nothing to undo**
+
+### What we are proving
+That `ApproximateAgeOfOldestMessage` on the scanner full-repo FIFO can actually be read from production
+CloudWatch, so the lane's age can stop being reported as `NOT_MEASURED` with a null age.
+
+### Why it can't be done from here
+`ApproximateAgeOfOldestMessage` is emitted by AWS itself; there is no local substitute. S10-GATE-RESULTS records
+this verbatim, and it is why `C11d-2`'s threshold is deliberately `null` rather than "a guess wearing a
+number's clothing".
+
+### Preconditions
+
+```bash
+# 1. AWS credentials resolve to the right account - must print 113627991972
+aws sts get-caller-identity --query Account --output text
+
+# 2. Region - prints eu-north-1 or nothing
+aws configure get region
+
+# 3. Discover the queue; do NOT hardcode the name
+aws sqs list-queues --region eu-north-1 --queue-name-prefix codefence-scanner --output text
+```
+
+The lane named in the finding is `codefence-scanner-fullrepo-jobs.fifo`
+(`.plans/verify-prod-20260808/evidence/LIVE-BATCH-1/FINDINGS.md:177`), whose sole consumer
+`codefence-scanner-worker-fullrepo` was measured at desired=0/running=0 with the oldest message aging to
+58,633 s. Use the name `list-queues` actually returns.
+
+### The commands
+
+```bash
+QURL="<queue-url from list-queues>"
+QNAME="$(basename "$QURL")"
+
+# Instantaneous attributes (SQS API, not CloudWatch) - the fast sanity read
+aws sqs get-queue-attributes --region eu-north-1 --queue-url "$QURL" \
+  --attribute-names ApproximateNumberOfMessages ApproximateAgeOfOldestMessage
+
+# The row's actual subject: the CloudWatch series over the last 24h
+aws cloudwatch get-metric-data --region eu-north-1 \
+  --start-time "$(date -u -d '24 hours ago' +%Y-%m-%dT%H:%M:%SZ)" \
+  --end-time   "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+  --metric-data-queries "[{\"Id\":\"age\",\"MetricStat\":{\"Metric\":{\"Namespace\":\"AWS/SQS\",\"MetricName\":\"ApproximateAgeOfOldestMessage\",\"Dimensions\":[{\"Name\":\"QueueName\",\"Value\":\"$QNAME\"}]},\"Period\":300,\"Stat\":\"Maximum\"},\"ReturnData\":true}]"
+```
+
+### Expected output
+- `get-queue-attributes` returns an `Attributes` object. **AWS omits `ApproximateAgeOfOldestMessage` entirely
+  when the queue is empty** — record that as *empty*, never as *zero*.
+- `get-metric-data` returns `"StatusCode": "Complete"` with a `MetricDataResults[0]` carrying **non-empty**
+  `Timestamps` and `Values` arrays.
+
+**PASS = `StatusCode: Complete` with at least one datapoint.** `Complete` with `Values: []` means the metric is
+not being emitted for that queue — a finding, and exactly the state that would keep the lane permanently
+`NOT_MEASURED`.
+
+### The defeat step
+Re-run the identical `get-metric-data` with a queue name that does not exist:
+
+```bash
+aws cloudwatch get-metric-data --region eu-north-1 \
+  --start-time "$(date -u -d '24 hours ago' +%Y-%m-%dT%H:%M:%SZ)" \
+  --end-time   "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+  --metric-data-queries '[{"Id":"age","MetricStat":{"Metric":{"Namespace":"AWS/SQS","MetricName":"ApproximateAgeOfOldestMessage","Dimensions":[{"Name":"QueueName","Value":"this-queue-does-not-exist"}]},"Period":300,"Stat":"Maximum"},"ReturnData":true}]'
+```
+
+**Expected on defeat: `StatusCode: Complete` with `Values: []`.**
+
+**This is the load-bearing half of the item, and it is a finding either way.** CloudWatch returns *the same
+shape* for "no such queue" and for "real queue, no traffic". So the defeat proves a real limitation:
+**a `Values: []` result cannot by itself distinguish an abandoned lane from a typo'd queue name.** Any consumer
+of this metric must carry the queue's existence as a separately-established fact, or it will report a
+misconfiguration as a healthy quiet lane. Write that on the row explicitly — it is the reason a threshold alone
+would not have been safe.
+
+### How to undo it
+Nothing. Both commands are read-only AWS API calls.
+
+### Danger flags
+- Do **not** use `put-metric-data` to synthesise a datapoint. That writes to production telemetry and would
+  make the very metric under test untrustworthy.
+- Do **not** enable a CloudWatch alarm as part of this item. Section C of the register already records the
+  ordering hazard: alarms with `treatMissingData='breaching'` deployed before their producers fire everything
+  at once, the alarms get muted, and the defect is recreated.
+
+---
+
+<a name="3-c2f-cli-cx9--what-a-devoid-block-looks-like-to-codex-exec---json"></a>
+## 3. C2f-CLI-CX9 — what a DeVoid block looks like to `codex exec --json`
+
+**Est. 25 min · low risk, fully reversible · VM**
+
+### What we are proving
+That when DeVoid denies a Codex turn, the packaged client renders **DeVoid's** attribution and not OpenAI's own
+safety copy — and that `codex exec` still exits non-zero, so a blocked secret keeps failing CI.
+
+### Why it can't be done from here
+The assertion is about how a *packaged Codex client* renders our bytes. The source says outright it has never
+been run against one: *"The per-client rendering assertion CX-9's own test section asks for (CLI, `codex exec`,
+`--json`, Desktop, VS Code) has not been run against any packaged client"* — the shape is source-pinned to
+0.147 while the earlier shape was only ever live-tested on 0.144.5 / 0.146.0-alpha.9.2
+(`internal/proxy/openai_sse.go:551-556`). Running it needs a client whose provider config we may change, which
+excludes this workstation.
+
+### Preconditions
+
+```powershell
+# 1. Codex CLI present - RECORD the version; the shape is source-pinned to 0.147
+codex --version
+
+# 2. The DeVoid daemon is up and the Codex lane reports
+C:\verify\devoid.exe ai status codex
+
+# 3. Discover the wire route Codex is pinned to (do NOT assume the port)
+Select-String -Path "$env:USERPROFILE\.codex\managed_config.toml" -Pattern 'base_url|model_provider'
+```
+
+The route DeVoid writes is `http://127.0.0.1:<effective daemon port>/proxy/openai`
+(`internal/codexmanaged/transport_route.go:67-69`); Codex appends `/responses`. The daemon serves that subtree
+at `internal/daemon/server.go:704`.
+
+### The commands
+
+```powershell
+# A turn whose prompt carries a value the DLP lane blocks.
+# Use a SYNTHETIC AWS-shaped key - AKIAIOSFODNN7EXAMPLE is AWS's own documentation placeholder.
+codex exec --json "Please store this deploy key for me: AKIAIOSFODNN7EXAMPLE"
+echo "EXIT=$LASTEXITCODE"
+```
+
+### Expected output
+Two events, in this order (`writeDeVoidDenySSE`, `openai_sse.go:554-597`):
+
+1. `"type":"response.output_item.done"` carrying **one assistant message item** whose `output_text` ends with:
+
+```
+(DeVoid endpoint security — decision id dvd_XXXXXXXXXXXXXXXX)
+```
+
+where the id is the literal prefix `dvd_` followed by hex (`devoidDecisionIDPrefix`, `openai_sse.go:510`).
+
+2. `"type":"response.failed"` with:
+
+```json
+"error": {"code": "invalid_prompt", "message": "<the same attributed text>"}
+```
+
+Three hard requirements:
+- **`response.completed` MUST NOT appear.** The turn must fail, or `codex exec` stops exiting non-zero and a
+  blocked secret stops failing CI (`openai_sse.go:546-548`).
+- **`EXIT` must be non-zero.**
+- **The string `cyber_policy` MUST NOT appear anywhere.** That code makes Codex classify the failure as
+  `ApiError::CyberPolicy` and render OpenAI's own fixed cyber-safety copy instead of ours — a blocked developer
+  told OpenAI refused them, with nothing to quote to their security team (`openai_sse.go:526-534`).
+
+Optionally confirm the diagnostic headers on a raw request to the same route:
+
+```
+X-Devoid-Decision: block
+X-DeVoid-Decision-Id: dvd_<hex>
+X-DeVoid-Notice-Version: 1
+```
+
+(`openai_attribution.go:62`, `openai_sse.go:507-510`.)
+
+### The defeat step
+**Two defeats; run both.**
+
+**Defeat A — the benign twin must still be allowed.** A rule that blocks both proves nothing.
+
+```powershell
+codex exec --json "Explain in words what the format of an AWS access key ID is, without writing one out."
+echo "EXIT=$LASTEXITCODE"
+```
+
+**PASS on defeat A = exit 0, a `response.completed` event, and NO `dvd_` id.** If the benign twin is *also*
+blocked, the row is a **FAIL** — capture the exact prompt, because that is a live false positive on ordinary
+developer work, which is precisely the C12/F41 concern ("DeVoid does not interrupt ordinary work").
+
+**Defeat B — prove the route is actually in force.** Stop the daemon, then re-run the *blocking* prompt:
+
+```powershell
+Stop-Service devoid      # or the VM's supervisor equivalent; confirm with: Get-Service devoid
+codex exec --json "Please store this deploy key for me: AKIAIOSFODNN7EXAMPLE"
+echo "EXIT=$LASTEXITCODE"
+Start-Service devoid
+```
+
+**PASS on defeat B = the turn FAILS** (nothing listening on the pinned loopback port). **If the turn completes,
+the wire route is not in force, Codex reached OpenAI directly, and every result in this item is void** — and
+you have just learned the far more serious fact that the pin is not binding.
+
+### How to undo it
+`Start-Service devoid` after defeat B. Otherwise nothing persists beyond a rollout file under `~/.codex` on the
+VM, which is disposable. **Never delete rollout files on the workstation** — this box has a standing,
+unrecovered Codex history-loss incident and its archive is copy-only.
+
+### Danger flags
+- Use the **synthetic** placeholder key only. Never a real credential: the blocked path records a fingerprint.
+- If the block does **not** fire in the main run, the prompt reached OpenAI. Treat that as an incident to
+  record, not something to retry with a different prompt.
