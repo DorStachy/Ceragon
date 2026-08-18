@@ -58,9 +58,12 @@ Ordered so every zero-risk item is done first and every irreversible item last.
 | **14** | [🔥 Stage E — second endpoint, second non-admin user, cross-tenant, nav-block](#14-stage-e--second-endpoint-second-user-cross-tenant-nav-block) | Stage E | **IRREVERSIBLE** | **60 min** |
 | **15** | [Calendar-blocked: F8b fleet replay · F26 live handshake header](#15-f8b--f26--calendar-blocked) | F8b / F26 | n/a | **20 min active** |
 
-**Total for items 0–14 in one sitting: ≈ 8 h 45 m.**
-**Recommended cut line: finish item 12 (≈ 6 h 15 m) and schedule 13–14 as a separate destructive session.**
-Items 13 and 14 destroy the VM; doing them last means an early stop costs nothing already earned.
+**Total for items 0–14 in one sitting: 540 min = 9 h 00 m** (item 15 adds 20 min of active work but is
+calendar-blocked, not box-blocked — see item 15).
+
+**Recommended cut line: finish item 12 (items 0–12 = 390 min = 6 h 30 m) and schedule 13–14 as a separate
+destructive session (150 min = 2 h 30 m).** Items 13 and 14 destroy the VM; doing them last means an early stop
+costs nothing already earned.
 
 ---
 
