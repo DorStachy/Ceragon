@@ -14,25 +14,59 @@
 #   SHARDS     jest shards, run in series  default 4
 #   WORKERS    jest workers per shard      default 3
 #   HEAP_MB    --max-old-space-size        default 1536
+#   IDLE_LIMIT --workerIdleMemoryLimit     default 1400MB
 #   MEM        container memory cap        default 5g
 #   FIRST_SHARD  resume from this shard    default 1
 #
-# ── WHY THE NUMBERS ARE THE NUMBERS ─────────────────────────────────────────
+# ── WHY THE NUMBERS ARE THE NUMBERS (all MEASURED on this box) ──────────────
 #
-# The Docker VM has 7.413 GiB total. The previous attempt at this run used 6
-# jest workers x 2560 MB — a 15 GiB ask against a 7.4 GiB VM — and wedged the
-# engine hard enough to need a Docker Desktop restart.
+# The Docker VM has 7.413 GiB total. The previous attempt used 6 jest workers x
+# 2560 MB — a 15 GiB ask against a 7.4 GiB VM — and wedged the engine hard
+# enough to need a Docker Desktop restart.
 #
-# WORKERS=3, HEAP_MB=1536: the ceiling is 3 x 1536 MB of V8 heap plus the jest
-# parent, so ~5.0 GiB worst case. MEM=5g puts a cgroup wall in front of that, so
-# the failure mode of a bad estimate is "the kernel kills a worker inside this
-# container" — a red run — instead of "the VM has no memory left" — a wedged
-# engine. That containment is the point of the cap, not the exact figure.
+# A ts-jest worker on this repo's module graph costs ~850 MB RSS. Measured by
+# running `--shard=1/20` at `--maxWorkers=6 --max-old-space-size=1024` under a
+# 5 GiB cap: the container climbed to the cap in ~2 min, sat pinned at
+# 4.99 GiB / 5 GiB, pushed 1.09 GiB into VM swap, and then the cgroup OOM killer
+# took a worker:
 #
-# Shards run in SERIES, not parallel: four parallel shards would multiply the
-# ceiling by four and put us back where the last attempt was. Sharding here buys
-# resumability (each finished shard leaves a summary on the /out named volume),
-# not concurrency.
+#   FAIL src/jobs/dto/worker-result.dto.spec.ts
+#     A jest worker process (pid=81) was terminated by another process:
+#     signal=SIGKILL, exitCode=null.
+#
+# THAT IS THE WHOLE POINT OF THE CAP. Six workers is over-subscribed either way;
+# the difference is that with `--memory` the kernel kills one process inside this
+# container and jest reports a red suite, while without it the VM runs out and
+# the engine goes down. During that probe the VM still had 812 MB available and
+# `docker stats` / `docker run` both stayed responsive.
+#
+# THE FIRST RETUNE WAS ALSO WRONG, AND IT FAILED DIFFERENTLY. WORKERS=4 /
+# HEAP_MB=1024 / IDLE_LIMIT=900MB produced, in ~15 min of shard 1: 0 PASS lines,
+# 9 suites "failed to run", 4 x `FATAL ERROR: ... JavaScript heap out of
+# memory`, 2 worker SIGKILLs and 16 worker SIGTERMs. Two independent mistakes:
+#
+#   * HEAP_MB=1024 is below what the heaviest suites need — CI runs this suite
+#     with `NODE_OPTIONS=--max-old-space-size=4096`. Those are the FATAL ERRORs.
+#   * IDLE_LIMIT=900MB is below the ~850 MB a HEALTHY worker already occupies,
+#     so jest restarted workers almost every file. Those are the SIGTERMs — a
+#     worker torn down mid-assignment reports its file as "failed to run". The
+#     lane was spending its time recycling workers instead of running tests.
+#
+# A memory limit set below the working set does not save memory; it converts the
+# run into thrash and reports the thrash as test failures.
+#
+# WORKERS=3, HEAP_MB=1536 (the value the passing probe used), IDLE_LIMIT=1400MB
+# (comfortably above a healthy worker, so a restart means something): worst case
+# 3 x 1536 MB + the jest parent = ~5.0 GiB, which is the wall; typical case is
+# 3 x ~850 MB = ~2.6 GiB. The VM has ~5.0 GiB free once the pre-existing
+# codesec-e2e stack (~1.5 GiB, another workstream's, deliberately left running)
+# and the three Postgres servers (~0.4 GiB) are accounted for.
+#
+# Shards run in SERIES, not parallel: four parallel shards would multiply that
+# ceiling by four and put us straight back where the last attempt was. Sharding
+# here buys resumability — each finished shard leaves a summary on the /out
+# named volume, so FIRST_SHARD=3 resumes a run that died at shard 3 — and not
+# concurrency.
 #
 # ── WHY THE SOURCE IS IN THE IMAGE ──────────────────────────────────────────
 #
@@ -53,9 +87,9 @@ IMAGE="${IMAGE:-ceragon-be-suite:int-gate-backend}"
 SHARDS="${SHARDS:-4}"
 WORKERS="${WORKERS:-3}"
 HEAP_MB="${HEAP_MB:-1536}"
-IDLE_LIMIT="${IDLE_LIMIT:-1024MB}"
+IDLE_LIMIT="${IDLE_LIMIT:-1400MB}"
 MEM="${MEM:-5g}"
-MEMSWAP="${MEMSWAP:-6g}"
+MEMSWAP="${MEMSWAP:-5632m}"
 FIRST_SHARD="${FIRST_SHARD:-1}"
 
 PG_MAIN=be-suite-pg
