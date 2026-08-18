@@ -190,3 +190,120 @@ panel that looks like a clean result.
 it is described as *"the honest intermediate state"*. Stage 2 can follow in a later wave.
 
 ---
+
+## 3. F16 — the credential split, and the one change that can permanently brick endpoints
+
+**The question.** The endpoint's signing private key currently sits in a file any local user can read. F16 would move
+it. Before that ships, someone must decide **where the key-minting code writes after the move** — and that decision
+determines whether the fix is safe or bricks endpoints permanently.
+
+**Why it is open.** `F16-SAFETY-ANALYSIS.md:338` closes with the verdict *"STILL OPEN"* and *"do not build F16 in
+Wave 4 on the current understanding"*, because the design document specifies a new save function without saying
+whether the mint site at `trust_anchor_client.go:248` is repointed at it — *"Nobody has decided this, so nobody can
+currently say whether F16 bricks the fleet."*
+
+### The failure mode, in plain terms — read this first
+
+An endpoint proves who it is with a signing key. The backend stores that key against the endpoint's row. If an
+endpoint ever mints a **new** key and presents it while the backend still holds the **old** one, the backend answers
+**409** — "rotation requires the approved rotation protocol". And there is **no retry limit and no latch**
+(`F16-SAFETY-ANALYSIS.md:2c`): the agent re-presents the same losing key **every 30 minutes forever**. That endpoint
+can never re-establish trust again. Not degraded — **permanently dead**, recoverable only by touching the machine.
+
+This is not hypothetical. It already happened: every MSI install/upgrade/repair used to wipe the key, and the
+documented result was exactly this permanent 409 (`cmd/devoid/setup_installer.go:170-178`).
+
+### What the analysis and the live measurement now agree on
+
+They agree on the whole reachable path — the analysis predicted it, the production gate then measured it:
+
+1. **The credential file is readable by any local user.** `MachineLocalReadSDDL` grants `BUILTIN\Users` read
+   (`internal/winacl/machine_secret_windows.go:68`), and the gate measured a non-elevated user both **reading**
+   `credentials.json` and **creating files in its directory**.
+2. **Therefore the only gate in front of the mint passes.** `trust_anchor_client.go:223` admits a caller if
+   `HasValidRequestSigningV2()` is true — and that checks the *request-signing* credential, which is the readable
+   one. It says nothing about the AI signing key.
+3. **A blocked read looks identical to "no key exists."** `Load()` swallows the permission error and returns success
+   (`internal/core/config/config.go:374-376`), so the identity arrives `nil` — and `nil` is exactly the input that
+   fires the mint at `trust_anchor_client.go:243`. The analysis flagged that the plan had this **wrong in the
+   optimistic direction**; the gate confirmed the analysis.
+4. **The number that would have exposed all of this is a constant.** `storageAssurance` is hardcoded `OS_PROTECTED`
+   (`internal/core/config/ai_trust.go:17`), so the health measurement can only ever report "protected".
+
+**The agreed conclusion: a non-elevated process can reach the mint today.** And critically — the split as currently
+designed **does not close this**. Register A1 states it plainly: moving the key to a SYSTEM-only file while leaving
+`credentials.json` readable *"still lets the non-elevated shim pass `:223` and arrive at `:243` with a nil identity.
+It still mints."*
+
+### The remaining fork
+
+**Where does the mint's save call write after the split?** Three plausible wirings, three different outcomes:
+
+| Wiring | What happens | Result |
+|---|---|---|
+| Save targets the SYSTEM-only file and fails cleanly | Mint fails before the key is presented | Safe — degrades, no 409 |
+| Save writes one scope and fails the other | Half-written state, then presents | Partial — may 409 |
+| Save succeeds locally and the key is presented | New key meets old backend row | **Permanent 409. Endpoint bricked.** |
+
+Two further facts bound any option you pick. The reader inventory is **five** entry points, not the one the plan
+names — `devoid install-package` and `devoid setup enroll` appear in neither the plan nor the design doc, so a guard
+keyed on the shim alone **ships with two live holes**. And four of the five funnel through `performEnrollment`
+(`cmd/devoid/main.go:6715`), which is the place a guard actually catches them.
+
+### Options
+
+**Option A — Ship the credential split as designed.**
+Cost: the planned Wave 4 work. Risk: **the brick, and it does not even close the exposure.** The non-elevated path
+still reaches the mint, and which of the three wirings you land on is currently undecided — so this is the one option
+where nobody can state the outcome in advance. Endpoints that mint against a stale backend row die permanently.
+
+**Option B — Elevation-gate the mint; do not split the credential this wave.**
+Cost: **one line**, using a primitive that already exists a hundred lines away. `canPersistUnsignedEnrollmentRecovery`
+(`cmd/devoid/main.go:6707-6713`) already makes exactly this decision for exactly this class of problem, via
+`!config.IsSystemInstall() || uninstall.IsElevated()`. Applying it in front of the enrol-time convergence closes four
+of the five reachable paths. Risk: on a machine-scope install, a non-elevated user no longer converges trust inline —
+it happens on the daemon's next pass instead. That is a **latency** change, not a capability loss.
+
+**Option C — Remove shim-side convergence entirely; let the daemon do it.**
+Cost: nothing to build; the daemon path already exists and is tested
+(`internal/daemon/ai_trust_converge_test.go:54`). Risk: convergence waits up to 30 minutes
+(`internal/daemon/ai_trust_converge.go:26`) — **and if the daemon is not running, it never happens at all.** That
+must be measured before choosing this, not assumed.
+
+**Option D — Build the daemon broker (D3): the shim asks the privileged daemon to converge.**
+Cost: a new route, a client helper, and a new IPC surface. Risk: the analysis is blunt that the broker's
+authentication is **weaker than the boundary F16 is building** — the daemon token is itself readable by local users,
+so the broker would become a local-user-triggerable mint. This option adds attack surface to fix an attack surface.
+
+**Option E — Defer F16 entirely; change nothing.**
+Cost: none. Risk: the endpoint signing private key stays readable by every local user on every installed machine.
+No brick risk, but the CRITICAL stays open indefinitely.
+
+### Recommendation
+
+**Option B, plus one companion change: refuse to present a freshly minted key when the machine already shows a prior
+attestation under a different key id. The elevation gate closes the paths that reach the mint; the refusal makes the
+brick unreachable even if some future path gets there anyway.**
+
+The single reason: **Option B is the only option that reduces the brick risk using a primitive already written and
+reviewed in this codebase, and it does so without deciding the unanswered question at all.** The unresolved fork is
+"where does the save write after the split" — Option B does not split, so the fork does not need answering this wave.
+
+Two things to hold firm on if you pick B:
+
+- **The guard must sit at `performEnrollment`, not at the shim.** Four of the five entry points funnel through it; a
+  shim-keyed guard misses `install-package` and `setup enroll`.
+- **Do not ship the split as a partial.** Register A1 is explicit that the five defects are one mechanism and that
+  fixing them separately is cosmetic. Leaving the file readable while moving the key changes nothing.
+
+### What happens if we defer
+
+**This does not block pushing the existing commits — F16 was never built — but it does block cutting the agent MSI,
+and it is the only item on the register that can cause permanent, unrecoverable damage in the field.**
+
+Deferring is a legitimate choice (Option E) as long as it is chosen rather than drifted into. What is *not* safe is
+shipping the split without answering the fork. Note also that the self-repair pass that would fix the file
+permissions is reachable only through an admin-only subcommand (`cmd/devoid/main.go:8120`), and the **lite** install
+mode is the one most likely to skip it — so the exposure does not heal on its own.
+
+---
