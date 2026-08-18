@@ -1296,3 +1296,359 @@ Nothing else persists.
 - **Never do this on the workstation.** Restarting the production daemon mid-turn interrupts live governance,
   and a dead daemon has previously denied every tool call on this codebase.
 - Use the synthetic key for defeat B, never a real credential — the whole question is whether it crossed.
+
+---
+
+# PART 4 — ⚠ DANGEROUS: CREDENTIAL AND ACL BOUNDARIES
+
+Items 11 and 12 deliberately break a credential boundary to see whether the product repairs it. **Both run on
+the VM only.** Item 12 is **F16-adjacent** — F16 is the one register item that can permanently brick endpoints —
+and carries an explicit stop-and-check.
+
+---
+
+<a name="11-new-item-a--the-daemon-token-hardening-brick-c3"></a>
+## 11. ⚠ NEW ITEM A — the daemon-token hardening brick (filed C3, unverified)
+
+**Est. 30 min · DANGEROUS: can block every non-elevated install on the endpoint · VM only**
+
+### What we are proving
+That if an operator (or a hardening script reacting to a scanner flagging a world-readable file called
+"daemon-token") narrows `%ProgramData%\devoid\daemon-token` to administrators only, **the startup self-heal
+declines to widen it back**, and every non-elevated `npm install` on that endpoint is blocked with no automatic
+recovery.
+
+### Why it can't be done from here
+It requires deliberately breaking the daemon-token ACL on a machine-scope install and then running a
+non-elevated `npm install` through the shim. Doing that on this workstation would block the production
+endpoint's own installs, and the recovery step is an elevated `harden-shims` run, which guardrail 1 forbids
+against the production agent.
+
+### The mechanism, confirmed in source
+The "already strict enough, skip the repair" rule is applied to **two files with opposite intended boundaries**.
+
+`ReconcileMachineSecretACLs` — the startup self-heal — is
+(`internal/core/config/machine_secret_hardening_windows.go:147-148`):
+
+```go
+func ReconcileMachineSecretACLs() error {
+	return hardenMachineSecrets(machineSecretIsAlreadyStricter)
+}
+```
+
+and `hardenMachineSecrets` walks **three** paths (`:27-31`):
+
+| Path | Intended descriptor | Users may read? |
+|---|---|---|
+| `credentials.json` | `MachineLocalReadSDDL` | **yes** |
+| `daemon-token` | `MachineLocalReadSDDL` | **yes, deliberately** |
+| `endpoint-identity.json` | `MachineSecretSDDL` | no |
+
+```
+MachineSecretSDDL     = O:SYG:SYD:P(A;;FA;;;SY)(A;;FA;;;BA)
+MachineLocalReadSDDL  = O:SYG:SYD:P(A;;FA;;;SY)(A;;FA;;;BA)(A;;0x120089;;;BU)
+```
+(`internal/winacl/machine_secret_windows.go:47,69` — `BU` = `BUILTIN\Users`, `0x120089` = `FILE_GENERIC_READ`.)
+
+The skip predicate asks one question — *"does this already grant nothing to any principal outside
+{LocalSystem, Administrators}?"* (`IsAtLeastAsStrictAsMachineSecret`). For `endpoint-identity.json` that
+question is correct: stricter is better, never re-open it. **For `daemon-token` it is backwards.** The token is
+deliberately Users-readable because `attachDaemonToken` reads it **from a non-elevated process on every shim
+and hook call**, and *"If the token cannot be read the header is left unset and the daemon rejects the request
+401 (fail-closed)"* (`cmd/devoid/daemon_client.go:178-189`).
+
+So: narrow the token to admins → the predicate answers "already stricter" → **skip** → the self-heal never
+widens it back, on any number of restarts.
+
+### Preconditions
+
+```powershell
+# 1. Machine-scope install with a daemon-token present - prints True
+Test-Path "$env:ProgramData\devoid\daemon-token"
+
+# 2. RECORD the current ACL. This is the primary undo. Do not skip it.
+icacls "$env:ProgramData\devoid\daemon-token" > C:\verify\daemon-token-acl-before.txt
+Get-Content C:\verify\daemon-token-acl-before.txt
+# Expect a line granting BUILTIN\Users:(R)
+
+# 3. Baseline: a non-elevated install works. Run this in a NON-ELEVATED shell.
+cd C:\verify\scratch-proj; npm install left-pad; echo "EXIT=$LASTEXITCODE"
+
+# 4. The recovery binary is where the repair pass demands it be
+Test-Path "$env:ProgramData\devoid\bin\devoid.exe"
+```
+
+> Note: `icacls` output is the ACL, not the token. **Never `type`, `cat` or `Get-Content` the token file
+> itself.**
+
+### The commands
+
+```powershell
+# --- ELEVATED shell ---
+$tok = "$env:ProgramData\devoid\daemon-token"
+
+# Narrow it to admins only - exactly what a scanner-driven hardening script would do.
+icacls $tok /inheritance:r /grant:r "*S-1-5-18:(F)" "*S-1-5-32-544:(F)"
+icacls $tok        # confirm BUILTIN\Users is GONE
+
+# Restart the daemon so the startup self-heal runs.
+Restart-Service <service name>   # discover with: Get-Service | ? Name -match 'devoid|cera'
+Start-Sleep -Seconds 5
+
+# Did the self-heal widen it back?
+icacls $tok
+```
+
+```powershell
+# --- NON-ELEVATED shell, as an ordinary user ---
+cd C:\verify\scratch-proj
+npm install left-pad
+echo "EXIT=$LASTEXITCODE"
+```
+
+### Expected output — if the claim is TRUE (the finding)
+- After the restart, `icacls` still shows **no `BUILTIN\Users` ACE**. The self-heal declined.
+- The non-elevated `npm install` **fails**, and the failure traces to a daemon `401` — the token could not be
+  read, so the header was never set, and the daemon fails closed by design.
+- Restarting again does not help. **There is no automatic recovery.**
+
+### Expected output — if the claim is FALSE
+`icacls` shows `BUILTIN\Users:(R)` restored after the restart, and `npm install` succeeds. Record that, and
+record the SHA from Preflight: it means the skip predicate is boundary-aware and the finding is closed.
+
+### The defeat step
+**Defeat A — prove the block is caused by the ACL, not by something else you broke.** Restore the ACL (see undo)
+**without** restarting anything, and re-run the same non-elevated `npm install`. **PASS = it succeeds again
+immediately.** If it still fails, the ACL was not the cause and this run measured something else — the row is
+**NOT-RUN**.
+
+**Defeat B — prove the elevated repair pass is the only recovery, and that it works.** Re-apply the narrow ACL,
+then from an **elevated** prompt run the repair the code says is the only unconditional one
+(`HardenExistingMachineSecrets`, reached only via `--require-machine-root`, `cmd/devoid/main.go:8150-8156`):
+
+```powershell
+& "$env:ProgramData\devoid\bin\devoid.exe" harden-shims --require-machine-root
+echo "EXIT=$LASTEXITCODE"
+icacls "$env:ProgramData\devoid\daemon-token"
+```
+
+**Expected: exit 0, the line `[devoid] Shim directory hardened: <dir>`, and `BUILTIN\Users:(R)` restored.**
+
+That command is deliberately fussy about where it runs from: `validateMachineShimRoot` requires the executable
+to sit in `<machineCredsDir>\bin`, and otherwise refuses with
+`refusing machine ACL hardening outside <path>` (`main.go:8169-8181`). Run the copy under `%ProgramData%\devoid\bin`,
+**not** `C:\verify\devoid.exe`.
+
+**If defeat B does NOT restore the ACE, the finding is worse than filed**: there is no recovery path at all,
+and that must be escalated immediately.
+
+### How to undo it
+
+```powershell
+# --- ELEVATED ---
+# Primary: re-grant the Users read ACE that MachineLocalReadSDDL specifies.
+icacls "$env:ProgramData\devoid\daemon-token" /grant "*S-1-5-32-545:(RX)"
+icacls "$env:ProgramData\devoid\daemon-token"    # confirm BUILTIN\Users:(RX) present
+
+# Canonical: let the product re-assert its own descriptor.
+& "$env:ProgramData\devoid\bin\devoid.exe" harden-shims --require-machine-root
+
+# Verify recovery end to end, from a NON-ELEVATED shell:
+cd C:\verify\scratch-proj; npm install left-pad; echo "EXIT=$LASTEXITCODE"
+```
+
+If neither works: **restore the `CLEAN-PRE-DEVOID` snapshot and reinstall.** That is why Preflight's defeat
+step exists.
+
+### Danger flags
+- 🔴 **This blocks every non-elevated `npm install` on the endpoint while the narrow ACL is in place.** On a
+  real fleet that is a fleet-wide install outage with no self-recovery. Do not leave the VM in this state.
+- 🔴 **Do not run any part of this against `C:\ProgramData\devoid` on the workstation.** Guardrail 1 and 2.
+- Do not "fix" a failing `npm install` by bypassing the shim. The shim is the thing under test, and bypassing
+  it destroys the measurement.
+- Never print the token's contents. `icacls` only.
+
+---
+
+<a name="12-new-item-b--the-read-loosened-signing-key-on-a-script-install-c10"></a>
+## 12. ⚠ NEW ITEM B — the read-loosened signing key on a script install (filed C10, unverified)
+
+**Est. 45 min · DANGEROUS · F16-ADJACENT · VM only**
+
+> # 🛑 STOP AND CHECK BEFORE STARTING
+> **F16 — the credential split — is the single register item that can PERMANENTLY BRICK ENDPOINTS.** This item
+> touches the same file, `endpoint-identity.json`, and the same mint path.
+>
+> The specific brick, in the code's own words
+> (`internal/core/config/endpoint_identity.go:118-131`): a file a non-privileged principal owns or can rewrite
+> is reported **absent**, and absent is the mint's trigger. Round 2 also answered "foreign" for a file a
+> non-privileged principal could merely READ — *"and since foreign is reported as ABSENT — the mint's trigger —
+> one `icacls <identity> /grant *S-1-5-32-545:(RX)` on the endpoint's OWN key file made it mint a replacement
+> over a key the backend row was already bound to. **That is the permanent rotation 409 this register entry
+> exists to prevent.**"*
+>
+> **Therefore, before you touch anything:**
+> 1. Confirm you are on the **VM**, not the workstation: `hostname`
+> 2. Confirm the `CLEAN-PRE-DEVOID` snapshot exists and you proved it restores (Preflight defeat step).
+> 3. Confirm this endpoint is enrolled against a **non-production** backend, or under a **throwaway site token
+>    you are willing to have permanently 409**: `C:\verify\devoid.exe status`
+>
+> **A reinstall has previously bricked the trust anchor permanently — 409 forever.** If this endpoint mints
+> over a key the backend is already bound to, that endpoint is gone. Only proceed on a machine you are willing
+> to lose.
+
+### What we are proving
+Whether "read-loosened" is a label nothing acts on, and whether a **script-installed** endpoint leaves the
+endpoint signing private key readable by every local user with nothing to narrow it back — while an
+**MSI-installed** endpoint does not. The whole claim is that the two install paths differ, so **both must be
+tested**.
+
+### Why it can't be done from here
+It needs two separate machine-scope installs — one MSI, one PowerShell script — with their ACLs compared. The
+workstation may not be reinstalled by either path.
+
+### What source already says (read this; it changes what you should expect)
+
+**Confirmed — the label is inert.** `machineIdentityStandingReadLoosened` is *defined*
+(`endpoint_identity.go:66-69`) and *produced* (`endpoint_identity_windows.go:75-76`,
+`endpoint_identity_unix.go:69`), but **there is no `case machineIdentityStandingReadLoosened` anywhere in the
+tree.** Every consumer of the standing compares only against `machineIdentityStandingForeign`
+(`machineEndpointIdentityIsForeign`, and the guard at `endpoint_identity.go:139`). So the comment's promise —
+*"A repairable exposure of a real key; the elevated pass re-asserts the boundary"* — is carried by no code
+path keyed on that value.
+
+**Partially refuted — "the script path never calls it" is not quite right, and the difference matters.**
+
+| Path | What it actually does |
+|---|---|
+| **MSI** | `CustomActions.wxs:169` runs `"[BINDIR]devoid.exe" harden-shims --require-machine-root`. The flag is what reaches `config.HardenExistingMachineSecrets()` (`main.go:8150-8156`), which calls `MigrateMachineEndpointIdentity()` and hardens with **nil skip** — unconditional. |
+| **Script** | `install.ps1:2350` **does** call `harden-shims` — but **without** `--require-machine-root`. `runHardenShims` gates the entire secrets block on that flag, so the script install hardens the shim directory and **never touches the machine secrets**. |
+| **Both, later** | `daemonStartupPrepare` calls `config.ReconcileMachineSecretACLs()` on **every daemon start** (`main.go:694`), which does call `MigrateMachineEndpointIdentity` and, because a Users-readable identity file is *not* "at least as strict", **does** re-harden it. And the lite install registers the daemon as `NT AUTHORITY\SYSTEM`, `RunLevel Highest` (`install.ps1:2414-2417`) — so it has the privilege to repair. |
+
+**So the sharp, falsifiable question a real box settles is:** does the script-installed endpoint have a
+**window** (install → first daemon start) rather than an indefinite exposure — and does that window become
+indefinite when the scheduled-task registration fails, which `install.ps1:2437-2439` handles as a **non-fatal
+warning** (`Write-Warn "Failed to register scheduled task (non-fatal)"`)?
+
+### Preconditions
+
+```powershell
+hostname                                     # must be the VM
+C:\verify\devoid.exe status                  # non-production backend, or throwaway token
+Get-VMSnapshot -VMName <vm> | Select Name    # CLEAN-PRE-DEVOID present, on the HOST
+```
+
+### The commands
+Run **path A**, snapshot the result, restore, then run **path B**. Never both on one VM state.
+
+**Path A — MSI install.**
+```powershell
+msiexec /i C:\verify\<devoid>.msi TOKEN="<throwaway site token>" BACKEND_URL="<non-prod backend>" /qn /l*v C:\verify\msi-A.log
+
+# Presence, path, permissions. NEVER contents.
+$id = "$env:ProgramData\devoid\endpoint-identity.json"
+Test-Path $id
+(Get-Item $id).Length
+icacls $id            > C:\verify\acl-A-identity.txt
+icacls "$env:ProgramData\devoid\credentials.json" > C:\verify\acl-A-creds.txt
+icacls "$env:ProgramData\devoid\daemon-token"     > C:\verify\acl-A-token.txt
+Get-Content C:\verify\acl-A-identity.txt
+```
+
+**Path B — script install.** Restore `CLEAN-PRE-DEVOID` first.
+```powershell
+# Elevated. Use the production install script, Lite (default) mode.
+powershell -ExecutionPolicy Bypass -File C:\verify\install.ps1 -Token "<throwaway>" -BackendUrl "<non-prod>"
+
+# IMMEDIATELY, BEFORE the daemon's first start if you can catch it:
+Get-ScheduledTask -TaskName "Devoid Daemon" | Select TaskName, State
+$id = "$env:ProgramData\devoid\endpoint-identity.json"
+Test-Path $id
+icacls $id > C:\verify\acl-B-identity-preboot.txt
+Get-Content C:\verify\acl-B-identity-preboot.txt
+
+# Now let the daemon start, and re-read
+Start-ScheduledTask -TaskName "Devoid Daemon"; Start-Sleep -Seconds 10
+icacls $id > C:\verify\acl-B-identity-postboot.txt
+Get-Content C:\verify\acl-B-identity-postboot.txt
+```
+
+### Expected output
+Compare the three ACL captures.
+
+- **PASS (boundary held):** `endpoint-identity.json` shows **only** `NT AUTHORITY\SYSTEM` and
+  `BUILTIN\Administrators` — matching `MachineSecretSDDL = O:SYG:SYD:P(A;;FA;;;SY)(A;;FA;;;BA)`. **No
+  `BUILTIN\Users` ACE.**
+- **FINDING (the filed claim):** `BUILTIN\Users:(R)` present on `endpoint-identity.json`. If it is present on
+  path B's **pre-boot** capture but gone from the **post-boot** capture, the exposure is a **window**, and you
+  have measured its length. If it is present in **both**, the exposure is indefinite on that path.
+- For contrast, `credentials.json` and `daemon-token` **should** carry `BUILTIN\Users:(R)` — that is
+  `MachineLocalReadSDDL` and it is intended. Their captures are the control that proves your reading of
+  `icacls` is right.
+
+Also record whether `endpoint-identity.json` **exists at all** after each path. It is a new file; the whole
+installed fleet is still in the pre-split shape with the key inline in `credentials.json`, migrated only by an
+elevated repair pass.
+
+### The defeat step
+**Defeat A — prove the migration is what moves the key, by observing both files.** After each install, record:
+
+```powershell
+Test-Path "$env:ProgramData\devoid\endpoint-identity.json"
+(Get-Item "$env:ProgramData\devoid\credentials.json").Length
+```
+
+Then run the elevated repair explicitly and re-read **both**:
+
+```powershell
+& "$env:ProgramData\devoid\bin\devoid.exe" harden-shims --require-machine-root
+Test-Path "$env:ProgramData\devoid\endpoint-identity.json"
+(Get-Item "$env:ProgramData\devoid\credentials.json").Length
+icacls "$env:ProgramData\devoid\endpoint-identity.json"
+```
+
+**PASS on defeat A = the identity file appears (or its ACL tightens) and `credentials.json` gets SMALLER** —
+the inline key was moved out. If nothing changes on a path where the pre-state showed the key inline, the
+migration did not run and that is the finding.
+
+**Defeat B — the one that matters: does the window brick anything?** With the script install's **pre-boot**
+state (if it showed `BUILTIN\Users:(R)` on the identity file), run a non-elevated shim call and check whether
+the endpoint **mints a new key**:
+
+```powershell
+# NON-ELEVATED
+C:\verify\devoid.exe status
+# Then, ELEVATED, compare the identity file's size/mtime to the pre-boot capture
+Get-Item "$env:ProgramData\devoid\endpoint-identity.json" | Select Length, LastWriteTime
+```
+
+**PASS = the file is UNCHANGED.** A changed file means the read-loosened state was treated as absent and the
+endpoint minted over its own key — **that is the permanent-409 brick, reproduced.** Record it and stop; do not
+continue using that endpoint.
+
+> If you cannot catch the pre-boot window (the task starts too fast), **say so and mark defeat B NOT-RUN.**
+> Do not simulate it by hand-loosening the ACL with `icacls /grant *S-1-5-32-545:(RX)` — the code comment
+> above records that exact command as the one that produced the permanent 409. Simulating it proves the brick
+> exists, which is already known; it does not prove the install path reaches that state.
+
+### How to undo it
+**Restore `CLEAN-PRE-DEVOID`.** That is the only undo for this item, because it performs real install
+transactions.
+
+```powershell
+# On the HOST
+Restore-VMSnapshot -VMName <vm> -Name 'CLEAN-PRE-DEVOID' -Confirm:$false
+```
+
+If the endpoint minted a replacement key, **also revoke the throwaway site token in the console** — the bricked
+endpoint row will never enrol again.
+
+### Danger flags
+- 🔴 **F16-adjacent. This is the item that can permanently brick an endpoint (409 forever).** Only on a VM you
+  will destroy, only with a throwaway token.
+- 🔴 **Do not hand-loosen the identity file's ACL.** `icacls <identity> /grant *S-1-5-32-545:(RX)` is recorded
+  in source as the exact command that caused the permanent rotation 409.
+- 🔴 **Never print the key.** `Test-Path`, `Get-Item ... | Select Length, LastWriteTime`, and `icacls` only.
+  This item measures **presence, path and permissions** — nothing else.
+- Run the two install paths on **separate VM states**, never stacked. An MSI over a script install is an
+  upgrade transaction, which is item 13's subject, not this one.
