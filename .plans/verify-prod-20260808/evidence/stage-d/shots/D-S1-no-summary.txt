@@ -1,0 +1,100 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+ACCOUNT
+Render QA Org
+Render QA Site
+ADMIN
+ENDPOINTS
+Search…
+ctrl
+K
+RQ
+Render QA
+Admin
+ADMINISTRATION
+Admin
+ENDPOINTS
+Endpoint Management
+Install & Enrollment
+Fleet
+Coverage
+Fleet Coverage
+
+Per-machine AI protection coverage and rollout readiness: which controls are live, by team and by endpoint. Only attested controls count; configured is not enforced.
+
+One honest coverage truth per machine: exactly which protections are live, derived from what each endpoint actually uses. A machine is flagged only when a tool it uses is unprotected.
+
+Governance profile truth unavailable
+
+This deployment cannot prove which protections satisfy the selected profile, so it is not ready for external reliance.
+
+NO COVERAGE YET
+Once agents enroll and attest their controls, each machine's honest coverage appears here. Start by installing the agent on your fleet.
+OPEN THE INSTALL GUIDE
+AI GOVERNANCE OPT-OUTS
+
+An endpoint can be authorized to stop DeVoid governing a runtime. While an opt-out is in force that runtime is not governed on that endpoint, and it is not repaired automatically. Where no readable opt-out transition has been reported, the row reads “Not reported”: that coverage has not been measured.
+
+DESKTOP-QA01
+· codex
+
+This runtime is deliberately not governed on this endpoint. Prompts and tool calls run without AI-security checks until the opt-out is cleared.
+
+Authorized by
+CORP\maya
+Lever
+pause
+Expires
+8/18/2026, 11:06:29 PM
+Observed
+8/18/2026, 9:56:29 PM
+
+Reason: Debugging a false positive on the release branch
+
+Opt-out in force
+DESKTOP-QA02
+· claude-code
+
+An opt-out reached its expiry and is no longer honoured. The endpoint reported the lapse; governance resumed.
+
+Authorized by
+CORP\ariel
+Lever
+uninstall-hooks
+Expires
+8/18/2026, 8:06:29 PM
+Observed
+8/18/2026, 8:36:29 PM
+Opt-out expired
+DESKTOP-QA03
+· codex
+
+An opt-out was observed being cleared, so this runtime is under governance again.
+
+Authorized by
+CORP\maya
+Lever
+pause
+Expires
+-
+Observed
+8/18/2026, 10:01:29 PM
+Governed
+DESKTOP-QA04
+· wsl:Ubuntu-22.04
+
+No readable opt-out transition has been reported here, so opt-out coverage has not been measured. This is not a statement that it is governed.
+
+Not reported
+DESKTOP-QA05
+
+No readable opt-out transition has been reported here, so opt-out coverage has not been measured. This is not a statement that it is governed.
+
+Not reported

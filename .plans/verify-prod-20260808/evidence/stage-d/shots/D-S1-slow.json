@@ -1,0 +1,30 @@
+{
+  "url": "/admin/endpoints?sub=coverage&siteId=11111111-1111-4111-8111-111111111111",
+  "title": "Endpoint Management · Admin · DeVoid",
+  "overflow": null,
+  "found": {
+    "ai-optout-coverage-panel": [
+      {
+        "text": "AI GOVERNANCE OPT-OUTS An endpoint can be authorized to stop DeVoid governing a runtime. While an opt-out is in force that runtime is not governed on that endpoint, and it is not repaired automatically. Where no readable opt-out transition has been reported, the row reads “Not reported”: that coverage has not been measured. Reading AI opt-out coverage…",
+        "attrs": {
+          "data-testid": "ai-optout-coverage-panel"
+        }
+      }
+    ],
+    "optout-coverage-row": [],
+    "optout-state-badge": [],
+    "optout-coverage-loading": [
+      {
+        "text": "Reading AI opt-out coverage…",
+        "attrs": {
+          "data-testid": "optout-coverage-loading"
+        }
+      }
+    ],
+    "optout-coverage-unread": [],
+    "optout-coverage-empty": [],
+    "optout-stat-endpoints": []
+  },
+  "consoleErrors": [],
+  "failed": []
+}

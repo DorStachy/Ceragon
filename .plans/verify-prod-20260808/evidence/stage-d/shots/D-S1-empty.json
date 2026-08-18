@@ -1,0 +1,62 @@
+{
+  "url": "/admin/endpoints?sub=coverage&siteId=11111111-1111-4111-8111-111111111111",
+  "title": "Endpoint Management · Admin · DeVoid",
+  "overflow": null,
+  "found": {
+    "ai-optout-coverage-panel": [
+      {
+        "text": "AI GOVERNANCE OPT-OUTS An endpoint can be authorized to stop DeVoid governing a runtime. While an opt-out is in force that runtime is not governed on that endpoint, and it is not repaired automatically. Where no readable opt-out transition has been reported, the row reads “Not reported”: that coverage has not been measured. ENDPOINTS IN SCOPE 0 OPT-OUT IN FORCE 0 OPT-OUT EXPIRED 0 NOT REPORTED 0 No endpoints are in scope, so there is no opt-out coverage to report. This is not a statement that any runtime is governed.",
+        "attrs": {
+          "data-testid": "ai-optout-coverage-panel"
+        }
+      }
+    ],
+    "optout-coverage-row": [],
+    "optout-state-badge": [],
+    "optout-stat-endpoints": [
+      {
+        "text": "ENDPOINTS IN SCOPE 0",
+        "attrs": {
+          "data-testid": "optout-stat-endpoints"
+        }
+      }
+    ],
+    "optout-stat-in-force": [
+      {
+        "text": "OPT-OUT IN FORCE 0",
+        "attrs": {
+          "data-testid": "optout-stat-in-force"
+        }
+      }
+    ],
+    "optout-stat-expired": [
+      {
+        "text": "OPT-OUT EXPIRED 0",
+        "attrs": {
+          "data-testid": "optout-stat-expired"
+        }
+      }
+    ],
+    "optout-stat-not-reported": [
+      {
+        "text": "NOT REPORTED 0",
+        "attrs": {
+          "data-testid": "optout-stat-not-reported"
+        }
+      }
+    ],
+    "optout-coverage-all-unmeasured": [],
+    "optout-coverage-empty": [
+      {
+        "text": "No endpoints are in scope, so there is no opt-out coverage to report. This is not a statement that any runtime is governed.",
+        "attrs": {
+          "data-testid": "optout-coverage-empty"
+        }
+      }
+    ],
+    "optout-coverage-unread": [],
+    "optout-coverage-loading": []
+  },
+  "consoleErrors": [],
+  "failed": []
+}
