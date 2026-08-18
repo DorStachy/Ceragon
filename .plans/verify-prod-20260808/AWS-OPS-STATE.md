@@ -29,8 +29,8 @@ performed. Where closing an item needs a write, the exact command for a human is
 | C-5 | Hetzner / intel ECS at 0/0 | **PASS — expected state** |
 | C-6 | `CODEFENCE_SIGNING_MASTER_KEY` present | **PASS** |
 | C-6b | AI prompt-evidence Lane B keys | **FAIL — still absent, 26 revisions on** |
-| C-7 | Lambda event source mappings | *see §6* |
-| C-8 | Queues with no consumer | *see §7* |
+| C-7 | Lambda event source mappings | **all 8 Disabled (expected); 1 dangling** |
+| C-8 | Queues with no consumer | **FAIL — 2 abandoned lanes + 283-msg unalarmed DLQ** |
 
 ---
 
@@ -301,3 +301,350 @@ Needs an owner call before any write: repointing production at the empty product
 #   DYNAMODB_ARTIFACT_CACHE_TABLE=cera-artifact_analysis_cache-production
 # Decide FIRST whether the production table is backfilled before the switch.
 ```
+
+---
+
+## 4. C-3 `RELEASE_MANIFEST_PATH` + its `s3:GetObject` grant — VERDICT: FAIL (three parts, only one is config)
+
+### 4a. The env var is unset — PROVEN LIVE
+
+```
+$ curl https://api.devoid.one/api/v1/health/release-manifest
+[HTTP 503]
+{"expected":null,"manifestLoaded":false,
+ "manifestLoadError":"RELEASE_MANIFEST_PATH unset and no manifest at any default location
+                      (/app/release-manifest.json, /app/dist/release-manifest.json,
+                       /etc/devoid/release-manifest.json)",
+ "manifestSource":"unset","liveEcsComparison":{"enabled":false},
+ "driftReport":{"manifestUnreachable":true,"hasDrift":false,
+   "reasons":[{"component":"manifest","reason":"MANIFEST_UNREACHABLE",
+               "expected":"manifest path configured",
+               "observed":"RELEASE_MANIFEST_PATH unset and no manifest at any default location"}]}}
+```
+
+The route is **behaving correctly**: 503 with a named reason and `expected: null`. It refuses to report 200 for a
+route that knows nothing. This is the honest-negative posture the spec requires — do not "fix" it by relaxing
+the route.
+
+### 4b. The `s3:GetObject` grant ALREADY EXISTS — PASS
+
+The register lists the grant as outstanding. It is not. Inline policy `s3-local-artifacts` on the backend task
+role (`arn:aws:iam::113627991972:role/ecsTaskExecutionRole`):
+
+```json
+{ "Effect": "Allow",
+  "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject", "s3:ListBucket"],
+  "Resource": ["arn:aws:s3:::cera-artifacts-staging-113627991972-eu-north-1",
+               "arn:aws:s3:::cera-artifacts-staging-113627991972-eu-north-1/*",
+               "arn:aws:s3:::installers-prod/*",
+               "arn:aws:s3:::installer-binaries-prod/*"] }
+```
+
+`s3:GetObject` on `installer-binaries-prod/*` is granted. **No IAM change is needed.**
+
+Further, the `s3://` scheme is supported by the **deployed** code, not merely the worktree.
+`release-manifest.service.ts` routes `s3://` to `loadManifestFromS3()` and reserves the "not supported" throw for
+`https://` only. Verified against the running build:
+`git show d52a1ce0:src/health/services/release-manifest.service.ts | grep -c loadManifestFromS3` returns `2`.
+
+### 4c. THE ACTUAL BLOCKER — there is no complete manifest to point at
+
+```
+$ aws s3 ls s3://installer-binaries-prod/manifests/ --recursive
+(empty)
+
+$ aws s3 ls s3://installer-binaries-prod/ --recursive | grep release-manifest
+2026-08-08  1691  releases/7.8.30/release-manifest.v1.partial.json
+...
+2026-08-17  1691  releases/7.8.41/release-manifest.v1.partial.json
+```
+
+Only `.partial.json` objects exist. Per `fix-specs/BACKENDOPS.md:241`, the release pipeline emits that partial
+**deliberately and correctly** — it cannot fill `components{8}`, `compatibleWorkerContractVersion` or
+`compatibleBackendRange`, and it explicitly warns that **`RELEASE_MANIFEST_PATH` must NEVER point at it.** The
+key the spec prescribes (`manifests/backend/release-manifest.v1.json`) does not exist.
+
+**Conclusion:** C-3 is **not** an ops/config item at all — it is blocked on the missing assembler
+(`Backend/.github/workflows/` has no producer). Setting the env var today would either 503 with
+`MANIFEST_UNREACHABLE` (pointing at a nonexistent key) or load a partial that fails shape validation. Both are
+strictly worse than the current honest `unset`.
+
+```bash
+# NOT RUN - and must NOT be run until a COMPLETE manifest is published.
+# Pointing this at the existing .partial.json is explicitly forbidden by the producer.
+#   RELEASE_MANIFEST_PATH=s3://installer-binaries-prod/manifests/backend/release-manifest.v1.json
+```
+
+---
+
+## 5. C-4 CloudWatch alarms — VERDICT: FAIL — no alarm covers any production intelligence lane
+
+25 metric alarms exist; **0 composite alarms**. The decisive measurement:
+
+```
+$ aws cloudwatch describe-alarms --region eu-north-1 --output json | grep -c "ceragon-production"
+0
+```
+
+**Not one alarm — in any namespace, on any metric, with any dimension — references a `ceragon-production-*`
+queue, table, or service.** Every SQS alarm that exists is dimensioned on a `cera-*-staging` or `codefence-*`
+queue.
+
+Full inventory (name and state):
+
+| Alarm | State |
+|---|---|
+| `backend-memory-utilization-high` | OK |
+| `TargetTracking-cera-sandbox-intel-asg-AlarmHigh` / `-AlarmLow` | OK / OK |
+| `cera-fetch-worker-staging-received-but-zero-completed` | OK |
+| `cera-fetch-worker-staging-scalein-zero` | ALARM |
+| `cera-fetch-worker-staging-scaleout-backlog` | OK |
+| `cera-fetch_jobs_dlq-staging-nonzero` | **ALARM** |
+| `cera-sandbox-exec-now-scale-up-staging` | OK |
+| `cera-sandbox-scale-down-staging` | ALARM |
+| `cera-sandbox-scale-up-staging` | OK |
+| `cera-sandbox-staging-exec-now-scale-out` | OK |
+| `cera-sandbox-staging-sqs-scale-in` | ALARM |
+| `cera-sandbox-staging-sqs-scale-out` | OK |
+| `codefence-scan-processor-dlq-nonzero` | OK |
+| `codefence-scanner-jobs-dlq-nonzero` | OK |
+| `codefence-scanner-worker-scalein-min1` | ALARM |
+| `codefence-scanner-worker-scaleout-backlog` | OK |
+| `fetch-dlq-not-empty` | **ALARM** |
+| `fetch-worker-high-wait-time-exec` / `-normal` | OK / OK |
+| `fetch-worker-idle` | ALARM |
+| `fullrepo-queue-has-messages` | OK |
+| `fullrepo-queue-idle` | ALARM |
+| `p0-7-sandbox-sqs-verify-failures` | OK |
+| `sandbox-dlq-not-empty` | INSUFFICIENT_DATA |
+
+The `*-scalein-*` / `*-idle` alarms sitting in ALARM are **by design** — they are autoscaling triggers on idle
+lanes, not faults. The two that matter are `cera-fetch_jobs_dlq-staging-nonzero` and `fetch-dlq-not-empty`, both
+firing to `arn:aws:sns:eu-north-1:113627991972:cera-alerts` against a staging DLQ holding 1 message.
+
+**The consequence is section 8:** production DLQs and abandoned production queues are entirely uninstrumented.
+`sandbox-dlq-not-empty` at `INSUFFICIENT_DATA` is itself a silent alarm — it has no data to judge.
+
+---
+
+## 6. C-5 Hetzner / intel ECS — VERDICT: PASS (expected state, no action)
+
+```
+=== ceragon-intelligence-production ===
+0  0  ceragon-intelligence-artifact-fetcher-production   .../ceragon-intelligence-artifact-fetcher-production:37
+0  0  ceragon-multi-follower-production                  .../ceragon-multi-follower-production:39
+0  0  ceragon-intel-static-worker-production             .../ceragon-intel-static-worker-production:110
+0  0  ceragon-intel-sandbox-worker-production            .../ceragon-intel-sandbox-worker-production:56
+```
+
+All four intel services 0/0. **This is correct** — the intelligence pipeline runs on Hetzner, not ECS. Confirmed
+positively rather than assumed: the intel queues show real consumption that no AWS compute could be performing,
+because every AWS consumer for them is either 0/0 or `Disabled` (sections 7 and 8):
+
+```
+ceragon-production-intel-static-jobs    sent14d=733       received14d=3635
+ceragon-production-intel-dynamic-jobs   sent14d=179       received14d=202
+ceragon-production-release-observation  sent14d=1215817   received14d=7410
+```
+
+Something off-AWS is draining those queues. That is the Hetzner fleet, and it is alive.
+
+### Full ECS state — running revision vs. newest registered
+
+| Cluster / service | desired/running | Running task def | Newest registered | Match |
+|---|---|---|---|---|
+| `backend` / `backend-service` | 1 / 1 | `backend:315` | `backend:315` | **YES** |
+| `frontend` / `frontend` | 1 / 1 | `frontend:371` | `frontend:371` | **YES** |
+| `cera-workers-staging` / `cera-fetch-worker-staging` | 1 / 1 | `cera-fetch-worker-staging:93` | `:93` | **YES** |
+| `cera-workers-staging` / `cera-sandbox-worker-staging` | 1 / 1 | `cera-sandbox-worker-staging-ec2:68` | not compared | — |
+| `cera-workers-staging` / `codefence-scanner-worker` | **0 / 0** | `codefence-scanner-worker:159` | `:159` | YES (image current, not running) |
+| `cera-workers-staging` / `codefence-scanner-worker-fullrepo` | **0 / 0** | `codefence-scanner-worker-fullrepo:34` | not compared | — |
+| `ceragon-intelligence-production` / all four | **0 / 0** | see above | `ceragon-multi-follower-production:39` | YES |
+
+**No service is running a stale revision.** Every service that is up is on the newest registered task definition.
+The 0/0 services are the known deliberate power-off (scanner workers) and the Hetzner-hosted intel lanes —
+images are current, nothing is analysing. Reported, not alarmed about.
+
+---
+
+## 7. C-7 Lambda event source mappings — VERDICT: all 8 `Disabled`; one is dangling
+
+```
+$ aws lambda list-event-source-mappings --region eu-north-1
+```
+
+| Function | Source queue | State |
+|---|---|---|
+| `ceragon-intel-result-aggregator-production` | `ceragon-production-intel-result-write` | **Disabled** |
+| `ceragon-intel-dispatcher-production` | `ceragon-production-analysis-static-background` | **Disabled** |
+| `ceragon-intel-dispatcher-production` | `ceragon-production-analysis-dynamic-background` | **Disabled** |
+| `ceragon-intel-dispatcher-production` | `ceragon-production-analysis-dynamic-urgent` | **Disabled** (dangling) |
+| `ceragon-intel-router-production` | `ceragon-production-release-observation` | **Disabled** |
+| `ceragon-intel-metadata-only-production` | `ceragon-production-metadata-only` | **Disabled** |
+| `cera-sandbox-staging-wake-up` | `cera-sandbox_jobs-staging` | **Disabled** |
+| `cera-sandbox-staging-wake-up` | `cera-sandbox_jobs_exec_now-staging` | **Disabled** |
+
+All eight disabled is **consistent with the deliberate power-off** (`ceragon-power-off.ps1` disables Lambda event
+source mappings and records them in `scripts/ceragon-power-state.json`).
+
+**Dangling mapping — UUID `602a90f8-bdf0-4fd1-bff6-bac508e4e742`.** It points at
+`ceragon-production-analysis-dynamic-urgent`, which **does not exist**:
+
+```
+$ aws sqs get-queue-url --queue-name ceragon-production-analysis-dynamic-urgent --region eu-north-1
+An error occurred (AWS.SimpleQueueService.NonExistentQueue) when calling the GetQueueUrl operation:
+The specified queue does not exist.
+```
+
+Harmless while `Disabled`, but a future `ceragon-power-on.ps1` run that re-enables the recorded mappings will
+attempt to enable a mapping against a deleted queue. Worth an operator's eye before the next power-on.
+
+```bash
+# NOT RUN - deletion is a write, and this may be an intentionally-retained mapping.
+# aws lambda delete-event-source-mapping --uuid 602a90f8-bdf0-4fd1-bff6-bac508e4e742 --region eu-north-1
+```
+
+---
+
+## 8. C-8 Queues with no consumer — VERDICT: FAIL — two abandoned lanes and a 283-message DLQ, none of it alarmed
+
+This is the register open question B4 / C11d-2 (*an abandoned lane is silent — is that acceptable?*), answered
+with measurements rather than reasoning.
+
+### 8a. Two production queues have a backlog and have NEVER been consumed
+
+`ceragon-production-verdict-write` — over a **60-day** window:
+
+```
+NumberOfMessagesSent      60d = 115.0
+NumberOfMessagesReceived  60d = 0.0
+NumberOfMessagesDeleted   60d = 0.0
+current depth: vis=115 inflight=0 delayed=0
+created: 2026-08-14
+```
+
+**115 messages produced, zero ever received, zero ever deleted.** The queue was created on 2026-08-14 and has
+never had a consumer. It has no Lambda event source mapping and no ECS consumer.
+
+`ceragon-production-rescan-plan` — 14-day window:
+
+```
+NumberOfMessagesSent      14d = 81.0
+NumberOfMessagesReceived  14d = 0.0
+NumberOfMessagesDeleted   14d = 0.0
+current depth: vis=79
+```
+
+**Neither queue raises anything** — per section 5, zero alarms reference `ceragon-production`. This is the
+"abandoned lane that raises no alarm" the register asks about, now with a name and a number: it is real, it is
+happening today, on two lanes.
+
+### 8b. A 283-message production DLQ that nothing watches
+
+```
+ceragon-production-intel-static-jobs-dlq                    vis=283 inflight=0 delayed=0
+```
+
+For scale: the *staging* DLQ holding **1** message fires `cera-fetch_jobs_dlq-staging-nonzero` to SNS. The
+production DLQ holding **283** fires nothing, because no alarm exists for it.
+
+### 8c. Full queue depth census (34 queues)
+
+```
+cera-fetch_jobs-staging                                    vis=0   inflight=0
+cera-fetch_jobs_dlq-staging                                vis=1   inflight=0
+cera-fetch_jobs_exec_now-staging                           vis=0   inflight=0
+cera-sandbox_jobs-staging                                  vis=0   inflight=0
+cera-sandbox_jobs_dlq-staging                              vis=0   inflight=0
+cera-sandbox_jobs_exec_now-staging                         vis=0   inflight=0
+ceragon-production-analysis-dynamic-background             vis=0   inflight=0
+ceragon-production-analysis-dynamic-background-dlq         vis=0   inflight=0
+ceragon-production-analysis-static-background              vis=1   inflight=0
+ceragon-production-analysis-static-background-dlq          vis=0   inflight=0
+ceragon-production-artifact-fetch-background               vis=0   inflight=0
+ceragon-production-artifact-fetch-background-dlq           vis=2   inflight=0
+ceragon-production-intel-dynamic-jobs                      vis=2   inflight=0
+ceragon-production-intel-dynamic-jobs-dlq                  vis=0   inflight=0
+ceragon-production-intel-dynamic-jobs-windows              vis=0   inflight=0
+ceragon-production-intel-dynamic-jobs-windows-dlq          vis=0   inflight=0
+ceragon-production-intel-result-write                      vis=0   inflight=0
+ceragon-production-intel-result-write-dlq                  vis=0   inflight=0
+ceragon-production-intel-static-jobs                       vis=0   inflight=0
+ceragon-production-intel-static-jobs-dlq                   vis=283 inflight=0   <-- unalarmed
+ceragon-production-metadata-only                           vis=0   inflight=0
+ceragon-production-metadata-only-dlq                       vis=0   inflight=0
+ceragon-production-release-observation                     vis=0   inflight=0
+ceragon-production-release-observation-dlq                 vis=0   inflight=0
+ceragon-production-rescan-plan                             vis=79  inflight=0   <-- no consumer
+ceragon-production-rescan-plan-dlq                         vis=0   inflight=0
+ceragon-production-verdict-write                           vis=115 inflight=0   <-- no consumer, ever
+ceragon-production-verdict-write-dlq                       vis=0   inflight=0
+codefence-scan-processor-dlq.fifo                          vis=0   inflight=0
+codefence-scan-processor.fifo                              vis=0   inflight=0
+codefence-scanner-fullrepo-jobs-dlq.fifo                   vis=0   inflight=0
+codefence-scanner-fullrepo-jobs.fifo                       vis=0   inflight=0
+codefence-scanner-jobs-dlq.fifo                            vis=0   inflight=0
+codefence-scanner-jobs.fifo                                vis=0   inflight=0
+```
+
+### 8d. An unexplained gap on `ceragon-production-release-observation` — reported, not diagnosed
+
+```
+14-day totals:  sent = 1,215,817   received = 7,410   deleted = 7,394
+current depth:  0
+DLQ depth:      0
+MessageRetentionPeriod: 1209600 s (14 days)   LastModified: 2026-08-17
+
+daily:  2026-08-14  sent=162,681  received=0
+        2026-08-15  sent= 77,064  received=5,365
+        2026-08-16  sent=      0  received=0
+        2026-08-17  sent=      0  received=0
+```
+
+Roughly 1.2 million messages were sent in the window and about 7,400 were consumed, yet the queue now stands at
+zero with an empty DLQ, and 14-day retention has not elapsed for the 240k sent on 14-15 Aug. **I could not
+account for the difference from read-only telemetry** and will not invent a mechanism for it — a `PurgeQueue`, a
+retention change (the queue attributes were modified on 2026-08-17), or a metrics artefact would each explain
+it, and I cannot distinguish them without CloudTrail. **Flagged as an open question, verdict BLOCKED**, with the
+exact next step below.
+
+```bash
+# NOT RUN - CloudTrail lookup to distinguish purge from attribute change (read-only, but outside this scope):
+aws cloudtrail lookup-events --region eu-north-1 \
+  --lookup-attributes AttributeKey=ResourceName,AttributeValue=ceragon-production-release-observation \
+  --start-time 2026-08-13 --end-time 2026-08-18
+```
+
+---
+
+## 9. Not exercised — stated plainly
+
+These were **not** verified, with the reason:
+
+- **Hetzner itself.** Out of AWS entirely; no credential for it in this environment. Its liveness is inferred
+  from queue consumption (section 6), which is evidence that *something* off-AWS consumes, not proof of which
+  host.
+- **Secret VALUES.** Deliberately never read. Presence is proven by task-definition wiring plus the fact that
+  the backend boots and serves 200 — not by reading any parameter.
+- **The `release-observation` 1.2M-message gap** — BLOCKED, see 8d; needs CloudTrail.
+- **Whether the 283 DLQ messages are one recurring failure or 283 distinct ones.** Reading them requires
+  `sqs receive-message`, which mutates visibility. Not performed.
+- **RDS / database posture.** Not in register section C; not inspected.
+- **`AUDIT_RETENTION_DAYS` real-world effect.** The 30-day default is read from source
+  (`fix-specs/BACKENDOPS.md:433` citing `audit-retention.service.ts:92-101`), not measured against the live
+  `audit_events` table — the prod DB is private with no bastion, so no query was possible from here.
+
+---
+
+## 10. Corrections the register itself needs
+
+1. **Section C: "Add `CF_BUILD_SHA`/`CF_BUILD_TIME` on the ECS task definition"** — delete this instruction. It
+   is the defect `d79b8ac0` fixed. The task definition must stay silent; the image is the authority. (1.5)
+2. **#20 "the running backend cannot say what build it is"** — no longer true for the sha; PROVEN closed live.
+   Only `buildTime` remains, and its fix is an unpushed commit, not an ops action. (1.4)
+3. **Section C "`RELEASE_MANIFEST_PATH` + its `s3:GetObject` grant"** — the grant already exists. The real
+   blocker is that no complete manifest is published, which is a pipeline item, not an ops item. (4)
+4. **New, unregistered, live:** `DYNAMODB_ARTIFACT_CACHE_TABLE` points production at the staging table. (3)
+5. **B4 / C11d-2 is answered:** consumer-less lanes are real and silent today —
+   `ceragon-production-verdict-write` (115 msgs, never consumed) and `ceragon-production-rescan-plan` (79), plus
+   a 283-message unalarmed production DLQ. (8)
