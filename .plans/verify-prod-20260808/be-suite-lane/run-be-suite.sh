@@ -179,8 +179,13 @@ cmd_run() {
 
 cmd_report() {
   say "per-lane discovered vs executed"
-  docker run --rm -v "$VOL_OUT:/out" -w /out "$IMAGE" \
-    bash -c 'node /out/lane-accounting.cjs /out/jest-summary-shard-*.json /out/jest-summary-e2e.json'
+  # Injects the CURRENT lane-accounting.cjs rather than whatever copy the run
+  # left on the volume, so fixing the reporter never means re-running the suite.
+  docker run --rm -v "$VOL_OUT:/out" -w /out --memory=512m \
+    -e LANE_ACCOUNTING_B64="$(base64 -w0 < "$HERE/lane-accounting.cjs")" \
+    "$IMAGE" bash -c '
+      echo "$LANE_ACCOUNTING_B64" | base64 -d > /tmp/lane-accounting.cjs
+      node /tmp/lane-accounting.cjs /out/jest-summary-shard-*.json /out/jest-summary-e2e.json'
 }
 
 cmd_fetch() {

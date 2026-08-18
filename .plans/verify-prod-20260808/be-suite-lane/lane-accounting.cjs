@@ -92,12 +92,14 @@ for (const l of LANES) {
     discovered: 0,
     executed: 0,
     fileSkipped: 0,
+    failedToRun: 0,
     vacuous: 0,
     failedSuites: 0,
     testsPassed: 0,
     testsFailed: 0,
     testsPending: 0,
     fileSkippedPaths: [],
+    failedToRunPaths: [],
     vacuousPaths: [],
     failedPaths: [],
   });
@@ -137,9 +139,18 @@ for (const f of files) {
     if (r.status === 'skipped') {
       t.fileSkipped += 1;
       t.fileSkippedPaths.push(rel);
+    } else if (r.status === 'failed' && ran === 0) {
+      // FAILED TO RUN — the file never got as far as an assertion: a ts-jest
+      // compile error (TS####), a worker killed under it, a throw in a
+      // top-level hook. These are RED, not silent, so the repo's suite gate
+      // counts them as "executed"; but they produced ZERO test evidence, so
+      // counting them as coverage would be a lie in the other direction.
+      // They get their own column for exactly that reason.
+      t.failedToRun += 1;
+      t.failedToRunPaths.push(rel);
     } else if (ran === 0) {
-      // The file loaded and reported, but not one assertion executed. This is
-      // the shape `assert-suites-executed.js` is structurally blind to.
+      // Reported as PASSED and ran nothing. This is the shape
+      // `assert-suites-executed.js` is structurally blind to.
       t.vacuous += 1;
       t.vacuousPaths.push(rel);
     } else {
@@ -166,30 +177,33 @@ console.log('');
 console.log('DISCOVERED vs EXECUTED, BY LANE');
 console.log('  EXECUTED = the suite ran at least one assertion (passed or failed).');
 console.log('  FILE-SKIPPED = jest reported the whole file as skipped.');
+console.log('  FAILED-TO-RUN = red before any assertion (compile error, killed worker, hook throw).');
 console.log('  VACUOUS = the file reported as passed but ran ZERO assertions.');
 console.log('');
 console.log(
-  `${pad('lane', 22)}${lpad('disc', 6)}${lpad('exec', 6)}${lpad('skip', 6)}${lpad('vacuous', 9)}${lpad('redSuites', 11)}${lpad('tests+', 8)}${lpad('tests-', 8)}`,
+  `${pad('lane', 22)}${lpad('disc', 6)}${lpad('exec', 6)}${lpad('skip', 6)}${lpad('failRun', 9)}${lpad('vacuous', 9)}${lpad('redSuites', 11)}${lpad('tests+', 8)}${lpad('tests-', 8)}`,
 );
-console.log('-'.repeat(76));
+console.log('-'.repeat(85));
 let d = 0,
   e = 0,
   s = 0,
   v = 0,
+  ftr = 0,
   fs_ = 0;
 for (const r of rows) {
   d += r.discovered;
   e += r.executed;
   s += r.fileSkipped;
   v += r.vacuous;
+  ftr += r.failedToRun;
   fs_ += r.failedSuites;
   console.log(
-    `${pad(r.id, 22)}${lpad(r.discovered, 6)}${lpad(r.executed, 6)}${lpad(r.fileSkipped, 6)}${lpad(r.vacuous, 9)}${lpad(r.failedSuites, 11)}${lpad(r.testsPassed, 8)}${lpad(r.testsFailed, 8)}`,
+    `${pad(r.id, 22)}${lpad(r.discovered, 6)}${lpad(r.executed, 6)}${lpad(r.fileSkipped, 6)}${lpad(r.failedToRun, 9)}${lpad(r.vacuous, 9)}${lpad(r.failedSuites, 11)}${lpad(r.testsPassed, 8)}${lpad(r.testsFailed, 8)}`,
   );
 }
-console.log('-'.repeat(76));
+console.log('-'.repeat(85));
 console.log(
-  `${pad('TOTAL', 22)}${lpad(d, 6)}${lpad(e, 6)}${lpad(s, 6)}${lpad(v, 9)}${lpad(fs_, 11)}`,
+  `${pad('TOTAL', 22)}${lpad(d, 6)}${lpad(e, 6)}${lpad(s, 6)}${lpad(ftr, 9)}${lpad(v, 9)}${lpad(fs_, 11)}`,
 );
 console.log('');
 console.log(`jest numTotalTestSuites across summaries: ${grandDiscovered}`);
@@ -204,6 +218,11 @@ for (const r of rows) {
   if (r.fileSkipped) {
     console.log(`\n[${r.id}] FILE-SKIPPED (${r.fileSkipped})   gate: ${r.gate}`);
     r.fileSkippedPaths.sort().forEach((p) => console.log(`  - ${p}`));
+  }
+  if (r.failedToRun) {
+    console.log(`
+[${r.id}] FAILED TO RUN — red before any assertion (${r.failedToRun})`);
+    r.failedToRunPaths.sort().forEach((p) => console.log(`  - ${p}`));
   }
   if (r.vacuous) {
     console.log(`\n[${r.id}] VACUOUS — reported passed, ran nothing (${r.vacuous})`);
