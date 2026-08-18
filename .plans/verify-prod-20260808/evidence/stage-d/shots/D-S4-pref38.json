@@ -1,0 +1,66 @@
+{
+  "url": "/admin/endpoints?sub=coverage&siteId=11111111-1111-4111-8111-111111111111",
+  "title": "Endpoint Management · Admin · DeVoid",
+  "overflow": null,
+  "found": {
+    "enforcement-proof-rollup": [
+      {
+        "text": "ENFORCEMENT PROOF, PER RUNTIME INSTANCE 8 instances PROVEN 0 NOT PROVEN 0 NEVER TESTED 0 COULD NOT TEST 0 PROOF EXPIRED 0 Only “Not proven” is a measured enforcement gap. “Never tested” and “Could not test” are the absence of a measurement, and “Proof expired” is a measurement that has lapsed: none of the three is a pass, and none of the three is a defect.",
+        "attrs": {
+          "data-testid": "enforcement-proof-rollup"
+        }
+      }
+    ],
+    "proof-rollup-instances": [
+      {
+        "text": "8 instances",
+        "attrs": {
+          "data-testid": "proof-rollup-instances"
+        }
+      }
+    ],
+    "proof-count-proven": [
+      {
+        "text": "0",
+        "attrs": {
+          "data-testid": "proof-count-proven"
+        }
+      }
+    ],
+    "proof-count-not-proven": [
+      {
+        "text": "0",
+        "attrs": {
+          "data-testid": "proof-count-not-proven"
+        }
+      }
+    ],
+    "proof-count-never-tested": [
+      {
+        "text": "0",
+        "attrs": {
+          "data-testid": "proof-count-never-tested"
+        }
+      }
+    ],
+    "proof-count-could-not-test": [
+      {
+        "text": "0",
+        "attrs": {
+          "data-testid": "proof-count-could-not-test"
+        }
+      }
+    ],
+    "proof-count-proof-expired": [
+      {
+        "text": "0",
+        "attrs": {
+          "data-testid": "proof-count-proof-expired"
+        }
+      }
+    ],
+    "proof-rollup-not-served": []
+  },
+  "consoleErrors": [],
+  "failed": []
+}

@@ -491,3 +491,113 @@ and a false one rather than always firing.
 
 **Fix shape (not applied):** derive the displayed counts from the rows when rows are present, or render a
 discrepancy note when `summary.sourcesUnanswered !== unanswered.length`.
+
+---
+
+## D-S4 — F38 enforcement proof (Protection Depth) — **PASS on the proof gate, FAIL on the rollup's denominator**
+
+Entry point `/admin/endpoints?sub=coverage` → "Runtime protection depth". Note the panel only mounts when
+readiness returns at least one team or endpoint, so the first fixture (an empty fleet) produced no panel at all;
+the readiness fixture was given one endpoint before this item could be measured.
+
+### D1 — grep every render file for the changed fields
+
+```
+enforcementProof    -> app/ai-control-plane/protection-depth.tsx · types/ai-governance.ts
+serverHoldsReceipt  -> app/ai-control-plane/protection-depth.tsx · types/ai-governance.ts
+```
+
+One renderer, re-used by `coverage-section.tsx`, `endpoint-hub-content.tsx`, `enforced-authority-panel.tsx` and
+`ai-control-plane-region.tsx` through exported helpers — so there is one resolver, not four.
+
+### D-S4a — the F38-a manufactured-green path is closed at the render layer — **PASS**
+
+Nine adapters served, **four of them carrying `enforcementProof: "proven"` on the wire**. Exactly one reaches
+`Proven` on screen (`shots/D-S4-proof.*`):
+
+```
+ENFORCEMENT PROOF, PER RUNTIME INSTANCE          8 instances
+PROVEN 1 · NOT PROVEN 1 · NEVER TESTED 1 · COULD NOT TEST 3 · PROOF EXPIRED 1
+```
+
+The three demotions, and what the drill-down says about each:
+
+| wire | why it cannot stand | rendered |
+|---|---|---|
+| `proven`, `serverHoldsReceipt: false` | no receipt | **Could not test** |
+| `proven`, `enforcementTestedAt: null` | no observation instant | **Could not test** |
+| `proven`, `proofExpiresAt` in the past | lapsed | **Proof expired** |
+| `ENFORCED_OK` (invented token) | unknown to this build | **Could not test** |
+
+And the endpoint's own claim is displayed *as a claim*, never as the verdict:
+
+```
+ENFORCEMENT PROOF   COULD NOT TEST
+  "The canary could not be carried out on this instance, so enforcement was not measured either way.
+   This is neither a pass nor a defect."
+  "The endpoint's record said "Proven". This console does not render that state, because the evidence
+   the server holds does not support it."
+  RECEIPT HELD  no
+  Reason: Proof without receipt
+  ENDPOINT-REPORTED (NOT EVIDENCE)   REPORTED LAST CANARY never   REPORTED EXPIRY never
+```
+
+**Discriminating control:** the one adapter with a receipt, an observation instant and a live expiry does render
+`Proven` with `RECEIPT HELD yes` — so the gate is not simply refusing every `proven`.
+
+An adapter with **no integrity block at all** is excluded from the instance count and called out rather than
+silently dropped:
+
+```
+[proof-rollup-not-served] :: 1 adapter carried no instance-integrity block at all, so it is in none of the
+                             counts above. A missing block is not a clean instance.
+```
+
+### D-S4b — **FAIL — on a pre-F38 backend the rollup reads "8 instances · 0 · 0 · 0 · 0 · 0" and says nothing**
+
+`shots/D-S4-pref38.*`. Fixture: eight adapters, each with an instance-integrity block, **none carrying any
+enforcement-proof key** — which is what a console deployed against a Backend older than F38 receives, i.e. the
+whole fleet today.
+
+```
+ENFORCEMENT PROOF, PER RUNTIME INSTANCE          8 instances
+PROVEN 0 · NOT PROVEN 0 · NEVER TESTED 0 · COULD NOT TEST 0 · PROOF EXPIRED 0
+[proof-rollup-not-served] x0        ← the "missing block" note does not apply and does not fire
+```
+
+Eight instances, every bucket zero, and **no sentence anywhere in the rollup saying the deployment served no
+proof state.** `NOT PROVEN 0` — the only bucket the caption calls a measured gap — reads as "no enforcement gaps
+anywhere", which is the reassuring reading of a fleet that was never asked.
+
+**Mechanism** — `app/ai-control-plane/protection-depth.tsx:953-961` tallies six states including `"not-served"`,
+and the render at `:981` maps over only five:
+
+```js
+const tally: Record<EnforcementProofRender, number> = {
+  proven: 0, "not-proven": 0, "never-tested": 0, "could-not-test": 0, "proof-expired": 0,
+  "not-served": 0,            // <- counted here
+}
+...
+{(["proven", "not-proven", "never-tested", "could-not-test", "proof-expired"] as const).map(   // <- never here
+```
+
+So `instances` (the header) counts six states and the buckets display five. The sum silently fails to reach the
+header — visible in the *populated* case too, where `8 instances` sits above buckets totalling 7.
+
+**The console already knows the right sentence and prints it one level down.** The per-instance drill for the same
+data renders:
+
+```
+ENFORCEMENT PROOF   NOT SERVED
+  "This deployment served no enforcement-proof state for the instance, so nothing can be said about whether it
+   has ever been shown to enforce. An unanswered question is not a clean answer."
+```
+
+The rollup above it does not. Third occurrence in this run of the same shape: **a summary derived independently
+of the rows it sits on top of, disagreeing with them silently** (see D-S1e and D-S3d).
+
+**Defeat / discriminating control:** the same rollup with proof states present reports `1/1/1/3/1` and the
+per-instance rows agree — so the blank is caused by the pre-F38 shape, not by the panel being inert.
+
+**Fix shape (not applied):** render the `not-served` bucket, or emit a rollup-level note when
+`sum(displayed buckets) !== instances`.
