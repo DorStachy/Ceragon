@@ -208,12 +208,283 @@ admits the second one ("a gated `describe` beside an un-gated one is invisible t
 
 ---
 
-## 4. Results
+## 4. Results — PROVEN
 
-*(populated when the run completes — see §5 for the classified failure list)*
+**The run completed.** S10 row A2 moves from BLOCKED to a real verdict.
+
+```
+shard 1 exit=1 elapsed=1119s   Test Suites: 7 failed, 1 skipped, 236 passed, 243 of 244 total
+shard 2 exit=1 elapsed=690s    Test Suites: 6 failed, 1 skipped, 236 passed, 242 of 243 total
+shard 3 exit=1 elapsed=1651s   Test Suites: 14 failed, 229 passed, 243 total
+shard 4 exit=1 elapsed=1358s   Test Suites: 10 failed, 233 passed, 243 total
+e2e     exit=0                 Test Suites: 1 passed, 1 total   Tests: 26 passed, 26 total
+```
+
+Wall clock **4818 s = 80 min** for 973 suites, against a projected 7–13 h — about **6.5× faster than
+the host baseline**, of which 1.86× is the filesystem and the rest is being able to raise the worker
+count without taking the engine down.
+
+| | suites | tests |
+|---|---|---|
+| discovered | **974** | |
+| passed | **934** | 15 861 |
+| failed | **37** | 40 |
+| skipped (whole file) | **2** | |
+
+934 + 37 + 2 = 973 under the main config, plus the 1-suite e2e lane = **974**.
+
+### Discovered vs executed, BY LANE
+
+```
+lane                    disc  exec  skip  failRun  vacuous  redSuites  tests+  tests-
+-------------------------------------------------------------------------------------
+licenses-integration      30    30     0        0        0          6     252      22
+live-pg                   80    75     0        5        0          4    1004      11
+e2e-dot                    4     3     0        1        0          1      16       1
+e2e-dash                   1     1     0        0        0          0      26       0
+dev-only                   1     0     1        0        0          0       0       0
+unit                     858   839     1       18        0          2   14563       6
+-------------------------------------------------------------------------------------
+TOTAL                    974   948     2       24        0         13
+
+jest numTotalTestSuites across summaries: 974
+testResults rows across summaries:        974
+```
+
+**VACUOUS = 0 in every lane.** No lane reports green while asserting nothing. That is the honest
+answer to "is a whole lane discovered but never executed" — and this time it is good news, earned
+rather than assumed.
+
+**The live-pg lane is live.** 80 discovered, 75 executed, **1004 tests passed**. The spec flagged to
+me specifically, `src/ai-governance/services/ai-query.optout-details-allowlist.live-pg.spec.ts`,
+executed **12 assertions, all passed**:
+
+```
+jest-summary-shard-1.json | src/ai-governance/services/ai-query.optout-details-allowlist.live-pg.spec.ts
+  status: passed | assertions executed: 12 | pending: 0
+   - passed : stores all seven identifying keys in ai_events.metadata (the write side is honest)
+   - passed : projects all seven onto the ACTIVITY row
+   - passed : projects all seven onto the SESSION TIMELINE row
+   - passed : surfaces every key the shared contract names, read off a live console row
+```
+
+The 5 live-pg suites in the `failRun` column are not skips — they are red-before-assertion, and all
+5 went green on a serial re-run (§4.2).
+
+**Both file-skips are correct and already allowlisted.** The repo's own gate agrees on all shards:
+
+```
+suite-gate [be-suite-lane shard 1/4]: 1 allowlisted skip(s):
+  - [aspirational-target-behaviour-intentionally-red] src/ai-governance/m47-backend-truth.repro.spec.ts
+suite-gate [be-suite-lane shard 2/4]: 1 allowlisted skip(s):
+  - [unsatisfiable-precondition] src/shared-contracts-guard/shared-contracts-mirror.dev.spec.ts
+suite-gate ... shard 1/4: OK — every discovered suite executed.
+suite-gate ... shard 2/4: OK — every discovered suite executed.
+suite-gate ... shard 3/4: OK — every discovered suite executed.
+suite-gate ... shard 4/4: OK — every discovered suite executed.
+```
+
+### 4.1 A lane note that outlives the totals
+
+`e2e-dash` — `test/jest-e2e.json` — is **structurally invisible to `npm test`**. Its one spec is
+`*.e2e-spec.ts`; `jest.config.js` matches `.*\.spec\.ts$`, which a `-spec.ts` filename does not
+satisfy. That config also carries `passWithNoTests: true`, so discovering nothing green-passes. In CI
+it runs **only** in `build.yml`'s `e2e_advisory` job, which is `workflow_dispatch`-only and
+deliberately outside the deploy job's `needs`.
+
+That is exactly the defect class — except **the author already defended against it**. The spec's
+header names the risk, and every test calls `expect.hasAssertions()` so a zero-assertion run cannot
+masquerade as green. It executed here: **26 tests, 26 passed**. Reported because the *structure* is
+fragile (one config, one file, `passWithNoTests: true`, advisory-only), not because it is dark today.
+
+### 4.2 The 37 failures, classified
+
+Method: re-run only the red suites with contention removed — one container, `--runInBand` (no worker
+pool at all, so "worker terminated" cannot occur by construction), 3 GiB heap, nothing else running,
+same live-PG environment. Run twice, identical both times: **13 failed, 23 passed, 36 total**.
+
+#### (a) REAL — defects in the merged Backend: 8 suites
+
+**A1 — `AiController` gained a 7th constructor parameter and no spec was updated. 6 suites, 8 errors.**
+
+CX-7 added `private readonly optOutCoverage: AiOptOutCoverageService` at `ai.controller.ts:115`,
+deliberately **not** `@Optional()`. All six specs that construct the controller still pass 6
+arguments, so they **fail to compile and have never executed on this branch**. Independently
+confirmed by `tsc --noEmit` — the same check CI's `typecheck` job runs:
+
+```
+src/agents/ai-correlation-key-custody.readiness.spec.ts(92,12): error TS2554: Expected 7 arguments, but got 6.
+src/ai-governance/controllers/ai-runtime-filter.wire.spec.ts(92,18): error TS2554: Expected 7 arguments, but got 6.
+src/ai-governance/controllers/ai-runtime-filter.wire.spec.ts(125,18): error TS2554: Expected 7 arguments, but got 6.
+src/ai-governance/controllers/ai.controller.exceptions.spec.ts(54,16): error TS2554: Expected 7 arguments, but got 6.
+src/ai-governance/controllers/ai.controller.export.spec.ts(83,16): error TS2554: Expected 7 arguments, but got 6.
+src/ai-governance/controllers/ai.controller.qa-remediation.spec.ts(25,26): error TS2554: Expected 7 arguments, but got 6.
+src/ai-governance/controllers/ai.controller.qa-remediation.spec.ts(81,24): error TS2554: Expected 7 arguments, but got 6.
+src/ai-governance/services/ai-query.thread-sort-order.spec.ts(469,16): error TS2554: Expected 7 arguments, but got 6.
+tsc exit=2
+```
+
+`tsconfig.json` has `include: ["src/**/*"]` and does **not** exclude specs, so CI's typecheck job
+would fail this SHA. It surfaced here rather than in CI because nothing has run CI on the merged
+integration SHA. One of the six even carries the stale comment
+`// Real ctor arity on this branch (Wave C added exceptionService as the 5th)` — it was updated for a
+*previous* arity change and not for this one, which is the signature of waves landing independently.
+**Blocks merge. The fix is mechanical.**
+
+**A2 — `aicp-m1-invariants.e2e.spec.ts` INVARIANT 3: producer and spec disagree on a persisted enum's case.**
+
+```
+● AICP M1 invariants (real Postgres, real services) › INVARIANT 3 — dead-man switch records a went-dark agent, idempotently
+  expect(received).toBe(expected)
+  Expected: "agent_went_dark"
+  Received: "AGENT_WENT_DARK"
+  > 247 |     expect(tamperRow.metadata.reason).toBe('agent_went_dark');
+```
+
+CI recorded this suite green (4/4) on 2026-08-08, so one side changed after that. **Needs an owner
+decision on which case is canonical** — if any consumer matches this string exactly, this is a live
+behaviour change and not a test nit.
+
+**A3 — `scanner-cache-schema.spec.ts`: the allowlist guard flags its own spec file.**
+
+```
+● Cache-version literal lockdown › no Backend file outside the canonical allowlist declares a numeric cache-version literal
+  - Expected  - 1     Array []
+  + Received  + 3     Array [ "/app/src/packages/services/scanner-cache-schema.spec.ts", ... ]
+```
+
+The sweep includes the file performing the sweep. A test-design defect, but red on the merged branch
+and still red serially.
+
+#### (b) Not part of the merged Backend: 1 suite
+
+`src/ai-governance/services/zz-adv-reporter-probe.live-pg.spec.ts` is **untracked** in the worktree —
+another workstream's scratch probe. It sits inside the Docker build context, so it is inside the run.
+It fails on a malformed fixture UUID:
+
+```
+QueryFailedError: invalid input syntax for type uuid: "15adv000-0000-4000-8000-000000000001"
+```
+
+(`v` is not a hex digit.) Not a finding against `integ/gate-backend` — flagged so nobody counts it as one.
+
+#### (c) Environmental / lane-caused: 28 suites
+
+- **23 — parallel contention.** Green on serial re-run. Two signatures: `A jest worker process was
+  terminated by another process: signal=SIGTERM/SIGKILL` (jest recycling a worker mid-assignment), and
+  `Exceeded timeout of 5000 ms for a hook` (a `beforeAll` reaching Postgres while three ts-jest
+  workers share 12 vCPUs). Includes all 6 licenses-integration reds and 4 of the live-pg reds.
+- **1 — `LicenseIssuesRepository.summary+charts.spec.ts`.** Green serially (8/8). The classifier's
+  first pass never ran it: `+` is a regex metacharacter, so jest's path pattern did not match the
+  filename. A real limitation of my classifier, recorded rather than papered over.
+- **3 — `build-stamp-{dist,taskdef,nest-build}.spec.ts`: my image's fault, not the code's.**
+  `spawnSync git ENOENT` / `spawnSync jq ENOENT`. All three pass once `git` and `jq` exist (measured
+  14/14, 5/5, and a green nest-build). They do **not** need a real `.git` — they build throwaway repos
+  in a temp dir. `Dockerfile.suite` now installs both.
+- **1 — `build-stamp-deploy-gate.spec.ts`: cannot pass in this lane, by design.** It calls
+  `execFileSync('docker', ['build', …])` to construct fixture images, so it needs a Docker daemon
+  inside the test. Supplying one means mounting the host docker socket — which the tool-risk guard
+  blocks, correctly. **Treat as NOT EXERCISED here, not as a pass and not as a failure.**
+
+#### Known-flaky list: not applicable
+
+`BoundedFanOutCompletesInTimeBox`, `internal/skillgate TestResolve_PluginFastPathHonoursContext` and
+`TestRootCockpitUsesLiveStatus` are **Go** tests in the Installers repo. They cannot appear in a
+TypeScript Jest suite, and none of them did.
+
+### 4.3 RULE 0 — the lane can be made red — PROVEN
+
+One production line deleted: the CSV-injection formula guard in `src/common/csv.util.ts`, asserted by
+`csv.util.spec.ts:28`. All three phases in one container, one image layer, one jest binary:
+
+```
+########## PHASE 1 — BASELINE (unmodified production source) ##########
+    ✓ neutralizes a leading formula trigger on STRING cells only (1 ms)
+    ✓ applies the guard then still quotes when needed (1 ms)
+Test Suites: 1 passed, 1 total
+Tests:       11 passed, 11 total
+PHASE1_EXIT=0
+
+########## PHASE 2 — MUTATE: delete the CSV-injection formula guard ##########
+28:  if (FORMULA_LEAD.test(s)) s = `'${s}`;
+--- line is gone: ---
+0
+  ● csvCell — RFC-4180 quoting + spreadsheet-injection guard › applies the guard then still quotes when needed
+    expect(received).toBe(expected)
+    Expected: "\"'=1,2\""
+    Received: "\"=1,2\""
+Test Suites: 1 failed, 1 total
+Tests:       2 failed, 9 passed, 11 total
+PHASE2_EXIT=1
+
+########## PHASE 3 — RESTORE ##########
+source restored byte-for-byte
+Test Suites: 1 passed, 1 total
+Tests:       11 passed, 11 total
+PHASE3_EXIT=0
+```
+
+GREEN → RED → GREEN.
+
+**Scope, stated honestly:** the mutation was verified against the affected spec, not by re-running all
+973 suites, because a full re-run costs 80 minutes per phase. What is proven is that the lane's jest
+compiles and executes the image's production source and reports a real failure when that source changes.
+
+### 4.4 Two things that bit me, recorded so they do not bite the next person
+
+**A memory limit set below the working set does not save memory — it manufactures test failures.**
+My first configuration (`WORKERS=4 / HEAP_MB=1024 / IDLE_LIMIT=900MB`) produced, in ~15 minutes: 0
+PASS lines, 9 suites "failed to run", 4 × `JavaScript heap out of memory`, 2 worker SIGKILLs and 16
+worker SIGTERMs. `IDLE_LIMIT=900MB` sits *below* the ~850 MB a healthy ts-jest worker already
+occupies, so jest recycled workers almost every file, and a worker torn down mid-assignment reports
+its file as failed. ts-jest instantiates a TS program over the whole `src` graph in **every** worker,
+so ~1 GB is the floor for one worker, not a budget.
+
+**`jest --json --outputFile` crashes on this suite set.**
+
+```
+TypeError: Converting circular structure to JSON
+    --- property 'error' closes the circle
+    at processResults (/app/node_modules/@jest/core/build/runJest.js:194:17)
+```
+
+It throws *after* every test has run, so the summary file is never written. The sharded run was
+unaffected — each shard wrote its summary and the gate read all four — but a whole-suite `--json` run,
+which is exactly what `build.yml`'s deploy-gate step does, can lose its summary this way while every
+test actually ran. The classifier therefore does not use `--json`.
 
 ---
 
 ## 5. Restoration
 
-*(populated at the end of the run)*
+Created by this work and removed at the end: containers `be-suite-pg`, `be-suite-pg-aicp-m1`,
+`be-suite-pg-aicp-m2`, `be-suite-runner`, `be-suite-classify`; volumes `be-suite-pgdata-*`.
+
+- **The Backend worktree `C:/cwt/int-be` is exactly as found** — branch `integ/gate-backend`, HEAD
+  `08d24367`, the same 95 CRLF-only `packages/shared-contracts/dist/*` entries and the same single
+  untracked probe file. Nothing was written to it; the lane reads it only as a Docker build context.
+- **No `npm install` was ever run on a host worktree.** Installs happen inside the image.
+- **The pre-existing `codesec-e2e` stack (another workstream's) was left running throughout** and
+  budgeted around, never stopped.
+- **WSL untouched** — never written to. `Ubuntu` and `docker-desktop` both still `Running`, and the
+  deliberate gate-contamination entry is exactly as found:
+  `drwxr-xr-x 2 root root 4096 Aug 18 15:39 /etc/codex/requirements.toml` — still a directory, with a
+  timestamp predating this session.
+- Nothing under `C:\ProgramData\` or `C:\Users\Owner\.codex` was touched. No branch switched, no push,
+  no `git add -A`, no commit to any Backend repo.
+
+## 6. What is NOT proven
+
+- **`build-stamp-deploy-gate.spec.ts` — NOT EXERCISED.** Needs a Docker daemon inside the test.
+- **The e2e lane is thin by construction** — 1 suite, 26 tests. Green, but not broad coverage.
+- **The 23 contention failures are proven green *serially*, not proven green *under the parallel
+  lane*.** They will likely recur at `WORKERS=3`. Fixing that needs either a larger VM, `WORKERS=2`
+  (~2× the wall clock), or raising the 5-second hook timeout in the live-PG specs — a test-config
+  change deliberately not made here.
+- **All four shards shared ONE Postgres, sequentially**, where CI gives each shard its own. Cross-shard
+  state persists here and does not in CI. No failure was traced to this, but it is not ruled out.
+- **The recorded numbers come from the image built BEFORE `git`/`jq` were added.** The three
+  build-stamp suites were proven green by installing those binaries at runtime, not by a rebuilt image.
+  A rebuild moves them from failed to passed: **934 → 937 passed, 37 → 34 failed.**
+- **Suite-count fidelity to CI is not established.** CI shards on its own runners with `--maxWorkers=2`;
+  this lane's timing-sensitive suites ran under a different schedule.
