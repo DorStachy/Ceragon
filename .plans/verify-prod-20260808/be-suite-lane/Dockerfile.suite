@@ -27,8 +27,20 @@ WORKDIR /app
 
 # python3/make/g++ are the node-gyp fallback for bcrypt when no prebuild matches;
 # postgresql-client gives the runner a `pg_isready` for the readiness gate.
+#
+# git + jq ADDED 2026-08-19 after the first full run. Three suites --
+# build-stamp-dist, build-stamp-taskdef, build-stamp-nest-build -- failed with
+# `spawnSync git ENOENT` / `spawnSync jq ENOENT`, i.e. the LANE was red, not the
+# code. All three PASS once these two binaries exist (measured: 14/14, 5/5,
+# and a green nest-build suite). They do NOT need a real `.git` -- the specs
+# build their own throwaway repos in a temp dir.
+#
+# build-stamp-deploy-gate.spec.ts is NOT fixed by this and is not meant to be:
+# it shells out to `docker build` to construct fixture images, so it needs a
+# Docker daemon inside the test. This lane does not provide one and must not --
+# mounting the host docker socket is precisely what the tool-risk guard blocks.
 RUN apt-get update \
- && apt-get install -y --no-install-recommends ca-certificates python3 make g++ postgresql-client \
+ && apt-get install -y --no-install-recommends ca-certificates python3 make g++ postgresql-client git jq \
  && apt-get clean
 
 # `@ceragon/shared-contracts` is a `file:` dependency: its directory has to exist

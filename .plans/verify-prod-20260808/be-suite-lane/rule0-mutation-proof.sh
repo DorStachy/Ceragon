@@ -30,11 +30,11 @@ SPEC=src/common/csv.util.spec.ts
 
 export MSYS_NO_PATHCONV=1
 
-docker run --rm --memory=1500m --memory-swap=1500m \
+docker run --rm --memory=3g --memory-swap=3g \
   -e JWT_SECRET=ci-test-only-jwt-secret \
   "$IMAGE" bash -c "
 set -u
-J='node --max-old-space-size=1024 node_modules/jest/bin/jest.js --ci --maxWorkers=1'
+J='node --max-old-space-size=2048 node_modules/jest/bin/jest.js --ci --maxWorkers=1'
 
 echo '########## PHASE 1 — BASELINE (unmodified production source) ##########'
 \$J $SPEC 2>&1 | tail -12
