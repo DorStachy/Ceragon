@@ -229,11 +229,14 @@ count without taking the engine down.
 | | suites | tests |
 |---|---|---|
 | discovered | **974** | |
-| passed | **934** | 15 861 |
+| passed | **935** | 15 861 |
 | failed | **37** | 40 |
 | skipped (whole file) | **2** | |
 
-934 + 37 + 2 = 973 under the main config, plus the 1-suite e2e lane = **974**.
+935 + 37 + 2 = **974**. Of the 935 passed, 934 are under `jest.config.js` (236 + 236 + 229 + 233
+across the four shards) and 1 is the e2e lane. Of the 37 failed, 13 executed and then failed and 24
+were red before a single assertion — that split is the `redSuites` / `failRun` columns below, and it
+matters: a compile error and a failed expectation are not the same finding.
 
 ### Discovered vs executed, BY LANE
 
