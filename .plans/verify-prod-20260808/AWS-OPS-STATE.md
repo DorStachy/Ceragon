@@ -23,7 +23,7 @@ performed. Where closing an item needs a write, the exact command for a human is
 | C-0c | **§C's prescribed remediation is wrong and would re-break #20** | **FAIL — register defect** |
 | C-1 | `AUDIT_RETENTION_DAYS` explicit | **FAIL — unset; implicit 30-day cut in force** |
 | C-2 | `CERAGON_ENV=production` | **PASS** |
-| C-2b | `DYNAMODB_ARTIFACT_CACHE_TABLE` points at production | **FAIL — bound to the STAGING table** |
+| C-2b | `DYNAMODB_ARTIFACT_CACHE_TABLE` name | **PASS — staging-named table is correct by design; `CLAUDE.md:41` is stale** |
 | C-3 | `RELEASE_MANIFEST_PATH` + its `s3:GetObject` grant | **FAIL — unset (honest 503)** |
 | C-4 | CloudWatch alarms | **FAIL — no alarm on any register-named lane** |
 | C-5 | Hetzner / intel ECS at 0/0 | **PASS — expected state** |
@@ -266,9 +266,11 @@ aws ecs update-service --cluster backend --service backend-service --region eu-n
 The `CERAGON_ENV || 'staging'` silent fallback (F37) is **not** in force — the value is set explicitly, so the
 `ceragon-production-artifact-{alias,catalog,verdict}` tables are the ones addressed on that path.
 
-### C-2b `DYNAMODB_ARTIFACT_CACHE_TABLE` — VERDICT: FAIL — **production is bound to the STAGING table**
+### C-2b `DYNAMODB_ARTIFACT_CACHE_TABLE` — VERDICT: PASS (by design) — **DO NOT "FIX" THIS**
 
-Not on the register. Found during this inspection.
+> **Correction.** An earlier revision of this document called this a FAIL. **That verdict was wrong and is
+> retracted.** The staging-*named* table is the intended production cache. Recorded here in full because the
+> mistake is an easy one to repeat, and acting on it would cause an outage.
 
 ```json
 { "name": "DYNAMODB_ARTIFACT_CACHE_TABLE", "value": "cera-artifact_analysis_cache-staging" }
@@ -285,22 +287,30 @@ $ aws dynamodb describe-table --table-name cera-artifact_analysis_cache-producti
 { "name": "cera-artifact_analysis_cache-production", "items": 0,    "size": 0,       "status": "ACTIVE" }
 ```
 
-`AWS_INFRASTRUCTURE_SOURCE_OF_TRUTH` / `CLAUDE.md` name `cera-artifact_analysis_cache-production` as the table
-Backend reads. The production backend is instead reading **staging's 1360 rows**, while the production table sits
-empty. `fix-specs/BACKENDOPS.md:545` predicted exactly this shape: *"dynamodb-cache.service.ts:644 reads
-`DYNAMODB_ARTIFACT_CACHE_TABLE` with no environment assertion at all, so it will happily attach to a staging
-table name and log 'DynamoDB connectivity VERIFIED' against it."* Live `/api/v1/health` reports
-`"dynamodb": true` — the health surface confirms connectivity to *a* table and cannot tell you it is the wrong
-one.
+The canonical source of truth rules on this explicitly
+(`docs/MostUpdated_SourceOfTruth/CERA_PRODUCT_GUIDE_PLAIN_ENGLISH.md:535`):
 
-Needs an owner call before any write: repointing production at the empty production table moves the cache from
-*wrong-environment data* to *no data*, which changes install-time behaviour. **Flagged, not fixed.**
+> ⚠️ **The live production cache is the table named `cera-artifact_analysis_cache-staging`** (~1,100+ entries).
+> The similarly-named `-production` table is **empty** — a historical naming quirk. *Do not "fix" this name*;
+> flipping it would point the system at the empty table and trigger a re-analysis storm.
+
+The measured state matches that ruling exactly — 1360 rows in the staging-named table, 0 in the production-named
+one. **The configuration is correct. No change is required, and the obvious-looking change is harmful.**
+
+**The real defect here is documentation drift.** `CLAUDE.md:41` states that Backend reads
+`cera-artifact_analysis_cache-production`, which contradicts the SOT and would lead a reader (or an agent) to
+"correct" the live task definition into an outage. `AWS_INFRASTRUCTURE_SOURCE_OF_TRUTH.md:700` sidesteps it by
+writing the generic `cera-artifact_analysis_cache-{env}`.
 
 ```bash
-# NOT RUN. Same register/update-service sequence as C-1, setting
+# NOT RUN, and MUST NOT BE RUN:
 #   DYNAMODB_ARTIFACT_CACHE_TABLE=cera-artifact_analysis_cache-production
-# Decide FIRST whether the production table is backfilled before the switch.
+# This is the re-analysis-storm change the SOT forbids.
 ```
+
+**Documentation fix for a human** (a text edit, not an AWS write): amend `CLAUDE.md:41` to name
+`cera-artifact_analysis_cache-staging` as the live production cache, with the naming-quirk note, so the next
+reader does not repeat the mistake this section retracts.
 
 ---
 
@@ -644,7 +654,10 @@ These were **not** verified, with the reason:
    Only `buildTime` remains, and its fix is an unpushed commit, not an ops action. (1.4)
 3. **Section C "`RELEASE_MANIFEST_PATH` + its `s3:GetObject` grant"** — the grant already exists. The real
    blocker is that no complete manifest is published, which is a pipeline item, not an ops item. (4)
-4. **New, unregistered, live:** `DYNAMODB_ARTIFACT_CACHE_TABLE` points production at the staging table. (3)
+4. **`CLAUDE.md:41` is stale and dangerous.** It names `cera-artifact_analysis_cache-production` as the table
+   Backend reads; the SOT says the staging-*named* table is the live production cache and that "fixing" the name
+   would trigger a re-analysis storm. This document's first revision fell for it and recorded a false FAIL —
+   retracted in (3). Amend `CLAUDE.md` so the next reader does not.
 5. **B4 / C11d-2 is answered:** consumer-less lanes are real and silent today —
    `ceragon-production-verdict-write` (115 msgs, never consumed) and `ceragon-production-rescan-plan` (79), plus
    a 283-message unalarmed production DLQ. (8)
