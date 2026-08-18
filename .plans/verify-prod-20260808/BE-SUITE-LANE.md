@@ -1,5 +1,7 @@
 # Backend full-suite lane — configuration, denominators, results
 
+Subject: `integ/gate-backend` @ **`08d24367`** (the worktree has since advanced — see §7).
+
 Closes S10 gate row **A2 Backend full suite**, which has been BLOCKED since 2026-08-08 with
 "no complete run achieved, so there is no count and this is **not a PASS**".
 
@@ -488,3 +490,56 @@ Created by this work and removed at the end: containers `be-suite-pg`, `be-suite
   A rebuild moves them from failed to passed: **934 → 937 passed, 37 → 34 failed.**
 - **Suite-count fidelity to CI is not established.** CI shards on its own runners with `--maxWorkers=2`;
   this lane's timing-sensitive suites ran under a different schedule.
+
+---
+
+## 7. Addendum — the branch moved under the run, and finding A1 is already fixed
+
+**Which SHA these numbers describe.** The run was taken against `integ/gate-backend` at
+**`08d24367`**. By the time it finished, a concurrent session had advanced the shared worktree to
+**`abaed97b`** — eight commits, none of them mine. Everything in §4 describes `08d24367`. I never
+wrote to that worktree; the lane reads it only as a Docker build context.
+
+**Finding A1 was found independently by that session and is fixed at the tip.** Two of those eight
+commits are exactly it:
+
+```
+767f07c6 merge(gate-backend): six spec files could not compile, so 46 assertions ran as zero
+0d0e2826 test(ai-governance): six spec files could not compile, so 46 assertions were running as zero
+```
+
+Same six files, same cause. They fixed it by supplying the missing 7th argument positionally, which
+is why it does not grep as `optOutCoverage`:
+
+```
+83:  const ctrl = new AiController(
+...
+89-    { custodyReadiness: () => ({ ... }) } as never,
+90-    {} as never
+91-  );
+```
+
+Verified at `abaed97b` with the same independent check used in §4.2:
+
+```
+tsc-errors-total: 0
+```
+
+So A1 is **CONFIRMED REAL and NO LONGER ACTIONABLE** — two independent discoveries of the same defect,
+already closed. Their commit message puts the cost at **46 assertions that were running as zero**,
+which is the same quantity this lane's `failRun` column exists to make visible.
+
+**What this does not change.** A2 (`aicp-m1-invariants` enum-case mismatch) and A3
+(`scanner-cache-schema` self-referential sweep) were not touched by those eight commits and should be
+assumed still open. They were not re-verified at `abaed97b` — re-running them means rebuilding the
+image against the new tip, which is the correct next step for whoever picks this up:
+
+```bash
+cd .plans/verify-prod-20260808/be-suite-lane
+bash run-be-suite.sh build && bash run-be-suite.sh up && bash run-be-suite.sh run
+```
+
+**The honest lesson.** A shared worktree is not a stable test subject. A run this long should pin its
+subject — build the image from a detached checkout of an explicit SHA, and record that SHA in the
+image — otherwise the answer describes a tree that no longer exists by the time it arrives. The lane
+records `BE_SRC` but not its commit; that is the first thing to fix in it.
