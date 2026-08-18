@@ -23,7 +23,7 @@ const PORT = Number(process.env.CDP_PORT || 9366)
 const APP = process.env.APP || 'http://localhost:3130'
 const STUB = process.env.STUB || 'http://127.0.0.1:2163'
 const OUT = path.join(__dirname, '..', 'shots')
-const PROFILE = path.join(os.tmpdir(), 'staged-profile-' + PORT)
+const PROFILE = path.join(os.tmpdir(), 'staged-profile-' + PORT + '-' + Date.now())
 const SITE = '11111111-1111-4111-8111-111111111111'
 
 const NAME = process.argv[2]
@@ -140,7 +140,10 @@ function connect(u) {
       const ids = ${JSON.stringify(TESTIDS)}
       const found = {}
       for (const id of ids) {
-        const els = Array.from(document.querySelectorAll('[data-testid="' + id + '"]'))
+        // A bare word is a data-testid; anything with CSS punctuation is used
+        // as a raw selector, because not every surface labels itself testid.
+        const sel = /^[\w-]+$/.test(id) ? '[data-testid="' + id + '"]' : id
+        const els = Array.from(document.querySelectorAll(sel))
         found[id] = els.map((el) => ({
           text: el.innerText.replace(/\\s+/g, ' ').trim().slice(0, 700),
           attrs: Object.fromEntries(Array.from(el.attributes).filter(a => a.name.startsWith('data-')).map(a => [a.name, a.value])),
