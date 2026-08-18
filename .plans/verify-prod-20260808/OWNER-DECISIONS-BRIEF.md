@@ -12,13 +12,16 @@ confirmation, not a decision.
 
 | # | Item | Blocks the push? | One-line recommendation |
 |---|---|---|---|
-| 1 | Shared-contract parity | **No** | Take Intel's value on all three real divergences; delete the orphan copy |
-| 2 | F36 Stage 2 | **No** | Ship Stage 1; build the corrected Stage 2 already written in the spec |
-| 3 | F16 credential split | **YES** | Elevation-gate the mint; do not split the credential this wave |
-| 4 | C11d-2 abandoned queue | **No** | Add the one alarm that needs no threshold |
-| 5 | F11 | **No** | ALREADY DECIDED — do not fix in code; confirm and close |
-| 6 | overview-strip / guard-health | **No** | Draft spec below; six assumptions need your ruling |
-| 7 | `actor` raw or hashed | **No** | Keep it raw; it is not what the contract forbids |
+| 1 | Shared-contract parity | No | Take Intel's value on all three real divergences; delete the orphan copy |
+| 2 | F36 Stage 2 | No | Ship Stage 1; build the corrected Stage 2 already written in the spec |
+| 3 | F16 credential split | No — **blocks the MSI** | Elevation-gate the mint; do not split the credential this wave |
+| 4 | C11d-2 abandoned queue | No | Add the one alarm that needs no threshold |
+| 5 | F11 | No | ALREADY DECIDED — do not fix in code; confirm and close |
+| 6 | overview-strip / guard-health | No | Draft spec below; seven assumptions need your ruling |
+| 7 | `actor` raw or hashed | No | Keep it raw; it is not what the contract forbids |
+
+**None of the seven blocks the push.** Item 3 is the one that must be settled before the agent MSI is cut, and it is
+the only item that can cause permanent damage in the field.
 
 ---
 
@@ -569,3 +572,104 @@ render-surface verification that **has never been run**, and which is where the 
 spec means Stage D cannot close, so the definition of done cannot be met even if everything else lands.
 
 ---
+
+## 7. Should the integrity record name the operator, or hash them?
+
+**The question.** The opt-out record now carries `actor` — an operator's login name such as `HOST\user` — in plain
+text, on a channel where every other identity field arrives hashed. Keep it readable, or hash it?
+
+**Why it is open.** Commit `af4ebaaa` admits `actor` to the allowlist and flags the tension in its own message as
+*"REVIEW NOTE, unresolved"*, because §10 register #15 requires the row to **name** the authorizing actor while the
+file's header says the channel exists so a caller *"cannot leak a path, SID, command line, prompt or policy body
+through it"*.
+
+### The fact that decides it: this value does not leave the machine
+
+I traced the mirror's second destination, since that was the thing that would have changed the answer. **It is a
+local file.**
+
+- The primary mirror writes to the operator's own config directory (`system_evidence_integrity.go:270-275`).
+- The privileged spool writes to `%ProgramData%\Devoid\evidence\tamper.log` on Windows, or
+  `/var/lib/devoid/evidence/tamper.log` on Linux and macOS (`system_evidence.go:45-56`). On Linux and macOS it
+  travels over a local unix socket to a privileged service on the same box. **There is no network destination on
+  either path.**
+- The channel explicitly refuses the one queue that *does* leave — `system_evidence_integrity.go:280`: *"IT DOES NOT
+  AND MUST NOT WRITE `Paths.EventQueuePath`"*, the queue that rides the heartbeat.
+
+**And the channel that does leave the box does not carry `actor` at all today.** The durable, server-bound spool
+gates on `internal/daemon/evidence_delivery.go:17`, and of the seven opt-out keys only `reason` is on that list.
+`actor` is not. So as things stand, the raw name goes to two local files and nowhere else.
+
+### The tension is smaller than it looks
+
+Two things weaken the "everything else is hashed" premise:
+
+1. **A login name is not one of the five things the contract forbids.** The header names *path, SID, command line,
+   prompt, policy body*. The three hashed neighbours hash exactly those kinds — `actorSidHash` (a SID),
+   `actorProcessPathHash` (a path), `actorSignerHash` (a signer). The hashing tracks the forbidden list; it is not a
+   blanket rule about identity. Two other actor fields, `actorSource` and `actorAssurance`, are already unhashed.
+2. **The value is bounded, not free text.** `integrityDetailMaxLen = 96` (`:139`), enforced at `:230`, with empty
+   values and embedded newlines or tabs rejected at `:230` and `:238`. A producer cannot smuggle a prompt or a policy
+   body through a 96-character, newline-free field.
+
+**What the design intends.** `internal/aiwire/optout.go:165-170` names four gates that should key off the same
+producer list: this local mirror, the durable spool, the Backend console projection, and the shared contract. Register
+#15 wants the console row to say who authorized the transition. So the intended end state is that `actor` reaches the
+console — the local mirror is the *least* exposed of the four, not the most.
+
+### Options
+
+**Option A — Admit `actor` raw, here and on the channels that will later carry it.**
+Cost: nothing now; the code already does this. Risk: on a shared Windows machine the ProgramData spool is readable by
+authenticated local users, so other users of that box can see who opted out. When the console gate opens, the login
+name lands in the audit database.
+
+**Option B — Hash `actor` everywhere.**
+Cost: one change here, and hashed values on every future gate. Risk: **register #15 becomes unmeetable.** A hash
+cannot name anybody. The audit row would record that *someone* authorized the transition and be permanently unable to
+say who — which is the exact defect #15 exists to fix. Accountability is the whole point of the field.
+
+**Option C — Raw locally, hashed on anything that leaves the box.**
+Cost: a second representation and the code to switch between them. Risk: this is the worst of the three. The place
+#15 actually needs a name is the **console** row, so hashing on egress fails the requirement precisely where it
+matters — and it produces two different answers to "who authorized this?" for one transition, with the machine-local
+copy the only one that can answer. An investigator reading the console would have to go to the endpoint to learn
+anything.
+
+**Option D — Keep it raw locally now; decide the egress form when the other gates are actually widened.**
+Cost: nothing. Risk: the decision returns later. But it returns attached to the work that makes it real, rather than
+being made now in the abstract.
+
+### Recommendation
+
+**Option A. The single reason: a login name is not one of the five content classes this channel forbids, and hashing
+it would make the register requirement — name the authorizing actor — permanently impossible to satisfy.**
+
+The bound is already enforced, the value already cannot carry a newline or exceed 96 characters, and the field is
+already unable to reach the wire. If you want a smaller step, Option D is Option A with the decision deferred to the
+moment it has consequences — the code needs no change either way.
+
+One thing to know rather than to decide: the ProgramData spool grants read to authenticated users on that machine, so
+on a shared box the opt-out names its author to other local users. Given that opting out of security governance is
+exactly the sort of act that ought to be locally visible, I read that as acceptable — but it is a real property and
+you should hear it before choosing.
+
+### What happens if we defer
+
+**Does not block the push.** The value is confined to two local files, is bounded, and cannot reach the wire — the
+allowlist that would carry it off the box does not admit it. This can be settled whenever register A3 #15's remaining
+work opens the spool and console gates.
+
+---
+
+## What this means for the push
+
+**Nothing in section B blocks pushing the existing commits.** Items 1, 2, 4, 5, 6 and 7 are all either
+already-decided, config rather than code, additive frontend, or confined to a local file.
+
+**Item 3 (F16) is the one to settle before the agent MSI is cut**, not before the push. F16 was never built, so it is
+not in the tree being pushed — but it is the only item on the whole register that can cause permanent,
+unrecoverable damage in the field, and the credential it concerns is readable on every installed machine right now.
+
+**The real gate on the definition of done is not in this list.** Stage D — the render-surface verification — has
+never been run, and item 6 sits inside it. That is where the previous wave died.
