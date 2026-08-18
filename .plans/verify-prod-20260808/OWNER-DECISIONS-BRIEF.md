@@ -462,3 +462,110 @@ that a HIGH-severity "dead producer" claim stays on the register describing some
 work to do — which makes the register less trustworthy.
 
 ---
+
+## 6. overview-strip / region guard-health — no spec exists, so here is the smallest one
+
+**The question.** This item cannot be decided as written, because nothing anywhere says what it is. Below is the
+smallest honest spec that would let it be built — **and seven assumptions I had to invent, each of which needs your
+ruling before anyone starts.**
+
+**Why it is open.** `OPEN-REGISTER-TO-DONE.md:79` says *"no spec exists"*, and
+`REMEDIATION-PROGRESS.md:1004-1009` confirms it: *"It is a console surface whose acceptance criteria could not be
+found. It needs a spec before it needs an implementer."*
+
+### First — one correction that changes the size of this job
+
+**The register concluded "nothing exists", but its own evidence was narrower than its conclusion.** The check it ran
+searched only the Go module (`--include=*.go`). The surface is TypeScript, and **it is already built**:
+
+- The strip: `Frontend/components/overview/coverage-strip.tsx`, mounted at `Frontend/app/page.tsx:354`.
+- The region: `AiControlPlaneRegion` (`Frontend/components/overview/ai-control-plane-region.tsx:557`), mounted at
+  `Frontend/app/page.tsx:853` under the comment *"AI Control Plane region"*.
+- The feed: `GET /api/v1/ai/web-coverage` (`Backend/src/ai-governance/controllers/ai.controller.ts:146`), described
+  in its own comment as *"Web AI Guard coverage/health: per-endpoint browser-extension presence"*.
+
+So **"no spec" is right; "nothing built" is wrong.** This is a modification to a shipped surface, not a new feature.
+That materially shrinks it.
+
+Also note the full name in the source register is **`overview-strip / ai-plane region guard-health`** — the short
+form on the open register dropped "ai-plane", which is the word that decodes the whole item.
+
+> **Trap for whoever builds this:** the `Frontend` working copy is on `feat/font-geist`, and `coverage-strip.tsx`,
+> `kpi-strip.tsx`, `components/ui/absent.tsx`, `components/ui/pill.tsx` and `lib/absence.ts` exist **only on
+> `origin/main`**. Writing this against the working tree would re-invent components that already exist.
+
+### Draft spec — smallest honest version
+
+**Goal.** On the console landing page, inside the AI Control Plane region, the coverage strip states the health of
+Web AI Guard across the fleet, and never implies a measurement it does not have.
+
+**Feed.** The existing `GET /api/v1/ai/web-coverage`. No new route.
+
+**Vocabulary.** Three states only, per `IMPLEMENTATION_PLAN.md:199` (M5) — **PROTECTED / NOT PROTECTED / NOT
+REPORTED**. Never a boolean "healthy". Never a percentage computed on a zero denominator.
+
+**States and what each renders.**
+
+| Condition | Renders |
+|---|---|
+| Endpoint reports the guard installed, beaconing, not drifted | Protected |
+| Endpoint reports the guard absent, or reports drift | Not protected, with which of the two |
+| Endpoint has not reported guard coverage at all | **"Not reported"** — muted, never green, never red |
+| Zero endpoints in the tenant | "No endpoints enrolled" — never `0%`, never `100%` |
+| The feed itself failed | "Unavailable" — never zero, never hidden |
+
+**Rules it must obey.**
+
+1. Unknown is never folded into either side, and never dropped from the denominator. This is already the strip's
+   stated contract (`coverage-strip.tsx:15-26`).
+2. A failed source must always speak — never hidden, never drawn as 0% (`coverage-strip.tsx:291-292`).
+3. It replaces the existing ladder at `Frontend/app/admin/endpoints/coverage-section.tsx:917-925`, which is a **live
+   defect**: unknown currently falls through to "Active". `fix-specs/WEBGUARD.md:108` already requires this be
+   removed. Anything built here that copies that ladder inherits the bug.
+4. No in-house rationale in the copy — the strip states what is true of the fleet, never why we built it this way.
+
+**Acceptance.** The existing criterion `CN-04`
+(`PRODUCTION_VERIFICATION_CHECKLIST_20260808.md:1094-1103`) already covers this and should be the test:
+*"Every element traces to data; every empty element says it is empty rather than implying a measured zero."* Its
+stated false-pass is the exact trap — a coverage percentage computed as `covered / total` with `total = 0` rendering
+as `100%` or `0%`. **Defeat step: point the console at a tenant with no data and read the raw numerator and
+denominator out of the network response.**
+
+### The seven assumptions I invented — each needs your ruling
+
+1. **"Region" means a page region, not a geography.** I read it as `AiControlPlaneRegion`, the named UI section. There
+   is no per-geography health concept anywhere in the product, and `ai-activity-region.tsx` confirms "region" is this
+   codebase's word for a composed page section. **Confirm — if you meant AWS regions, this spec is wrong end to end.**
+2. **"Guard" means Web AI Guard only.** It could instead mean all enforcement lanes — command guard, DLP, Codex wire.
+   That would be a much larger surface with four feeds instead of one. **Which did you mean?**
+3. **Extend the existing strip rather than add a new one.** Cheaper and avoids two strips making adjacent claims.
+   **Confirm, or say you want a separate row.**
+4. **The absence wording.** M9 (`IMPLEMENTATION_PLAN.md:202`) specifies the literal `"Not reported"` with `title=` and
+   `data-absence=`. The **shipped** primitives disagree — `lib/absence.ts:22` renders `"-"` and
+   `components/ui/absent.tsx` carries a caller-supplied reason and `data-testid`, not `title`/`data-absence`. The
+   literal string `"Not reported"` does **not exist in the frontend today**. `HANDOVER-TO-DESIGN.md:80-84` flags this
+   clash and suggests the components may be the better design *"in which case M9's wording should change rather than
+   the components."* **Pick one. A spec cannot assume "Not reported" renders today, because it does not.**
+5. **The backend already serves the fields.** It may not. The response type declares only
+   `{ installed, online, stale }` (`Backend/src/ai-governance/dto/ai-response.dto.ts:380-388`), but the frontend
+   already reads `summary.degraded` and per-endpoint `drifted` / `policyAgeMs`. **Someone must verify whether those
+   are actually served, or this is a backend change too.** This is the one assumption that could change the size of
+   the work.
+6. **Fleet rollup, not per-endpoint.** The strip is a summary surface; per-endpoint detail already lives on the
+   endpoints page. **Confirm the strip is a rollup only.**
+7. **Read gate unstated.** Which roles see this? A reader without access must see an explicit "not readable at your
+   role", never an empty panel that looks like a clean result. **Name the roles.**
+
+### Recommendation
+
+**Answer questions 1, 2 and 4 first — they are the only three that change what gets built. The other four can be
+settled by whoever writes the spec.** Question 4 is the one most likely to cause rework, because the doctrine and the
+shipped components currently specify different things and both are checked in.
+
+### What happens if we defer
+
+**Does not block the push.** Nothing depends on this and no code is waiting on it. But it sits inside Stage D — the
+render-surface verification that **has never been run**, and which is where the previous wave died. Deferring the
+spec means Stage D cannot close, so the definition of done cannot be met even if everything else lands.
+
+---
