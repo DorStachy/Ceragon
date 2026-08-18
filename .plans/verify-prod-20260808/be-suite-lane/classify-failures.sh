@@ -71,8 +71,20 @@ echo "========================================"
 
 # --runInBand: no worker pool, so "worker terminated" cannot happen by
 # construction. If a suite is still red here, the harness is not why.
+#
+# NO `--json --outputFile` here, deliberately. Jest 29.7.0 crashes writing that
+# file when one of these suites fails:
+#
+#   TypeError: Converting circular structure to JSON
+#       --- property 'error' closes the circle
+#       at processResults (/app/node_modules/@jest/core/build/runJest.js:194:17)
+#
+# It throws AFTER every test has already run, so the summary is never written
+# and the reporter output is the only record of the result. Keep the FULL
+# reporter output -- an earlier cut piped it through `tail -80` and threw away
+# the very list this script exists to produce.
 node --max-old-space-size=3072 node_modules/jest/bin/jest.js \
-  --ci --runInBand --json --outputFile /out/jest-summary-reclassify.json \
-  $(tr "\n" " " < /tmp/failed.txt) 2>&1 | tail -80
-echo "reclassify exit=${PIPESTATUS[0]}"
+  --ci --runInBand \
+  $(tr "\n" " " < /tmp/failed.txt) 2>&1
+echo "reclassify exit=$?"
 '
