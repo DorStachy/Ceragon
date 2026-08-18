@@ -978,3 +978,321 @@ disposable VM.
 - **Do not repoint the workstation's Codex provider config.** That is a change to a production-governed
   endpoint's configuration and it is what this whole item is quarantined to a VM to avoid.
 - If a block does **not** fire, the prompt reached OpenAI. Record it as an incident.
+
+---
+
+# PART 3 — NEEDS A LIVE ENROLLED ENDPOINT
+
+Items 8-10 need a machine-scope DeVoid endpoint that is **enrolled and answering**. Every one of them runs on
+the VM against a **non-production** backend.
+
+> **⛔ ENROLMENT BOUNDARY.** The workstation's agent is enrolled against `https://api.devoid.one`. Enrol the VM
+> against a **non-production** backend, or against production only with a **throwaway site token you are
+> willing to revoke**. Confirm which before starting — this is the single decision that determines whether
+> items 8-10 can touch production data at all:
+>
+> ```powershell
+> # On the VM, AFTER enrolment - print the backend this endpoint talks to
+> C:\verify\devoid.exe status
+> ```
+>
+> If that prints `https://api.devoid.one`, stop and decide deliberately. Do not discover it afterwards.
+
+---
+
+<a name="8-b1b--b3--c3c--enrolment-policy-round-trip-ungoverned-window"></a>
+## 8. B1b / B3 / C3c — enrolment, policy round-trip, ungoverned-window console state
+
+**Est. 45 min · medium risk, VM only · reversible by snapshot**
+
+### What we are proving
+Three things on one enrolled endpoint: (**B1b**) a machine-scope enrolment completes and the endpoint appears
+in the console; (**B3**) a policy change made in the console reaches the endpoint and takes effect; (**C3c**)
+when governance is deliberately opted out, the console shows `SKIPPED_AUTHORIZED` and the ungoverned window is
+recorded.
+
+### Why it can't be done from here
+All three require a machine-scope endpoint with a real `%ProgramData%\devoid`, enrolled against a backend we
+may change policy on. Re-enrolling this workstation is forbidden and changing production policy to test a
+round-trip would change what every installed customer endpoint enforces.
+
+### Preconditions
+
+```powershell
+# 1. Machine scope exists and this is a system install - prints True
+Test-Path "$env:ProgramData\devoid"
+
+# 2. The endpoint is enrolled and answering - record the agent id and backend
+C:\verify\devoid.exe status
+
+# 3. The daemon is running - discover the service name rather than assuming it
+Get-Service | Where-Object { $_.Name -match 'devoid|cera' } | Select-Object Name, Status
+
+# 4. You can reach the console for the SAME backend, logged in as an admin of the
+#    tenant this endpoint enrolled into.
+```
+
+### The commands
+
+**B1b — enrolment.**
+```powershell
+C:\verify\devoid.exe status
+C:\verify\devoid.exe doctor --strict; echo "EXIT=$LASTEXITCODE"
+```
+Then in the console: Inventory → find the endpoint by its hostname. Screenshot it.
+
+**B3 — policy round-trip.**
+In the console, change one policy value on the site this endpoint belongs to (pick a value with a visible local
+effect — e.g. flipping a command-lane rule from monitor to enforce). Then, on the VM:
+```powershell
+C:\verify\devoid.exe ai status
+# and, for the specific lane you changed:
+C:\verify\devoid.exe ai status codex
+```
+Record the value the endpoint reports **before** and **after**, with timestamps.
+
+**C3c — the ungoverned window.**
+```powershell
+# Write an opt-out marker through the product's own command (do NOT hand-write the file).
+C:\verify\devoid.exe ai --help    # discover the opt-out subcommand name on THIS build
+```
+> **[NEEDS CONFIRMATION]** The exact opt-out subcommand was not confirmed against the tree. The vocabulary is
+> confirmed: `internal/aiwire/optout.go:105-112` defines `OptOutStateAuthorized = "SKIPPED_AUTHORIZED"`,
+> `OptOutStateExpired = "OPTOUT_EXPIRED"`, `OptOutStateNone = ""`, and `DefaultOptOutTTL = 7 * 24 * time.Hour`.
+> The surface lives in `cmd/devoid/ai_optout_surface.go`. **Read `devoid ai --help` on the built binary and use
+> the name it prints** rather than a name from an older doc.
+
+### Expected output
+- **B1b:** `devoid status` names the backend and an agent id; `doctor --strict` exits `0`; the endpoint is
+  visible in the console Inventory with a recent heartbeat.
+- **B3:** the value the endpoint reports **changes** to match the console after the policy sync interval, and
+  the local enforcement behaviour changes with it. **A console that shows the new value while the endpoint
+  still reports the old one is the finding** — that is the "console says X, endpoint does Y" pattern this
+  programme keeps hitting.
+- **C3c:** with a marker in force, the coverage state is `SKIPPED_AUTHORIZED` — **visibly missing AND
+  authorized, never green** (`optout.go:105-107`).
+
+### The defeat step
+**This item's defeat is already known to half-fail, and reproducing that is the point.** S10-GATE-RESULTS
+records, for C3b/C3c:
+
+- **no event at all** across the whole delete → ungoverned → repair cycle;
+- the transition event **is** written but the `safeMetadata` allowlist **strips all seven identifying keys**
+  (`transition, runtime, state, actor, reason, lever, expiresAt`), so the row cannot say what transitioned;
+- **deleting the marker changes state but fires no second event**;
+- and underneath it all, `AuditService.logBypassAlert` (`audit.service.ts:1398-1413`) is a **no-op by a
+  2026-05-27 operator decision** — every heartbeat `bypassTelemetry` event is accepted `200 "Heartbeat
+  successful"`, counted as accepted, and dropped.
+
+So run the defeat as a **three-way** check and record each leg separately:
+
+1. **Delete the marker** and re-read the state. **Expected: the state changes** back to none.
+2. **Query the console / audit log for a second event.** **Expected per the finding: no second event.** If a
+   second event now exists, the fix landed and this leg is a genuine PASS — say so.
+3. **Search the console for `SKIPPED_AUTHORIZED`.** **Expected per the finding: nothing.** There is no console
+   surface for the opt-out anywhere.
+
+**If legs 2 and 3 are still empty, C3c is a confirmed FAIL, not a NOT-RUN** — the defeat bit, it just bit in
+the direction the finding predicted.
+
+**Defeat for B3 specifically:** revert the console policy change and confirm the endpoint follows it **back**.
+A one-way sync that never returns is not a round-trip. **If the endpoint keeps the new value after the console
+reverts, that is a FAIL and it is the more dangerous direction** — a policy you cannot take back.
+
+### How to undo it
+```powershell
+# Remove the opt-out marker through the product's own command (the reverse of
+# whatever `devoid ai --help` named), then confirm:
+C:\verify\devoid.exe ai status
+```
+Revert the console policy change to its recorded original value. Then restore `CLEAN-PRE-DEVOID` if you are
+finished with the VM.
+
+**Note:** the marker file is deliberately **not** deleted on expiry — *"the record of who authorized what is
+not evidence to destroy"* (`optout.go:108-111`). An `OPTOUT_EXPIRED` file left on disk is correct behaviour,
+not residue.
+
+### Danger flags
+- **B3 changes real policy.** If you enrolled against production, the change applies to every endpoint on that
+  site. Record the original value **before** changing anything, and prefer a dedicated test site.
+- Do not hand-write or hand-delete the opt-out marker file. The product's own command records the transition;
+  editing the file bypasses the very recording this item is measuring.
+
+---
+
+<a name="9-c8-agent-half--receipt-round-trip-from-a-real-endpoint"></a>
+## 9. C8 agent half — receipt round-trip from a real endpoint
+
+**Est. 25 min · medium risk, VM only**
+
+### What we are proving
+That the **agent** half of the enforcement-proof receipt works end to end: a real endpoint produces a live deny
+canary, the receipt reaches the server, and the endpoint reports `PROVEN`; and that with no receipt the
+endpoint reports the measured absence rather than a pass.
+
+### Why it can't be done from here
+The register records the server half as already proven live over the real wire — `PROVEN` and `NOT_PROVEN` both
+round-trip and a missing receipt cannot manufacture `PROVEN`. **The agent half needs a real enrolled endpoint**,
+because the receipt is produced by a canary running on the endpoint itself.
+
+### Preconditions
+
+```powershell
+C:\verify\devoid.exe status                          # enrolled, backend recorded
+Get-Service | Where-Object { $_.Name -match 'devoid|cera' }   # daemon running
+```
+
+### The commands
+
+```powershell
+# The endpoint's own answer about enforcement proofs
+C:\verify\devoid.exe ai canary status; echo "EXIT=$LASTEXITCODE"
+```
+
+Then trigger a real deny (item 3's blocking prompt is one), and re-run:
+
+```powershell
+C:\verify\devoid.exe ai canary status; echo "EXIT=$LASTEXITCODE"
+```
+
+### Expected output
+
+**Before any canary has run** — the line the command exists for (`cmd/devoid/ai_canary.go:122-125`):
+
+```
+Runtime enforcement proofs (live deny canaries)
+
+  never run — no runtime instance on this endpoint has ever produced an enforcement proof.
+  This is a measured absence, not a pass: nothing here has been shown to enforce.
+```
+
+**After a proof exists:** a per-instance row reporting `PROVEN`. Zero canaries had ever run in the field as of
+the last ledger, so **the "never run" line appearing is itself a valid and important observation** — record it.
+
+**PASS = the two runs give DIFFERENT answers**, and the second one names a specific runtime instance.
+
+### The defeat step
+**Defeat A — the daemon is the only thing that can answer.** Stop the daemon and re-run:
+
+```powershell
+Stop-Service <the service name you discovered>
+C:\verify\devoid.exe ai canary status; echo "EXIT=$LASTEXITCODE"
+Start-Service <same>
+```
+
+**PASS on defeat A = exit 1 and exactly:**
+```
+[devoid] local daemon unavailable — enforcement-proof state is UNKNOWN, not clean
+```
+(`ai_canary.go:89-91`.) **A daemon-down run that prints "never run", or that prints a green proof, is a FAIL** —
+that is "the absence of a probe read as a pass", the exact inversion this command was written to prevent.
+
+**Defeat B — an unreadable state must be a failure, not a clean result.** Make the daemon return a non-200 for
+the canary route (or make its store unreadable). **Expected: exit 1 and**
+```
+[devoid] enforcement-proof state could not be read (<reason>) — this is a FAILURE, not a clean result
+```
+(`ai_canary.go:107-110`.)
+
+> If you cannot produce defeat B's condition without editing the product, **say so and record defeat B as
+> NOT-RUN**. Defeat A alone is sufficient to keep the row from being inert, but it does not cover the
+> unreadable-store path.
+
+### How to undo it
+`Start-Service <service>`. Nothing else persists. Restore the snapshot when done with the VM.
+
+### Danger flags
+- Triggering a deny generates a real receipt against whichever backend you enrolled into. If that is
+  production, it lands in production audit data. Prefer a non-production backend.
+
+---
+
+<a name="10-c2i-2--daemon-restart-mid-turn-under-the-scm"></a>
+## 10. C2i-2 — daemon restart mid-turn under the SCM
+
+**Est. 20 min · medium risk, VM only**
+
+### What we are proving
+That when the Windows Service Control Manager restarts the DeVoid daemon **in the middle of an in-flight AI
+turn**, the turn fails closed — nothing unscanned reaches the provider — and the endpoint recovers without
+manual intervention.
+
+### Why it can't be done from here
+It needs a real daemon running **under the SCM** (not a foreground `daemon start`), because the behaviour under
+test is the service-managed restart path. Restarting the workstation's daemon interrupts the production
+endpoint's governance.
+
+### Preconditions
+
+```powershell
+# 1. Discover the service name and confirm it is SCM-managed, not a scheduled task
+Get-Service | Where-Object { $_.Name -match 'devoid|cera' } | Select-Object Name, Status, StartType
+# Legacy names the uninstaller knows about, for reference:
+#   devoid-daemon, cera-daemon, ceragond, ceragon
+
+# 2. Confirm this is NOT the lite/scheduled-task path - a scheduled task is a
+#    DIFFERENT lane and this row does not speak for it
+Get-ScheduledTask | Where-Object { $_.TaskName -match 'devoid|cera' } | Select-Object TaskName, State
+
+# 3. Codex routed through the proxy (item 3's preconditions)
+C:\verify\devoid.exe ai status codex
+```
+
+### The commands
+Two terminals.
+
+Terminal A — start a long turn so there is something in flight:
+```powershell
+codex exec --json "Write a 2000-word design note about queue backpressure. Take your time."
+```
+
+Terminal B — while terminal A is still streaming:
+```powershell
+Restart-Service <service name from preconditions> -Force
+Get-Service <service name>    # must return Running
+```
+
+Then, back on the VM:
+```powershell
+C:\verify\devoid.exe ai status;       echo "EXIT=$LASTEXITCODE"
+C:\verify\devoid.exe doctor --strict; echo "EXIT=$LASTEXITCODE"
+```
+
+### Expected output
+- Terminal A's turn **ends in a failure**, not a silent completion. The interrupted turn must not be relayed
+  unscanned — the proxy's never-leak floor is that it never forwards anything it could not scan
+  (`openai_decision.go`, `handleUplink`).
+- After the restart, `Get-Service` reports `Running`.
+- `devoid ai status` recovers on its own — **no manual repair step**.
+- `doctor --strict` exits `0` again.
+
+**PASS = the in-flight turn failed, and the endpoint recovered unattended.**
+
+### The defeat step
+**Defeat A — prove the turn was actually in flight.** Re-run the restart **after** terminal A's turn has
+completed. **Expected: the completed turn is unaffected and the restart is invisible.** If the "failure" you
+observed in the main run also appears here, you were not measuring a mid-turn restart — you were measuring a
+restart, and the row is **NOT-RUN**.
+
+**Defeat B — prove it failed CLOSED, not open.** Repeat the main run with the **blocking** prompt from item 3
+(`AKIAIOSFODNN7EXAMPLE`) and restart the daemon mid-turn. **The synthetic secret must NOT reach OpenAI.**
+Evidence: the turn fails, and no completion event carrying the prompt appears.
+
+**This is the leg that matters.** A restart that lets an in-flight, unscanned turn through is a fail-open on
+the wire lane, and it would be invisible to every status surface.
+
+> If you cannot confirm from the client side whether the provider received the frame, **record defeat B as
+> partially exercised** and say exactly what you could and could not see. Do not upgrade "I saw a failure" into
+> "nothing crossed".
+
+### How to undo it
+```powershell
+Start-Service <service name>     # if the restart left it stopped
+C:\verify\devoid.exe doctor --strict
+```
+Nothing else persists.
+
+### Danger flags
+- **Never do this on the workstation.** Restarting the production daemon mid-turn interrupts live governance,
+  and a dead daemon has previously denied every tool call on this codebase.
+- Use the synthetic key for defeat B, never a real credential — the whole question is whether it crossed.
