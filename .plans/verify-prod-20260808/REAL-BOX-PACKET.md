@@ -1652,3 +1652,335 @@ endpoint row will never enrol again.
   This item measures **presence, path and permissions** — nothing else.
 - Run the two install paths on **separate VM states**, never stacked. An MSI over a script install is an
   upgrade transaction, which is item 13's subject, not this one.
+
+---
+
+# PART 5 — 🔥 IRREVERSIBLE
+
+Items 13 and 14 perform real install transactions and consume the VM. **Do them last.** Nothing after them is
+recoverable except by snapshot restore, and item 13 deliberately exercises the transaction class that has
+permanently bricked a trust anchor before.
+
+---
+
+<a name="13-c6b--dacl-across-fresh--upgrade--lite--re-enrol"></a>
+## 13. 🔥 C6b — DACL across fresh / upgrade / lite / re-enrol
+
+**Est. 90 min · IRREVERSIBLE (real install transactions) · VM only · snapshot between every mode**
+
+### What we are proving
+That the machine-secret DACLs are correct after **each** of the four install transactions — fresh MSI, MSI
+upgrade, lite (script) install, and re-enrolment — and specifically that **lite does not skip the elevated
+`harden-shims` pass**, which is the only unconditional caller of the self-heal.
+
+### Why it can't be done from here
+Every mode is an elevated MSI or script transaction on a machine we must be free to re-enrol and destroy. The
+register records C6b as BLOCKED for exactly this: *"needs an elevated MSI transaction on a disposable box"*.
+
+### 🔴 THE RISK, STATED PLAINLY
+**A reinstall has previously bricked the trust anchor permanently — 409 forever.** Modes 2 and 4 are reinstall
+and re-enrol. **Use a throwaway site token you are willing to lose, on a non-production backend if at all
+possible.** If an endpoint 409s, that endpoint row is unrecoverable; that is a valid finding, and it is also the
+end of that endpoint.
+
+### Preconditions
+
+```powershell
+hostname                                              # the VM
+Get-VMSnapshot -VMName <vm> | Select Name             # on the HOST: CLEAN-PRE-DEVOID present
+C:\verify\devoid.exe --version                        # the build under test
+```
+
+Prepare a capture helper so every mode is measured identically:
+
+```powershell
+# Save as C:\verify\capture-acls.ps1
+param([string]$Tag)
+$root = "$env:ProgramData\devoid"
+$out  = "C:\verify\acls-$Tag.txt"
+"=== $Tag  $(Get-Date -Format o) ===" | Out-File $out
+foreach ($f in 'credentials.json','daemon-token','endpoint-identity.json') {
+  $p = Join-Path $root $f
+  "--- $f  exists=$(Test-Path $p) ---" | Out-File $out -Append
+  if (Test-Path $p) {
+    (Get-Item $p | Select-Object Length, LastWriteTime | Out-String) | Out-File $out -Append
+    (icacls $p | Out-String) | Out-File $out -Append
+  }
+}
+"--- bin ---" | Out-File $out -Append
+(icacls (Join-Path $root 'bin') | Out-String) | Out-File $out -Append
+"--- migration sentinel (must be admin-only, no Users ACE) ---" | Out-File $out -Append
+Get-ChildItem "$root*.migration-pending" -ErrorAction SilentlyContinue |
+  ForEach-Object { (icacls $_.FullName | Out-String) | Out-File $out -Append }
+Get-Content $out
+```
+
+### The commands
+**Snapshot before each mode. Restore between modes where the mode requires a clean start.**
+
+```powershell
+# --- MODE 1: FRESH MSI (from CLEAN-PRE-DEVOID) ---
+msiexec /i C:\verify\<devoid>.msi TOKEN="<throwaway>" BACKEND_URL="<backend>" /qn /l*v C:\verify\msi-fresh.log
+C:\verify\capture-acls.ps1 -Tag fresh
+
+# --- MODE 2: MSI UPGRADE (on top of mode 1 - do NOT restore first) ---
+# 🔴 THIS IS THE REINSTALL TRANSACTION. Snapshot as POST-FRESH before running it.
+msiexec /i C:\verify\<devoid-newer>.msi /qn /l*v C:\verify\msi-upgrade.log
+C:\verify\capture-acls.ps1 -Tag upgrade
+C:\verify\devoid.exe status        # did the endpoint survive, or is it 409?
+
+# --- MODE 3: LITE / SCRIPT INSTALL (restore CLEAN-PRE-DEVOID first) ---
+powershell -ExecutionPolicy Bypass -File C:\verify\install.ps1 -Token "<throwaway>" -BackendUrl "<backend>"
+C:\verify\capture-acls.ps1 -Tag lite
+
+# --- MODE 4: RE-ENROL (on top of mode 3) ---
+# 🔴 SECOND REINSTALL-CLASS TRANSACTION. Snapshot as POST-LITE first.
+C:\verify\devoid.exe enroll --token "<throwaway>"     # confirm the real subcommand with: devoid --help
+C:\verify\capture-acls.ps1 -Tag reenrol
+C:\verify\devoid.exe status
+```
+
+### Expected output
+For every mode, compare against the two canonical descriptors
+(`internal/winacl/machine_secret_windows.go:47,69`):
+
+| File | Expected `icacls` | Descriptor |
+|---|---|---|
+| `credentials.json` | SYSTEM:(F), BUILTIN\Administrators:(F), **BUILTIN\Users:(R)** | `MachineLocalReadSDDL` |
+| `daemon-token` | SYSTEM:(F), BUILTIN\Administrators:(F), **BUILTIN\Users:(R)** | `MachineLocalReadSDDL` |
+| `endpoint-identity.json` | SYSTEM:(F), BUILTIN\Administrators:(F), **no Users ACE** | `MachineSecretSDDL` |
+| `<root>.migration-pending` | SYSTEM:(F), BUILTIN\Administrators:(F), **no Users ACE** | `adminOnlyFileSDDL` |
+
+**PASS = all four modes produce the same table.** The register's specific suspicion is that **lite differs**,
+because the script install calls `harden-shims` **without** `--require-machine-root` and therefore never
+reaches the machine-secrets block (see item 12's table). Compare `acls-lite.txt` against `acls-fresh.txt`
+line by line.
+
+### ⚠ The sentinel landmine — check it in every mode
+**The MSI guard's migration sentinel must be admin-only.** The source states why in one sentence
+(`cmd/devoid-msi-root-guard/guard_windows.go:708-716`):
+
+> *"a non-admin who cannot even OPEN the file for read can never hold a share-mode handle that blocks its
+> deletion, so finalizeMigration/reconcileInflight can ALWAYS clear the sentinel against a non-admin. That is
+> what makes reconcile-at-Pre's invariant true … and keeps the RC2 (healthy-box downgrade) class closed."*
+
+**If any mode leaves `<root>.migration-pending` with a `BUILTIN\Users` ACE, that is a FAIL and it is the
+downgrade-reopen defect.** The same comment names the files that legitimately grant Users read — `bin`,
+`config`, `credentials`, `daemon-token` — so a Users ACE on those is correct and on the sentinel is not.
+
+### The defeat step
+**Defeat A — prove the capture actually discriminates.** Before running mode 2, hand-loosen **`daemon-token`**
+(never the identity file) and re-run the capture:
+
+```powershell
+icacls "$env:ProgramData\devoid\daemon-token" /inheritance:r /grant:r "*S-1-5-18:(F)" "*S-1-5-32-544:(F)"
+C:\verify\capture-acls.ps1 -Tag defeat-probe
+```
+
+**PASS on defeat A = `acls-defeat-probe.txt` differs visibly from `acls-fresh.txt`.** If your capture prints
+the same thing on a deliberately-wrong ACL, the capture is inert and every mode's verdict is worthless.
+Restore with item 11's undo before continuing.
+
+**Defeat B — prove the modes are actually different transactions.** Diff the four files:
+
+```powershell
+Compare-Object (Get-Content C:\verify\acls-fresh.txt) (Get-Content C:\verify\acls-lite.txt)
+```
+
+If fresh and lite are byte-identical, verify you actually ran two different installers — check
+`C:\verify\msi-fresh.log` exists **and** that the lite run registered a scheduled task
+(`Get-ScheduledTask -TaskName "Devoid Daemon"`). Two identical captures from two paths you did not confirm ran
+separately is **NOT-RUN**, not PASS.
+
+### How to undo it
+**Snapshot restore is the only undo.**
+
+```powershell
+# On the HOST
+Restore-VMSnapshot -VMName <vm> -Name 'CLEAN-PRE-DEVOID' -Confirm:$false
+```
+
+Then, in the console, **revoke every throwaway site token used**, and delete any endpoint rows the modes
+created. If mode 2 or 4 produced a 409, that endpoint row is permanently unusable — record its id and revoke.
+
+### Danger flags
+- 🔴 **IRREVERSIBLE.** Modes 2 and 4 are reinstall-class transactions. A reinstall has permanently bricked the
+  trust anchor before — **409 forever**.
+- 🔴 Snapshot **between** modes, named (`POST-FRESH`, `POST-LITE`). Without them a failure in mode 2 costs you
+  mode 1's result as well.
+- 🔴 Throwaway token, non-production backend. Never a token in use by real endpoints.
+- Never print any credential file's contents. The capture helper reads `Length`, `LastWriteTime` and `icacls`
+  only, by design — do not "improve" it.
+
+---
+
+<a name="14-stage-e--second-endpoint-second-user-cross-tenant-nav-block"></a>
+## 14. 🔥 Stage E — second endpoint, second non-admin user, cross-tenant, nav-block
+
+**Est. 60 min · IRREVERSIBLE (second enrolment, real tenant data) · VM(s) only**
+
+### What we are proving
+Five things the register groups as Stage E: cross-tenant isolation · signed-bundle propagation latency ·
+a second endpoint · a second non-admin user on one endpoint · a live nav-block.
+
+### Why it can't be done from here
+Each needs something this workstation cannot supply without touching production: a **second** enrolled
+endpoint, a **second** local non-admin user profile under a governed install, and a **second tenant** whose
+data must provably not leak into the first.
+
+### Preconditions
+
+```powershell
+# 1. TWO VMs, or one VM plus one more, both enrolled - list them in the console first
+C:\verify\devoid.exe status           # on each, record agent id + backend + tenant
+
+# 2. A second local NON-ADMIN user on endpoint 1
+Get-LocalUser | Select Name, Enabled
+Get-LocalGroupMember -Group Administrators | Select Name    # the test user must NOT be here
+
+# 3. Two tenants you control in the console, with distinct data
+```
+
+### The commands and expected output, per sub-item
+
+**E-1 · Cross-tenant isolation.** Log into the console as tenant A and attempt to read tenant B's endpoint by
+id (direct URL, and the API route behind it).
+**PASS = 403/404 with no tenant-B data in the body — and no tenant-B row in any list.** Record the exact
+status code and the response body.
+
+**E-2 · Signed-bundle propagation latency.** Publish a policy bundle in the console; timestamp it. Poll each
+endpoint until it reports the new bundle.
+```powershell
+C:\verify\devoid.exe ai status     # run repeatedly; record the timestamp it flips
+```
+**PASS = both endpoints converge, and you can state the measured latency as a number.** "It eventually
+updated" is not a measurement.
+**Note:** as of the last acceptance ledger, **no signed bundle had ever activated in the field** and endpoints
+were stuck `V1_DEGRADED`. If that is still the state, this sub-item's honest verdict is **FAIL with the
+degraded state recorded**, not NOT-RUN.
+
+**E-3 · Second endpoint.** Confirm both endpoints appear separately in Inventory with distinct agent ids and
+independent heartbeats. **PASS = two rows, two ids, both heartbeating.**
+
+**E-4 · Second non-admin user.** Log into endpoint 1 as the non-admin user and run a governed action.
+```powershell
+# As the NON-ADMIN user
+cd C:\Users\<testuser>\proj; npm install left-pad; echo "EXIT=$LASTEXITCODE"
+devoid ai status
+```
+**PASS = governance applies to the second user's session too**, and the endpoint reports one endpoint (not
+two). A machine-scope install governs the machine; a second profile must not appear as a second endpoint and
+must not be ungoverned.
+
+**E-5 · Live nav-block.** With the browser extension loaded and a blocked destination in policy, navigate to
+it. **PASS = the navigation is blocked and the block names DeVoid.** Screenshot it.
+
+### The defeat step
+One per sub-item; none of them is optional.
+
+- **E-1:** repeat the same request **as a tenant-A user who legitimately has the data**. **PASS = 200 with the
+  data.** If both requests 403, the isolation you measured is just a broken route.
+- **E-2:** revert the bundle and confirm both endpoints follow it **back**. A one-way propagation is not a
+  round-trip, and an endpoint that keeps a revoked policy is the dangerous direction.
+- **E-3:** power off endpoint 2 and confirm **only** its row goes stale in the console, while endpoint 1 stays
+  current. If both go stale, the rows are not independent.
+- **E-4:** run the same action as the **admin** user and confirm the outcome is the same. If the non-admin is
+  blocked and the admin is not, you measured a permission failure, not governance.
+- **E-5:** navigate to a destination that is **not** in policy. **PASS = it loads normally.** A nav-block that
+  blocks everything proves nothing — and is the same "blocks both twins" trap as items 3 and 7.
+
+### How to undo it
+- Restore both VMs to `CLEAN-PRE-DEVOID`.
+- **Revoke every throwaway site token.**
+- Delete the second local user: `Remove-LocalUser -Name <testuser>` (on the VM only).
+- Revert the policy bundle to its recorded original.
+- Delete any test tenant data you created, in the console.
+
+### Danger flags
+- 🔴 **IRREVERSIBLE.** Enrolment consumes a token and creates a permanent endpoint row.
+- 🔴 **E-1 touches two tenants' real data.** Use tenants you own. Never a customer's.
+- 🔴 **E-2 changes policy for every endpoint on the site.** Record the original bundle before publishing.
+- Do not create the second local user on the workstation.
+
+---
+
+<a name="15-f8b--f26--calendar-blocked"></a>
+## 15. F8b · F26 — calendar-blocked, not box-blocked
+
+**Est. 20 min active work · the rest is waiting · no risk**
+
+### F8b — ≥7-day fleet replay
+**What we are proving:** that the command-guard changes produce **zero newly-blocked benign commands** over a
+real ≥7-day capture of fleet activity.
+
+**Why it can't be done in one sitting:** it needs seven days of fleet data that does not exist yet. **This is
+not a real-box item at all — it is a calendar item.** Putting it on a one-sitting list guarantees it gets
+skipped or faked.
+
+**What to do in this sitting (20 min):** start the clock.
+1. Confirm capture is running and is retaining ≥7 days.
+2. Record today's date and the earliest timestamp currently in the capture.
+3. Put a calendar entry for `today + 7 days` to run the replay.
+
+**Defeat step:** when you do run it, the replay must be shown capable of producing a non-zero count — seed one
+known-blocked command into the corpus and confirm it appears. **A replay that reports zero and cannot be made
+to report non-zero has not run.**
+
+### F26 — live Codex handshake header
+**What we are proving:** which header a real Codex client sends on the wire handshake, so wire-lane activity
+can be attributed to a session and Codex governance becomes findable in the console.
+
+**Why it can't be done from here:** it needs a header capture from a **real** Codex handshake against the
+proxy. The workstation's Codex is production-governed.
+
+**Note on ordering (this one has bitten before):** F26's backend half already landed after PR #250, so the
+`F27 → F26/F28/F31/F32` ordering constraint is discharged and the agent half does not touch any title gate.
+But the standing rule still applies to anything you cut from this: **never cut an agent release before the
+Backend detections work is deployed, or session-start 400s fleet-wide.**
+
+**The commands (on the VM, after item 3 has the route working):**
+```powershell
+# Capture what the client actually sends. Read the daemon's own request log for the
+# wire subtree rather than adding a sniffer.
+C:\verify\devoid.exe ai status codex
+# Then drive one turn (item 3's benign prompt) and read the proxy-side headers.
+```
+**[NEEDS CONFIRMATION]** The proxy's evidence path snapshots *"a redacted snapshot of the handshake/turn
+headers"* (`internal/proxy/openai_evidence.go:92`), and `openai_route.go:51` pins a required WS beta version
+header. **Confirm how to surface that snapshot from the CLI before running** — this entry does not name a
+command because none was verified, and inventing one would be worse than saying so.
+
+**Defeat step:** capture the headers of a turn from a **different** client (e.g. `codex exec` vs the Desktop
+app) and confirm the header you identified differs or is absent. **A header present identically on every
+client cannot attribute a session**, which is the whole point of F26.
+
+**Danger flags:** redacted snapshots only. **Never record an `Authorization` header value**, even redacted, in
+the verification evidence.
+
+---
+
+# CLOSING — how to record the sitting
+
+For every item, write one row: **item · verdict · evidence path · defeat step exercised? · what it would have
+taken to make it red.**
+
+Verdicts are **PASS / FAIL / BLOCKED / NOT-RUN**. Not "looks fine".
+
+**Rule 0, restated because it is the thing that keeps being lost:** a row whose defeat step did not turn it red
+is **NOT-RUN**, not PASS. On the last Stage C run, **five of eight refuted PASS rows fell for exactly this
+reason** — the row was green and nobody could make it red.
+
+**Items that could NOT be given a real defeat step, and why — carry these forward as spec defects:**
+
+| Item | Why it is unfalsifiable as specified |
+|---|---|
+| **5 (C2d-6)** — WSL console surface | **No surface exists.** Measured: no backend or frontend code consumes WSL coverage. There is nothing to point a browser at, so no defeat can turn it red. Move it to the build list. |
+| **9 (C8) defeat B** — unreadable canary store | The unreadable-store condition cannot be produced without editing the product. Defeat A (daemon down) keeps the row from being inert but does not cover this path. |
+| **10 (C2i-2) defeat B** — "nothing crossed" | The client cannot show what the provider received. A visible turn failure is not proof nothing crossed. Record as partially exercised; do not upgrade it. |
+| **12 defeat B** — the pre-boot window | If the daemon task starts too fast to catch, the window cannot be observed, and simulating it with `icacls /grant` reproduces a known brick rather than the install path's behaviour. |
+| **15 (F8b)** | Not a real-box item at all — a ≥7-day calendar item. |
+
+**Items whose expected-output strings were NOT verified against `C:/cwt/int-go` and must be confirmed before
+they are treated as expected values:** the `[NEEDS CONFIRMATION]` blocks in items 1 (how to inject a wrong
+`$DownloadUrl`), 5 (the literal `COVERED`/`UNCOVERED`/`UNKNOWN` casing), 8 (the opt-out subcommand name), and
+15 (how to surface the handshake-header snapshot).
