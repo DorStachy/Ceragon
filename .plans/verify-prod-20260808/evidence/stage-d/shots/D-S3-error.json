@@ -1,0 +1,22 @@
+{
+  "url": "/mcp?siteId=11111111-1111-4111-8111-111111111111",
+  "title": "DeVoid | AI Control Plane",
+  "overflow": null,
+  "found": {
+    "mcp-count-line": [],
+    "mcp-coverage-counts": [],
+    "mcp-coverage-incomplete": [],
+    "mcp-coverage-not-served": [],
+    "mcp-coverage-unreported": [],
+    "mcp-coverage-no-rows": [],
+    "mcp-coverage-panel": []
+  },
+  "consoleErrors": [
+    "{\"timestamp\":\"2026-08-18T20:05:22.007Z\",\"level\":\"error\",\"message\":\"Fetch MCP servers error\",\"error\":{\"name\":\"Error\",\"message\":\"mcp read failed\",\"stack\":\"Error: mcp read failed\\n    at McpGovernanceContent.useCallback[fetchServers] (webpack-",
+    "{\"timestamp\":\"2026-08-18T20:05:22.393Z\",\"level\":\"error\",\"message\":\"Fetch MCP servers error\",\"error\":{\"name\":\"Error\",\"message\":\"mcp read failed\",\"stack\":\"Error: mcp read failed\\n    at McpGovernanceContent.useCallback[fetchServers] (webpack-"
+  ],
+  "failed": [
+    "500 /api/ai-control-plane/mcp/servers?siteId=11111111-1111-4111-8111-111111111111",
+    "500 /api/ai-control-plane/mcp/servers?siteId=11111111-1111-4111-8111-111111111111"
+  ]
+}

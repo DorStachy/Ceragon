@@ -366,3 +366,128 @@ column, counted in its own fleet tile (`GUARD NOT REPORTED 5`), and named in the
 
 Recorded as a residual risk only: a column generically headed `STATUS` invites being read as the row's overall
 verdict. Not scored FAIL — the absent fact is on screen, adjacent, and counted.
+
+---
+
+## D-S3 — MCP discovery coverage (F7d) — **PASS on the per-source rows, FAIL on the count line**
+
+Entry point `/mcp` — the top-level "MCP Control Tower" nav item. Screenshots `shots/D-S3-*`.
+
+### D1 — grep every render file for the changed fields
+
+```
+coverageSummary          -> app/mcp/mcp-governance-content.tsx · app/endpoints/[hostname]/endpoint-hub-content.tsx
+                            (the latter is a different type: github/ai-context coverage, not MCP discovery)
+McpDiscoveryCoverageRow  -> app/mcp/mcp-governance-content.tsx · types/ai-governance.ts
+```
+
+### D-S3a — the six source states, plus one the console has never seen — **PASS**
+
+`shots/D-S3-populated.*`. All six wire states rendered, unanswered ones sorted to the top:
+
+```
+COULD NOT READ           "DeVoid could not open this file, so what it declares is unknown. Servers configured
+                          here would not appear anywhere in this console." (permission denied)
+COULD NOT PARSE          "…opened this file and could not parse it…" (invalid JSON syntax)
+CONFIG NOT UNDERSTOOD    "…has no reader for this file's format…" (no reader for this format)
+SKIMMED                  ← a state this build has never heard of, from a newer Backend
+READ                     "DeVoid read this file and understood it. 2 servers declared here."
+READ, EMPTY              "…and it declares no MCP servers."
+NOT PRESENT              "This location was checked and there is no file there."
+```
+
+The three unanswered states are rendered as neither a pass nor a defect, and each says the consequence out loud:
+a server declared there is **absent from this console**. The unknown `skimmed` state is placed in the unanswered
+group by `isMcpDiscoveryStateAnswered(r.state)` — the console does not trust the row's own `answered` boolean
+(the fixture set `answered: true` on it and was overruled).
+
+### D-S3b — empty / not-served / unreported — **PASS**
+
+```
+mcp-coverage-unreported  (reported:false) :: "DeVoid cannot say which configuration sources were read. No
+   endpoint in this scope has reported its discovery coverage, which is indistinguishable from an agent whose
+   report was dropped in transit. Treat the list above as what happened to be found, never as the set of MCP
+   servers that exist."
+
+mcp-coverage-not-served  (no coverage keys at all — older Backend) :: "This deployment does not report which
+   configuration sources were read… The list above is what was found, not a statement about what exists."
+```
+
+Two different absences, two different sentences, neither of them a pass. This is the distinction
+`McpServersResponse` documents, and it survives to the screen.
+
+### D-S3c — error — **PASS**
+
+`shots/D-S3-error.txt`, backend 500:
+
+```
+COULD NOT LOAD MCP SERVERS
+mcp read failed
+RETRY
+```
+
+Loud, named, retryable. (Contrast D-S2d on the coverage page, which renders nothing at all for the same class of
+failure — the two surfaces disagree, and this one is right.)
+
+### D-S3d — **FAIL — "7 OF 7 CONFIGURATION SOURCES READ" printed directly above three rows that say they could not be read**
+
+This is the `devoid doctor --strict` shape the coordinator flagged, in the console.
+
+`shots/D-S3-lying-summary.*`. Response carries the same seven coverage rows as the populated case, with
+`coverageSummary: { reported: true, sourcesTotal: 7, sourcesAnswered: 7, sourcesUnanswered: 0 }`:
+
+```
+[mcp-count-line]          :: 1 MCP SERVER · 7 OF 7 CONFIGURATION SOURCES READ
+[mcp-coverage-counts]     :: 7 answered · 0 unanswered · 1 endpoint reporting
+[mcp-coverage-incomplete] :: (absent — the qualifier does not fire)
+
+…and immediately below, in the same panel:
+
+COULD NOT READ         C:/Users/other/.claude.json  "…what it declares is unknown."
+COULD NOT PARSE        C:/repo/.mcp.json            "…what it declares is unknown."
+CONFIG NOT UNDERSTOOD  C:/repo/mcp.yaml             "…what it declares is unknown."
+```
+
+**Mechanism** — `app/mcp/mcp-governance-content.tsx`:
+
+```js
+// counts + count line: taken verbatim from the server
+{summary.sourcesAnswered} answered · {summary.sourcesUnanswered} unanswered      // :221
+return `${servers} · ${summary.sourcesAnswered} of ${summary.sourcesTotal} configuration sources read`  // :148
+const coverageIsPartial = !coverageSummary || !coverageSummary.reported || coverageSummary.sourcesUnanswered > 0  // :332
+
+// rows: re-derived locally, and correctly
+const unanswered = rows.filter((r) => !isMcpDiscoveryStateAnswered(r.state))     // :177
+```
+
+`sourcesUnanswered` gates **three** honesty surfaces — the incomplete banner, the count line, and
+`coverageIsPartial` (which qualifies the empty state and the inventory reconciliation note). All three are keyed
+on a number the console never checks against the rows it just rendered.
+
+**This does not need a lying backend.** The realistic trigger is deployment skew, and it is already visible in the
+ordinary populated case — `shots/D-S3-populated.*`, with an honest backend that simply knows one state more than
+the console does:
+
+```
+[mcp-count-line]      :: 2 MCP SERVERS · 4 OF 7 CONFIGURATION SOURCES READ
+[mcp-coverage-counts] :: 4 answered · 3 unanswered
+rows actually rendered: 3 in the answered group, 4 in the unanswered group
+```
+
+The Backend counted `skimmed` as answered; the console put it in the unanswered group and kept the Backend's
+number. Off by one, silently, from nothing worse than shipping a new state token — which is exactly the sequence
+that will happen the next time the discovery vocabulary grows.
+
+**Defeat / discriminating control:** `shots/D-S3-complete.*` — three genuinely answered rows with
+`sourcesAnswered: 3, sourcesUnanswered: 0`:
+
+```
+[mcp-count-line]  :: 1 MCP SERVER · 3 OF 3 CONFIGURATION SOURCES READ
+rows: READ · READ, EMPTY · NOT PRESENT   (three answered, zero unanswered)
+```
+
+Here `3 OF 3` is true, and the same code path produces it — so the check discriminates between an honest N-of-N
+and a false one rather than always firing.
+
+**Fix shape (not applied):** derive the displayed counts from the rows when rows are present, or render a
+discrepancy note when `summary.sourcesUnanswered !== unanswered.length`.

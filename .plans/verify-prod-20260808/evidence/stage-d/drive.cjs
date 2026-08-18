@@ -142,7 +142,9 @@ function connect(u) {
       for (const id of ids) {
         // A bare word is a data-testid; anything with CSS punctuation is used
         // as a raw selector, because not every surface labels itself testid.
-        const sel = /^[\w-]+$/.test(id) ? '[data-testid="' + id + '"]' : id
+        // NB: written out longhand, not \\w — this string is a JS template
+        // literal, so a backslash class would reach the page as a bare letter.
+        const sel = /^[A-Za-z0-9_-]+$/.test(id) ? '[data-testid="' + id + '"]' : id
         const els = Array.from(document.querySelectorAll(sel))
         found[id] = els.map((el) => ({
           text: el.innerText.replace(/\\s+/g, ' ').trim().slice(0, 700),
