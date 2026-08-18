@@ -397,3 +397,68 @@ owner-executed AWS items in section C of the register. The exposure is ongoing r
 been silent for weeks.
 
 ---
+
+## 5. F11 — ALREADY DECIDED. The programme only *looks* like it contradicts itself.
+
+**The question.** One document says settle F11 by inspection with no code; another lists it as a Wave 1 build item.
+Which governs?
+
+**Why it is open.** `fix-specs/READ-THIS-FIRST.md:57` says *"Do not fix in code… F11: no gate is off — settle by
+inspection and restate the finding if no work arrived,"* while `IMPLEMENTATION_PLAN.md:235` lists *"F11 liveness
+columns"* among the Wave 1 deliverables.
+
+### This is already settled — in three places, twice in the same document
+
+**The contradiction is internal to `IMPLEMENTATION_PLAN.md`, and that document resolves it against itself.** Line 235
+is in §4, the wave plan. Line 377 is in **§6, "Do NOT fix these"** — a later section whose entire purpose is to
+override the wave plan — and it says:
+
+> **F11** — *"Owner settles it in one check with zero code. If arrivals are zero, **restate as "no work arrived"**
+> rather than leaving a HIGH dead-producer claim."*
+
+So the same file that lists F11 as a Wave 1 deliverable later removes it, in the section built for exactly that. And
+a **third** document agrees: `REMEDIATION_PLAN.md:3-4` marks itself superseded and records that the newer plan
+*"overturned six of the findings below (F9, F19, F11, F40, F21, F36)"* — F11 among them. The original finding was
+*"scanner producer dead 14d"* (`REMEDIATION_PLAN.md:85`).
+
+**Score: two documents and two sections say do-not-fix; one line in a superseded-by-its-own-§6 wave list says build
+it.** Later, more specific, and more numerous all point the same way.
+
+### The cost of each reading
+
+**Reading it as "settle by inspection" (correct).** Cost: one check — did any work actually arrive in the window? If
+zero arrived, restate the finding as "no work arrived" and close it. Zero code, zero deploy.
+
+**Reading it as "build liveness columns" (incorrect).** Cost: backend schema change, a Wave 1 deploy slot, and
+verification. But the real problem is not cost — **it would build the exact defect the same plan is trying to
+eliminate.** `IMPLEMENTATION_PLAN.md:199` (M5) mandates the vocabulary *"PRODUCING / NOT PRODUCING / NOT MEASURED,
+never a boolean healthy"* and says to alarm *"on a ratio between two measured facts, **never on `Sum == 0`**"* —
+summarising *"Six findings, one defect class: a config fact reported as health."* Liveness columns that read zero
+arrivals as a dead producer are `Sum == 0` reported as health. You would be shipping a seventh instance of the defect
+class while fixing the other six.
+
+### Options
+
+**Option A — Confirm the do-not-fix ruling; settle by inspection.**
+Cost: one check. Risk: if the producer really is dead, you have described it accurately rather than fixed it — but
+the override states *"no gate is off"*, so nothing is being blocked in the meantime.
+
+**Option B — Build the liveness columns.**
+Cost: schema plus a Wave 1 deploy. Risk: creates a surface that reports "no work arrived" as "producer dead" —
+the M5 defect class, in a wave whose stated purpose includes removing it.
+
+**Option C — Delete the stale line.**
+Cost: a one-line edit to `IMPLEMENTATION_PLAN.md:235`. Risk: none. This is bookkeeping, not a decision.
+
+### Recommendation
+
+**Option A, plus Option C. The one reason: §6 of the plan exists specifically to override the wave list, and it
+already ruled on F11 — so there is nothing here to decide, only a stale line to delete so nobody re-opens this.**
+
+### What happens if we defer
+
+**Does not block the push.** Nothing is gated on F11 and no code depends on it. The only real cost of leaving it is
+that a HIGH-severity "dead producer" claim stays on the register describing something that may simply have had no
+work to do — which makes the register less trustworthy.
+
+---
