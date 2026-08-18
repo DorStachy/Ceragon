@@ -86,6 +86,24 @@ Each of the three is independently corroborated:
 **Nothing is on fire.** Only Intel imports `S3_BUCKETS`, so Backend's wrong bucket names are unreachable today, and
 Backend's `boolean` is already routed around. This is a live landmine, not a live outage.
 
+### Two facts that explain why this keeps happening
+
+**The nine files are not declared mirrors at all.** This codebase marks a mirrored file explicitly, with a
+`MIRROR FILE` banner in the source. Exactly three files carry it — `customer-taxonomy.ts`,
+`endpoint-inventory-contract.ts`, `scan-run-view-contract.ts` — and **no file under `package-intelligence/` carries
+it in any of the three copies.** The nine were never covered by the mirror discipline. They were copied once and
+left alone, which is exactly the shape of the accident above.
+
+*(The register does not enumerate its "nine". `package-intelligence/` holds exactly nine files and all nine differ
+between the orphan and Intel, so that is the set — but it is an inference, not a quotation.)*
+
+**The check that would have caught this is not in version control.** The CTR-1 commit records *"Verified:
+contracts-mirror-parity.sh PASS (3 files, 0 diverge)"*. That script is not tracked in this repo, nor in `Backend`,
+nor in `Ceragon-Intelligence` — it exists only as something run by hand, once. Nothing re-runs it, so nothing will
+notice the next drift, **including on the three files it does cover.** Committing it and putting it in CI is the
+cheap fix that stops this returning; extending it past the three declared mirrors is what would have caught the
+three divergences above.
+
 ### Options
 
 **Option A — Take Intel's value on all three; delete the workspace-root orphan.**
@@ -111,7 +129,8 @@ addresses non-existent buckets or mis-reads every verdict row's currency flag.
 question to settle — only a stale snapshot to correct and an orphan to remove so it cannot happen a third time.**
 
 Also worth correcting while you are here: `CLAUDE.md` states `packages/shared-contracts/` is *"used by Backend"*.
-It is not, and that sentence is what makes the orphan look authoritative.
+It is not, and that sentence is what makes the orphan look authoritative. And commit `contracts-mirror-parity.sh`
+— today the parity guarantee rests on a script no repo tracks, so it has run exactly once.
 
 ### What happens if we defer
 
