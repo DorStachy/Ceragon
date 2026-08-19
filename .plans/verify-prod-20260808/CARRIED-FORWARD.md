@@ -142,3 +142,5 @@ constant — the forbidden fix, register #4 reintroduced: the two byte-identity 
 **Still open on this path:** nothing pushed, nothing deployed, and the backend widening of
 `AI_TRUST_ANCHOR_STORAGE_ASSURANCES` must be deployed BEFORE any agent that can emit a measured
 level, or every ack 400s and the fleet parks in V1_DEGRADED (`d044aed6`'s own deploy-order note).
+
+- [low] Installers/internal/winacl/assurance.go:82 — `WeakestAssurance`, the aggregator that picks the single storageAssurance value the signed ack carries across every secret-material file, has no direct test anywhere in the tree, and after `1eaee322` no test at any layer proves `OS_PROTECTED` can still survive that aggregation (it is pinned only one layer below, on `classifyDescriptor(MachineSecretSDDL)`); pre-existing since `d044aed6`, not introduced by the assurance-determinism fix.
