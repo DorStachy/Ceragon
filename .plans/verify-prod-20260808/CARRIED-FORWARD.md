@@ -39,3 +39,40 @@ A carried-forward item is a success of the pass that recorded it, not a failure.
 
 - [low] Installers/internal/codexmanaged/LIVE_PROOF_RUNBOOK.md:52 — the one document in the repo that states this command's exit contract still reads "must exit 0. Exit 1 means a layer is genuinely unclean", which abf7f408 makes incomplete: an unreadable WSL registration now exits 31, and a live-proof operator following this runbook would read 31 as an unrecognised failure; no CI job, install script or packaging step reads this command's exit code (all five workflows plus install-scripts/, packaging/, windows-installer/ and scripts/ were grepped), so nothing automated breaks.
 - [low] Installers/cmd/devoid/ai_status.go:210 — the exit-code precedence puts `wslUnknown` ahead of `excluded` while the render switch above puts `excluded` first, so a host carrying an authorized opt-out AND an unreadable registration prints the opt-out headline and exits 31; both states are truthfully non-zero and layer 3/3 still prints the unknown rows, but the number and the headline name different repairs on that one combination.
+
+## BLOCKER found after the close-out — do not release without settling this
+
+- [BLOCKER] Installers/internal/policybundle + internal/winacl/assurance.go — the
+  storageAssurance measurement added by `d044aed6` ("measure storageAssurance instead of
+  asserting it", register #4) is BOTH wrong and NON-DETERMINISTIC on the trust-anchor ack,
+  and the close-out's claim that these two reds are "pre-existing at the base commit" is
+  incorrect: before d044aed6 the value was the hardcoded constant `OS_PROTECTED`, so both
+  tests passed trivially and could not have failed.
+
+  Measured on a QUIET box (the whole rest of the Go tree is green; the five other failures
+  seen earlier were load artifacts of three concurrent jobs):
+
+    TestMeasuredStorageAssuranceMovesWithTheActualFile
+      a SYSTEM+Administrators-only credential measured "UNVERIFIED"; want "OS_PROTECTED"
+
+    TestConvergencePersistsBeforeAckAndRetriesByteIdentically
+      retry ack changed — the SAME state measured twice returned two different answers:
+        first  storageAssurance "UNVERIFIED"
+        second storageAssurance "OS_LOCAL_USER_READABLE"
+
+  The second is the serious one and is a defect independent of which answer is correct: the
+  ack is signed, so a value that changes between attempts changes the SIGNATURE, and the
+  contract this test pins is that a retried convergence is byte-identical. A backend that
+  de-duplicates on the ack bytes cannot do so; a backend that stores the first ack and the
+  agent that retries now disagree about the endpoint's own storage posture.
+
+  The first may be the TEST being stale rather than the code being wrong — a non-elevated
+  process legitimately cannot verify a SYSTEM-only descriptor, and answering UNVERIFIED is
+  the honest result. That question has to be settled before either is touched, because
+  "make the test match the code" in the credential path is precisely how a real control was
+  lost earlier in this campaign.
+
+  NOT FIXED HERE deliberately. This is the trust-anchor/credential path — the one class on
+  this register that can permanently disable endpoints — and a rushed fix at the end of a
+  long session is how the planted-identity regression was introduced. It needs a fresh pass
+  with the register's F16 analysis open beside it.
