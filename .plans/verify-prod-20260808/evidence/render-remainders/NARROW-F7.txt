@@ -1,0 +1,63 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+ACCOUNT
+Render QA Org
+RQ
+Servers
+Activity
+MCP CONTROL TOWER
+MCP Control Tower
+
+Every MCP server detected across your agents' configurations: declared capabilities, static-analysis verdict, approval state, and enforcement. Coding agents and autonomous agents both consume MCP, so the registry is governed here, once. This view is read-only. Approve or block servers from Admin.
+
+REVIEW IN ADMIN →
+1 MCP SERVER · 1 OF 2 CONFIGURATION SOURCES LISTED HERE WERE READ · NO SOURCE TOTAL REPORTED
+
+This count and Inventory's MCP count can differ. This registry is built from MCP servers found in an agent's configuration files. Inventory can also list an MCP item that reached us through the runtime shim when an agent used it. That path records the item; it does not register a server here.
+
+SERVER
+	1 · SOURCE PERMITTED
+	2 · EXACT MATERIAL ANALYZED
+	CAPABILITIES
+	RISK RESULT
+	3 · TENANT APPROVED
+	4 · RUNTIME EFFECT ENFORCED
+
+filesystem
+Client not measured for this row
+	Unknown source	
+coverage incomplete
+unknown transport
+	
+Fs.read
+	
+not analyzed	PENDING	No permitted runtime effect
+CONFIGURATION SOURCES
+1 answered · 1 unanswered · 1 endpoint reporting
+
+This deployment reported coverage without a source total, so the counts above cover only the 2 sources listed below. DeVoid is not saying that is every configuration source that exists.
+
+1 configuration source could not be read or could not be understood. A source with no answer is not an empty source: any MCP server declared there is absent from this console, and DeVoid is not claiming there is none.
+
+claude-code · user · json
+COULD NOT READ
+
+C:/Users/other/.claude.json
+
+DeVoid could not open this file, so what it declares is unknown. Servers configured here would not appear anywhere in this console. (permission denied)
+
+claude-code · user · json
+READ
+
+C:/Users/x/.claude.json
+
+DeVoid read this file and understood it.
+
+2 servers declared here.

@@ -1,0 +1,37 @@
+{
+  "url": "/admin/endpoints?sub=coverage&siteId=11111111-1111-4111-8111-111111111111",
+  "title": "Endpoint Management · Admin · DeVoid",
+  "overflow": null,
+  "found": {
+    "optout-stat-not-reported": [
+      {
+        "text": "NOT REPORTED 2",
+        "attrs": {
+          "data-testid": "optout-stat-not-reported"
+        }
+      }
+    ],
+    "optout-coverage-count-disagreement": [
+      {
+        "text": "The opt-out coverage counts this server reported do not match the rows below, which this console resolved for itself: notReported (reported 0, rows 2). Where they differ, the count shown is the one that claims less.",
+        "attrs": {
+          "data-testid": "optout-coverage-count-disagreement",
+          "data-disagreements": "1"
+        }
+      }
+    ],
+    "optout-coverage-rows-truncated": [
+      {
+        "text": "2 of 5endpoints are listed below, so the rows are a subset of the scope the counts above cover. Each count is the larger of the server’s number and the rows on this screen. A count the rows exceed is reported as a disagreement; a count higher than the rows is not, because a subset cannot account for the whole scope.",
+        "attrs": {
+          "data-testid": "optout-coverage-rows-truncated"
+        }
+      }
+    ],
+    "optout-coverage-all-unmeasured": []
+  },
+  "consoleErrors": [
+    "{\"timestamp\":\"2026-08-19T10:32:56.612Z\",\"level\":\"error\",\"message\":\"web-coverage fetch failed\",\"error\":{\"name\":\"Error\",\"message\":\"web coverage read returned no endpoint list\",\"stack\":\"Error: web coverage read returned no endpoint list\\n    a"
+  ],
+  "failed": []
+}

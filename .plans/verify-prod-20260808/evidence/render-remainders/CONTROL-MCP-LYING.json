@@ -1,0 +1,35 @@
+{
+  "url": "/mcp?siteId=11111111-1111-4111-8111-111111111111",
+  "title": "DeVoid | AI Control Plane",
+  "overflow": null,
+  "found": {
+    "mcp-coverage-counts": [
+      {
+        "text": "3 answered · 4 unanswered · 1 endpoint reporting",
+        "attrs": {
+          "data-testid": "mcp-coverage-counts"
+        }
+      }
+    ],
+    "mcp-coverage-incomplete": [
+      {
+        "text": "4 configuration sources could not be read or could not be understood. A source with no answer is not an empty source: any MCP server declared there is absent from this console, and DeVoid is not claiming there is none.",
+        "attrs": {
+          "data-testid": "mcp-coverage-incomplete"
+        }
+      }
+    ],
+    "mcp-coverage-count-disagreement": [
+      {
+        "text": "The configuration-source counts this server reported do not match the rows below, which this console resolved for itself: sourcesAnswered (reported 7, rows 3); sourcesUnanswered (reported 0, rows 4). Where they differ, the count shown is the one that claims less.",
+        "attrs": {
+          "data-testid": "mcp-coverage-count-disagreement",
+          "data-disagreements": "2"
+        }
+      }
+    ],
+    "mcp-coverage-rows-unlisted": []
+  },
+  "consoleErrors": [],
+  "failed": []
+}
