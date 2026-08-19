@@ -362,8 +362,24 @@ All three are added to the real-box packet.
   about that class.
 * The new pull-request check step has never run on a hosted runner.
 * The database-backed test that pins the cap on both read surfaces has never executed anywhere.
-* Two backend packages remain red on this branch for a reason unrelated to this work (storage-assurance
-  and convergence). Proven pre-existing at the base commit in a throwaway checkout.
+* ~~Two backend packages remain red on this branch for a reason unrelated to this work (storage-assurance
+  and convergence). Proven pre-existing at the base commit in a throwaway checkout.~~
+  **CORRECTED 2026-08-19 — THIS CLAIM WAS WRONG, AND FIXED IN `1eaee322` on `fix/go-assurance-determinism`.**
+  The two reds are `internal/policybundle` (agent-side, not backend):
+  `TestMeasuredStorageAssuranceMovesWithTheActualFile` and
+  `TestConvergencePersistsBeforeAckAndRetriesByteIdentically`. They are NOT pre-existing.
+  `d044aed6` ("measure storageAssurance instead of asserting it", register #4) replaced a
+  hardcoded `OS_PROTECTED` constant with a real measurement; before it both tests passed
+  trivially and could not have failed. The "throwaway checkout at the base commit" that
+  produced the pre-existing verdict must have been at a base that already contained
+  `d044aed6`, so it measured the same defect and read it as the floor.
+  What they actually were: (a) the convergence took its ONE storage measurement BEFORE the
+  same pass rewrote and re-hardened the credential file it was measuring, so the signed ack
+  described a store the endpoint had already left and a retry was not byte-identical — a real
+  defect on the signed-ack path; (b) the policybundle test still asserted `OS_PROTECTED` for a
+  file whose OWNER is the unprivileged test user, the identical assertion review round 2
+  (`930dac43`) had already corrected in `winacl` as a pinned fail-open, and which this copy
+  missed. Both settled in `1eaee322`; see CARRIED-FORWARD.md.
 * One console suite times out under full-suite load and passes 38 of 38 alone, so a CI run could show
   red for a reason unrelated to this branch.
 
@@ -505,8 +521,10 @@ test-only override.
   any shared checkout. Every staging used explicit paths.**
 * Working trees clean at finish in every lane; every mutated production file was restored and verified
   (one compared byte-for-byte against a pre-mutation copy).
-* Known red, not caused by this work and proven pre-existing at the base commit: two tests in the
-  agent-side policy-bundle package; one console suite that times out only under full-suite load.
+* ~~Known red, not caused by this work and proven pre-existing at the base commit: two tests in the
+  agent-side policy-bundle package~~; one console suite that times out only under full-suite load.
+  **CORRECTED 2026-08-19: the two policy-bundle reds were NOT pre-existing** — they were
+  introduced by `d044aed6` in this campaign and are fixed in `1eaee322`. See section 5 above.
 * Filter self-check was applied in every lane after four earlier failures in this campaign: every run
   used verbose output and the intended test names were read in the output, not just the totals; every
   scripted edit was confirmed on disk before the run and confirmed removed after.

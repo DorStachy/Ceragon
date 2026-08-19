@@ -396,7 +396,14 @@ Practical severity of the residual: for a typical application developer it is ne
 full dangerous string has to be present verbatim. For anyone maintaining *this* detector — writing its
 tests, its docs, or its commit messages — it fires constantly. It hit me four times in one session.
 
-## Pre-existing failures I did not cause
+## Failures I did not cause — but they were NOT pre-existing
+
+> **CORRECTED 2026-08-19.** The attribution below is right: these two reds are not from the
+> C5/C12 unit. The label "pre-existing" is WRONG. They were introduced inside this campaign by
+> `d044aed6` ("measure storageAssurance instead of asserting it", register #4), which replaced a
+> hardcoded `OS_PROTECTED` constant with a real measurement — before that commit both tests
+> passed trivially and could not have failed. Fixed in `1eaee322` on
+> `fix/go-assurance-determinism`.
 
 `go test ./...` on this branch has two red tests in `internal/policybundle`:
 `TestMeasuredStorageAssuranceMovesWithTheActualFile` and

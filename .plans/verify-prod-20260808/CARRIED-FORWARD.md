@@ -40,7 +40,11 @@ A carried-forward item is a success of the pass that recorded it, not a failure.
 - [low] Installers/internal/codexmanaged/LIVE_PROOF_RUNBOOK.md:52 — the one document in the repo that states this command's exit contract still reads "must exit 0. Exit 1 means a layer is genuinely unclean", which abf7f408 makes incomplete: an unreadable WSL registration now exits 31, and a live-proof operator following this runbook would read 31 as an unrecognised failure; no CI job, install script or packaging step reads this command's exit code (all five workflows plus install-scripts/, packaging/, windows-installer/ and scripts/ were grepped), so nothing automated breaks.
 - [low] Installers/cmd/devoid/ai_status.go:210 — the exit-code precedence puts `wslUnknown` ahead of `excluded` while the render switch above puts `excluded` first, so a host carrying an authorized opt-out AND an unreadable registration prints the opt-out headline and exits 31; both states are truthfully non-zero and layer 3/3 still prints the unknown rows, but the number and the headline name different repairs on that one combination.
 
-## BLOCKER found after the close-out — do not release without settling this
+## BLOCKER found after the close-out — SETTLED 2026-08-19 in `1eaee322`
+
+> **RESOLVED.** Both halves are fixed on `fix/go-assurance-determinism` (`1eaee322`), local
+> commit only — NOT pushed, NOT deployed. The entry below is kept verbatim as the record of
+> what was found; the resolution is appended after it.
 
 - [BLOCKER] Installers/internal/policybundle + internal/winacl/assurance.go — the
   storageAssurance measurement added by `d044aed6` ("measure storageAssurance instead of
@@ -76,3 +80,44 @@ A carried-forward item is a success of the pass that recorded it, not a failure.
   this register that can permanently disable endpoints — and a rushed fix at the end of a
   long session is how the planted-identity regression was introduced. It needs a fresh pass
   with the register's F16 analysis open beside it.
+
+### Resolution (2026-08-19, `1eaee322`, branch `fix/go-assurance-determinism`)
+
+Both halves settled. Instrumented, not reasoned from source.
+
+**The non-determinism was an ORDERING defect, and the state really did change between the two
+measurements.** `convergeTrustAnchorWithAPIClock` measured the credential store, THEN called
+`config.SaveAITrustAnchor` — which on the machine scope rewrites `credentials.json` through
+`writeCredentialsFileAtomic` and stamps `winacl.MachineLocalReadSDDL` onto it — and only THEN
+signed the ack. Measured on a quiet box, same unchanged intent throughout: the file measured
+`UNVERIFIED` before pass 1, `OS_LOCAL_USER_READABLE` after pass 1, so ack[0] was already false
+when it was signed and ack[1] carried a different payload and signature. Fix: re-measure after
+the pass's own write lands and persist the settled value, so the durable record and the signed
+ack still carry one value and the next pass signs the identical payload. Not a freeze — the
+value is still read from the real security descriptor every pass.
+
+**The first failure WAS the test, and the reason is recorded in the test.**
+`winacl.HardenSecretWithPrincipal` applies the `MachineSecretSDDL` *DACL* but assigns the current
+UNPRIVILEGED USER as owner (an unprivileged process cannot assign LocalSystem), and an owner holds
+READ_CONTROL and WRITE_DAC however the DACL reads — the test's own `t.Cleanup` proves it by
+running `icacls <path> /grant *<me>:(F)` against that SY+BA-only DACL and succeeding. Review
+round 2 (`930dac43`) taught the classifier to read the owner and corrected the IDENTICAL
+assertion in `winacl` (`TestMeasureSecretAssuranceRefusesASYBAOnlyDACLThisUserOwns`), recording
+there that it "PINNED A FAIL-OPEN"; the `policybundle` copy was missed. The expectation moved to
+`UNVERIFIED` and the test was STRENGTHENED, not softened: it now checks the file's real owner as
+a stated precondition, so `UNVERIFIED` reached for any other reason fails. `OS_PROTECTED` is still
+pinned on the SYSTEM-owned descriptor the product actually writes, by
+`winacl.TestClassifyDescriptorOnTheShippedMachineDescriptors`.
+
+**Defeat step, discriminating.** (A) Delete the settle step: `TestConvergencePersistsBeforeAckAndRetriesByteIdentically` and
+`TestConvergenceSignsTheAssuranceAsItStandsAfterItsOwnWrite` go RED while
+`TestConvergenceAckAssuranceMovesWithTheCredentialStore`, `TestConvergenceSignsTheMeasuredStorageAssurance`
+and `TestMeasuredStorageAssuranceMovesWithTheActualFile` stay GREEN. (B) Freeze the value to a
+constant — the forbidden fix, register #4 reintroduced: the two byte-identity tests stay GREEN and
+`TestConvergenceAckAssuranceMovesWithTheCredentialStore` goes RED. (C) Disable the owner branch in
+`classifyDescriptor`: `TestMeasuredStorageAssuranceMovesWithTheActualFile` goes RED reporting
+`OS_PROTECTED` while `TestClassifyDescriptorOnTheShippedMachineDescriptors` stays GREEN.
+
+**Still open on this path:** nothing pushed, nothing deployed, and the backend widening of
+`AI_TRUST_ANCHOR_STORAGE_ASSURANCES` must be deployed BEFORE any agent that can emit a measured
+level, or every ack 400s and the fleet parks in V1_DEGRADED (`d044aed6`'s own deploy-order note).
