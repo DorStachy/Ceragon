@@ -144,3 +144,7 @@ constant — the forbidden fix, register #4 reintroduced: the two byte-identity 
 level, or every ack 400s and the fleet parks in V1_DEGRADED (`d044aed6`'s own deploy-order note).
 
 - [low] Installers/internal/winacl/assurance.go:82 — `WeakestAssurance`, the aggregator that picks the single storageAssurance value the signed ack carries across every secret-material file, has no direct test anywhere in the tree, and after `1eaee322` no test at any layer proves `OS_PROTECTED` can still survive that aggregation (it is pinned only one layer below, on `classifyDescriptor(MachineSecretSDDL)`); pre-existing since `d044aed6`, not introduced by the assurance-determinism fix.
+
+## Found during the regression check of the close-out pass, 2026-08-19
+
+- [medium] Installers/.github/workflows/pr-checks.yml:127 — the WSL step added by `83b6e557` is step 6 of 9 in `wire-lane-tests` and carries no `if: always()`, so the two WSL packages' pins are silenced whenever any of the three steps above them (proxy suite, daemon wire-mount, machine-secret ACL) goes red — the identical silencing class `96f127cf` just closed one job over for `pathfix`, reintroduced by the very commit that closed the "these packages run in no job" item; verified by parsing the workflow and printing every step of that job with its `if` (only the `pathfix` step in `cli-entrypoint-tests` has one). Settled by adding `if: always()` to that step, or by observing one red `wire-lane-tests` run and checking whether the WSL step reported at all.
