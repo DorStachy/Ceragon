@@ -23,7 +23,33 @@ Each component has its own `CLAUDE.md` or `README.md` with commands and architec
 | [Installers](Installers/) | Go-based `ceragon` / `ceragond` CLI/daemon plus Windows MSI/EXE installer (WiX + WPF bootstrapper). | [Installers/STRUCTURE.md](Installers/STRUCTURE.md) |
 | [packages/shared-contracts](packages/shared-contracts/) | `@ceragon/shared-contracts` — TypeScript type contracts shared with `Backend`. | [packages/shared-contracts/package.json](packages/shared-contracts/package.json) |
 | [scripts](scripts/) | Operational PowerShell + Node scripts (power on/off, queue checks, smoke tests). | — |
+| [ci](ci/) | Local CI: runs every repo's GitHub Actions gates in Docker, off the real workflow files. | [ci/README.md](ci/README.md) |
 | [docs](docs/) | Plans, handoffs, and canonical source-of-truth documents. | See below |
+
+## Running the gates and shipping to production
+
+**Read [ci/README.md](ci/README.md) before pushing anything.** Gates run locally, in Docker;
+deploys stay on GitHub. GitHub Actions billed $600 for July 2026 and the only jobs that still need
+to run there are the ones a laptop genuinely cannot do.
+
+```bash
+node ci/lib/drift.mjs          # is the local mirror still complete?
+node ci/lib/run.mjs Backend    # every mirrored gate for one repo
+```
+
+- 52 gate legs across the 7 component repos are mirrored, reading commands straight from each
+  repo's `.github/workflows/*.yml`, so a gate added upstream is picked up without editing anything
+  here. `ci/gates.json` records only which jobs are mirrored and, for the rest, why they are not.
+- **Every checkout in this workspace is far behind its `origin/main`** (Installers by 933 commits,
+  Backend by 684, Frontend by 485, as of 2026-08-24). The runner handles workflow staleness itself
+  by following GitHub's merge semantics, and prints how far behind each repo is. Pass `--merged` to
+  test the tree a pull request would actually build.
+- **73 job legs cannot be mirrored at all** and 68 of them are `Installers/finding-b-e2e.yml` on
+  macOS and Windows. Docker cannot run macOS. Never report a change as "all checks pass" on the
+  strength of a local run; say which gates ran and which could not.
+- **Deploying needs a fresh, explicit ask from the owner every time.** Merging is not deploying and
+  a green local run is not permission. [ci/README.md](ci/README.md) lists each repo's deploy
+  workflow and the ordering rules that have broken production before.
 
 ## Canonical source-of-truth docs
 

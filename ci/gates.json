@@ -1,0 +1,195 @@
+{
+  "$schema": "./gates.schema.json",
+  "$comment": [
+    "WHICH GitHub Actions jobs run locally, and for the ones that cannot, WHY NOT.",
+    "",
+    "This file does NOT contain any gate's commands. Those are read from each repo's",
+    "real .github/workflows/*.yml when the gate runs, so a command added upstream is",
+    "picked up automatically and cannot silently go unmirrored. What this file adds is",
+    "the part a workflow does not state: which container image supplies the toolchain,",
+    "which Docker volume holds that repo's workspace, and the honest list of jobs the",
+    "mirror does not cover.",
+    "",
+    "'cannotMirror' is load-bearing. `node ci/lib/drift.mjs` fails when a workflow gains",
+    "a job that appears in neither map, which is the only thing standing between this",
+    "harness and the failure mode it exists to prevent: a local run that reports green",
+    "while certifying less than the reader believes."
+  ],
+  "images": {
+    "node20": "images/node20.Dockerfile",
+    "node24": "images/node24.Dockerfile",
+    "go124": "images/go124.Dockerfile",
+    "scanner": "images/scanner.Dockerfile",
+    "ops": "images/ops.Dockerfile"
+  },
+  "caches": {
+    "npm": "devoidci-npm-cache",
+    "go": "devoidci-go-cache"
+  },
+  "repos": {
+    "Backend": {
+      "path": "Backend",
+      "defaultImage": "node24",
+      "volume": "devoidci-backend",
+      "mirrored": {
+        "pr-checks:typecheck": {},
+        "pr-checks:lint": {},
+        "pr-checks:audit_integration": {},
+        "pr-checks:licenses_integration": {},
+        "pr-checks:alerts_integration": {},
+        "pr-checks:migration_chain_from_empty": {},
+        "pr-checks:full_test": {},
+        "security:audit": {},
+        "security:rate_limit_taskdef": {},
+        "security:rds_boundary": {},
+        "build:build_and_test": {},
+        "build:e2e_advisory": {}
+      },
+      "cannotMirror": {
+        "build:required_checks": "Polls the GitHub Checks API for this SHA to decide whether the deploy may start. There is no local equivalent of 'what did GitHub record for this commit', and faking one would defeat the gate.",
+        "build:deploy": "Assumes an OIDC role, pushes to ECR and rolls the ECS service. Deploys stay on GitHub deliberately: they need the cloud identity, and a deploy that can be triggered from a laptop is a deploy with no audit trail.",
+        "security:rate_limit_taskdef (AWS leg)": "The offline self-test IS mirrored; the step that reads the live task definition needs the github-runner-backend role and is reported PARTIAL.",
+        "security:rds_boundary (AWS leg)": "Same shape: the fixture self-test runs locally, the live security-group read does not."
+      }
+    },
+    "Frontend": {
+      "path": "Frontend",
+      "defaultImage": "node20",
+      "volume": "devoidci-frontend",
+      "mirrored": {
+        "pr-checks:checks": {},
+        "security:audit": {}
+      },
+      "cannotMirror": {
+        "vendored-upstream-drift:drift": "Compares the vendored engine against Installers@main over the network with a token. Cross-repo and scheduled, not a PR gate.",
+        "deploy-frontend-ecs:required_checks": "Reads GitHub check runs for the SHA, same as Backend's.",
+        "deploy-frontend-ecs:deploy": "OIDC role + ECR + ECS. Deploys stay on GitHub."
+      }
+    },
+    "Ceragon-Intelligence": {
+      "path": "Ceragon-Intelligence",
+      "defaultImage": "node20",
+      "volume": "devoidci-intel",
+      "mirrored": {
+        "validate:validate": {
+          "dockerSocket": true
+        },
+        "hetzner-validate-pr:shellcheck": {
+          "image": "ops"
+        },
+        "hetzner-validate-pr:compose-config": {
+          "image": "ops",
+          "dockerSocket": true
+        },
+        "hetzner-validate-pr:iam-policy-lint": {
+          "image": "ops"
+        },
+        "hetzner-validate-pr:env-template-lint": {
+          "image": "ops"
+        },
+        "hetzner-validate-pr:cross-reference-aws-baseline": {
+          "image": "ops"
+        },
+        "hetzner-validate-pr:actionlint": {
+          "image": "ops"
+        }
+      },
+      "cannotMirror": {
+        "hetzner-validate-pr:summary": "Aggregates the other jobs' results through `needs:`; locally the runner's own summary is that aggregate.",
+        "hetzner-deploy:*": "Runs on the [self-hosted, hetzner] runner, against the production intel cluster. Not billed by GitHub and not reproducible off that box.",
+        "home-deploy:deploy_home": "Runs on the [self-hosted, home] runner.",
+        "deploy-production:deploy": "OIDC deploy.",
+        "rollback:rollback": "OIDC rollback of a live service.",
+        "hetzner-autobump:*": "Opens and merges a PR as a GitHub App. Requires the app's installation token.",
+        "hetzner-autodeploy:trigger_deploy": "Fires the deploy workflow after a provenance check against GitHub's API.",
+        "hetzner-autorollback:rollback": "Triggered by workflow_run on a failed deploy; there is no local workflow_run.",
+        "cloudflare-ip-refresh:refresh": "Rewrites live ALB security groups."
+      }
+    },
+    "GithubApp-Bot-Scanner-Worker": {
+      "path": "GithubApp-Bot-Scanner-Worker",
+      "defaultImage": "node20",
+      "volume": "devoidci-scanner",
+      "mirrored": {
+        "typecheck:typecheck": {},
+        "test:test": {},
+        "test:github-action-clean-install": {},
+        "security:audit": {},
+        "security:rule-precision": {
+          "image": "scanner"
+        },
+        "ai-detection-gate:ai-detection-gate": {},
+        "quality-precision-gate:quality-precision-gate": {
+          "image": "scanner"
+        },
+        "ai-vs-scanner-benchmark:benchmark": {
+          "image": "scanner"
+        }
+      },
+      "cannotMirror": {
+        "deploy-scanner-workers:deploy": "OIDC role + ECR + ECS. Deploys stay on GitHub."
+      }
+    },
+    "Sandbox-Worker": {
+      "path": "Sandbox-Worker",
+      "defaultImage": "node20",
+      "volume": "devoidci-sandbox",
+      "mirrored": {
+        "build-and-deploy:build_and_deploy": {}
+      },
+      "cannotMirror": {
+        "build-and-deploy:dispatch_intel_bump": "Mints a GitHub App installation token and POSTs repository_dispatch into Ceragon-Intelligence.",
+        "build-and-deploy (deploy leg)": "This repo has no separate PR-checks workflow: audit, build, test, the task-definition policy gate and the worker-result contract all live in the same job as the deploy. Everything up to the OIDC step runs locally and the gate reports PARTIAL, which is accurate -- the deploy half genuinely did not run."
+      }
+    },
+    "Static-Worker": {
+      "path": "Static-Worker",
+      "defaultImage": "node20",
+      "volume": "devoidci-static",
+      "copyGit": true,
+      "mirrored": {
+        "build-and-deploy:build_and_deploy": {}
+      },
+      "cannotMirror": {
+        "build-and-deploy:dispatch_intel_bump": "GitHub App token + cross-repo repository_dispatch.",
+        "fp-drift-check:check": "Assumes a scoped read-only AWS role and reads production findings. Scheduled, not a PR gate.",
+        "retriage-check:check": "Same scoped AWS role; also opens/updates a GitHub issue."
+      }
+    },
+    "Installers": {
+      "path": "Installers",
+      "defaultImage": "go124",
+      "volume": "devoidci-installers",
+      "mirrored": {
+        "pr-checks:hot-path-audit-imports": {},
+        "pr-checks:scanner-parity": {},
+        "pr-checks:wire-lane-tests": {},
+        "pr-checks:codex-vendor-lane": {},
+        "pr-checks:ai-checkpoint-observation": {},
+        "pr-checks:codex-hook-lane-live-proof": {},
+        "pr-checks:release-workflow-contract": {},
+        "pr-checks:self-update-lane": {},
+        "pr-checks:macos-legacy-identity": {},
+        "holdout-score:score": {}
+      },
+      "cannotMirror": {
+        "pr-checks:cli-entrypoint-tests": "runs-on windows-latest. cmd/devoid's entrypoint tests exercise Windows service control, ACLs and PATH resolution; a Linux container cannot stand in. Run them on this machine with `go test ./cmd/devoid/... -count=1` from a Windows shell.",
+        "finding-b-e2e:macos-matrix": "runs-on macos-14. Docker cannot run macOS -- Apple's licence permits macOS VMs only on Apple hardware, and there is no macOS container runtime at all. This is the single most expensive job in the workspace (30 legs per run) and it has no local substitute.",
+        "finding-b-e2e:macos-daemon": "macos-14, launchd lifecycle.",
+        "finding-b-e2e:macos-codex-exec": "macos-14.",
+        "finding-b-e2e:windows-matrix": "runs-on windows-2022. Windows containers need a Windows container host; Docker Desktop here runs the Linux engine. Runnable on this box directly, outside Docker.",
+        "finding-b-e2e:wsl": "windows-2022 host driving WSL distros.",
+        "finding-b-e2e:windows-msi-uninstall": "windows-2022, MSI install/uninstall against a real registry.",
+        "finding-b-e2e:uninstall-sweep": "matrix over ubuntu AND macos; the ubuntu legs would mirror, the macOS legs cannot, so the job is listed whole rather than half-claimed.",
+        "finding-b-e2e:unit": "matrix over ubuntu/macos/windows, same reason.",
+        "finding-b-e2e:linux-matrix": "Mirrorable in principle -- 15 legs of shell/privilege/scenario -- but each leg installs a daemon under systemd, and the runner does not give containers a system systemd. Left unmirrored rather than mirrored-but-inert.",
+        "finding-b-e2e:drift-latency": "same systemd dependency.",
+        "finding-b-e2e:two-user-systemd": "same, plus two real user accounts.",
+        "finding-b-e2e:anti-tamper": "same.",
+        "finding-b-e2e:linux-package-uninstall": "same.",
+        "release:*": "Cuts and signs a real agent release. Stays on GitHub: the signing keys live there and a release built on a laptop has no provenance.",
+        "internal-candidate:*": "Builds and publishes a prerelease, including the Windows installer on windows-latest."
+      }
+    }
+  }
+}

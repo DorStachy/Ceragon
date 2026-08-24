@@ -79,3 +79,8 @@ packages/shared-contracts/package-lock.json
 .codesec-e2e/
 tmp-llm-comparison/
 tmp-opus-live-test/
+
+# Local CI mirror (ci/README.md). The harness and its manifest ARE tracked;
+# per-gate logs and the runner's own dependency are not.
+ci/.logs/
+ci/node_modules/

@@ -1,0 +1,15 @@
+{
+  "name": "@devoid/local-ci",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Runs the GitHub Actions gates of every repo in this workspace locally, in Docker, off the real workflow files.",
+  "type": "module",
+  "bin": { "devoid-ci": "./lib/run.mjs" },
+  "scripts": {
+    "gate": "node lib/run.mjs",
+    "drift": "node lib/drift.mjs"
+  },
+  "dependencies": {
+    "yaml": "^2.7.0"
+  }
+}
