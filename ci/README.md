@@ -173,7 +173,10 @@ when 68 macOS legs never ran is the failure this harness exists to prevent.
 
 ### Repo-specific notes
 
-**Backend.** `npm install`, never `npm ci` — the repo `.gitignore`s its lockfile and CI matches.
+**Backend.** `npm ci`, from the committed `package-lock.json`. Until 2026-08-26 the repo
+`.gitignore`d its lockfile and CI used `npm install`; a same-day re-resolve then differed on **21 of 80
+direct dependencies with no commit to `package.json`**, which is what killed deploys on 2026-08-25. The
+mirror reads its commands from the real workflow files, so it picked the change up without an edit here.
 The four Postgres lanes and the sharded suite each get fresh `postgres:17` containers;
 `migration_chain_from_empty` asserts the database is empty before it starts, which is why services
 are recreated per gate rather than reused.

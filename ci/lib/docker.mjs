@@ -18,10 +18,10 @@
  *    server is told to listen on the host port instead of remapping.
  *
  * 2. THE SOURCE TREE IS MOUNTED READ-ONLY.
- *    Concurrent sessions work in these checkouts, several gates run `npm
- *    install` (the Backend repo .gitignores its lockfile, so CI cannot use
- *    `npm ci`), and a container writing a Linux-resolved `package-lock.json`
- *    or a Linux `node_modules` into a Windows working tree would corrupt it.
+ *    Concurrent sessions work in these checkouts, gates run `npm ci` (and a few
+ *    still `npm install`), and a container writing a Linux-resolved
+ *    `package-lock.json` or a Linux `node_modules` into a Windows working tree
+ *    would corrupt it.
  *    `/src` is read-only; the container rsyncs it into `/w`, a named volume.
  *
  * 3. SERVICES ARE RECREATED PER GATE, THE WORKSPACE VOLUME IS NOT.
