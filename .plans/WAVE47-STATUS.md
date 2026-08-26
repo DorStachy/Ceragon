@@ -974,3 +974,88 @@ line-ending churn and were deliberately left unstaged. Idempotence proven: a sec
 ### One process question for the owner
 **Why the shipping copy fell four versions behind for months** is worth asking whoever bumped the reference
 copy. The sync is done; the process that skipped the shipping copy is not.
+
+---
+
+## Lane 13, round 3 — six render defects fixed, with the crash proved visually. 5 commits on `wave47/fesmall`.
+
+Screenshots under `…/scratchpad/r47-render-harness/wave47-fixed/`, including
+`broken--admin-endpoints-sub-coverage.png` — a full-page **"500 SOMETHING WENT WRONG"** — beside
+`fixed--admin-endpoints-sub-coverage.png`, the same wire state rendering normally.
+
+1. **The all-clear over zero** now reads `0 MCP SERVERS · NO CONFIGURATION SOURCE WAS READ`, with
+   *"MCP COVERAGE NOT MEASURED … This is not a statement that there are none."* — both phrases reused
+   verbatim from this product. **Its first cut over-reached and three existing tests caught it**: it had
+   conflated "we were not told what was read" with "we were told that zero were read", which this product
+   already distinguishes. The flag is now reserved for a *measured* zero.
+2. **The tile** reads 2 endpoints over two rows. **Only the total was widened** — the other three counters
+   are statements about an *agent*, and a machine with no agent has none. A test pins that they must not
+   move.
+3. **The picker** now says it is a separate read, and only when there is something to reconcile.
+   **Both false comments corrected** — the one beside the markup and a second in the prop docblock. Both
+   reasoned about the value *written* and concluded something about the text *said*.
+4. **The guessed URL.** The canonical cookie name has **170 uses**; the broken route held the **only**
+   instance of the other spelling — the one that matches the *product* name, which is why it read as
+   correct to everyone who looked. Fixed, with a case pinning the misspelling as a name that must **not**
+   authenticate.
+5. **+6. The page crashes.** The guard covered the outer object and then reached through a middle one with
+   a plain dot; that middle field is typed *required* but arrives through an unchecked cast. **Three more
+   siblings in the same component.** And **one apparent sibling was not one** — that panel's fetch already
+   rejects the bad shape, so the guard would have been dead code. It removed its own guard and **pinned the
+   invariant instead**, noting that deleting it would reopen the defect in the worse direction.
+
+Five mutations, each in isolation, controls green throughout. Four diffs it could not reach were routed.
+
+---
+
+## Lane 10, round 3 — the corpus correction, done through the real protocol. 7 commits.
+
+**The protocol turned out to be regeneration, not a hand-written correction.** It looked for a precedent to
+copy, as instructed, and found **none** — every governance-correction block is null across all 158 cases
+and no code even models the field. So it did not invent one. The documented path is a generator that builds
+and runs the real engine and regenerates the corpus, the index and the drift manifest together.
+
+**So the corpus was regenerated from the engines, not edited** — which is why no reviewer identity had to
+be supplied: every provenance field is stamped by the generator exactly as before. Nothing fictional was
+recorded. Both digests moved to the same new value, **and that value is the one the browser produced
+independently before the regeneration**.
+
+### A regeneration hazard it predicted, caught and reverted
+
+The runner enforces a 5-second per-case budget, so on a contended box random cases finish as
+"budget exceeded". **Run 1 baked that into three DLP *attack* cases. Run 2 into a different benign one.**
+Committing either would have recorded *"we ran out of budget"* as the expected answer for an attack case.
+
+It kept only the intended case, restored everything else byte-for-byte from HEAD including the drift
+totals, then **audited rather than assumed**: every case in every generated file byte-identical except the
+one, all 158 digests still reproducing, and one file dropped from the commit entirely because its only
+diff was line endings.
+
+### It reported a non-green rather than a green it did not get
+
+The package still fails — **but the corrected case is absent from every failure list**, and the failures
+are a *rotating* set of load-dependent timeouts. Proven by isolated runs: the same three cases that failed
+at 9.8s, 11.5s and 20.0s under full-suite load pass at 0.21s, 1.61s and 1.33s alone. The `origin/main`
+baseline fails the same way on a *different* case, and the failing set has differed on every single run.
+
+---
+
+## A refresh I was about to do myself, and did not
+
+The Frontend playground vendors the three browser engines so the console demonstrates what the endpoint
+actually ships. A stale copy makes the console demonstrate behaviour the endpoint does not have.
+
+I intended to refresh it mechanically. **Checking first showed why the lane was right to decline.** All
+three vendored files sit at pinned commit `1365f60e` and match their manifest digests exactly — the copy
+is internally consistent. **But all three have drifted at source since that pin**, not just the one this
+wave touched.
+
+So refreshing is not a one-file copy. It would pull in changes to two other engines that nobody in this
+wave reviewed, and it would silence a lock digest that is **deliberately red to signal older debt**. That
+is a decision, not a mechanical sync.
+
+**Tracked, not done.** The exact procedure is recorded in the lock file itself.
+
+Also now documented in both engines: the quoted-region bound counts **bytes** in Go and **UTF-16 code
+units** in the browser, so a demotion can differ on non-ASCII text near the limit. A known, written-down
+difference is fine; an undiscovered one is how the two drifted in the first place.
