@@ -360,3 +360,106 @@ stale.** `internal/daemon/ai_handlers.go:3962` says **DeVoid**, and `:3982` alre
 *"To stop this interruption: AI Security -> Tool-Risk -> {class} -> Monitor"*. The only "Cera" strings in
 that tree are deliberate pre-rebrand scheduled-task name lookups. **F41(c)'s "name the class and the dial"
 is DONE.** The remaining half is surfacing `exclusions.allow` in the console — Backend already carries it.
+
+---
+
+## Lane 5 — CLOSED (§1.3 lockfile). 5 commits on `wave47/lockfile`.
+
+Two clean installs from **separate empty caches**: 1016 packages each, identical tree hash
+`6dda24f3…`. Build exit 0, 3673 dist files, zero TS errors. Audit gate passed with **0 unaccounted
+high/critical**; the allowlist stays empty. The gate can go red — a deliberate `package.json`/lockfile
+mismatch produced `Invalid: lock file's axios@1.20.0 does not satisfy axios@1.19.0`.
+
+**The real evidence is the negative, and it is not what "reproducible install" usually means.** Two
+unlocked installs *at the same instant* agree. The failure is that the answer changes underneath you:
+**21 of 80 direct dependencies differed** between the developer's installed tree and a same-day fresh
+resolve, with **zero commits to `package.json`** — axios 1.16→1.20, openai 6.25→6.49, typeorm
+0.3.28→0.3.31, @typescript-eslint 8.59→8.68, and 17 more. `ajv` was installed at 8.18.0 while
+`package.json` demands exactly 8.20.0.
+
+**The lane retracted its own reasoning after measuring it.** It first wrote that the lockfile landed on a
+working `@types/node` only because of the pin. Then it swapped in 20.19.43 by unpacking the tarball
+directly (npm silently reverted an earlier attempt — worth knowing) and measured: **0 errors either way.**
+The documented 3-error breakage no longer reproduces, and *why* is not established. Pin kept on narrower
+honest grounds, written into the step, with relaxing it named as a real option rather than a trap.
+
+Frontend confirmed genuinely using its lockfile (`npm ci` in pr-checks, security, and the Dockerfile).
+
+**Highest residual risk:** the **Docker image build never succeeded** — three attempts, all failing on
+container→registry egress, never on the lockfile. The same `npm ci --omit=dev` succeeds on Windows, so
+the lockfile is installable dev-free, but the Linux leg is unverified and the Dockerfile builds what ships.
+
+Also found, reported not fixed: **the committed `shared-contracts/dist` does not match its source** — the
+de-AI sweep edited the built artifact rather than the source, so every rebuild reintroduces em dashes.
+And `.gitattributes` does not pin the lockfile to LF, in a repo whose own file documents four prior CRLF
+incidents.
+
+**Method warning worth keeping:** `git show "origin/main:.github/…"` fails under MSYS path mangling on
+this box, and a `|| echo` fallback swallowed it into a **false negative**. Use `MSYS_NO_PATHCONV=1`.
+
+**Fixed by me** (`e0ee2bd`): the mirror's own docs asserted the Backend has no lockfile and cannot use
+`npm ci`. The mirror reads commands from the real workflows and picked the change up unaided — only the
+prose was stale, which is the worse half.
+
+---
+
+## Lane 8 — CLOSED (§4.2 HTTP boundary). 4 commits on `wave47/httpbound`.
+
+Three specs booting a **real Nest app over a real socket** with the production bootstrap — real rawBody
+verify, cookie parser, helmet, exception filter, the real ingest pipe, real guards. The policy-bundle spec
+derives a **genuine HMAC signature** from the keyring and verifies it through the real signature guard
+against a real database row, so the endpoint identity is crypto-derived rather than injected. Schema built
+fresh: 240 migrations, 323 CHECK constraints. Baseline 48/48 green.
+
+Five mutations, all red then green. **The most important is M2:** stop the controller forwarding one field
+and the request still returns **201 in every case** — only the stored-row assertion notices. That is
+exactly how a silently-dead column shipped here before.
+
+### New finding — the tolerate-and-drop mechanism has a layer in front of it that tolerates nothing
+
+Guards run **before** validation in Nest, and `SiteGuard` reads the raw request body. So an agent that
+starts stamping a site identifier onto an enrolment body gets **403 Forbidden**, not a silent drop —
+reproducing the exact fleet-wide-outage class the tolerance mechanism exists to prevent, one layer earlier,
+where nobody has been auditing. **The pipe is the wrong place to look.** Sent back to be fixed at the right
+layer, with a tenant-boundary test and a sweep for sibling guards.
+
+### Three more, pinned at the wire
+
+- **The signature timestamp header is ISO-8601, not epoch seconds.** Nothing in the repo pinned this. If
+  the Go agent ever "simplifies" to epoch, **policy delivery dies fleet-wide and the signing code still
+  looks correct.**
+- The exception filter **echoes the raw internal error string** on unhandled 500s unless
+  `NODE_ENV=production` — deliberate, but a dev or staging box leaks internals in the response body.
+- **A bearer-only endpoint gets 403 from the policy bundle and no policy at all**, while the console shows
+  it healthy. That is this campaign's core failure shape and it is adjacent to a hard gate. Routed to a
+  decision brief; behaviour unchanged.
+
+---
+
+## Lane 13 — CLOSED (§3.11, §3.12). 2 commits on `wave47/fesmall`, now resumed with a widened scope.
+
+**§3.11 proven by showing the defect verbatim:** with no total on the wire, the pre-fix panel rendered a
+**byte-identical string** to the measured case. Now three distinct states. A sibling in the same file was
+worse — an unreported *population* was printed as the row count of the page in front of the operator.
+
+**§3.12 — honest verdict: robustness, not a vulnerability.** AST-verified across 1,483 files: **zero**
+`dangerouslySetInnerHTML` anywhere. The suite *demonstrates* the escaping rather than asserting it, by
+feeding it script and image-onerror payloads and requiring no element is created — **and those cases
+passed on the unfixed code**, which is the evidence for the verdict rather than a weakness in it. What was
+genuinely possible and is now closed: right-to-left override characters reversing displayed text,
+invisible characters inside words, newlines breaking the sentence, and a 5,000-character flood.
+
+**The file already contained the fix**, with a doc comment describing this exact defect — wired to a
+different banner one section below and never to the reported line.
+
+**A closed-set lookup walked the JavaScript prototype.** `constructor` returns a Function and React
+renders **nothing** — the reason a capability is inactive silently vanishes. `__proto__` returns
+`Object.prototype` and React **throws**, taking the whole card down. Inert shape 4 exactly: the set had
+only ever been fed its own members.
+
+**Its own test was inert first** — it asserted only that the page survived, and passed against the broken
+lookup for 4 of 5 tokens. Rewritten to a positive assertion; all five then go red unfixed.
+
+**Systemic:** ~25 further sites across the console render server-supplied text raw. Now producing a
+census rather than a patch, plus the shared-component fix, the sibling sites in its own directory, and the
+`exclusions.allow` console surface that F41(c) still needs.
