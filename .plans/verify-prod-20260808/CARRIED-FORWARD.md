@@ -1,5 +1,69 @@
 # Carried forward — noticed during a scoped fix, deliberately NOT fixed
 
+> # ⚠️ THIS IS A LIST OF CLAIMS TO CHECK. IT IS NOT A WORKLIST.
+>
+> **Do not pick an item off this file and go fix it.** Every line below was true on the day it was
+> written and many are no longer true. Read the line, then read the **RECONCILED** verdict appended
+> to it, then read the code yourself before doing anything. A severity marker on a line means
+> somebody once measured a defect there — it does not mean the defect is there now.
+>
+> ## Reconciliation of 2026-08-26
+>
+> Every line was checked against `origin/main` of the repository it names — Installers `114dbc03`,
+> Backend `1a24262b`, Frontend `359d6548` — not against the branch state the line describes.
+> Each carries one of three verdicts:
+>
+> - **FIXED** — the specific defect claimed is gone, with the commit or `file:line` that proves it.
+> - **STILL OPEN** — re-verified as still true today.
+> - **WRONG CLAIM** — the line asserts something that was not true of the code it named.
+>
+> **Result across the 15 lines that still carried a severity: 13 FIXED, 2 STILL OPEN, 0 WRONG CLAIM.**
+> No line was found to have been wrong about the code it named on the day it was written — the
+> failure mode of this file is staleness, not inaccuracy. **Roughly seven in eight of its open items
+> are done.** That is why it must not be used as a worklist.
+>
+> The two still open:
+>
+> - `internal/codexmanaged/requirements.go` — `knownTrustLevel`'s closed vocabulary has no telemetry.
+>   Tracked nowhere else.
+> - `app/admin/endpoints/ai-optout-coverage-panel.tsx` — an absent `total` still reads as whole-scope.
+>   Also master checklist §3.11.
+>
+> One more open thing hides INSIDE a FIXED line: the findings cap (§6 #11) was fixed at the write
+> layer, but `findingsDropped` is still never read, so no console reader sees it. That is master
+> checklist §3.10 and it is annotated on that line.
+>
+> The 8 `[CLOSED]` lines and the settled `[BLOCKER]` were re-checked too. All eight closes hold, but
+> **one CLOSED line's own resolution text has since gone stale in a way that would mislead an
+> operator** — the `94a05b45` entry still says the runbook was corrected to state that exit **1** is
+> expected on a healthy endpoint. The runbook now says **0**, correctly, because the exit code
+> changed afterwards. That is annotated in place.
+>
+> Several lines were closed by BUILDING the thing, in cases where the close-out had explicitly
+> proposed an observation that might have settled them as won't-fix instead (the WSL seam widening,
+> the mixed-box enrolment rollup). The proposed observations were never taken; they were overtaken.
+>
+> ### Two things this file said about ITSELF that are now false
+>
+> 1. **"Nothing was pushed and nothing was deployed — every SHA named here is a local commit."**
+>    No longer true. All seventeen SHAs named anywhere in this file — `c6608646` `130220ea`
+>    `cfba9caa` `16a0e454` `82dca031` `83b6e557` `96f127cf` `94a05b45` `45efc9e3` `1eaee322`
+>    `930dac43` `d044aed6` `06d3da9b` `fae2bc3f` `24bdbcd1` `abf7f408` `721c780b` — are ancestors of
+>    Installers `origin/main`, each checked individually with `git merge-base --is-ancestor`.
+>    **Pushed is still not shipped:** no agent release has been cut, so none of it is on an endpoint.
+>    See the master checklist §0.2.
+> 2. **The deploy-order constraint on the trust-anchor path is now SATISFIED.** The BLOCKER's
+>    resolution warned that `AI_TRUST_ANCHOR_STORAGE_ASSURANCES` had to be widened and deployed
+>    before any agent that can emit a measured level. It is widened on Backend `origin/main`
+>    (`src/crypto/ai-trust-anchor-ack.ts`, consumed by `src/agents/dto/ai-trust-anchor-ack.dto.ts:83`),
+>    Backend `320` is deployed, and no agent release exists. The ordering cannot now be violated by
+>    accident — only by cutting an agent release against an older Backend.
+>
+> ### Line numbers in this file are stale
+>
+> Several items name a `file:line` that has since moved. Where the reconciliation found the new
+> location it says so. Trust the symbol name, never the line number.
+
 One line per item: `- [severity] file:line — one sentence`.
 A carried-forward item is a success of the pass that recorded it, not a failure.
 
@@ -14,30 +78,90 @@ closed eight of these lines, annotated five it deliberately left open with the e
 observation that would settle each, and added one new one. Six lines were out of that
 worktree's repo (two Backend `[high]`, two Frontend, one `[info]`) and were not touched.
 **Nothing was pushed and nothing was deployed** — every SHA named here is a local commit.
+~~That sentence~~ **is FALSE as of 2026-08-26: every SHA named in this file is now an ancestor of
+Installers `origin/main`. See the reconciliation header. Still on ZERO endpoints, though — no agent
+release has been cut.**
 
 ## From fix/go-flap-route4 (the fourth five-minute rewrite-and-flap door), 2026-08-19
 
 - [CLOSED c6608646] ~~[medium]~~ Installers/cmd/devoid/setup_installer.go:497 — `governedAgents` still omits `res.InstalledUnattested`, so the enrolment's last line can read "No AI agents detected to wire (homes absent)" over a Codex that is installed and egress-governed but whose hook-trust dialect could not be attested (the unmerged branch `fix/go-flap-second-verdict`, commit c6608646, fixes this class generically from disk presence — do not fix it twice). **CLOSED by that branch, which is NOW an ancestor of `integ/gate-go`. Verified by reading, not by re-running an enrolment: `reportAIWireSummary` gates on `aiwire.GovernedAgents(res)`, and `governedWireBuckets` (internal/aiwire/ungoverned_window.go:193) carries `res.InstalledUnattested` and `res.WiredDesktop` alongside `Wired`/`AlreadyCompliant`. Not fixed twice, as instructed.**
 - [CLOSED — the claim went stale] ~~[info]~~ integ/gate-go — the brief stated two flap doors were already closed on this branch, but only one is: `130220ea` (hook-trust dialect) is an ancestor; `cfba9caa`/`c6608646`/`16a0e454` (the `diverged` and redirected-CODEX_HOME doors, plus `internal/aiwire/reconcile_decision.go` which centralises the whole decision) are still on the unmerged branch `fix/go-flap-second-verdict` — this route-4 fix was therefore built on the pre-centralisation two-branch shape and will need a small merge onto `reconcile_decision.go` when that branch lands. **No longer true. All four of `130220ea`, `cfba9caa`, `c6608646`, `16a0e454` are ancestors of `integ/gate-go`, each checked individually with `git merge-base --is-ancestor`. The predicted merge onto `reconcile_decision.go` has happened.**
 - [low] Installers/internal/codexmanaged/requirements.go:733 — `knownTrustLevel` is a hard-coded closed vocabulary (`trusted`/`untrusted`/`none`/empty) with no telemetry, so a vendor adding a fifth word degrades every endpoint's hook-lane attestation to unreadable with nothing counting how many endpoints it hit. **STILL OPEN — UNRESOLVABLE IN THIS PASS. `internal/codexmanaged` is a pure library with no counter, heartbeat field or daemon handle, so "count how many endpoints it hit" needs a NEW wire field, and widening the heartbeat contract at close-out is the wrong trade. THE OBSERVATION THAT SETTLES IT WITHOUT BUILDING ANYTHING: a fleet query for endpoints landing in the `InstalledUserConfigOpaque` bucket for codex. That bucket is already the surface this condition reaches — setup_installer.go:499 prints "a trust_level word it does not model" for exactly it — so a non-zero count there IS the missing telemetry, read off the enrolment path instead of a new one. If that count is zero across the fleet, no vendor has added a fifth word yet and this line can be closed as unexercised rather than built.**
+  **RECONCILED 2026-08-26 — STILL OPEN.** `knownTrustLevel` is still the same closed switch over
+  `trusted`/`untrusted`/`none`/empty, now at `internal/codexmanaged/requirements.go:865` (the `:733`
+  in this line is stale). No counter, heartbeat field or daemon handle was added, so the telemetry
+  half is untouched. The `InstalledUserConfigOpaque` bucket this line proposes reading instead does
+  exist and is populated (`internal/aiwire/aiwire.go:442`, `:539`) and is already rendered
+  (`cmd/devoid/setup_installer.go:509`), so the suggested observation is available without building
+  anything — it has simply not been taken.
 
 ## From fix/go-enum-unreadable (the shared WSL distro enumerator dropped rows it could not read), 2026-08-19
 
 - [CLOSED 82dca031] ~~[high]~~ Installers/internal/wsldistro/rows.go:110 — a non-distro subkey under the user-writable `HKCU\...\Lxss` (Windows/Store can create `AppxInstallerCache` there, which has no `DistributionName`) is now a name-missing row, so this fix escalates it to a whole-read failure and every WSL surface on such a host would report UNKNOWN with exit 31 permanently; not observed on the verification box (both subkeys were GUID-named distros) and `airuntimeinventory.DefaultWSLDistros` already emits `wsl-distro-name-missing` for the same key today, but the escalation is new and wants a live sweep before release. **CLOSED by widening the contract, NOT by weakening the failed-read rule. `subkeyOpener` went from `(name string, ok bool)` — which could not express "no DistributionName value present" versus "present but empty" — to `(name string, finding subkeyFinding)`, and the judgement moved into `classifySubkeyRead` over a platform-free `subkeyRead`. Only a DEFINITIVELY ABSENT `DistributionName` exonerates a subkey (not counted, does not poison); an unopenable subkey, an unreadable value, a wrong-typed value and a present-but-blank value all stay FAILED READS, which is the honesty property the lane exists for. The paired control `TestNamesFromRows_ExoneratingANonRegistrationDidNotWeakenTheFailedReadRule` goes red if that rule is relaxed to buy the fix. STILL OWED, and this line's own request: the escalation remains source-derived — no host with a non-distro Lxss subkey was available, so the live sweep before release has NOT been done.**
+  **RECONCILED 2026-08-26 — the CLOSE holds; the residual is now MOSTLY superseded but not
+  discharged.** `host_windows_errnotexist_test.go` settles the one real-registry input read-only on
+  any Windows host, so the live sweep is no longer the ONLY way to exercise the discriminator. What
+  is still not done is the thing that was actually asked for: observing a real host that carries a
+  non-distro `Lxss` subkey. That is **master checklist §2.7 item 4**, on the real-box packet, and it
+  is called out there as the one hardware item this campaign's WSL fix depends on. NOT EXERCISED.
 - [medium] Installers/internal/wsldistro/wsldistro.go:133 — `Enumerate`'s `([]Registration, bool)` seam has no channel for a per-row failure, so on a partial read the readable distro names are discarded and the operator is told only "cannot tell", where the sibling `airuntimeinventory.DefaultWSLDistros` returns the readable observations BESIDE the errors; widening the seam touches cmd/devoid, internal/pathfix and ~10 test files and was left out of a scoped fix. **STILL OPEN, and deliberately not attempted at close-out: it changes what three shipped commands print immediately before hardware testing, and it is in direct tension with the merged design note in rows.go — "a partial list handed back with ok=false is a list a future caller can be tempted to render, and the whole defect above is a partial list being rendered as a total". THE OBSERVATION THAT SETTLES IT: on a host with a genuinely partial registration, whether an operator handed the readable names ALONGSIDE "and one more could not be read" takes a different action than one handed "cannot tell". If the action is identical, this should be closed as won't-fix rather than built, and the seam should stay narrow.**
+  **RECONCILED 2026-08-26 — FIXED. It was BUILT, not settled as won't-fix.** `721c780b` added a
+  SECOND, wide seam beside the narrow one: `wsldistro.ScanHost() HostScan` with
+  `Partial() (readable, unreadable)` and `Total()` (`internal/wsldistro/scan.go:196`). Both shipped
+  surfaces are wired onto it — `cmd/devoid/wsl_enum.go:103-104` and `internal/pathfix/wsl_api.go:49`
+  — so on a partial read the operator now gets the readable distro names ALONGSIDE the failures
+  instead of only "cannot tell". `Enumerate`'s own `([]Registration, bool)` is UNCHANGED and still
+  narrow, which is the standing prohibition in the master checklist §5; the two projections are held
+  in agreement by `TestScanAndEnumerate_NeverDisagreeAboutAHost` (`scan_test.go:306`). The
+  "observation that settles it" recorded above was overtaken and never needed to be taken.
 - [medium] Installers/internal/wsldistro/rows.go:52 — the `wsl-distro-unreadable` vs `wsl-distro-name-missing` reason slugs are computed correctly and then discarded at that same `ok bool` boundary, so no surface can tell the operator which of the two repairs applies; blocked on the same seam widening. **STILL OPEN and still blocked on the item above. Changed by 82dca031 only in that a THIRD outcome now exists behind that boundary (not-a-registration) which is NOT discarded — it is acted on — so the boundary now hides two reasons where it hid two before out of two.**
+  **RECONCILED 2026-08-26 — FIXED, by the seam widening above.** The reason slugs now leave the
+  package on `HostScan.Partial()` and a surface acts on them: `cmd/devoid/wsl_enum.go` mirrors the
+  four slugs and maps each to a DIFFERENT repair sentence in `wslReadFailureRepair`, so an operator
+  is told whether a subkey would not open (a permissions repair they may own) or opened with an
+  unusable name (a broken registration to re-install). `wslRepairFor` has a fallback, so a slug
+  added upstream degrades to "no repair recorded" and still keeps the read incomplete and the exit
+  31 — never to silence.
 - [low] Installers/internal/wsldistro/host_windows.go:44 — `openLxssSubkey` is the one branch of this scan with no test, because covering it means writing fake subkeys into the user's live WSL registration; it is five lines with no branching beyond the two conditions its return values encode, but it is untested residue and should be recorded as such. **MOSTLY CLOSED by 82dca031: the branching is no longer in there. The whole judgement is now `classifySubkeyRead`, tested exhaustively over all eight shapes of `subkeyRead` on every platform, with a standing guard that exactly ONE of the eight may exonerate a subkey. RESIDUAL, still untested and now more load-bearing than before: the registry calls that BUILD the `subkeyRead` — specifically the mapping of `registry.ErrNotExist` from `GetStringValue` onto `NameAbsent`, which is the discriminator's only input. That single line is what a live sweep on a host with an `AppxInstallerCache` subkey would exercise.**
+  **RECONCILED 2026-08-26 — FIXED.** The residual is now covered by
+  `internal/wsldistro/host_windows_errnotexist_test.go`, which pins the discriminator's only real
+  input: that an absent registry value satisfies `errors.Is(err, registry.ErrNotExist)`, with a
+  paired control that `ErrUnexpectedType` does NOT — so a wrong-typed `DistributionName` cannot be
+  exonerated. The test also refutes this line's premise that a host carrying a non-registration
+  subkey was needed: the claim is about what `golang.org/x/sys/windows/registry` returns for an
+  absent value, so it is settled read-only against `HKCU\Software` on any Windows host, CI runners
+  included. Lxss is never opened and nothing is written.
 
 ## From fix/go-wsl-remainder (the §2.1 WSL-lane remainders), 2026-08-19
 
 - [CLOSED 83b6e557] ~~[high]~~ Installers/.github/workflows/pr-checks.yml — `./internal/wsldistro` and `./internal/wslcodex` are named in NO job of ANY of the five workflow files (every `go test` invocation was enumerated), so the package defining the failed-read contract and the package defining the covered/uncovered/unknown vocabulary both ship with their own tests never having run on a pull request; not fixed here because this brief excluded editing CI. **CLOSED: a step in `wire-lane-tests` (ubuntu) now runs both packages. RE-VERIFIED during the close-out that the pin is not inert in the way this campaign has shipped five times — the six tests 82dca031 adds are present by name inside a `GOOS=linux` test binary, so they execute on that runner rather than being silently skipped as Windows-only.**
 - [CLOSED 96f127cf] ~~[medium]~~ Installers/.github/workflows/pr-checks.yml:183 — the `pathfix` step added by 24bdbcd1 is the LAST step of `cli-entrypoint-tests` with no `if: always()`, sitting behind a 25-minute `go test ./cmd/devoid/...` step, so the strict-gate lane reports nothing whenever that suite goes red or times out; the `if: always()` idiom is already used twice in the same file (lines 276, 504); not fixed here because this brief excluded editing CI. **CLOSED: `if: always()` added. The failing cmd/devoid step still fails the job — this only stops it SILENCING an independent gate, in exactly the situation where a reviewer is already looking at a red run. Verified by parsing the workflow and printing every step of that job with its `if`: the pathfix step has `always()`, every other step has none.**
 - [medium] Installers/cmd/devoid/ai_status.go:59 — `codexMachineLayerVerdict`'s own comment records that the machine layer reports false on EVERY endpoint in the fleet today (`Provider.CloudRequirements` is nil in production by design), which means `devoid ai status codex` exits non-zero on every healthy endpoint too, so its exit code cannot presently be used as a fleet health signal; noticed while choosing the exit-code precedence and deliberately not touched. **STILL OPEN, and it is one of the decisions this pass is handing to a human: whether DeVoid should be able to observe the CLOUD_REQUIREMENTS tier at all is a product question, not something to settle by editing code at close-out. WHAT DID CHANGE (94a05b45): the one runbook that told a live-proof operator this command "must exit 0" now states that 1 is the expected answer on a healthy endpoint and why, so while the defect is open it no longer causes a valid proof to be abandoned on step 1.**
+  **RECONCILED 2026-08-26 — FIXED.** `devoid ai status codex` no longer exits non-zero on a healthy
+  endpoint, so its exit code IS usable as a fleet health signal now. `codexMachineLayerVerdict`
+  (`cmd/devoid/ai_status.go:54-86`) reads `reportCodexMachineStatus`, which returns "nothing was
+  observed to be WRONG" rather than `EffectiveResult.Clean()`. The composition rule is untouched —
+  an unobserved tier still never composes clean, per the master checklist §5 prohibition — and the
+  unread CLOUD_REQUIREMENTS tier is named in the command's own NOT ASSESSED block instead of being
+  inferred from an exit code. **The product question this line handed to a human is NOT answered:**
+  whether DeVoid should observe the CLOUD_REQUIREMENTS tier at all is still undecided. Only the
+  "every healthy endpoint exits non-zero" defect is closed.
 - [info] Frontend/app/mcp/mcp-governance-content.tsx — §6 findings 7 (NaN count line silencing its own "coverage incomplete" banner) and 8 (the false server-disagreement accusation when a summary is served with no rows) were found ALREADY FIXED, uncommitted, in the concurrent Frontend worktree `C:/cwt/w2-fe` on branch `fix/fe-summary-vs-rows` (`toCount` is now applied to `summary.sourcesTotal`, and `rowsAreWholeScope` gates the comparison); not touched from this Go worktree, which does not contain those files.
+  **RECONCILED 2026-08-26 — FIXED and MERGED.** Both are on Frontend `origin/main` (`359d6548`), no
+  longer uncommitted in a worktree: `toCount(summary.sourcesTotal)` at
+  `app/mcp/mcp-governance-content.tsx:247` (finding 7 — the NaN count line) and `rowsAreWholeScope`
+  at `:259` (finding 8 — the false server-disagreement accusation on a summary served with no rows).
 
 ## From fix/go-enrol-summary (the enrolment closing summary), 2026-08-19
 
 - [low] Installers/cmd/devoid/setup_installer.go:525 — the closing alarm is gated on "NO agent is governed", so a MIXED box (one runtime governed, a second one deferred/failed/opted out) ends enrolment with no rollup naming the ungoverned one at all; each runtime's own row above still states its outcome, and the gate matches the alarm's own "NONE is governed" wording, so this is pre-existing behaviour left untouched rather than something this fix introduced. **STILL OPEN, re-confirmed by reading at close-out: the gate is still `len(aiwire.GovernedAgents(res)) == 0`. Not fixed because the fix is a NEW line of enrolment output whose wording is a product choice, and because this exact function was rewritten one merge ago by c6608646 — rewriting the same closing summary twice in one week is how a regression gets in. THE OBSERVATION THAT SETTLES IT: enrol a box with Codex governed and Claude Code deferred, and read the last line. If a reader of only that line would believe the endpoint is fully governed, the rollup is needed; if the per-runtime rows above it already stop that belief, this closes as won't-fix.**
+  **RECONCILED 2026-08-26 — FIXED. It was BUILT, not settled as won't-fix.** The mixed-box rollup
+  now exists: `reportUngovernedRemainder` (`cmd/devoid/setup_installer.go:624`), called
+  unconditionally at `:587`, warns "AI runtimes are installed on this endpoint and NOT governed
+  after this pass" and NAMES them. The all-ungoverned alarm's `len(GovernedAgents(res)) == 0` gate
+  is unchanged, as this line predicted it would be — the rollup was added beside it rather than by
+  loosening it. The set is derived as `AgentHomesPresent(opts)` minus `GovernedAgents(res)`, so a
+  bucket added later joins the correct side on its own instead of needing a second hand-written list.
 - [CLOSED — verified] ~~[high]~~ Installers integ/gate-go — the §2.1 lane's three commits (`06d3da9b`, `fae2bc3f`, `24bdbcd1`, branch `fix/go-wsl-gate-truth`) are NOT ancestors of `integ/gate-go`; `fix/go-wsl-remainder` fast-forwarded them in so its own fix could build on them, so merging that one branch brings all four, and merging `fix/go-wsl-gate-truth` alone would leave the exit-code half behind. **No longer true. All three are ancestors of `integ/gate-go`, checked individually with `git merge-base --is-ancestor` rather than inferred from a merge message. The `fix/go-wsl-remainder` merge brought them as predicted, so the exit-code half is in.**
 
 ## From fix/fe-summary-vs-rows (the console render remainders, §2.4 / §6 items 7, 8, 10, 14), 2026-08-19
@@ -48,18 +172,75 @@ touch them; they remain open and need the Backend lane.** The two Frontend entri
 them are likewise not in that repo.
 
 - [high] Backend (not in this worktree) — §6 #9, "a stored key that a console panel reads is discarded before it is written", is a Backend write-time sanitiser defect and could not be touched from the Frontend worktree `C:/cwt/w2-fe`; `guardHealth` also does not exist anywhere in `Backend/src` on the shared checkout's current branch, so the code lives on a Backend feature branch in another agent's worktree and needs that lane, not this one.
+  **RECONCILED 2026-08-26 — FIXED at the layer this line names.** That Backend branch merged.
+  `guardHealth` and `guardDegraded` are now throughout `Backend/src` on `origin/main` (`1a24262b`):
+  `guardDegraded` survives the write-time sanitiser as one of the two `STRUCTURED_EVIDENCE_METADATA_KEYS`
+  (`src/ai-governance/services/ai-event.service.ts`), it is carried by the controller at
+  `src/ai-governance/controllers/ai-agent.controller.ts:1299`, and write and read are joined by
+  `src/ai-governance/services/ai-event.guard-degraded-roundtrip.spec.ts`. A spec is even named
+  *"DELIVERS guardDegraded now that it is declared — declaring the key is the fix"*.
+  **The PROOF is still one layer short, and that is tracked as master checklist §4.8:** there is no
+  live-Postgres spec for `guardDegraded`, and the `jsonb_typeof(metadata -> 'guardDegraded') = 'array'`
+  predicate the read projection depends on is re-implemented in TypeScript rather than executed in
+  Postgres. So: the defect is closed, the guarantee is not yet executed where it actually runs.
 - [high] Backend (not in this worktree) — §6 #11, the silent order-dependent 32-entry write-time cap on stored findings, is likewise Backend-side; the only `32` in the shared Backend checkout is `scan-dispatch.service.ts:3122` (`normalizeStringArray(summary.riskyPaths, 32)`), which is a different array, so the reported cap is on an unmerged Backend branch and was not confirmed here.
+  **RECONCILED 2026-08-26 — FIXED on the write side; the READ side is a separate open item.** The cap
+  is confirmed present and is `MAX_STORED_FINDINGS = 32` in
+  `src/ai-governance/services/ai-event.service.ts` — a different `32` from the
+  `scan-dispatch.service.ts` one this line found, so the line was right that it had not merged yet.
+  Both halves it complained of are closed: it is **no longer silent** (`findingsDropped` is stamped
+  as a server-owned truncation report, `SANITIZER_TRUNCATION_REPORT_KEYS`, and a caller-authored copy
+  is discarded), and it is **no longer order-dependent** (`findingsWithinCap` keeps the highest-BASE
+  entries and restores arrival order, so a `critical` arriving at position 33 still bands the row).
+  Held by `ai-event.findings-cap-disclosure.spec.ts` and `ai-event.sanitizer-never-flatters.spec.ts`.
+  **STILL OPEN downstream, and it is master checklist §3.10:** `findingsDropped` is written and never
+  read — `git grep findingsDropped origin/main -- src/ai-governance/services/ai-query.service.ts`
+  returns **zero** hits, so it reaches no `safeMetadata` projection and no timeline DTO. A console
+  reader still cannot see that a row's findings were truncated. Fixing the write side did not make
+  the fact visible to anybody.
 - [low] Frontend/components/ui/summary-vs-rows-note.tsx:41 — the shared sentence ends "the count shown is the one that claims less", which reads naturally when the smaller number is displayed (`sourcesAnswered`) but is confusing when the LARGER number is displayed because the larger number is the one claiming less coverage (`notReported`, `sourcesUnanswered`); the wording is load-bearing in four existing tests and was left alone in a scoped fix.
+  **RECONCILED 2026-08-26 — FIXED.** The sentence was rewritten. `components/ui/summary-vs-rows-note.tsx`
+  no longer ends "the count shown is the one that claims less"; its header now records the exact
+  confusion this line reported — that a reader resolves "claims less" as "the smaller number" while
+  `worstCaseCount` (`Math.max`) displays the larger one — and states the DIRECTION rather than an
+  arithmetic, then names the case where obeying the rule means showing the larger number. It also
+  records why promising the larger number instead would ALSO be false on a real branch
+  (`sourcesAnswered` derived as `sourcesTotal - sourcesUnanswered`).
 - [info] Frontend/app/admin/endpoints/ai-optout-coverage-panel.tsx — the panel's `total` is the only signal that the row list is a subset; if a Backend ever omits `total` while capping the list, the panel silently reverts to treating a capped page as the whole scope and can then report a false disagreement in the reported > rendered direction. No backend behaviour was checked; this is a contract risk, not an observed defect.
+  **RECONCILED 2026-08-26 — STILL OPEN, and it is now a NAMED item on the master checklist (§3.11).**
+  Re-read on Frontend `origin/main`: `app/admin/endpoints/ai-optout-coverage-panel.tsx:292` reads
+  `const rowsAreWholeScope = typeof data?.total !== "number" || !Number.isFinite(data.total) || data.total === rows.length`
+  — an ABSENT `total` still evaluates to whole-scope. The risk this line predicted is unchanged and
+  the backend behaviour is STILL not checked, so it remains a contract risk rather than an observed
+  defect. Note the sibling surface `app/mcp/mcp-governance-content.tsx` got the same guard and the
+  same fail-direction, so the two now share the exposure rather than only one carrying it.
 
 ## From the regression check of fix/go-wsl-remainder, 2026-08-19
 
 - [CLOSED 94a05b45] ~~[low]~~ Installers/internal/codexmanaged/LIVE_PROOF_RUNBOOK.md:52 — the one document in the repo that states this command's exit contract still reads "must exit 0. Exit 1 means a layer is genuinely unclean", which abf7f408 makes incomplete: an unreadable WSL registration now exits 31, and a live-proof operator following this runbook would read 31 as an unrecognised failure; no CI job, install script or packaging step reads this command's exit code (all five workflows plus install-scripts/, packaging/, windows-installer/ and scripts/ were grepped), so nothing automated breaks. **CLOSED — and the line was wrong TWICE, not once. Besides 31, "must exit 0" is itself false today: 1 is what a HEALTHY endpoint returns, because the rollup's machine term is a measured constant false fleet-wide (see the ai_status.go:59 item above). An operator obeying the old line abandons a valid proof on step 1. The runbook now states what 0, 1 and 31 each mean here and which two commands actually discriminate. DOCUMENTATION ONLY: no exit code was changed, because which of them is right is a product decision.**
+  **RECONCILED 2026-08-26 — the close holds, but THIS RESOLUTION NOTE IS ITSELF NOW STALE.** It says
+  the runbook was corrected to state that **1** is the expected answer on a healthy endpoint. It no
+  longer says that, and it should not: `codexMachineLayerVerdict` was subsequently changed so a
+  healthy endpoint exits **0** (see the `ai_status.go:59` item above), and the runbook was updated to
+  match — it now reads *"0 IS the expected answer on a healthy endpoint"*, and separately documents
+  that `devoid ai codex-machine status` returning INCOMPLETE also exits 0 and quotes its verdict line
+  verbatim. An operator following the RESOLUTION TEXT above rather than the runbook would now abandon
+  a valid proof for the opposite reason. **Read the runbook, not this line.** (Separately: the master
+  checklist §3.13 records that `LIVE_PROOF_RUNBOOK.md:152`'s line numbers point at unrelated code —
+  a different defect in the same file, owned elsewhere.)
 - [CLOSED 45efc9e3] ~~[low]~~ Installers/cmd/devoid/ai_status.go:210 — the exit-code precedence puts `wslUnknown` ahead of `excluded` while the render switch above puts `excluded` first, so a host carrying an authorized opt-out AND an unreadable registration prints the opt-out headline and exits 31; both states are truthfully non-zero and layer 3/3 still prints the unknown rows, but the number and the headline name different repairs on that one combination. **CLOSED without moving EITHER ordering — both are deliberate and both are documented in the source. The `excluded` branch now also names the unreadable registration when it holds, and says that is what the 31 refers to. The load-bearing half is the CONTROL test: on a readable host the new sentence must NOT appear and the code must stay 1. Writing that control caught a too-broad assertion in itself — layer 1/3 legitimately prints "codex client version could not be read" on the same box — which is the "check measures the wrong thing" trap caught before it shipped rather than after.**
 
 ## Found during the close-out pass, 2026-08-19
 
 - [low] Installers/internal/airuntimeinventory/sources_windows.go:167 — `DefaultWSLDistros` still collapses "DistributionName definitively ABSENT" into `wsl-distro-name-missing`, the distinction 82dca031 drew in `internal/wsldistro`, so a host with an `AppxInstallerCache` subkey grows one spurious unknown row on the inventory surface while `devoid wsl list` reads clean; it is NOT the fleet-wide brick that was fixed, because this channel returns per-row errors BESIDE a partial result so one bad row costs one row, but the two enumerators now classify the same registry subkey differently, which is §10 register #9's defect class in miniature. Not fixed in the close-out because the function has no seam and is untestable off a configured host, so any change would ship unverified; settled by one host carrying a non-distro Lxss subkey, comparing that surface's unknown-row count against `devoid wsl list`.
+  **RECONCILED 2026-08-26 — FIXED, and it did get a seam.** `721c780b` split the judgement out of the
+  Windows-only function into `internal/airuntimeinventory/wsl_rows.go`, which ports
+  `classifySubkeyRead` as `classifyWSLSubkeyRead` over a platform-free `wslSubkeyRead`, so it is
+  testable off a configured host — the exact objection that stopped the close-out. `DefaultWSLDistros`
+  (`sources_windows.go:129`) now calls `collectWSLSubkeyRows` + `wslDistroRows`, and a definitively
+  absent `DistributionName` produces NEITHER a boundary marker NOR an error row. The two enumerators
+  no longer classify the same registry subkey differently. `openLxssUserSubkey` maps only
+  `registry.ErrNotExist` onto `NameAbsent`; every other failure stays a failed read.
 
 ## BLOCKER found after the close-out — SETTLED 2026-08-19 in `1eaee322`
 
@@ -143,9 +324,43 @@ constant — the forbidden fix, register #4 reintroduced: the two byte-identity 
 `AI_TRUST_ANCHOR_STORAGE_ASSURANCES` must be deployed BEFORE any agent that can emit a measured
 level, or every ack 400s and the fleet parks in V1_DEGRADED (`d044aed6`'s own deploy-order note).
 
+**RECONCILED 2026-08-26 — the fix holds and the DEPLOY ORDER IS NOW SATISFIED.** `1eaee322` and
+`930dac43` are both ancestors of Installers `origin/main`, so "nothing pushed" is no longer true.
+The backend widening is on Backend `origin/main`: `AI_TRUST_ANCHOR_STORAGE_ASSURANCES` is defined in
+`src/crypto/ai-trust-anchor-ack.ts` and enforced as the `@IsIn` set on
+`src/agents/dto/ai-trust-anchor-ack.dto.ts:83`, with `src/crypto/ai-trust-anchor-ack.storage-assurance.spec.ts`
+asserting it contains `OS_PROTECTED`, `OS_LOCAL_USER_READABLE`, `OS_SHARED_LOCAL_GROUP` and
+`UNVERIFIED` — which is every level the agent's `internal/winacl/assurance.go` can emit. Backend
+`320` is deployed and no agent release exists, so the required ordering already holds.
+**The remaining way to break it is to cut an agent release against an older Backend** — it can no
+longer happen by simply shipping in the wrong order from here.
+
 - [low] Installers/internal/winacl/assurance.go:82 — `WeakestAssurance`, the aggregator that picks the single storageAssurance value the signed ack carries across every secret-material file, has no direct test anywhere in the tree, and after `1eaee322` no test at any layer proves `OS_PROTECTED` can still survive that aggregation (it is pinned only one layer below, on `classifyDescriptor(MachineSecretSDDL)`); pre-existing since `d044aed6`, not introduced by the assurance-determinism fix.
+  **RECONCILED 2026-08-26 — FIXED.** `internal/winacl/assurance_aggregate_test.go` now tests
+  `WeakestAssurance` directly, and its own header names this line as the reason it was written. It
+  proves the specific thing this line said no test at any layer proved: that `OS_PROTECTED` can
+  survive the aggregation (`:72`). It also pins identity, the empty-input answer (`UNVERIFIED`,
+  `:219`), commutativity over every pair, that no pair can produce a level no measurement produced,
+  and that the output always lands inside the backend's closed set.
 
 ## Found during the regression check of the close-out pass, 2026-08-19
 
 - [medium] Installers/.github/workflows/pr-checks.yml:127 — the WSL step added by `83b6e557` is step 6 of 9 in `wire-lane-tests` and carries no `if: always()`, so the two WSL packages' pins are silenced whenever any of the three steps above them (proxy suite, daemon wire-mount, machine-secret ACL) goes red — the identical silencing class `96f127cf` just closed one job over for `pathfix`, reintroduced by the very commit that closed the "these packages run in no job" item; verified by parsing the workflow and printing every step of that job with its `if` (only the `pathfix` step in `cli-entrypoint-tests` has one). Settled by adding `if: always()` to that step, or by observing one red `wire-lane-tests` run and checking whether the WSL step reported at all.
+  **RECONCILED 2026-08-26 — FIXED, and the CLASS was closed rather than the instance.** The WSL step
+  ("WSL enumeration + Codex-in-WSL coverage vocabulary") now carries `if: always()`
+  (`.github/workflows/pr-checks.yml:166`), and so does every other `go test` step in the job — proxy
+  (`:137`), daemon wire-mount (`:141`), machine-secret ACL + browser distribution (`:149`). The job
+  header (`:107-124`) now states the rule and why `Whole-module compile` is deliberately exempt (it is
+  the first step, so nothing above it can silence it), and records that `always()` is not
+  `continue-on-error` — a failing step still fails the job. **NOT PROVEN: none of this has executed.**
+  GitHub Actions is blocked org-wide (master checklist §0.1), so the corrected gating has never run.
 - [low] Installers/internal/wsldistro/rows.go:219 — `82dca031`'s exoneration is INVISIBLE: a `subkeyAbsentRegistration` row yields no name, no reason slug and no count, so nothing anywhere can say "one Lxss subkey was skipped because it is not a registration". That is in tension with this package's own stated doctrine one file over ("EXCLUDED IS NOT ABSENT ... every surface that shows a roll-up must NAME them and say they were excluded and why"), which it honours for `docker-desktop` but not here. Two shapes ride on it: a half-written REAL registration (State/BasePath written, `DistributionName` not yet) is now silently dropped where it used to fail the read, and any future change to how Windows shapes its Lxss bookkeeping keys shrinks the denominator with nothing to see. Not a brick and the failure direction is a subkey WSL itself cannot launch, which is why it is [low] and not a blocker on the fix. Settled by carrying an exonerated-subkey COUNT out of `scanRegistrationRows` and printing it on the same line that already names excluded distros — or by deciding the doctrine deliberately does not extend to non-registrations, and saying so in `rows.go`.
+  **RECONCILED 2026-08-26 — FIXED, by the first of the two settlements this line offered.** The
+  exoneration is no longer invisible. `HostScan.SkippedNonRegistrations()` carries the count
+  (`internal/wsldistro/scan.go:145`) and `HostScan.ExclusionLine()` prints it on the SAME line that
+  already names excluded distros: *"N subkeys under the registration key were skipped: not a distro
+  registration"*. `cmd/devoid/wsl_enum.go`'s `readWSLHost` takes the exclusion line from the scan and
+  does not recompute it from the readable rows, precisely so the count cannot be lost. It is a COUNT
+  and not a list because the only identifier such a subkey has is a GUID. Pinned by
+  `TestScanFromRows_ExoneratedSubkeysAreCountedNotInvisible` (`scan_test.go:236`), which names this
+  item, with a control at `:70` that only the exonerated row is counted. The doctrine is honoured.
