@@ -720,3 +720,57 @@ Left behind: branch `wave47/liveproof`, one commit, rewriting three stale quaran
 actually measured. **All four observed flags remain false**, and the register's own test still passes. One
 of those reasons claimed a directory exists that does not — the same shape of stale line that misled a
 reader once before.
+
+---
+
+## Lane 8, round 3 — CLOSED (installer routes, the outage class). 11 commits on `wave47/httpbound`.
+
+**It marked six routes, not the three reported** — because the classification rule is per-method, so it is
+equally true of the three nobody had noticed. Listing only the noticed subset would have been exactly the
+"second list somebody has to remember to update" that this mechanism exists to remove. One route with no
+guards at all was correctly **not** swept in, and a test pins that it stays unmarked.
+
+**M10 reproduced the outage** on the route an endpoint onboards through: removing one mark turned an
+undeclared field from accepted-and-counted into **400 Bad Request**. Every tolerate case also asserts the
+drop is counted at its exact path, with a clean-body control.
+
+### The key-type question, answered with evidence rather than an opinion
+
+**Nothing states the current behaviour is intended, and the nearest statement asserts the opposite.** The
+commit that put signature checking on these routes describes them as already enforcing a required key
+type. **Six of the eight never did**, confirmed by reading that commit's own version of the file. So the
+gap is **an unexamined belief, not a documented decision**. Pinned as current behaviour, not tightened —
+a runner-scoped key is admitted on one route while its sibling, which *does* declare the key type, rejects
+the same key. That contrast proves the admission is the missing marker rather than a permissive guard.
+
+### A false claim of its own, caught by its own mutation
+
+**Its mutation did NOT go red — and it reported that as its error rather than as a pass.** Its commit had
+claimed the leniency spec fails if a mark is removed. Deleting the controller from the scanner's list left
+that spec **fully green at 32/32** while the installer DTOs quietly stopped being checked — because
+removing a name does not fail an assertion, **it removes the assertion.**
+
+That is the precondition-that-skips-the-check shape, operating one level *above* the gate it was meant to
+protect. Closed by computing the set from source and comparing it to the declared list, with two further
+guards so the coverage spec cannot itself go inert.
+
+**Not exercised:** two of the six marked routes have no wire test of their own, and whether any real
+integration relies on the current key admission needs a production query that was not run.
+
+---
+
+## An environment hazard that bit two lanes in one day
+
+**`git stash` is shared across every worktree of a repo.** `refs/stash` lives in the shared repository, so
+concurrent sessions push onto and pop from the same stack.
+
+One lane's `push` created nothing because its file was already clean — so its `pop` **applied a different
+agent's stash**, producing 8 conflicted files across four unrelated areas. It restored every foreign path
+by name and removed the untracked files the pop brought in. The other lane's entry survived at
+`stash@{0}` **only because a conflicted pop preserves the entry**; a clean pop would have consumed it.
+
+Two siblings from the same day: a shared scratchpad helper was overwritten by another agent mid-run, and
+mutation scripts that `git checkout --` their target **destroy uncommitted work in that file**.
+
+Recorded as a standing rule: **no `git stash` in this workspace**, namespace scratchpad tooling per lane,
+and commit before mutating.
