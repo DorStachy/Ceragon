@@ -511,3 +511,88 @@ unproven — that the custom action reaches this code under a live SYSTEM token,
 folder-removal rows behave against a preserved directory inside a real transaction, and cross-profile ACL
 behaviour, since tests write as the current user and SYSTEM restoring into *another* user's profile was
 never actually attempted.
+
+---
+
+## Lane 3 — CODE COMPLETE (§2.3 observer for the vendor's fail-open). **HARD GATE.** 3 commits on `wave47/failopen`.
+
+**Mechanism chosen: the spawn-side counter.** The hook writes one content-free marker before it decides and
+removes it once the runtime has the bytes. An invocation the client killed, that crashed, or that exited
+non-zero never removes its marker, so **it leaves its own evidence**. The daemon reaps markers older than
+any window a client could still be waiting in.
+
+### Two of my premises were wrong, and the lane checked rather than assumed
+
+- **The vendor's failure line is NOT missing from old builds.** `hook: SessionStart Failed` and
+  `hook: UserPromptSubmit Failed` were captured verbatim on **0.134** by two operators, and the format
+  literal is present in the installed **0.147** binary. The 0.144-pinned string I warned about is a
+  *different* string — `hook: UserPromptSubmit Blocked`, the canary marker.
+- **So parsing was rejected on availability, not on version.** That line goes to the Codex process's own
+  output. DeVoid is not its parent and the client does not persist it — the log directory holds one login
+  log from May. Parsing would mean wrapping or shimming the vendor binary. **Everything a parser could
+  tell us, the absence of a delivery already tells us, with nothing pinned to a vendor build.**
+
+### It refused to ship the count on a field that would be dropped
+
+The signal rides the **existing** undecidable evidence channel as new reason *values*, following a
+precedent already in the tree. The lane deliberately did **not** add a field to the counters block,
+because a test pins that block to exactly the keys the Backend allowlist knows — **an extra key is
+silently dropped in transit.** Shipping a count on a dropped field would be green-over-a-dead-path again.
+Getting it onto that block needs a Backend change first (`runtime-adapter-shape.ts`), which is outside
+this repo. **Pending integration item.**
+
+### The defect it found while proving its own work
+
+The daemon resolved the marker directory from **its own home**. On a machine-scope install it runs as
+SYSTEM, whose profile no hook ever writes to — so the reaper would have read an empty directory and
+**reported a confident zero.** It now reaps every enumerated non-service profile and *counts the profiles
+it could not read* rather than letting the ones it could stand in for the machine.
+
+Its own first cut also had a defect the tests caught: the marker's name-sanitiser **sanitised rather than
+rejected**, so a home directory, a project name and a token body all survived into the marker. It now
+records `unknown` for anything outside the closed alphabet.
+
+### Four states proven, not three
+
+Mutation: neutralise the writer with one line → **10 tests fail, every one on a loud precondition**
+(*"the writer did not record this spawn, so every count below would be measuring nothing"*). Restored →
+green. Correctly **still green** under the mutation: the three not-measured tests — an endpoint with no
+observer *is* not-measured.
+
+- **measured zero** — and the daemon mints no row, because silence is right there.
+- **measured N** — *"1 invocation(s) were spawned and delivered no decision — those actions ran ungoverned"*.
+- **not measured** — *"no count is available from this endpoint; this is not a zero"*, never a count.
+- **the fourth branch a two-state design gets wrong** — measured, zero denominator → *"a measured absence,
+  not a pass"*.
+
+Every sentence, including the clean one, names the tier a spawn-side observer **cannot** see.
+Standing prohibition held and asserted: the verdict stays UNVERIFIABLE and `Clean()` stays **false**.
+
+**Not exercised:** no real ungoverned Codex session — synthetic spawns only. The proof is ~15 minutes on
+an enrolled endpoint with a deliberately broken hook target. Nothing exercised on the Backend side.
+
+### §3.6 — recorded NO, and the checklist's premise was wrong
+
+There are **three** Codex clients on this machine, not the two the checklist assumed: **0.147.0** (the npm
+CLI), **0.149.0-alpha.4.1** (inside the desktop app), and 0.130.0-alpha.5 (the launcher, below the floor).
+**No 0.144. No 0.148.**
+
+The artefacts *are* obtainable — the 0.147 binary carries the exact surface — but taking them means
+running an authenticated Codex client against a prepared home, which is a live-proof act on a real
+endpoint, not something a code change may do to itself. The one vendor source tree on this box is a
+directory skeleton with **zero files**.
+
+**Recommendation: do not widen now**, and note what widening would buy — *one row*. The desktop app on the
+same machine runs 0.149 and would still say unverified. The durable fix is for hook-trust to stop being
+version-pinned at all, which is a design change.
+
+### §3.7 — a third option, better than either of mine
+
+Closing it is expensive **not because of that line** but because an unknown hook row drags the *whole*
+report down to "posture not attestable" — you would lose six true statements to gain one honest absence,
+plus a red mark nobody on those machines can clear. The lane recommends changing the **rollup** so an
+unknown hook row marks only that row. Nothing changed; this is an owner decision.
+
+**And a warning I would have missed:** §2.3 does **not** compensate for §3.7. A wrong dialect makes the
+client refuse to spawn our hook at all — and a spawn-side observer sees nothing when it is never spawned.
+That is exactly the tier the observer discloses as unmeasured on every line it prints.
