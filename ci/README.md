@@ -238,6 +238,17 @@ when 68 macOS legs never ran is the failure this harness exists to prevent.
 `.gitignore`d its lockfile and CI used `npm install`; a same-day re-resolve then differed on **21 of 80
 direct dependencies with no commit to `package.json`**, which is what killed deploys on 2026-08-25. The
 mirror reads its commands from the real workflow files, so it picked the change up without an edit here.
+
+**Backend, whole suite.** `Backend/docker/test-suite/run-suite.sh` runs the `full_test` lane on its own,
+from inside the Backend repo, with the same three `postgres:17` services and the same env block.
+**Measured 2026-08-26 at `origin/main` 1a24262b: 7580 s wall clock (2 h 06 m) -- not the 7-13 h the bind
+mount cost. 17656 tests passed, 1 failed, 19 skipped; 1038 suites passed, 2 failed, 2 skipped.** Both red
+suites were re-run alone and neither is a real failure of `origin/main`: one needs a Docker CLI inside the
+shard (now in the image), the other times out under two-worker load and passes alone. Use this when the
+suite is what you want; use `run.mjs Backend` when you want every gate.
+
+⚠️ **A suite that CRASHES contributes zero to the totals.** One suite failed to run at all, and its 9
+errors are not in the 17676. Read the suite counts, never the test counts alone.
 The four Postgres lanes and the sharded suite each get fresh `postgres:17` containers;
 `migration_chain_from_empty` asserts the database is empty before it starts, which is why services
 are recreated per gate rather than reused.
@@ -368,6 +379,17 @@ ci/
 ---
 
 ## Troubleshooting
+
+**The transfer into a container is far slower than 1 MB/s.** `copyTreeIntoContainer` pipes `git archive`
+into `docker exec -i`, and that measured **877 s for Backend's 31 MB tracked tree -- about 36 kB/s**, not
+the ~1 MB/s recorded elsewhere in this file. Writing the archive to a file and using `docker cp` moves the
+same tree in under a minute: the daemon gets one stream instead of thousands of small writes across the
+Windows named-pipe transport. The same change is worth making in `ci/lib/docker.mjs`.
+
+**The npm registry, not Docker, is this box's worst bottleneck.** Measured from npm's own debug log:
+`@types/node` 135 s, `typescript` 366 s, `openai` **704 s for a single tarball**, with two
+`network read ETIMEDOUT` failures before a warm-cache success. Budget for it; do not diagnose it as a
+Docker problem.
 
 **"Docker is not running."** Start Docker Desktop and wait for `docker info` to report
 `OSType: linux`. It can take a minute after the process appears.
