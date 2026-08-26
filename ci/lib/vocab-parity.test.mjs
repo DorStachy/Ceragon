@@ -378,6 +378,59 @@ testCase('file deleted from the working tree but present at HEAD -> falls back A
   );
 });
 
+process.stdout.write(dim('\n  -- every way of naming a source, not just the default one --\n'));
+
+testCase('TOOLRISK_VOCAB_<REPO> pointing at nothing -> NOT CHECKED, and the override is printed', () => {
+  const root = trio({ Installers: BASE, Backend: BASE, Frontend: BASE });
+  let out = '';
+  let code = 0;
+  try {
+    out = execFileSync(process.execPath, [SCRIPT, '--root', root], {
+      encoding: 'utf8',
+      env: { ...process.env, NO_COLOR: '1', TOOLRISK_VOCAB_FRONTEND: 'C:/no/such/checkout' },
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+  } catch (err) {
+    code = err.status;
+    out = `${err.stdout || ''}${err.stderr || ''}`;
+  }
+  assert(code === 2, `expected exit 2, got ${code}\n${out}`);
+  assert(/source overridden by TOOLRISK_VOCAB_FRONTEND/.test(out), `the override must be visible:\n${out}`);
+  assert(!/\bPASS\b/.test(out), `must not print PASS:\n${out}`);
+});
+
+testCase('TOOLRISK_VOCAB_<REPO> redirected to a real copy -> that copy is what gets compared', () => {
+  const good = trio({ Installers: BASE, Backend: BASE, Frontend: BASE });
+  const bad = trio({ Frontend: addClass(clone(BASE), 'zz-redirected', 'high') });
+  let out = '';
+  let code = 0;
+  try {
+    out = execFileSync(process.execPath, [SCRIPT, '--root', good], {
+      encoding: 'utf8',
+      env: { ...process.env, NO_COLOR: '1', TOOLRISK_VOCAB_FRONTEND: join(bad, 'Frontend') },
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+  } catch (err) {
+    code = err.status;
+    out = `${err.stdout || ''}${err.stderr || ''}`;
+  }
+  assert(code === 1, `the redirected copy must be the one compared; got ${code}\n${out}`);
+  assert(out.includes('zz-redirected'), `must name the class from the redirected copy:\n${out}`);
+});
+
+testCase('--json reports the same verdict and names every source', () => {
+  const producer = addClass(clone(BASE), 'zz-json-shape', 'high');
+  const r = runAllowingFailure(trio({ Installers: producer, Backend: BASE, Frontend: BASE }), ['--json']);
+  assert(r.code === 1, `expected exit 1, got ${r.code}\n${r.out}`);
+  const parsed = JSON.parse(r.out);
+  assert(parsed.status === 'DRIFT', `expected DRIFT, got ${parsed.status}`);
+  assert(parsed.sources.length === 3, `expected 3 sources, got ${parsed.sources.length}`);
+  assert(
+    parsed.drift.some((d) => d.includes('zz-json-shape')),
+    `the machine-readable form must name the class too:\n${r.out}`,
+  );
+});
+
 process.stdout.write(dim('\n  -- the digest reimplementation matches the producer --\n'));
 
 testCase("canonicalCatalogDigest reproduces the Go producer's recorded value", () => {

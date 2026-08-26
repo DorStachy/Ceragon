@@ -92,7 +92,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const CI_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -609,6 +609,10 @@ function main(argv) {
   return EXIT[result.status];
 }
 
-if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith('vocab-parity.mjs')) {
+// Run only when this file IS the entry point. Compared as resolved file URLs
+// because on Windows `process.argv[1]` is a backslash path that never equals
+// `import.meta.url`, and a suffix test would also fire for any other module
+// whose name happens to end the same way.
+if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {
   process.exit(main(process.argv.slice(2)));
 }
