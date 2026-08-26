@@ -463,3 +463,51 @@ lookup for 4 of 5 tokens. Rewritten to a positive assertion; all five then go re
 **Systemic:** ~25 further sites across the console render server-supplied text raw. Now producing a
 census rather than a patch, plus the shared-component fix, the sibling sites in its own directory, and the
 `exclusions.allow` console surface that F41(c) still needs.
+
+---
+
+## Lane 2 — CLOSED (§1.2 plugins restored on uninstall). 2 commits on `wave47/plugingate`.
+
+Restore is wired into **both** uninstall paths. The stash engine moved to a new leaf package
+`internal/plugingatestash`, mirroring the `aicontextstash` precedent — and the reason is **measured, not
+assumed**: a blank import of `internal/plugingate` takes the MSI guard from **117 to 243 packages and
+4.4 MB to 6.9 MB**, dragging an HTTP client into a custom action embedded in the installer.
+
+**Confinement covers three kinds of path**, not one: declaration destinations and the settings-document
+path bounded to the owning home, backup sources bounded to the stash directory. The settings path is the
+easy miss — restore rewrites that JSON, so leaving it unbounded is the same elevated write by a longer
+route. Backup sources are bounded even though only read, because the read feeds the write.
+
+**The two-branch route is genuinely covered.** Reverting the CLI wiring reds `internal/uninstall` while
+the MSI tests stay green; reverting the MSI wiring reds `cmd/devoid-msi-root-guard` while the CLI tests
+stay green — **different files**, not one branch tested twice. Reverting confinement reds four cases
+across three packages, including the `bobby`-versus-`bob` sibling.
+
+**Controls present**, without which "preserves correctly" and "never deletes anything" are the same green:
+a clean stash is restored *and its directory deleted*, on both paths. Plus orphan `.bak` with no record
+(the case a record-counter cannot see), unparseable record, stray file, subdirectory, unknown backup
+format, drift, and unreadable — each blocking deletion without overclaiming that data is at risk.
+
+### ⚠️ A consequence of the decision, surfaced rather than discovered later
+
+**Uninstalling DeVoid now re-enables plugins DeVoid had blocked.** Restore puts the coordinate back into
+the enabled set. That is the decision working exactly as asked — uninstall returns the machine to its
+pre-DeVoid state and destroys nothing — but if a plugin was neutralised *because it looked malicious*,
+uninstalling re-arms it.
+
+A narrower variant exists and was not built, because it was not what was asked: restore the **file**
+(which is the whole point — the content exists nowhere else) but leave the plugin **disabled**, and say so.
+That keeps both properties: nothing destroyed, nothing re-armed. **Owner call.**
+
+### ⚠️ Integration hazard for whoever merges this
+
+`gofmt -l` flags **almost every `.go` file in this repository** because `core.autocrlf=true` rewrites line
+endings in the working tree. It is CRLF noise, pre-existing, and **`gofmt -w` across this tree would
+produce an enormous spurious diff.** Verify formatting on LF-normalised copies of only the files you
+touched.
+
+**Not exercised:** no real MSI uninstall (needs owner approval and a real box), so three things stay
+unproven — that the custom action reaches this code under a live SYSTEM token, how the installer's own
+folder-removal rows behave against a preserved directory inside a real transaction, and cross-profile ACL
+behaviour, since tests write as the current user and SYSTEM restoring into *another* user's profile was
+never actually attempted.
