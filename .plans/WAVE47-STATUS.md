@@ -147,3 +147,66 @@ it**, and that moving the credential files onto it today *"blocks every non-elev
 fleet-wide"* — because the unprivileged shim reads the machine credentials and treats a 401 as
 fail-closed. The recorded precondition is a per-user credential split plus per-user daemon-token
 distribution. Lane 9 has been redirected to the reader-inventory test plus a design for that split.
+
+---
+
+## Lane 7 — CLOSED (§4.1 live-pg fail-closed, §4.8 guardDegraded). 10 commits on `wave47/livepg`.
+
+### The question it was sent to answer
+
+**Is `RUN_INTEGRATION_TESTS=true` actually set where the Backend suite really runs?**
+
+**Yes.** `pr-checks.yml:228, :244, :391, :650` (all 4 shards) and `build.yml:272`. It is set nowhere else —
+`package.json:23` is a bare `jest`, no jest config sets it, and the local Docker mirror never names it but
+**does inherit it**, verified by executing the mirror's own `planJob` against the real workflow file.
+
+**But since 2026-08-25 no GitHub event runs those workflows at all** — the cost gate left them
+`workflow_dispatch`/`repository_dispatch` only. So the switch is correct and the lane it protects executes
+only on a deliberate dispatch or a local mirror run.
+
+### The sharper finding — the switch was never enough for seven of them
+
+**7 live-pg specs could not reach a CI database even with the switch on, in any lane, ever.** They do not
+read `DATABASE_HOST`. They read `VERDICT_SQL_TEST_DATABASE_URL` (one tries `F38_TEST_DATABASE_URL` first)
+and otherwise fall back to laptop ports 5433 / 55432 / 55433. **Neither variable is set in any workflow.**
+They take a runtime `dbUp = false` branch, every `it()` returns early and **passes**, Jest counts the file
+as a passed suite, and `scripts/assert-suites-executed.js` is structurally blind to it — it can only see a
+file Jest marked *skipped*.
+
+Census of all 98: **89 wired** on `DATABASE_HOST`, **7 dark**, 2 wired on their own vars.
+The comment at `pr-checks.yml:651-656` still says "47 of the 50". There are 97, and the three it names are
+not these seven.
+
+### Proven
+
+Same file, same absent database, opposite verdicts:
+```
+REQUIRE_LIVE_PG unset  ->  Tests: 19 passed, 19 total   exit 0
+REQUIRE_LIVE_PG=true   ->  Tests: 20 failed, 20 total   exit 1
+```
+§4.8 green against a real Postgres 17 (129 tables, 240 migrations, 323 CHECK constraints): 10/10.
+A psql dry-run showed **the real predicate selects 2 rows where the naive one selects 6** — including a
+JSON-null row that would have demoted a known fail-open endpoint. That is exactly the class of defect a
+TypeScript re-implementation of a database predicate cannot catch.
+
+Default lane unchanged: no test injected, no suite status flipped, the existing suite gate still green.
+
+### PENDING — a workflow edit I must apply at integration (the agent correctly did not touch `.github/**`)
+
+**Order matters. Step 2 before step 1 reds the job on day one.**
+
+1. Add to the Jest `env:` block in `pr-checks.yml` (after :650) and `build.yml` (after :272):
+   `VERDICT_SQL_TEST_DATABASE_URL: 'postgresql://codefense:codefense@localhost:5432/codefense_db'`
+2. **Only once step 1's run is green**, add `REQUIRE_LIVE_PG: 'true'` to the same blocks.
+The mirror inherits both automatically; no `ci/` change needed.
+
+### Not exercised
+
+3 of the 7 dark specs never got a clean run **on this box** — every failure was a timeout or a dropped
+connection, **zero assertion-shaped failures**, with single spec files taking 700–1900s under contention
+versus 38s alone. That is this wave saturating the machine, not a defect. No full-suite run, no mirror run,
+no GitHub run.
+
+`ceragon-ra0-pg` is **behind the migration chain** — its `ai_events` lacks `caused_by_event_id`. A loud
+precondition check now names the missing columns and the fixing command. A prepared Postgres is left as
+`r47-livepg-pg` on `127.0.0.1:55462`; remove with `docker rm -f r47-livepg-pg`.
