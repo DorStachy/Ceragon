@@ -596,3 +596,63 @@ unknown hook row marks only that row. Nothing changed; this is an owner decision
 **And a warning I would have missed:** §2.3 does **not** compensate for §3.7. A wrong dialect makes the
 client refuse to spawn our hook at all — and a spawn-side observer sees nothing when it is never spawned.
 That is exactly the tier the observer discloses as unmeasured on every line it prints.
+
+---
+
+## Lane 10 — CLOSED (§3.4 prompt-lane corpus, §3.5 replay brick). 5 commits on `wave47/promptlane`.
+
+### The numbers, which are the deliverable
+
+```
+CORPUS: 87 cases (52 benign, 35 attack); 8 carry origin=real
+FALSE POSITIVES:                     before 30/52   after 15/52
+TRUE POSITIVES:                      before 35/35   after 34/35
+BENIGN TEXT REACHING THE BLOCK TIER: before 8       after 0
+```
+
+**The last line is the one that mattered.** Reaching the block tier is what bricks a thread and what made
+engineers unable to document their own detector. It is now zero. Every remaining false positive is a warn.
+
+**Before this, the entire prompt-lane denominator on this box was FIVE cases, exactly one of them
+quotation-shaped.** That is why a day of security engineering walked straight through it.
+
+**The one detection lost is declared, not hidden:** a *lone* system-exfil signal wrapped in quotation
+marks demotes one tier and no longer warns. It is named in the harness, and the harness **fails on any
+undeclared loss**. Combos, obfuscation, decoded payloads and unquoted signals all still fire.
+
+**Two corrections to the premise I gave it:**
+- The seven refusals' **prompt text does not survive anywhere on this box** — only a classification table.
+  The reconstructions reproduce the documented *shape*, not the bytes, and say so.
+- **Only 2 of the 7 were prompt-lane at all.** The other five were tool-lane rules in a different package.
+
+### Its own mutation initially PASSED — and it caught that
+
+Mutation 1 reverted the discipline in production code and the corpus stayed green, because the corpus's
+"after" arm called the internal function rather than the production entry point. **A one-line production
+revert was invisible to the measurement.** Fixed and re-proven; the mutation now reports
+*"the quoting discipline removed NO false positives"*.
+
+### §3.5 — and what it checked against the earlier security regression
+
+**The checklist named the wrong commit.** The reverted attempt was `556b0483`, reverted 85 minutes later
+by `46dac5e5`. It **excised** prompt-risk spans — and a span is a ~32-byte trigger phrase, so removing it
+forwarded a 198-byte behavioural override that then re-scanned as allow.
+
+This design **rewrites nothing**: the body is forwarded byte-identical or not at all, pinned by a
+`bytes.Equal` assertion, so there is no span/payload gap for that defect to live in. All four of the
+review's blockers are closed by construction, including the vacuous containment guard — which had been fed
+a finding list that is *empty* on a prompt-risk-only decision, making system prompts excisable.
+
+**Its own control caught a real defect in its first version.** The report collapses to one span per class,
+so reasoning about position from the finding list reasons about a *representative* — with the same class
+in an old message and in the message just typed, only the older span survived and **a brand-new injection
+was forwarded**. Now decided by per-segment rescan. Without the control that would have shipped.
+
+### Open, and outside its scope
+
+**The browser-extension JavaScript mirror has NOT been given the quoting discipline**, so the Go and JS
+engines now disagree on fenced and quoted text. Nothing is red — the existing parity corpus passes because
+its markers sit outside quotes — but the divergence is real and needs routing.
+
+The acknowledgement store is process-scoped and in-memory; a daemon restart returns the thread to fully
+blocked. Not exercised across a restart.
