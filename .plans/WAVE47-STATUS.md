@@ -911,3 +911,66 @@ while one might still exist.
 Routed: make the promise conditional on the stash actually being present, and make an orphaned marker a
 distinct reportable state — the inverse of the orphaned-`.bak` case already handled. **The owner's file is
 gone; the thread history in the separate SQLite stores is a different artefact and was not touched.**
+
+---
+
+## Lane §4.4, round 2 — three follow-ups, and the third one found something serious. 5 commits.
+
+### 1. The third surface closed, with a design call worth keeping
+The item-detail page's "which machines have this" list is now projected through the same coverage function
+as the other three. **But the coverage state there is item-level, not per host row** — on the machine page
+a row IS an artifact, so coverage belongs on the row; on the item page the artifact is fixed and a row is a
+HOST, and stamping coverage per host would read as a claim that each workstation was analysed separately,
+which is not a fact this system holds. A three-surface assertion now pins that machine page, catalog and
+item page produce identical output for one artifact.
+
+### 2. Six dark tests now execute — and immediately caught a real defect
+
+It found **three** files, not the two reported. All three computed a path by counting directory levels to
+a workspace root that no longer exists — proven by printing the resolved path and its non-existence, not
+inferred. A sibling one directory away was fixed on 2026-08-08 and these were missed.
+
+**The third was worse than a skip.** It has been asserting producer/consumer parity against
+**hand-maintained inline copies** since it was written, reporting green for a comparison that never read
+the producer's fixtures. Its "the canonical fixtures file is present" check sat *inside* a condition that
+was false everywhere — so it was **not a skipped test, it was never registered.** It now announces which
+mode it is in, in both directions, and refuses to pass silently in the degraded one.
+
+### ⚠️ What the newly-executing tests found — this is the prize
+
+**Backend's vendored contract — the copy Backend compiles and SHIPS — was pinned at version 2 while
+Backend's runtime enforces 6.** Seven top-level result keys the product has been accepting for months were
+undeclared in the contract it ships.
+
+All three copies checked before touching anything: the workspace-root reference is at **6**, the
+Intelligence mirror is at **6** and byte-identical to it, and **the shipping copy was the sole outlier at 2**.
+The canonical's own changelog records a catch-up that *"was not bumped in lockstep until now"* — a catch-up
+the shipping copy never received. So this was one stale file, not a cross-repo judgement call. Synced,
+purely additive, no key removed; all three now byte-identical.
+
+Mutation-proven by sabotaging the canonical contracts: 19 of 72 red, restored to 72 green. A first attempt
+**aborted itself** — *"NO-OP SABOTAGE — anchor missed, proof would be worthless"* — a guard the lane put in
+its own mutation script rather than let it report a hollow pass.
+
+### 3. My diagnosis of the built-package divergence was half wrong
+
+I said a style sweep had edited the built artifact, so every rebuild would silently reintroduce the
+difference and the gate's colour would depend on who rebuilt last.
+
+**It was not a style sweep.** A commit hand-wrote a new declaration straight into the built type file
+instead of rebuilding — it touched the declaration and the source but left the JavaScript and all three
+source maps unregenerated, which a real rebuild never does. The hyphens are a symptom of one doc comment
+being typed twice by hand.
+
+**So the source was not what needed fixing.** Editing it to match would have rewritten a contract's prose
+to match a typo in a build artifact, and left the file internally inconsistent — eighteen other em dashes
+sit in that same file, identical in both copies. And **there is no em-dash gate over that package in this
+repo at all**, so my premise about a gate flipping colour did not hold either.
+
+Fixed by running the repo's own build. Seven files have real content changes; the other ninety were pure
+line-ending churn and were deliberately left unstaged. Idempotence proven: a second clean rebuild produces
+**zero** further diff.
+
+### One process question for the owner
+**Why the shipping copy fell four versions behind for months** is worth asking whoever bumped the reference
+copy. The sync is done; the process that skipped the shipping copy is not.
