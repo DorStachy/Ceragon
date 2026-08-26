@@ -838,3 +838,76 @@ requirement that a null "server enforced" renders the honest-unknown state and n
 Also confirmed: the live-Postgres fixture correction I applied earlier is the only required follow-up from
 that lane's first round, and it is closed — though it still carries no evidence either way until something
 runs it against a database.
+
+---
+
+## Lane 1 — §1.1 COMPLETE INVENTORY. **HARD GATE.** 3 commits on `wave47/inventory`.
+
+Measured on the real home directory, before and after, with the real resolver:
+
+| | before | after |
+|---|---|---|
+| candidate files **seen** | 18,336 | 6,842 |
+| candidate files **kept** | **200** | **6,842** |
+| total nodes | 1,039 | **20,053** |
+| `.codex/sessions` nodes | **0** | **193** |
+| truncated | false | false |
+| depth-pruned directories | **425** (at depth 8) | **0** (at depth 32) |
+
+**All three required assertions pass.** The 425 figure was confirmed by an independent bare-walk probe
+rather than quoted from the checklist.
+
+Six mutations, each red then green: remove the nine marketplace rows; restore the old ceilings; remove the
+depth-prune signal; remove it from the completeness answer; stop marking a candidate drop as truncated;
+remove it from the daemon's own re-derivation. Tree verified byte-identical to HEAD afterwards.
+Full `internal/aicontext` suite green (1898 s).
+
+**Upload stayed narrow and was not changed** — the batch converts findings and aggregates field by field,
+carries no file bodies and no node list, and every string field including the path is scrubbed and clamped
+inside the post call, so no caller can opt out. Resolution and upload are structurally separate.
+
+### ⚠️ It found the thing that blocks shipping its own work
+
+**The periodic sweep takes ≥50 minutes and did not complete.** CPU was only 1,411 s of that — it is
+I/O-bound, not compute-bound.
+
+The mechanism: a timestamp lookup runs **inside a sort comparator**, roughly two filesystem calls per
+comparison. At 1,039 nodes that was ~21,000 calls. At 20,053 nodes it is **~574,000**, plus two more per
+node elsewhere. At this box's measured ~317 calls per second that is about thirty minutes of pure syscall.
+
+**The defect is pre-existing. Completing the inventory is what makes it load-bearing** — and this is the
+daemon's periodic sweep on every customer endpoint. Routed back with its own diagnosis as the fix: stat
+once per node into a cached struct and sort on the cached value.
+
+Also routed back: finish the read-only proof it had to kill (currently resting on construction plus a spot
+check, not measurement), and examine chunking — only findings are chunked, aggregates ride the first chunk
+whole, and twenty times the scanned files means many more aggregate rows in one unchunked body.
+
+**One edit outside its list, correctly flagged:** the daemon re-derives the coverage answer itself, so a
+signal added in the package and not there would silently report green. Left in, because removing it would
+have made the depth-pruning honesty untrue in production.
+
+---
+
+## The quarantine data-loss P0 already happened, to the owner, and the file still says it is fine
+
+`~/.codex/history.jsonl` is **211 bytes**, dated **2026-08-23 02:03**. Its whole content is the quarantine
+marker, which reads:
+
+> *"The original content is preserved and can be restored from the DeVoid console."*
+
+**There is no stash.** No quarantine directory under the home config dir, no backup file, no machine-scope
+copy — the stash directories do not exist at all. The daemon that would restore it is not installed and
+there is no console to restore from.
+
+So the owner's Codex command history was truncated in place, the original destroyed, and **the file left on
+their disk still tells them it is recoverable.** This is the exact defect this wave fixed, having already
+happened, with the marker's promise outliving the thing it promised.
+
+The fix stops the stash being deleted. It cannot make an orphaned marker honest — and a marker claiming
+recovery when none exists is **worse than no marker**, because it stops someone looking for another copy
+while one might still exist.
+
+Routed: make the promise conditional on the stash actually being present, and make an orphaned marker a
+distinct reportable state — the inverse of the orphaned-`.bak` case already handled. **The owner's file is
+gone; the thread history in the separate SQLite stores is a different artefact and was not touched.**
