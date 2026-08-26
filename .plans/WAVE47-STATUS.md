@@ -774,3 +774,67 @@ mutation scripts that `git checkout --` their target **destroy uncommitted work 
 
 Recorded as a standing rule: **no `git stash` in this workspace**, namespace scratchpad tooling per lane,
 and commit before mutating.
+
+---
+
+## Lane 11, round 2 — CLOSED (§4.5 the destination is now named). `wave47/console`.
+
+A network-exfiltration detection used to describe what happened without ever naming where the data was
+going. It does now.
+
+**All four premises re-verified before editing, not taken on report** — the agent stamps it, the write-side
+sanitiser is a deny-list rather than an allowlist so it persists verbatim, it died at the read-side
+allowlist (zero occurrences anywhere in Backend source), and **the trap is real**: the producer's map is
+typed as string-to-string in Go, so the value can *only* ever be a comma-joined string, while the console
+gates on `Array.isArray`.
+
+### The mutation that matters is the second one
+
+**Mutation 1** (remove the allowlist entry) reds 7 of 21 — and the stored-row test correctly **stays
+green**, which is how you can tell it is not the deliverable.
+
+**Mutation 2 is the naive fix: forward the string unchanged.** It reds **16 of 21**.
+
+```
+Expected: ["api.openai.com", "evil.example.com"]
+Received: "api.openai.com,evil.example.com"
+```
+
+That is precisely what an HTTP 200 and a populated database column would both have "proved". Without that
+second mutation, a fix that renders nothing would have shipped looking correct.
+
+Restored, 21/21, including: a single destination is still a list; nothing readable renders as **absent, not
+an empty array**; a URL, a host with a port, markup, a sentence, a newline-forged second line, an
+over-long label and a bare dot are each refused **without losing the good entries beside them**; the list
+is capped and de-duplicated so it cannot become the payload; and a future array producer is accepted rather
+than silently dropped — the `evidence_ref` failure shape, avoided deliberately.
+
+**A grammar decision worth knowing:** the existing token rule admits `:` `/` `+` `=`, so it would have
+passed a full URL as a "host". A DNS host-name grammar is used instead. Side effect: a host **with a port
+is refused**. The producer contract says host names, so that was treated as correct — reversible if ports
+should survive.
+
+**No Frontend change was needed** — the type and the rendering already existed. The backend was the only gap.
+
+### Two corrections to the survey it was handed
+
+- **One console surface reads it, not four.** The other matches use "egress" only as English in headlines.
+- **The quoted copy does not exist.** Searched every phrase; the real strings are different words —
+  *"Blocked: destination host not allowed"*, *"Redacted, then sent"*, *"Sent (allowed)"*. Same conclusion:
+  every one describes the event without naming the destination. **The fix stands on the real evidence.**
+
+### The sibling was wider than reported — three fields, and the decision is taken
+
+Not one field but **three**: tool decision, provider, and server-enforced. The backend emits all three as
+**top-level** fields on the event; the console reads all three from **inside metadata**. So three chips
+never render, and it reads as a small oversight because the neighbouring `tool` chip *does* work.
+
+**Decision: point the console at the top-level fields**, rather than also projecting them into metadata.
+The faster option would have shipped the same fact **twice in every payload**, and two copies of one fact
+is how surfaces start disagreeing — the exact class this wave has been closing. Its only cost was needing
+a Frontend release, and a Frontend deploy is already in the plan, so that cost is zero. Routed, with the
+requirement that a null "server enforced" renders the honest-unknown state and never a definite "false".
+
+Also confirmed: the live-Postgres fixture correction I applied earlier is the only required follow-up from
+that lane's first round, and it is closed — though it still carries no evidence either way until something
+runs it against a database.
