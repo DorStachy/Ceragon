@@ -210,3 +210,61 @@ no GitHub run.
 `ceragon-ra0-pg` is **behind the migration chain** — its `ai_events` lacks `caused_by_event_id`. A loud
 precondition check now names the missing columns and the fixing command. A prepared Postgres is left as
 `r47-livepg-pg` on `127.0.0.1:55462`; remove with `docker rm -f r47-livepg-pg`.
+
+---
+
+## Lane 11 — CLOSED (§3.10, §3.14, §3.13 Backend). 4 commits on `wave47/console`.
+
+**§3.10 — the console can now see that evidence was truncated.** `findingsDropped` is projected through
+`safeMetadata` and declared on the timeline DTO. One DTO type serves Timeline, Activity and Detections, so
+all three get it from one projection. Bounded as a **count**, not text, and absence is never coerced to 0 —
+so an untruncated row still hashes as before.
+
+Mutation-proven both halves: removing the allowlist entry reds 5 specs (the 4 that stay green are the
+absence controls, correctly); removing the DTO field is invisible to transpile-only jest, so that half is
+proven by `tsc` instead — `TS2339: Property 'findingsDropped' does not exist`. Restored, 9/9 green,
+including a control at exactly the cap (not a truncation) and an **unknown** key fed to the allowlist and
+dropped while the declared one passes. The pass is a declaration, not an open door.
+
+**§3.14 — option C implemented, and the comment defending option B cited its own evidence backwards.**
+
+*Plain English:* the field is a one-word label for **where** an operator approved a data release; the
+console prints "approved on …". Under B the backend accepted any 64-character sentence, so a tampered
+endpoint could make the console display a plausible approval story of its own wording. Under C only
+single-token labels pass — `BROWSER_EXTENSION`, `browser_extension`, `CLI`, `extension-modal` all render
+exactly as today; a sentence or markup renders as nothing. **No legitimate producer value is lost.**
+
+The comment justifying B cited a spec line as supporting it. That line sits inside
+`it('rejects any other surface claim, including free text')` and asserts the string is **rejected** — the
+citation was inverted. The comment also contradicted itself four lines later.
+Mutation-proven: reverted to the loose rule, all six legitimate values stay green and only the sentence,
+the markup, the HTML-ish label, the quoted claim and the comma list go red. That is a narrowing, not a wall.
+
+**§3.13 — all three Backend comments were genuinely false.** My summary was right on all three; each is
+rewritten to name the real producer. Three adjacent comments that were checked and found **still true**
+were left alone.
+
+### Follow-ups this lane generated
+
+- **Applied by me** (`a3bb8e4f`): a live-Postgres fixture listed a free-text `approvalSurface` in its
+  *legitimate* set — a value no producer can emit — so option C would have read as a regression the first
+  time anyone corrected the gate. NOT RUN: no Postgres attached, and per lane 7 these files report green
+  when Postgres is absent, so it carries no evidence yet.
+- **Routed to lane 12**: the Frontend chip that renders the count. Sent with the control requirement
+  (absent and zero must render nothing) and a question — the Backend lane reports **the console renders no
+  AI-event findings list at all**, which would make this chip the only findings signal there is.
+- **NEW, still open:** `guardDegradedDropped` and `metadataKeysDropped` are the *same defect* — stamped by
+  the same writer, read by nobody, absent from both the allowlist and the DTO. §3.10 named only
+  `findingsDropped`, so only that was fixed; a tripwire spec now pins `guardDegradedDropped` as *not*
+  projected, so whoever adds it sees the pin.
+
+### Measured, not assumed
+
+Three HTTP suites failed with timeouts on the parallel run. Re-run serially on the same branch:
+**3 passed, 31 tests, 0 failures.** One of those suites takes 558s alone against a 5s per-test default, so
+187 suites in parallel on this bind mount blows it. Not caused by this change. `tsc --noEmit` exit 0. The
+138 eslint errors across the touched files all sit on lines this wave never touched — pre-existing red.
+
+**Near-miss worth recording:** this lane ran a `git stash push` it intended to be inert. It captured its own
+edit for about a minute, popped it immediately, and verified the seven other stashes (other chats') were
+intact. Concurrent sessions share these checkouts — `git stash` is not a safe idle command here.
