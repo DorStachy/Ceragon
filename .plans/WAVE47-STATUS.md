@@ -1144,3 +1144,114 @@ That path IS in the typecheck's include list, so `tsc` failed on it. It is gitig
 
 Every merge was verified **by ancestry**, not by reading merge output — which caught two branches that had
 advanced after being merged and would otherwise have been silently left behind.
+
+---
+
+# THE FINDING OF THE CAMPAIGN: under load, the product fails open and the secret leaves
+
+Measured 2026-08-26 on a sandboxed rig with a **real Claude Code client** (2.1.226) driven through a
+stub transport, so the client, the hooks, the daemon and the decision were all real.
+
+**Ten identical runs of the same private-key prompt, at the shipped 60-second hook timeout:**
+
+```
+4 runs  BLOCKED     0 requests reached the model      27–55 s
+6 runs  NOT BLOCKED the private-key bytes EGRESSED    63–143 s
+```
+
+**The split tracks wall-clock, not content**, and the leaks began the moment a Docker build put the box
+under load.
+
+**It is DeVoid's own fail-open, not the client's.** The product names the mechanism itself:
+
+```
+~/.devoid/undecidable-hook-payloads.json
+{"total":11,"byAdapter":{"claude-code":11},
+ "byReason":{"daemon-unreachable-budget-expired":11}}     17:16:07Z–17:36:11Z
+```
+
+That window is exactly the ten runs. The hook could not reach the daemon inside its budget and
+**proceeded unchecked**.
+
+## And the reporting says everything is fine
+
+In that same run the product reported `UserPromptSubmit decision=block count=21` and
+**"5 of 5 hooks have fired"** — while a third of the invocations were **never decided at all**.
+
+The lane corrected its own first write-up here, which had blamed the client for discarding a reached
+verdict. It was wrong, and DeVoid's own file disproved it: the earlier "the hook reached block every time"
+came from invoking it with no competing client process, which is not the loaded condition.
+
+## Two more from the same rig
+
+- **The block that fired was the DEGRADED fail-closed path, not a detection** —
+  `private-key-inspection:unsupported, failure-oracle:deny`. Inspection failing safe is not the same as
+  finding something.
+- **An AWS access key id AND its secret access key were NOT blocked** — allow, on the hook lane and again
+  on the wire lane. Separately, a proxy test forwarded AWS's canonical *documentation* example pair
+  upstream unblocked. Not a real credential, but it shows that pair is detected by **neither lane**.
+
+---
+
+## §2.4 — NOT-RUN, and it cannot be run locally at all. Refused live, root cause found.
+
+The backend was stood up and the endpoint **enrolled** (signing v2, `posture=V2_ATTESTED`). The backend
+offered a signed bundle and the endpoint **refused it**:
+
+```
+signed policy activation refused (agent-version-incompatible):
+minimum agent version … no activation floor on disk
+```
+
+**The chain deadlock, reproduced end to end — the box enforced nothing from policy.**
+
+The cause is a **build-flag bind**, not a missing step. One `-X main.version` stamp feeds *both* the bundle
+floor *and* the decision whether a loopback backend is honoured:
+
+- **Unstamped** → reaches the local backend, reports `"dev"`, and the comparison returns −1 on any
+  non-numeric segment, so it can never clear the minimum version.
+- **Stamped** → clears the floor, and is then rewritten to production.
+
+**No value satisfies both.** Stamping the daemon separately changes nothing — it is only a launcher that
+execs the main binary; tried at 7.10.99, identical refusal.
+
+## §2.5 — NOT-RUN, and production-scoped by its own wording
+Endpoint → ack → stored row **is** exercisable locally and now is: **15 rows landed**. Console render and
+the sequence-gap re-check are against production's own numbers and cannot be done on a rig that starts at
+zero. Useful negative: before signing was provisioned, every batch 403'd
+*"Signed endpoint identity does not match evidence batch"* **while the endpoint's own surfaces showed it
+enrolled**.
+
+## §2.2 — NOT-RUN, blocked by the dialect pin, which was NOT widened
+Enrolment is no longer the blocker; that was cleared. What remains is one known dialect against the
+installed client. The writer emits the old entry regardless, and the client **treats the cooperative hook
+as untrusted and skips it** — a deny never produced cannot be honoured.
+
+One thing that would have misled a re-run, and is **not** a defect: the cooperative layer reported
+"client version could not be read" while the machine layer read the version fine. The cooperative layer
+reads a rollout from an isolated home, and the product deliberately refuses to borrow the package
+manifest's number.
+
+---
+
+## DISCLOSURE — six enrolment attempts reached production
+
+**A version-stamped agent silently ignores a configured loopback backend and uses the production API.**
+Proven by an A/B against a sink: the unstamped daemon's enrol, policy and heartbeat all landed in the sink;
+the stamped one's never did. The product says it out loud — *"a release build will not route verdicts
+there."*
+
+Before that was understood, **six enrolment attempts carrying a locally-minted key reached production.
+All six were rejected 401 "Invalid API key". Nothing was enrolled, and no production credential was read
+or used** — the credentials file carried no agent id and the local table was empty. The lane stopped
+rather than pursuing it.
+
+## Environment verified at baseline by hash
+Both of the owner's AI-tool config files byte-identical to baseline; the two managed files still absent;
+the machine scope **never created**; the owner's own config directory last written *before* the rig
+started; no process, service, scheduled task or listener left behind. Containers, volume, the whole rig
+tree including the minted key, and every stub listener were removed. Another lane's cached image and
+volumes were **cloned rather than mounted**, and are untouched.
+
+**Register: 8 proofs, 1 observed, 7 quarantined with measured reasons.** `go test ./internal/liveproof/...`
+passes — and it cannot be made green by flipping a boolean.
