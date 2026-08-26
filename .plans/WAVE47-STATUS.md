@@ -1255,3 +1255,91 @@ volumes were **cloned rather than mounted**, and are untouched.
 
 **Register: 8 proofs, 1 observed, 7 quarantined with measured reasons.** `go test ./internal/liveproof/...`
 passes — and it cannot be made green by flipping a boolean.
+
+---
+
+# SHIP DAY — 2026-08-26/27
+
+## GitHub Actions is UNBLOCKED. §0.1 is closed.
+
+Measured, not assumed: `Security Audit` dispatched on `Frontend@main` completed **success in 38s**.
+The failure signature of the billing block was a 4-second death with no runner assigned; that is gone.
+
+## FRONTEND IS DEPLOYED — task definition 377, rollout COMPLETED, 1/1 running
+
+Order of operations, because the deploy gate is fail-closed on *missing* evidence as well as on red:
+
+1. `security.yml` dispatched on `main` -> success
+2. `pr-checks.yml` dispatched on `main` -> success (em-dash gate, `tsc --noEmit`, jest)
+3. `deploy-frontend-ecs.yml` -> `Required Checks Gate` success, `deploy` success
+
+The three build-time `NEXT_PUBLIC_*` inputs were **read off the last successful deploy's log**
+(run 32591950475) rather than guessed: `security_findings_v2=false`, `security_graph_guided_ui=true`,
+`security_graph_motion=anime`. They are the workflow defaults, so this deploy changes the wave-47
+code and nothing else. These are build-time inlined and therefore **not readable from the ECS task
+definition** — the previous run's log is the only record of what is actually baked into the image.
+
+## THE AGENT RELEASE WOULD HAVE BURNED ITS VERSION. Caught before dispatch.
+
+`browser-extension/src/**` moved under an already-published extension version for the **fourth**
+consecutive release (0.5.14, 0.5.15, 0.5.16, and now again under 0.5.16).
+
+| | digest |
+|---|---|
+| published `extensions/chrome/versions/0.5.16/source.sha256` | `5449e5c9...` |
+| tree at `47b4a8e7^`, hashed the way release.yml hashes | `5449e5c9...` **exact match** |
+| current `main` | `7ade99c0...` |
+
+The middle row is the point: reproducing the *published* marker exactly is what makes the third row
+evidence instead of a guess. The two commits are `47b4a8e7` (browser engine quoting discipline) and
+`c103c3fa` (parity-vector correction).
+
+Job **5b - Deploy Browser Extension -> S3** fails closed on this, and it runs **after** the release
+manifest is signed and the CLI, MSI and install scripts are already on S3. Release prefixes are
+immutable, so the version is burnt and `7 - Promote to Stable` is SKIPPED while the run reads
+"failure" and stable silently stays where it was.
+
+Fixed in Installers PR #178: all five version sources to 0.5.17, plus a guard.
+
+### The version pin was never a guard, and this is the shape of why
+
+A pinned **version** cannot see a changed **file**. The pin asks a person to remember; four times
+they did not, and every suite stayed green each time. The new test computes what job 5b computes --
+same file set, same part-wise path order, same digest -- and pins THAT. Mutation-proven both ways:
+appending one line to `src/policy.js` turns it red and names the new digest; reverting turns it green.
+
+Two details that had to be right, and both were verified rather than argued:
+
+- **Line endings.** `core.autocrlf=true` here, so disk bytes are CRLF while the Linux runner reads
+  LF. My first comparison hashed raw bytes and was therefore **contaminated** -- it "showed" a
+  difference that line endings alone could explain. Normalising `\r\n` first is what let the
+  published marker be reproduced exactly, which is what turned the finding from plausible into proven.
+- **Sort order.** release.yml sorts `pathlib.Path`, which compares part by part. `src/content/` and
+  `src/content-transform.js` both exist and `-` (0x2D) sorts before `/` (0x2F), so whole-string
+  sorting yields `ad3abfcf...` instead of `4cf6fb57...`. Measured both ways.
+
+## `bootstrap_trust_chain` MUST BE FALSE — confirmed against production, not recalled
+
+`s3://installer-binaries-prod/channels/stable.json` is **schemaVersion 2, version 7.10.4, published
+2026-08-23**, carrying `manifestKeyId` and real GPG signatures. The signed stable channel exists, so
+the one-time bootstrap has been consumed. The input's own description says never to use it after the
+first signed stable release. `managed_firefox=false` still holds.
+
+## Backend: the timeline spec did NOT reproduce locally
+
+A CI-faithful shard 3 was built and run: `postgres:17` container, `testdb:prepare-live-pg` +
+`migration:run` exactly as `pr-checks.yml` does, then `jest --maxWorkers=2 --shard=3/4` with the same
+env. **`ai-query.timeline-read-cost.live-pg.spec.ts` PASSED (70.4s).**
+
+Two earlier hypotheses of mine are now dead, and both were killed by measurement:
+
+- **"There is no index on `seq_num`."** Wrong -- I read a truncated `\d ai_events`. `ux_ai_events_org_seq`
+  (unique, `org_id, seq_num`) exists, comes from migration `1782420000000`, and is present in the
+  CI-shaped schema too. With 42,000 rows in the table the cursor plan bounds at **200 rows** and the
+  offset plan at 4,000; every assertion in the spec passes.
+- **"A shard-mate's leftover rows change the plan."** Not reproduced. The spec passed with all its
+  real shard-3 co-residents present.
+
+So the remaining possibilities are a runner-environment difference or a genuine flake, and the honest
+way to tell them apart is to re-run the gate on the real runner rather than to keep theorising here.
+That is dispatched.
