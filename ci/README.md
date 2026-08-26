@@ -160,11 +160,72 @@ Two of them are worth knowing by heart:
 
 ---
 
+## Workspace checks: the gates GitHub cannot host
+
+```bash
+node ci/lib/run.mjs workspace
+```
+
+Every gate above this line belongs to one repository and runs inside that repository's container.
+That is the right shape for a question about one repo and the wrong shape for a **contract split
+across repos** — three green repos can still disagree with each other, and no per-repo job is
+standing anywhere it could notice. GitHub cannot host these either: a workflow in one repository
+does not have the other two checked out.
+
+Workspace checks run on the **host**, not in Docker, because seeing more than one checkout at once
+is the entire point. They run whenever the whole workspace is in scope — `node ci/lib/run.mjs`,
+`node ci/lib/run.mjs all`, or `workspace` on its own — and they run **before** the Docker check, so
+a cross-repo break is still reported when Docker Desktop is down. They are declared in `gates.json`
+under `workspaceChecks`, which does **not** mirror a GitHub job, so `drift.mjs` neither expects nor
+validates it.
+
+| check | what one repo cannot see |
+|---|---|
+| `toolrisk-vocab-parity` | The tool-risk detector vocabulary is one contract living as three hand-copied files: `Installers/parity-vectors/`, `Backend/packages/shared-contracts/`, `Frontend/types/vendored/`. Each repo's guard compares that repo against **that repo's own copy**, so a class added in the agent and never copied leaves all three green. |
+| `toolrisk-vocab-parity-selftest` | The mutation proof for the check above. |
+
+### Why the per-repo guards cannot cover it
+
+`interpreter-exec`, `fetch-then-exec` and `substitution-exfil` were emitted by the agent's scanner
+for months while both consumer registries omitted them. That is not merely an invisible row on a
+board: `assertClosedActionMap` rejects any action-map key outside the Backend's registered tuple, so
+an administrator **could not save a policy for those classes at all**, from the console or the API.
+A detector that interrupts developers and has no off switch gets us uninstalled.
+
+Three guards were added afterwards — a Go test in Installers, a Jest spec in Backend, a Jest test in
+Frontend. Each compares its repo against a copy inside that same repo, so the Installers half is
+sound (add a rule, forget to regenerate, Go goes red) and the copy step is not covered by anything.
+Regenerate the vector in Installers and never copy it and all three stay green.
+
+### It reports NOT CHECKED rather than passing
+
+There is no degraded mode. A missing checkout, a missing file, an unreadable ref or unparseable JSON
+all print `NOT CHECKED` and exit **2**, which the runner shows as `ERROR`. A cross-repo checker that
+shrugs when a sibling is absent recreates the exact defect it exists to catch.
+
+The source of every copy — working tree, `HEAD`, or `origin/main` — is printed on every run, pass or
+fail. Because the checkouts here are hundreds of commits behind and several do not have the file on
+disk at all, the checker falls back to a committed copy, and says so by name when it does.
+
+```bash
+node ci/lib/vocab-parity.mjs --ref origin/main   # pin all three to one ref
+node ci/lib/vocab-parity.mjs --json
+TOOLRISK_VOCAB_BACKEND=/path/to/wt@HEAD node ci/lib/vocab-parity.mjs   # per-repo source
+```
+
+Exit status: `0` compared and agreed, `1` compared and disagreed, `2` could not be compared.
+
+**Adding a fourth consumer means adding a line to `COPIES` in `ci/lib/vocab-parity.mjs`.** A copy
+that list does not name is a copy nothing checks.
+
+---
+
 ## Before you push
 
 ```bash
 node ci/lib/drift.mjs                # the mirror still covers every gate
 node ci/lib/run.mjs <repo>           # every mirrored gate for the repo you touched
+node ci/lib/run.mjs workspace        # the cross-repo contracts no single repo's CI can see
 ```
 
 Both green means the PR will be green, minus the jobs listed as not mirrored. Say so explicitly in
@@ -292,13 +353,16 @@ command CI ran.
 
 ```
 ci/
-  gates.json          which jobs are mirrored, which are not, and why not
-  images/*.Dockerfile the five toolchains
-  lib/run.mjs         the runner
-  lib/workflow.mjs    workflow -> ordered steps (matrix, if:, expressions, uses: policy)
-  lib/wfsource.mjs    which version of a workflow to execute
-  lib/drift.mjs       the completeness fence, and the cost report
-  .logs/              per-gate logs, git-ignored
+  gates.json               which jobs are mirrored, which are not, and why not,
+                           plus workspaceChecks -- the cross-repo lane
+  images/*.Dockerfile      the five toolchains
+  lib/run.mjs              the runner
+  lib/workflow.mjs         workflow -> ordered steps (matrix, if:, expressions, uses: policy)
+  lib/wfsource.mjs         which version of a workflow to execute
+  lib/drift.mjs            the completeness fence, and the cost report
+  lib/vocab-parity.mjs     tool-risk vocabulary, three repos compared to EACH OTHER
+  lib/vocab-parity.test.mjs  its mutation proof
+  .logs/                   per-gate logs, git-ignored
 ```
 
 ---

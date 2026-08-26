@@ -26,6 +26,18 @@
     "npm": "devoidci-npm-cache",
     "go": "devoidci-go-cache"
   },
+  "workspaceChecks": [
+    {
+      "id": "toolrisk-vocab-parity",
+      "script": "ci/lib/vocab-parity.mjs",
+      "why": "The tool-risk detector vocabulary is one contract living as three hand-copied files in three repos. Each repo's own guard compares that repo against THAT REPO'S copy, so a class added in the agent and never copied leaves all three green while the class becomes ungovernable: the console cannot set a policy for a name the Backend tuple does not contain. Nothing inside a single repo's CI can see this; that is why it is here and not under 'mirrored'."
+    },
+    {
+      "id": "toolrisk-vocab-parity-selftest",
+      "script": "ci/lib/vocab-parity.test.mjs",
+      "why": "Mutation proof for the check above: fabricates divergent trios, including the historical interpreter-exec/fetch-then-exec/substitution-exfil incident, and asserts it goes red naming the class and the repos missing it -- plus that a missing checkout reports NOT CHECKED rather than passing. A drift check nobody has made go red has not been run."
+    }
+  ],
   "repos": {
     "Backend": {
       "path": "Backend",

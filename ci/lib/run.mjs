@@ -46,6 +46,24 @@ const ROOT = resolve(CI_DIR, '..');
 const MANIFEST = JSON.parse(readFileSync(join(CI_DIR, 'gates.json'), 'utf8'));
 const LOG_DIR = join(CI_DIR, '.logs');
 
+/**
+ * WORKSPACE CHECKS -- the things no single repo's CI can see.
+ *
+ * Every gate above this line belongs to one repository and runs inside that
+ * repository's container. That is the right shape for a gate that asks a
+ * question about one repo, and the wrong shape for a contract SPLIT ACROSS
+ * repos: three green repos can still disagree with each other, and no per-repo
+ * job is standing anywhere it could notice.
+ *
+ * These run on the host, not in Docker, because their whole value is seeing
+ * more than one checkout at once. They therefore also run when Docker is down.
+ * They are declared in `gates.json` under `workspaceChecks`; unlike `mirrored`,
+ * that key does NOT mirror a GitHub job, so `drift.mjs` neither expects nor
+ * validates it.
+ */
+const WORKSPACE_CHECKS = MANIFEST.workspaceChecks || [];
+const WORKSPACE_KEY = 'workspace';
+
 // Written with String.fromCharCode(27) rather than a literal escape byte so
 // the source stays copy-pasteable and greppable.
 const E = String.fromCharCode(27);
@@ -431,6 +449,61 @@ async function runGate(gate, flags, log) {
   return result;
 }
 
+/**
+ * Run the host-side workspace checks.
+ *
+ * Exit-status contract, which each check documents for itself:
+ *   0  the check was made and passed
+ *   1  the check was made and failed
+ *   2  THE CHECK COULD NOT BE MADE -- reported as ERROR, never as a pass.
+ * Anything else is an error too. A cross-repo check that shrugs when a sibling
+ * checkout is missing would recreate the exact defect it exists to catch, so
+ * "could not compare" is a red result here and not a footnote.
+ */
+async function runWorkspaceChecks(list, flags, log) {
+  const results = [];
+  mkdirSync(join(LOG_DIR, WORKSPACE_KEY), { recursive: true });
+  for (const check of list) {
+    log(`${C.dim}>>${C.reset} ${WORKSPACE_KEY} ${C.cyan}${check.id}${C.reset}\n`);
+    const started = Date.now();
+    const logFile = join(LOG_DIR, WORKSPACE_KEY, `${safeName(check.id)}.log`);
+    let code;
+    let out = '';
+    try {
+      out = execFileSync(process.execPath, [join(ROOT, check.script), ...(check.args || [])], {
+        cwd: ROOT,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'pipe'],
+      });
+      code = 0;
+    } catch (err) {
+      code = typeof err.status === 'number' ? err.status : 2;
+      out = `${err.stdout || ''}${err.stderr || ''}${err.status === undefined ? err.message : ''}`;
+    }
+    writeFileSync(logFile, out);
+    const status = code === 0 ? 'pass' : code === 1 ? 'fail' : 'error';
+    results.push({
+      repoKey: WORKSPACE_KEY,
+      legId: check.id,
+      gateId: check.id,
+      wfName: 'workspace',
+      jobId: check.script,
+      status,
+      ms: Date.now() - started,
+      logFile,
+      steps: [{ name: check.script, kind: 'host', code, reason: check.why }],
+    });
+    if (status !== 'pass') log(out.replace(/\n?$/, '\n'));
+    log(
+      `   ${statusLabel(status)} ${WORKSPACE_KEY} ${check.id} ` +
+        `${C.dim}${((Date.now() - started) / 1000).toFixed(0)}s${C.reset}` +
+        (code === 2 ? `  ${C.red}<- could not be checked${C.reset}` : '') +
+        '\n',
+    );
+  }
+  return results;
+}
+
 function statusLabel(s) {
   if (s === 'pass') return `${C.green}PASS   ${C.reset}`;
   if (s === 'fail') return `${C.red}FAIL   ${C.reset}`;
@@ -442,11 +515,20 @@ async function main() {
   const { flags, positional } = parseArgs(process.argv.slice(2));
   const log = (s) => process.stdout.write(s);
 
-  const repoKeys =
-    !positional.length || positional[0] === 'all'
-      ? Object.keys(MANIFEST.repos)
-      : [positional[0]];
+  const allRepos = !positional.length || positional[0] === 'all';
+  const workspaceOnly = positional[0] === WORKSPACE_KEY;
+  const repoKeys = allRepos ? Object.keys(MANIFEST.repos) : workspaceOnly ? [] : [positional[0]];
   const wanted = positional.slice(1);
+
+  // The cross-repo checks run when the whole workspace is in scope, or when
+  // asked for by name. They are skipped for a single-repo run for the same
+  // reason a single-repo run does not build the other repos' images -- but that
+  // is exactly why `node ci/lib/run.mjs all` has to include them, and does.
+  let workspaceChecks = allRepos || workspaceOnly ? WORKSPACE_CHECKS : [];
+  if (workspaceOnly && wanted.length) {
+    workspaceChecks = workspaceChecks.filter((c) => wanted.includes(c.id));
+  }
+  if (flags.only) workspaceChecks = workspaceChecks.filter((c) => c.id.includes(flags.only));
 
   let gates = repoKeys.flatMap((r) => enumerateGates(r));
   if (wanted.length) {
@@ -468,8 +550,30 @@ async function main() {
         log(`  ${C.yellow}(not mirrored)${C.reset} ${job}\n      ${C.dim}${why}${C.reset}\n`);
       }
     }
+    if (workspaceChecks.length) {
+      log(`\n${C.bold}${WORKSPACE_KEY}${C.reset}  ${C.dim}(host, no Docker; sees every checkout at once)${C.reset}\n`);
+      for (const check of workspaceChecks) {
+        log(`  ${C.cyan}${check.id}${C.reset}\n      ${C.dim}${check.script} -- ${check.why}${C.reset}\n`);
+      }
+    }
     for (const b of broken) log(`\n${C.red}BROKEN MANIFEST ENTRY${C.reset} ${b.gateId}: ${b.error}\n`);
     process.exit(broken.length ? 1 : 0);
+  }
+
+  // Before the Docker gate, so a cross-repo contract break is reported even
+  // when Docker Desktop is down -- these need three git checkouts, not a daemon.
+  const workspaceResults = workspaceChecks.length
+    ? await runWorkspaceChecks(workspaceChecks, flags, log)
+    : [];
+
+  if (workspaceOnly) {
+    const bad = workspaceResults.filter((r) => r.status !== 'pass');
+    log(`\n${C.bold}${'='.repeat(72)}${C.reset}\n`);
+    for (const r of workspaceResults) {
+      log(`${statusLabel(r.status)} ${r.repoKey.padEnd(30)} ${r.legId}\n`);
+      if (r.status !== 'pass') log(`          ${C.dim}log: ${r.logFile}${C.reset}\n`);
+    }
+    process.exit(bad.length ? 1 : 0);
   }
 
   if (!(await daemonUp())) {
@@ -527,7 +631,7 @@ async function main() {
 
   await ensureImages([...new Set(gates.map((g) => g.image))], flags, log);
 
-  const results = [];
+  const results = [...workspaceResults];
   const byRepo = new Map();
   for (const g of gates) {
     if (!byRepo.has(g.repoKey)) byRepo.set(g.repoKey, []);
