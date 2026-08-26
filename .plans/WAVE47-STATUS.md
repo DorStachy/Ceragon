@@ -1343,3 +1343,97 @@ Two earlier hypotheses of mine are now dead, and both were killed by measurement
 So the remaining possibilities are a runner-environment difference or a genuine flake, and the honest
 way to tell them apart is to re-run the gate on the real runner rather than to keep theorising here.
 That is dispatched.
+
+---
+
+# THE TIMELINE SPEC WAS A MISSING INDEX. The test was right and the schema was wrong.
+
+Re-run on the real runner: **shard 3 red again, same numbers.** Not a flake. `cursorPeak` **2000**
+against a 400 bound, and the cursor walk 2000 against 1800. Deterministic on Linux, green on this box.
+
+## What nothing indexed
+
+`getSessionTimeline` filters `org_id` + `session_id` and orders by `seq_num`. No index described that
+shape, so the planner had to choose between two half-matches:
+
+| index | gives | missing |
+|---|---|---|
+| `ux_ai_events_org_seq` (org_id, seq_num) | the ORDER BY | the session filter |
+| `idx_ai_events_session_org_type` (session_id, org_id, event_type) | the filter | the order |
+
+The second **cannot stop at the LIMIT**: it collects the whole session and sorts before the Limit node
+sees a row. Which one the planner picked came down to the statistics of the moment — so T-L22's
+central claim, that the seq-keyed cursor reads page N without traversing the N-1 before it, was
+**true on one database and false on another**. On CI it is false.
+
+## Measured, PostgreSQL 17, the T-L22 fixture
+
+```
+org_seq present    Bitmap Index Scan on ux_ai_events_org_seq              -> 200
+org_seq absent     Bitmap Index Scan on idx_ai_events_session_org_type    -> 4000, via a Sort
+                   ^ this is CI's plan
+new index present  Index Scan on ix_ai_events_org_session_seq            -> 200, NO Sort node
+```
+
+## Mutation-proven both ways, against a CI-shaped database
+
+Built the way `pr-checks.yml` builds it (`testdb:prepare-live-pg` + `migration:run` on `postgres:17`),
+then `ux_ai_events_org_seq` dropped so the planner is forced into CI's choice:
+
+```
+with the new index      6 passed, 6 total
+without it              1 failed   (cursor walk 11000 against a 6000 bound)
+schema restored         6 passed, 6 total
+```
+
+## Three of my own hypotheses were wrong first, and saying so is the point
+
+A missing `ANALYZE`; a seqscan the spec had not pinned; a shard-mate's leftover rows. **The first two
+were already handled by the spec's author** — I proposed them without reading far enough. The third I
+half-reproduced by polluting a table with 40,000 rows, then talked myself out of it when a clean
+`EXPLAIN` on the same table came back bounded. I also read a **truncated** `\d ai_events` and
+announced there was no `seq_num` index at all, which was simply false.
+
+What ended it was not a better theory. It was dropping indexes one at a time and reading the plan.
+
+## Not relaxing the bound
+
+The bound was reporting something true: the cursor read the entire session to return one page. A
+looser number would have made the check quiet and left the product exactly as slow. Backend PR #283
+adds `ix_ai_events_org_session_seq` with `CREATE INDEX CONCURRENTLY` + `transaction = false` —
+`ai_events` is large in production and a plain `CREATE INDEX` would hold a write lock across endpoint
+event ingest.
+
+Checked, because the production migration runner is custom rather than the TypeORM CLI and has
+mis-parsed this exact flag before: `scripts/run-pending-migrations.cjs`'s own regex detects
+`transaction = false` in the new file, and `npm run -s lint:migrations` is clean.
+
+---
+
+# A SECOND STALE-ENGINE FINDING, from the same wave
+
+`browser-extension/test/vendored-consumer-digest.test.mjs` is red on Installers `main` and has been
+since the wave-47 merge — Installers' PR checks last ran on main on 2026-08-22, and the 2026-08-25
+cost gate removed its push and pull_request triggers, so nothing ran it.
+
+The AI Security Policy **playground** vendors the agent's decision engine verbatim so the console can
+demonstrate what the endpoint does. All three copies were stale:
+
+| file | Frontend vendored | Installers live |
+|---|---|---|
+| `policyeval.js` | `d70c0731...` | `724ed5a9...` |
+| `dlp.js` | `e6d35379...` | `2967a343...` |
+| `promptrisk.js` | `0c8dbaa5...` | `b3e998a4...` |
+
+`promptrisk.js` was **509 lines against 908**.
+
+**The guard is one-sided, which is why two of the three were GREEN while stale.** `consumers.lock.json`
+records the ENGINE's digest, so updating it in the Installers repo satisfies the test — nobody has to
+touch the Frontend. The lock is green for `dlp.js` and `promptrisk.js` today and both copies were
+stale anyway. It went red only for `policyeval.js`, the file the engine moved past most recently.
+
+Fixed level-by-level: Frontend PR #188 refreshes all three from Installers `254d24fc` and restamps
+`MANIFEST.json` (78 tests pass, including the digest guard and `prompt-eval`, so the newer engine
+behaviour needed no expectation changes); Installers #178 then brings the lock up. **The structural
+gap is NOT closed** — nothing compares the two repositories, and that needs an owner decision about
+where such a check would run.
