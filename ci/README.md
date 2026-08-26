@@ -136,11 +136,20 @@ mirrored. Summary:
 | GithubApp-Bot-Scanner-Worker | 14 | node20 + scanner | Semgrep 1.89.0 and gitleaks 8.18.4 pinned |
 | Sandbox-Worker | 1 | node20 | PARTIAL by design: build+test share a job with the deploy |
 | Static-Worker | 1 | node20 | same shape; pnpm; needs `.git` for its lockfile guard |
-| Installers | 10 | go124 | Go 1.24 + Node 22 in one image |
+| Installers | 11 | go124 | Go 1.24 + Node 22 in one image |
 
 **Not mirrored, and why** is recorded in `ci/gates.json` under each repo's `cannotMirror`. The two
 categories are cloud identity (deploys, OIDC reads of live AWS state, GitHub App tokens) and
 non-Linux runners (macOS, Windows, WSL, systemd-dependent Linux legs).
+
+The eleventh Installers gate, `finding-b-e2e:shim-enforcement`, was added on 2026-08-26 and is the
+only leg of `finding-b-e2e.yml` that mirrors. It is worth knowing what it is: the rest of that
+workflow asserts PATH resolution — that a file with our name is found first — and until that date
+the file it found was an `echo` script the test wrote itself. This job feeds a real forbidden push
+and a real permitted one through the product and checks the side effect: the forbidden commit is
+not on the remote afterwards, the permitted one is. It carries its own mutation guard, which
+re-stages the old fake shim and requires the proof to refuse it.
+
 
 Two of them are worth knowing by heart:
 

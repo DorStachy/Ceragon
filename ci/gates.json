@@ -170,7 +170,8 @@
         "pr-checks:release-workflow-contract": {},
         "pr-checks:self-update-lane": {},
         "pr-checks:macos-legacy-identity": {},
-        "holdout-score:score": {}
+        "holdout-score:score": {},
+        "finding-b-e2e:shim-enforcement": {}
       },
       "cannotMirror": {
         "pr-checks:cli-entrypoint-tests": "runs-on windows-latest. cmd/devoid's entrypoint tests exercise Windows service control, ACLs and PATH resolution; a Linux container cannot stand in. Run them on this machine with `go test ./cmd/devoid/... -count=1` from a Windows shell.",
@@ -182,7 +183,7 @@
         "finding-b-e2e:windows-msi-uninstall": "windows-2022, MSI install/uninstall against a real registry.",
         "finding-b-e2e:uninstall-sweep": "matrix over ubuntu AND macos; the ubuntu legs would mirror, the macOS legs cannot, so the job is listed whole rather than half-claimed.",
         "finding-b-e2e:unit": "matrix over ubuntu/macos/windows, same reason.",
-        "finding-b-e2e:linux-matrix": "Mirrorable in principle -- 15 legs of shell/privilege/scenario -- but each leg installs a daemon under systemd, and the runner does not give containers a system systemd. Left unmirrored rather than mirrored-but-inert.",
+        "finding-b-e2e:linux-matrix": "Mirrorable in principle -- 36 legs of shell/privilege/scenario -- but each leg runs `doctor --fix` against a system systemd the container does not have. Left unmirrored rather than mirrored-but-inert. Since 2026-08-26 these legs also carry the real block/allow assertion (shim-enforcement.sh); that half IS mirrored, as finding-b-e2e:shim-enforcement, which needs no systemd. What stays unmirrored here is the per-shell PATH dimension, not the enforcement proof.",
         "finding-b-e2e:drift-latency": "same systemd dependency.",
         "finding-b-e2e:two-user-systemd": "same, plus two real user accounts.",
         "finding-b-e2e:anti-tamper": "same.",
