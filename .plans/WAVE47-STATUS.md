@@ -268,3 +268,95 @@ Three HTTP suites failed with timeouts on the parallel run. Re-run serially on t
 **Near-miss worth recording:** this lane ran a `git stash push` it intended to be inert. It captured its own
 edit for about a minute, popped it immediately, and verified the seven other stashes (other chats') were
 intact. Concurrent sessions share these checkouts — `git stash` is not a safe idle command here.
+
+---
+
+## Lane 9 — RECORDED "NOT LANDABLE" (§3.1). 3 commits on `wave47/winacl`. **No SDDL was changed.**
+
+That is the correct outcome, and it is evidence-backed rather than cautious.
+
+**The register was half stale.** One production file *does* now carry the strict descriptor
+(`endpoint_identity_windows.go:32`, landed 2026-08-18); the register entry was written 2026-08-07, so it
+was true when recorded and false for eight days. The rest holds: the credential file and the daemon token
+are still on the permissive boundary.
+
+**There are THREE non-elevated readers of the daemon token, not one.** The register named one. The third
+— the browser prompt-guard host — **fails OPEN**. So anyone who read the old prose, closed the named
+reader and narrowed the ACL would have taken the shipped Web AI Guard browser lane down **silently**: it
+would keep running and stop governing.
+
+**Landed instead:** a `go/ast` reader-inventory test — resolved selectors, immune to comments and string
+literals, no build tag so it runs on the Linux runner CI actually uses. It fails in **both** directions:
+a new non-elevated reader appears, *or* the last one disappears. Mutation-proven both ways, plus the
+tightening itself proven to go red naming the exposure.
+
+### The second door — three components encode two opposite boundaries
+
+Verified by me directly:
+- `install-scripts/production/install.ps1:2585-2596` **always re-asserts** a restrictive DACL on the
+  daemon token — installing user + Administrators + SYSTEM, inheritance disabled — and its own comment
+  calls itself *"the ACL-repair path for a token the daemon minted itself with the permissive inherited
+  ACL"*. It then prints **"Daemon capability token ACL enforced"**.
+- `internal/daemon/daemon_auth.go:209` documents the opposite intent — *"protected file ACL granting
+  Builtin Users read on Windows, so the human-user shim can authenticate"* — and
+  `loadOrCreateDaemonToken` **re-asserts the at-rest perms on every reuse, not just on mint**.
+- `windows-installer/msi-build/verify-msi-acl.ps1:1100` **asserts a non-admin CAN read both secrets.**
+
+The installer runs once; the daemon runs on every start. **The daemon wins, so the installer's message is
+the falsehood.** And the daemon is not simply wrong — its looseness is what keeps non-elevated
+`npm install` working, because the shim treats a refusal as fail-closed. The one automated gate that
+would catch a bad tightening runs only on GitHub Windows runners, which cannot be mirrored and are
+blocked.
+
+On Windows there is also **no second factor** behind that token — the peer-identity check is a no-op off
+Linux — so it is the only local authentication for restore, shutdown and the posture routes that were
+moved behind a token *precisely because loopback is not a boundary*. Two comments promising a "per-user"
+token were corrected by me (`b2302589`).
+
+A full per-user-split design is in the lane report, including the sharp part: the "may only ever tighten"
+rule that is protective today becomes the delivery mechanism for a fleet-wide outage the moment the
+routing constant changes.
+
+---
+
+## Lane 4 — CLOSED (§2.6 real shim test, §4.3 the alarm). 3 commits + `6ac4e38` in the workspace repo.
+
+**The fake is gone.** Shim directories now hold byte-identical copies of the real binary, re-verified
+before anything is asserted, and the assertions are on **the side effect — whether the commit reached the
+bare remote** — not on exit codes.
+
+Green across **all 6 Linux shells × 3 scenarios × both privilege modes.** The allow-control and the block
+go through the *same* branch and differ only in verdict, and a bypass leg re-sends the blocked push and
+lands it — which is what rules out "the push failed for an unrelated reason".
+
+### The mutation that caught a hole in the test's own first version
+
+With enforcement removed, **the product still prints "PUSH BLOCKED" and pushes anyway.** On the `.env`
+input an unrelated fail-closed control happened to stop the push, so exit code, unmoved ref and the
+message all looked correct. Only asserting *"the run must stop at the gate"* separates them. The first
+version of the test went red one case too late. **The message is not the enforcement.**
+
+A fourth mutation proves the shell-profile shim is load-bearing rather than decoration: identical commit,
+identical remote, PATH the only difference — on PATH the push is refused; off PATH the hook fails open and
+**the secret lands**.
+
+### The alarm is re-plugged, cheaply
+
+Weekly schedule; every job except the deliberately-red one carries an event filter, so a scheduled run is
+**one Linux job — roughly two cents a week**, against the ~$600 month the pull-request trigger produced.
+The RED-ON-PURPOSE block is verbatim, with a note that it is deliberately the one job without a filter so
+nobody silences it by adding one. `finding-b-e2e` gets a path-filtered push-on-main running only the new
+enforcement job, plus a monthly full matrix.
+
+**Not exercised:** GitHub Actions never ran — every trigger, filter and schedule is static reasoning only.
+macOS and Windows legs unrun (no macOS runtime; Docker here is the Linux engine).
+
+---
+
+## A claim I checked and did NOT act on
+
+The tool-risk lane reported that the interruption copy "names no dial" and still says "Cera". **Both are
+stale.** `internal/daemon/ai_handlers.go:3962` says **DeVoid**, and `:3982` already appends
+*"To stop this interruption: AI Security -> Tool-Risk -> {class} -> Monitor"*. The only "Cera" strings in
+that tree are deliberate pre-rebrand scheduled-task name lookups. **F41(c)'s "name the class and the dial"
+is DONE.** The remaining half is surfacing `exclusions.allow` in the console — Backend already carries it.
