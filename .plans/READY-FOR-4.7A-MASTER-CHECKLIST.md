@@ -280,6 +280,58 @@ definition (`build.yml:635` strips it deliberately) · do not repoint
 
 ---
 
+# STATUS 2026-08-27 — the gate, after tonight
+
+Merged to main: Backend #285 (`0cf9021e`), Installers #179 (`9503094e`). Both integrations green;
+Backend's gates passed on the branch before merge.
+
+| Gate item | State |
+|---|---|
+| 1 · Actions + agent release | **CLOSED** — Actions verified by a real dispatch; agent 7.10.5 promoted to stable |
+| 2 · a hook fires, is honoured, its failure is observed | §2.1 **CLOSED** · §2.3 **CLOSED** · §2.2 **PARTIAL — see below** |
+| 3 · a signed policy bundle activates | **CLOSED — PROVEN LIVE.** Register entry now `observed: true` |
+| 4 · the inventory is complete | **CLOSED** — and the second walker, which was hiding 47% of rule files, is fixed |
+| 5 · the harness can fail | **CLOSED** — both §4.1 and §4.2 |
+| 6 · the tool-risk default | **ALREADY CLOSED.** 11 of 12 MEDIUM classes default to `monitor`, not `warn`. This item was written off a stale JSDoc |
+
+**Three of the eight live-proof register entries are now `observed: true`.** This morning it was one.
+
+## §2.2 — what is proven, and the one thing that is not
+
+The control is demonstrated live on **three client builds**: 0.147.0, 0.134.0 and 0.146.0-alpha.3.1.
+Each with the deny asserted on the SIDE EFFECT, an allow control, and a trust-removed/restored control
+that proves the trust entry is what makes enforcement happen. `RunCanary` returns `CanaryProven`.
+
+The product's own ledger gate requires four observations — two builds x two lanes — and **the two
+Windows MACHINE lanes cannot be sandboxed.** Both binaries resolve the machine root through
+`SHGetKnownFolderPath(FOLDERID_ProgramData)`, which no environment variable moves; measured, with a
+full baseline in a redirected root producing zero hook fires. The only measurable Windows machine root
+is the owner's own, and writing there installs machine-wide governance over their live client.
+
+The machine lane WAS measured on Linux in a network-isolated container, including the managed-hook
+trust exemption demonstrated live for the first time. Recorded as a partial, deliberately not as an
+observation, because the Windows renderer emits different bytes through a different root.
+
+**So the gate stays red on exactly two named lanes, and closing them is §0.4 — an owner decision about
+a real-box cycle, not remaining engineering.**
+
+## New defects found while proving, both worth tracking
+
+1. `aicanary.Run`'s 5s `WaitDelay` reports a real deny as a launch failure — an enforcing endpoint
+   intermittently cannot mint the receipt that proves it. Re-measured clean at 90s.
+2. `TestLiveCanary_RealCodexHost` cannot drive the machine lane at all, which is what the runbook tells
+   you to run for it: it builds a projection with no compiled hook groups, so the gate is false
+   unconditionally.
+
+## Unasked-for security fixes that landed tonight
+
+- The **malicious floor now holds on the read path**. It had zero production callers despite its
+  docblock claiming otherwise, so a direct section PUT could leave an org below the floor permanently.
+- **MCP quarantine restore was unconfined while running elevated over every profile** — an
+  arbitrary-SYSTEM-write primitive — and then deleted the only copy of the removed config.
+
+---
+
 # Exit criteria — when is 4.7A actually ready to start?
 
 **A SEVENTH GATE ITEM, added 2026-08-27 from a live measurement.** 4.7A's output is *measurements
