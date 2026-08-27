@@ -29,12 +29,12 @@ worth. So "ready" is not "the code is merged" — it is:
 
 # §0 — BLOCKED ON THE OWNER. Nothing below §0 can finish without these.
 
-- [ ] **0.1 — Unblock GitHub Actions.** `github.com/organizations/Ceragon-Prod/settings/billing`.
+- [x] **0.1 — DONE 2026-08-27.** Owner cleared billing. Proven, not assumed: a dispatched `Security Audit` on `Frontend@main` completed **success in 38s**; the block's signature was a 4s death with no runner assigned. ~~Unblock GitHub Actions.~~ `github.com/organizations/Ceragon-Prod/settings/billing`.
   Jobs die in ~4s with `runner_name: ""` — no runner assigned. Actions is *enabled* at repo level, so
   this is a Free-plan spending limit or exhausted minutes. Onset between 2026-08-24 08:45 (a
   scheduled job passed) and 2026-08-25 03:58 (the same job failed, no commit involved).
   **This blocks: every agent release, all CI on 7 repos, and M4.7A Risk 2 branch protection.**
-- [ ] **0.2 — Approve an agent release** once 0.1 clears. Until then **every Installers fix in this
+- [x] **0.2 — DONE 2026-08-27. Agent 7.10.5 promoted to stable at 00:12:42Z**, verified against `s3://installer-binaries-prod/channels/stable.json` rather than the workflow conclusion. Backend (task def 321, both migrations applied to production) and Frontend (378) deployed first, in that order. The quarantine data-loss fix now reaches endpoints. ~~Approve an agent release~~ once 0.1 clears. Until then **every Installers fix in this
   campaign is live on ZERO endpoints** — the quarantine data-loss fix included.
 - [ ] **0.3 — Decide: transcript backup on this machine.** Currently none. The working Codex archive
   can be cloned onto `~/.claude` in ~10 min. Declined 2026-08-26 on the grounds that it cannot
@@ -103,7 +103,7 @@ This is bigger than the plugin folder. There are **three** caps and all three lo
 **This is the section that decides whether 4.7A stands on anything.** Each item needs a real
 enrolled endpoint. None can be closed by a unit test.
 
-- [ ] **2.1 — One Claude Code `PreToolUse` deny that actually stops the side effect.**
+- [x] **2.1 — DONE 2026-08-26T17:11:57Z.** `internal/liveproof/register.json` entry `pretooluse-deny-stops-side-effect` is `observed: true`, the ONLY observed entry of eight. Proven by the ABSENCE OF THE SIDE EFFECT, not by the hook's own claim: the deny run's `DENY_SIDE_EFFECT.txt` was never created while an allow control on the identical rig created its marker. Caveat recorded in the entry: **the deciding authority was the endpoint's LOCAL floor, not server policy** (the daemon's backend post 401'd and it fell back). ~~One Claude Code `PreToolUse` deny that actually stops the side effect.~~
   Hooks demonstrably FIRE — 131 hook processes observed in one turn window. But a real destructive
   delete ran through `PreToolUse`, returned **exit 0, and the directory was gone**. Zero
   `PROMPT_BLOCKED` events in 2,680 all-time events on that box.
@@ -281,6 +281,21 @@ definition (`build.yml:635` strips it deliberately) · do not repoint
 ---
 
 # Exit criteria — when is 4.7A actually ready to start?
+
+**A SEVENTH GATE ITEM, added 2026-08-27 from a live measurement.** 4.7A's output is *measurements
+of detection quality*. On 2026-08-26, ten identical private-key prompts were run against a real
+Claude Code client at the shipped 60-second hook timeout: **four blocked, six were NOT blocked and
+the private-key bytes egressed.** The split tracked wall-clock, not content, and the leaks began the
+moment a Docker build put the box under load. It is our own fail-open — the hook could not reach the
+daemon inside its budget and proceeded unchecked — and `~/.devoid/undecidable-hook-payloads.json`
+recorded eleven undecided invocations in exactly that window while the status surface printed
+"5 of 5 hooks have fired".
+
+**A false-positive or false-negative rate measured on that substrate is a number about the
+substrate, not about the detectors.** Item 2.3 is therefore promoted from "an observer exists" to
+"the fail-open is visible on the PRIMARY surface and changes the verdict" — and it is the cheapest
+item on this list, because the counter already exists and is already correct. It simply is not
+printed on the Claude lane.
 
 **Hard gate — all must be true:**
 
