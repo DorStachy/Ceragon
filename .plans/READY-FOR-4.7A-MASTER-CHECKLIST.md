@@ -391,11 +391,17 @@ Installers `r47a/{plugin-restore,inventory-complete,codex-dialect,failopen-surfa
 
 ## What is NOT closed, and none of it is code
 
-1. **The Backend merge is not deployed.** Production runs task definition **321**, deployed
-   2026-08-27T03:02 local. `origin/main` tipped at **17:00** the same day — fourteen hours later.
-   So the malicious-floor read-path fix, the tool-risk migration and every §4.2 guard in PR #285
-   exist on `main` and on **zero production endpoints**. 4.7A measures detection quality; measured
-   against an undeployed floor it measures the wrong substrate. **This is a fresh deploy ask.**
+1. ~~**The Backend merge is not deployed.**~~ **DEPLOYED 2026-08-27T19:01:15 local — task definition
+   322.** Owner approved. Verified against AWS rather than the workflow conclusion: the deployed image
+   tag is `0cf9021e944b72ef2a3024e8687f4114db1f2468`, byte-for-byte the `main` tip (321 carried
+   `0b2aa28c`, the pre-merge commit); `rolloutState: COMPLETED`, 1/1 running; `GET /health` 200. The
+   `Deploy to ECS` **job** is green, which is the surface that tells the truth here. Migration task
+   exit 0: *"247 migrations already applied · 0 migrations PENDING · No-op"*, taxonomy validator all
+   zero. **The malicious-floor read-path fix now runs in production.**
+
+   Both required gates were dispatched first and passed on the same SHA — `pr-checks.yml` and
+   `security.yml` — because `build.yml` is fail-closed on a MISSING run for `$GITHUB_SHA` and the
+   push triggers were removed in the 2026-08-25 cost gate.
 2. **§0.4 — a real-box MSI install/uninstall cycle.** The only route to the two Windows machine-lane
    observations. A reinstall has bricked the trust anchor before (409 forever), which is why it is
    the owner's call and not mine.
