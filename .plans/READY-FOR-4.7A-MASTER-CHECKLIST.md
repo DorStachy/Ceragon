@@ -61,38 +61,38 @@ This is bigger than the plugin folder. There are **three** caps and all three lo
 | `MaxNodes = 5000` | same | ~19,100 eligible files vs a 5,000 ceiling |
 | `MaxProjectDepth = 8` | same | **425 directories pruned for depth** |
 
-- [ ] **1.1a** Give the marketplace/extension caches their own classified rows so they are scanned
+- [x] **1.1a** Give the marketplace/extension caches their own classified rows so they are scanned — **DONE — already on `origin/main` (`72e9dfbf`), verified by ancestry, not re-implemented.**
   properly instead of sampled, freeing the candidate budget.
-- [ ] **1.1b** Raise/remove `MaxCandidates` and `MaxNodes` so the inventory is complete.
-- [ ] **1.1c** Make depth-pruning **visible**: an endpoint that could not walk everything must say so.
+- [x] **1.1b** Raise/remove `MaxCandidates` and `MaxNodes` so the inventory is complete. — **DONE — `3b41b5a0`. Defaults now 500000 nodes / 250000 candidates / depth 32.**
+- [x] **1.1c** Make depth-pruning **visible**: an endpoint that could not walk everything must say so. — **DONE — `a7a6d53b` + `d506156f`; the rule-file walker kept the same silent cap and now reports `Complete()`.**
   Silent truncation reads as "covered everything".
-- [ ] **1.1d** Keep the worker-side filter narrow — only relevant files leave the box. Complete
+- [x] **1.1d** Keep the worker-side filter narrow — only relevant files leave the box. Complete — **DONE — `AiInventoryBatch` is byte-for-byte unchanged (`d506156f`).**
   local enumeration ≠ complete upload.
-- [ ] **1.1e VERIFY:** re-run the resolver probe on a real home. Assert `CandidateCount == kept`,
+- [x] **1.1e VERIFY:** re-run the resolver probe on a real home. Assert `CandidateCount == kept`, — **DONE 2026-08-27 — real home, read-only: nodes=20114, candidateCount=6899, candidatesDropped=0, truncated=false, depthPruned=0. Candidate count equals kept count.**
   `Truncated == false`, and **`.codex/sessions` node count > 0** (it is currently **0**).
-- [ ] **1.1f VERIFY:** measure the new sweep wall-clock and record it. "Slower is fine" is not
+- [x] **1.1f VERIFY:** measure the new sweep wall-clock and record it. "Slower is fine" is not — **DONE — 20.2s cold / 3.48s warm for the resolver; the rule walk goes 1m37s→8m20s and finds 1,099 rule files where depth 8 found 585. 47% were invisible.**
   "unbounded".
 
 ## 1.2 — Plugins restored automatically on uninstall *(decided: finish it)*
 
-- [ ] **1.2a** Wire `plugingate.Neutralizer.Restore` into **both** uninstall paths — the CLI
+- [x] **1.2a** Wire `plugingate.Neutralizer.Restore` into **both** uninstall paths — the CLI — **DONE — already on `origin/main` (`7246af6f`), both paths, verified by ancestry.**
   (`internal/uninstall`) and the MSI teardown guard (`cmd/devoid-msi-root-guard`).
-- [ ] **1.2b** Apply the same per-home confinement the aicontext fix needed. A bundle record also
+- [x] **1.2b** Apply the same per-home confinement the aicontext fix needed. A bundle record also — **DONE — `internal/plugingatestash/rescue.go:169` confines all three path kinds.**
   names destination paths, and both uninstalls run elevated over other users' profiles — unconfined,
   this is an arbitrary write as SYSTEM.
-- [ ] **1.2c VERIFY:** mutation-prove it. Revert the wiring → test red; revert the confinement →
+- [x] **1.2c VERIFY:** mutation-prove it. Revert the wiring → test red; revert the confinement → — **DONE — three mutations, three different packages red, all restored. The same treatment then applied to the MCP stash (`490fc2b4`), which was unconfined while running elevated.**
   test red; restore → green. Include a control proving a clean stash still deletes.
 
 ## 1.3 — Commit a lockfile *(decided: record exact versions)*
 
-- [ ] **1.3a** Remove the `package-lock.json` exclusion from Backend `.gitignore` and commit the
+- [x] **1.3a** Remove the `package-lock.json` exclusion from Backend `.gitignore` and commit the — **DONE — `218ce14b`; lockfile tracked (534,427 bytes, 1044 entries), ignore line removed.**
   lockfile.
-- [ ] **1.3b** Switch `build.yml`'s install step to `npm ci` and rewrite the comment that says
+- [x] **1.3b** Switch `build.yml`'s install step to `npm ci` and rewrite the comment that says — **DONE — `fadd0a8e`; all 13 install steps use `npm ci`.**
   "`npm ci` would fail here" — it will no longer be true.
-- [ ] **1.3c** Revisit the `@types/node` pin added 2026-08-26. With a lockfile it may be relaxed
+- [x] **1.3c** Revisit the `@types/node` pin added 2026-08-26. With a lockfile it may be relaxed — **DONE — `ea2641de` measured `@types/node` 20.19.43 against this tree: 0 tsc errors. Pin kept on narrow stated grounds, no longer claimed as a tripwire.**
   back to a range; decide deliberately rather than leaving both belts on.
-- [ ] **1.3d VERIFY:** two clean builds from an empty cache produce byte-identical dependency trees.
-- [ ] **1.3e** Consider the same for Frontend (it already commits a lockfile — confirm it is used).
+- [x] **1.3d VERIFY:** two clean builds from an empty cache produce byte-identical dependency trees. — **DONE 2026-08-27 — two `npm ci` runs, separate empty caches: 1017 packages identical by version + tarball + SHA-512. RED proven by corrupting one integrity hash. Without the lockfile, 4 packages drifted in 24h.**
+- [x] **1.3e** Consider the same for Frontend (it already commits a lockfile — confirm it is used). — **DONE — Frontend commits its lockfile (1033 packages) and uses `npm ci` in all three workflows plus the Dockerfile.**
 
 ## 1.4 — Transcript backup — see §0.3.
 
@@ -109,20 +109,20 @@ enrolled endpoint. None can be closed by a unit test.
   `PROMPT_BLOCKED` events in 2,680 all-time events on that box.
   **A detection engine on a lane that detects and does not prevent is a reporting tool.**
   Closes `internal/liveproof/register.json` entry 1.
-- [ ] **2.2 — One Codex hook fires, decides, and the client honours the deny.**
+- [x] **2.2 — One Codex hook fires, decides, and the client honours the deny.** — **DONE 2026-08-27 — `21ce3cc3` / `4f302f0f`. A Codex hook fires, decides, and 0.147 honours the deny, on three client builds with allow and trust-removed controls. The product ledger gate stays red on two Windows MACHINE lanes — blocked on §0.4, not on engineering.**
   `ledger.json` is `"status": "UNFIRED"`, `observations: []`. Five partials exist; the strongest is
   `FAIL_OPEN_OBSERVED_AND_SUPPRESSION_ISOLATED` — *an observation of the defect, not of the control.*
   Run `internal/codexmanaged/LIVE_PROOF_RUNBOOK.md` §3 and append a real row.
   ⚠️ The runbook's discriminator string was mined on Codex 0.144 and **is not in the 0.134 binary** —
   confirm the marker for the fleet's actual build before trusting a negative.
-- [ ] **2.3 — An observer for the vendor's own fail-open.**
+- [x] **2.3 — An observer for the vendor's own fail-open.** — **DONE — `40f34362`. The Claude lane printed `[OK]` over invocations that were never decided; the undecided counter now reaches the primary status surface and changes the verdict.**
   `HookTimeoutFailOpen = true` (`machine_projection.go:120`). When Codex's client errors running our
   hook it **discards our decision and proceeds ungoverned, and nothing on our side records it.**
   Every other fail-open in the product (13 of them) is bucketed and counted; this one is invisible —
   and it is the one that silently voids every hook-based detection. Parse the client's
   `hook: <Event> Failed` line, or heartbeat a spawn-side counter. **It must exist before any hook
   coverage claim.**
-- [ ] **2.4 — A signed policy bundle activates on a real endpoint and the applied digest reaches the
+- [x] **2.4 — A signed policy bundle activates on a real endpoint and the applied digest reaches the — **DONE — `c25aaa92`. A signed bundle activates and its applied digest reaches the Backend.**
   Backend.** The chain deadlock was measured live twice (2026-08-06 endpoint `70573ce5`; 2026-08-19
   endpoint `5862b23a`, *"applied stayed nothing… the box enforced nothing"*). Both fixes are
   code-only. Without this, every detection runs on permissive built-in defaults — **not on your
@@ -155,7 +155,7 @@ enrolled endpoint. None can be closed by a unit test.
   set Codex's posture from the console**, which contradicts the standing product rule that policy
   belongs to the admin. ⚠️ `allowed_sandbox_modes` must never ship without `read-only` — that
   omission has bricked desktops.
-- [ ] **3.3 — F41/D4: tool-risk MEDIUM classes default to `warn`. THIS IS LIVE RIGHT NOW.**
+- [x] **3.3 — F41/D4: tool-risk MEDIUM classes default to `warn`. THIS IS LIVE RIGHT NOW.** — **CLOSED — the premise was FALSE, measured against the running engine: 11 of 12 MEDIUM classes default to `monitor`, not `warn` (23 block / 2 warn / 12 monitor / 3 allow). The stale JSDoc that said otherwise is corrected. No warn storm exists to fix.**
   `Backend/src/ai-security-policy/ai-security-policy.constants.ts:1131`, with `interpreter-exec`,
   `fetch-then-exec` and `substitution-exfil` still MEDIUM. Backend is deployed, so **every org is
   interrupted on ordinary agent work out of the box.** The decision was taken and never implemented.
@@ -172,7 +172,7 @@ enrolled endpoint. None can be closed by a unit test.
   Installed clients are 0.147/0.148, so R7/R8 report "unverified" on every real endpoint.
   **Do NOT widen without two vendor artefacts** — `TestDialectPinIsNotWidened` enforces this. May end
   in a recorded "no".
-- [ ] **3.7 — `verify.go:445`: an UNREAD Codex version is still dialect-claimable.** Deliberate and
+- [x] **3.7 — `verify.go:445`: an UNREAD Codex version is still dialect-claimable.** Deliberate and — **DONE — `9d167ed9`. Widened only after two vendor artefacts proved the 0.144 and 0.147 constructions byte-identical; the client is asked rather than assumed.**
   instrumented, but it is the one place a readiness surface can claim on an unobserved build.
   *Owner decision: keep the fail-open or close it.*
 - [ ] **3.8 — Frontend never renders `attestedProfile`.** Backend shapes it fully; FE grep returns
@@ -193,7 +193,7 @@ enrolled endpoint. None can be closed by a unit test.
   shipped 2026-08-05. And `LIVE_PROOF_RUNBOOK.md:152`'s line numbers now point at unrelated code.
 - [ ] **3.14 — `approvalSurface` shipped as option B; the recommendation was C.**
   `ai-query.service.ts:2877`. One line, owner decision.
-- [ ] **3.15 — `plugingate` restore** — see §1.2.
+- [x] **3.15 — `plugingate` restore** — see §1.2. **DONE — `7246af6f` (both paths) + `490fc2b4` (the MCP stash, which was unconfined while elevated).**
 
 ---
 
@@ -202,11 +202,11 @@ enrolled endpoint. None can be closed by a unit test.
 **4.7A's decision D3 is "build FP measurement before turning any rule on." A measurement taken on
 this harness today is not trustworthy.**
 
-- [ ] **4.1 — 97 `*.live-pg.spec.ts` files report GREEN when Postgres is absent.** They print
+- [x] **4.1 — 97 `*.live-pg.spec.ts` files report GREEN when Postgres is absent.** They print — **DONE — `4a9b9cd1` / `8cb1e9dc`. The suites now report `EXECUTED against a live database: N / SKIPPED (proved nothing): N` and fail dark instead of green.**
   `SKIPPED (no Postgres…) — "…" proved nothing.` and return. **Confirm `RUN_INTEGRATION_TESTS=true`
   is actually set wherever the Backend suite runs.** Until confirmed, treat all Backend integration
   coverage as unproven.
-- [ ] **4.2 — Zero tests cross the HTTP boundary on enrolment or policy delivery.** No real-socket
+- [x] **4.2 — Zero tests cross the HTTP boundary on enrolment or policy delivery.** No real-socket — **DONE — `6b5ad9f9`. `GET /api/v1/ai/policy` — the route the whole fleet polls — now runs over a real socket, plus the v2 credential issued by the real service. 88 tests, 4 mutations proven red.**
   test for `POST /api/v1/agents/enroll`; no real-DB test of `enrollAgent`; none for
   `GET /ai/policy-bundle`. This repo has already shipped a pipe that answered **every** submission
   `400 "property payload should not exist"` *"while all service-level and live-Postgres tests stayed
@@ -367,3 +367,43 @@ other than what it says.
 **The honest one-line status today:** the reporting layer is true and deployed; the enforcement layer
 underneath it has never been demonstrated on a real machine, and one of its two lanes is proven not
 to prevent anything.
+
+---
+
+# VERDICT 2026-08-27 (evening) — the engineering gate is MET; three things are not engineering
+
+All nine agent branches are merged and verified **by ancestry**, not by merge chatter:
+Backend `r47a/{http-boundary,toolrisk-default,lockfile,livepg-fail-dark}` → PR #285 → `0cf9021e`;
+Installers `r47a/{plugin-restore,inventory-complete,codex-dialect,failopen-surface,version-stamp-split}`
+→ PR #179 → `9503094e`. All five are ancestors of their `origin/main`.
+
+## The six hard-gate items
+
+| # | Item | State |
+|---|---|---|
+| 1 | §0.1 Actions + §0.2 agent release | **CLOSED** — 7.10.5 stable, verified off `stable.json` |
+| 2 | §2.1 / §2.2 / §2.3 hook fires, is honoured, failure is observed | **CLOSED** on the checklist's own wording; the product's stricter ledger gate is red on two Windows MACHINE lanes → §0.4 |
+| 3 | §2.4 a real policy activates | **CLOSED** — `c25aaa92` |
+| 4 | §1.1 the inventory is complete | **CLOSED** — and a *second* walker family was found capping at depth 8; 47% of rule files were invisible |
+| 5 | §4.1 / §4.2 the harness can fail | **CLOSED** — live-pg fails dark; the fleet's own policy poll is on a real socket |
+| 6 | §3.3 the shipped default stops interrupting | **CLOSED by measurement** — the premise was false |
+| 7 | the load fail-open (added 2026-08-27) | **CLOSED** — `40f34362` puts the undecided count on the primary surface |
+
+## What is NOT closed, and none of it is code
+
+1. **The Backend merge is not deployed.** Production runs task definition **321**, deployed
+   2026-08-27T03:02 local. `origin/main` tipped at **17:00** the same day — fourteen hours later.
+   So the malicious-floor read-path fix, the tool-risk migration and every §4.2 guard in PR #285
+   exist on `main` and on **zero production endpoints**. 4.7A measures detection quality; measured
+   against an undeployed floor it measures the wrong substrate. **This is a fresh deploy ask.**
+2. **§0.4 — a real-box MSI install/uninstall cycle.** The only route to the two Windows machine-lane
+   observations. A reinstall has bricked the trust anchor before (409 forever), which is why it is
+   the owner's call and not mine.
+3. **Which M4.7A.** Two different milestones carry the name — a *certification programme* (roadmap)
+   and a *quality build* (plan). Only 2 of the certification programme's 8 gate items appear in the
+   quality-build plan, and the D-numbers **collide across the two lists**. And the quality-build
+   plan's own commissioned review says, in its words, do not begin implementation from it —
+   19 blocking findings, no revision on disk.
+
+**Everything remaining in §3 and §4 was declared parallel-safe by the exit criteria above and stays
+tracked, not blocking.**
