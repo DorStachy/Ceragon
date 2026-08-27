@@ -413,3 +413,61 @@ Installers `r47a/{plugin-restore,inventory-complete,codex-dialect,failopen-surfa
 
 **Everything remaining in §3 and §4 was declared parallel-safe by the exit criteria above and stays
 tracked, not blocking.**
+
+---
+
+# AGENT RELEASE 7.10.6 — CUT AND PROMOTED 2026-08-27T17:05:32Z
+
+Owner approved. Dispatched on `9503094e` with the exact inputs of the last known-good release
+(`bump=patch`, `managed_ba=true`, `managed_firefox=false`, `promote=true`,
+`bootstrap_trust_chain=false`, `require_signed_windows=false`). Backend 322 was already live, so the
+**Backend-before-agent ordering rule was satisfied**.
+
+**All 15 jobs green**, including `6b · Verify SHA-256 on prod S3 artifacts` and `7 · Promote to Stable`.
+Verified against S3 rather than the run conclusion:
+
+- `s3://installer-binaries-prod/channels/stable.json` → **version `7.10.6`**, releaseSequence
+  `7000010000006`, publishedAt `2026-08-27T17:05:32Z`
+- 18 objects under `releases/7.10.6/` — binaries for all 6 platform/arch pairs, `manifest.json`,
+  detached `.asc` signatures
+- `s3://installers-prod/releases/7.10.6/` — `DevoidAgent.msi` (26,169,344 B), `DevoidSetup.exe`,
+  browser `chrome.json` + `update.xml`; `packages/7.10.6/` — deb, rpm, pkg.tar.zst, checksums
+
+Pre-flighted the trap that burned four previous releases: **none of the ten unreleased commits touched
+`browser-extension/`**, so the source-digest / version-bump gate was not armed.
+
+**This closes the last engineering item.** The ten commits that were merged-but-on-zero-endpoints now
+ship — including the inventory fix (47% of rule files were invisible), the fail-open observer that
+stops the Claude lane printing `[OK]` over undecided invocations, the 0.147 dialect, and the three
+uninstall data-loss fixes.
+
+## The gate, final state
+
+| # | Item | State |
+|---|---|---|
+| 1 | §0.1 Actions + §0.2 release carries the fixes | **CLOSED** — 7.10.6 stable |
+| 2 | §2.1 / §2.2 / §2.3 | **CLOSED** on the checklist's wording; product ledger gate red on two Windows MACHINE lanes |
+| 3 | §2.4 a real policy activates | **CLOSED** |
+| 4 | §1.1 inventory complete | **CLOSED** and shipped |
+| 5 | §4.1 / §4.2 the harness can fail | **CLOSED** and deployed (Backend 322) |
+| 6 | §3.3 shipped default | **CLOSED by measurement** — premise was false |
+| 7 | the load fail-open observer | **CLOSED** and shipped |
+
+**Engineering is done. What is left is one decision and two tracked defects — see below.**
+
+## The two defects that matter to 4.7A specifically
+
+4.7A measures detection quality *through the canary*, so the instrument has to be sound first:
+
+1. `aicanary.Run`'s 5s `WaitDelay` reports a real deny as a launch failure — an enforcing endpoint
+   intermittently cannot mint the receipt proving it. Re-measured clean at 90s.
+2. `TestLiveCanary_RealCodexHost` cannot drive the machine lane at all: it builds a projection with no
+   compiled hook groups, so the gate is false unconditionally.
+
+## And the one that is not blocking
+
+§2.2's two Windows MACHINE lanes. The blocker **changed shape** on 2026-08-27: it is no longer "no
+sandbox can reach a Windows machine root" — the real-box cycle reached it and wrote
+`requirements.toml` with an exact re-read match. It is now that the owner's Codex client is
+`0.149.0-alpha.4.1`, outside every dialect DeVoid has observed accepted, **including the 0.147 the pin
+was widened to today**. Closing it needs two vendor artefacts for 0.149 — never a version bump.
