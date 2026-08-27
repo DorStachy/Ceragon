@@ -3,12 +3,25 @@
 **Depends on:** Wave −1 (rebase, citation repair, the `ScanAll` correction), Wave 2 (the evidence-grade
 fields on `toolrisk.Finding`, which Task 7 carries onto the wire). Wave 0A and Wave 1 may run in
 parallel; nothing here blocks them.
+**Runs before:** **Wave 3B Task 3.** Its `metrics.byClassRepresentationSurface[]` rows are populated
+from the per-class exposure counters Task 2 builds here. Emitting that report first publishes the
+corpus-wide denominator into a schema-validated artifact, which is the exact defect this wave removes.
 **Implements decisions:** D3, D4 (amended — lane-specific, not tool-only), D5, D6 (rewritten), **D18**.
+
+**The split with Wave 3B, stated once so nothing is built twice.** This wave owns the *denominator*
+and the *honesty of an absent measurement*: per-surface exposure, `UNKNOWN`-not-zero on both rates,
+the package-level inspection budget, the four lane seams, the per-class shadow record, and the shared
+invalidation rule. **Wave 3B owns the whole version-identity axis** — making `--engine-version`
+mandatory (3B Task 1) and widening the environment digest into the system tuple (3B Task 2). Two tasks
+that used to live here, old Task 4 and old Task 5, are deleted below with pointers; **their numbers are
+kept as headstones** so every cross-reference in the other nine files still lands.
+
 **Certificate impact:** the **measurement-substrate integrity** dimension is `UNKNOWN` until this wave
 passes, and so is every `metrics` block in every certificate. Concretely: `metrics.falsePositiveRate`,
 `metrics.recall`, `metrics.unknownRate` and `metrics.inspectionCompleteness` stay `null` for every lane,
-`system.engineVersion` stays invalid, and no class may be promoted anywhere in Waves 4A/4B/4C/7B on a
-number this instrument produced. D18 is not advisory: **every rate this product has ever published was
+and no class may be promoted anywhere in Waves 4A/4B/4C/7B on a number this instrument produced.
+`system.engineVersion` stays invalid until **Wave 3B Task 1** lands — this wave does not repair it and
+must not report it repaired. D18 is not advisory: **every rate this product has ever published was
 computed against the wrong denominator, and 43 of 55 classes report perfect recall on zero evidence.**
 
 ---
@@ -132,28 +145,57 @@ introduces the defect it removed.
 
 ### Defect 2b — the report prints rows for classes the engine under measurement cannot emit
 
-`scoreHoldout` seeds a row for every catalog class (`:269-271`). But five of the 55 have **no Go
-producer**: `internal-url`, `custom-blocklist`, `high-risk-file-type`, `image-upload`, `kubeconfig`
-appear only in the generated catalog and in `browser-extension/src/`. Verified by
-`git grep -ln '"kubeconfig"' origin/main -- internal browser-extension/src`. They still print
-`fp=0/23` in a report about the Go engine.
+`scoreHoldout` seeds a row for every catalog class (`:269-271`). Some of those classes cannot be
+emitted by the Go engine at all, and they still print `fp=0/23` in a report about the Go engine.
+
+**Re-measured 2026-08-28 against `5b129523`, because an earlier count of "five" was wrong** — and the
+wrong version of this paragraph would have pushed two live DLP classes into a producer-less bucket and
+deleted two real denominators:
+
+| Class | Go producer on `origin/main` |
+|---|---|
+| `internal-url` | **yes** — registered at `internal/dlp/registry.go:186` |
+| `kubeconfig` | **yes** — registered at `internal/dlp/registry.go:187` |
+| `custom-blocklist` | **yes, but outside the three detector packages** — `policyeval.BlocklistClass` at `internal/policyeval/policyeval.go:54`, rendered at `internal/proxy/ai_synth.go:64` |
+| `high-risk-file-type` | **no** — catalog and spine only |
+| `image-upload` | **no** — catalog, spine and `detector_catalog_test.go` only |
+
+The true count is **two** with no Go producer at all, plus one that is policy-synthesised rather than
+detected. Reproduce:
+
+```bash
+cd /c/Users/Owner/Documents/Ceragon/Installers
+for c in internal-url custom-blocklist high-risk-file-type image-upload kubeconfig; do
+  printf '%-22s ' "$c"
+  MSYS_NO_PATHCONV=1 git grep -ln "\"$c\"" origin/main -- internal | grep -v _test | tr '\n' ' '; echo
+done
+```
 
 The 55 classes carry a `Family` (13 distinct: `CREDENTIAL` 21, `PROMPT_INJECTION` 10, `INGRESS_RISK` 6,
 `JAILBREAK` 4, `HEURISTIC` 3, `UPLOAD` 2, `PRIVATE_KEY` 2, `FINANCIAL_DATA` 2, and one each of
 `TOPOLOGY`, `POLICY_SYNTHESIZED`, `PERSONAL_DATA`, `DATABASE_URI`, `CONFIGURATION`) but
 `AiSecurityDetectorClass` (`detector_catalog_generated.go:22-36`) has **no producer or surface field**.
 Family correlates with producer but is not the same statement and must not be assumed to be.
-Discovery command for the full producer map, which was not machine-resolved this pass:
+Discovery command for the full producer map, which was not machine-resolved this pass. **Search
+`internal/policyeval` and `internal/proxy` too, not only the three detector packages** — restricting
+the sweep to `internal/dlp internal/promptrisk internal/ingressrisk` is what mislabelled
+`custom-blocklist` as producer-less:
 
 ```bash
 cd /c/Users/Owner/Documents/Ceragon/Installers
 for c in $(MSYS_NO_PATHCONV=1 git show "origin/main:internal/aipolicycontract/detector_catalog_generated.go" \
            | grep -oE 'ClassID: "[a-z0-9-]+"' | sed 's/ClassID: "//; s/"//'); do
-  printf '%-38s %s\n' "$c" "$(MSYS_NO_PATHCONV=1 git grep -ln "\"$c\"" origin/main -- internal/dlp internal/promptrisk internal/ingressrisk | tr '\n' ' ')"
+  printf '%-38s %s\n' "$c" "$(MSYS_NO_PATHCONV=1 git grep -ln "\"$c\"" origin/main -- internal/dlp internal/promptrisk internal/ingressrisk internal/policyeval internal/proxy | grep -v _test | tr '\n' ' ')"
 done
 ```
 
-### Defect 3 — every result ever produced carries a version stamp that cannot move
+### Defect 3 — every result ever produced carries a version stamp that cannot move (REPAIRED IN WAVE 3B)
+
+**This defect is the evidence for D18 and it is NOT repaired in this wave.** `--engine-version` is
+made mandatory by **Wave 3B Task 1**; the environment digest and the system tuple are widened by
+**Wave 3B Task 2**. It is measured here because every exit number below is invalid until those land,
+and because an engineer who trips over the constant while building Task 2 needs to know it already has
+an owner and must not fix it twice.
 
 `cmd/ai-security-neutral/main.go:23`:
 `engineVersion := flag.String("engine-version", "m4.7", "executed engine version")`
@@ -171,7 +213,7 @@ schema. `RunnerIdentity` (`internal/neutraleval/contract.go:124-130`) and `Resul
 
 **`artifactDigest` already works and nobody should rebuild it.** `main.go:28-39` derives it from the
 executing binary — *"a pasted digest can be wrong; this one cannot"* — and `normalizeOptions` rejects a
-run without it (`runner.go:474-478`).
+run without it (`runner.go:475-479`).
 
 ### The scorer has never had a test
 
@@ -203,9 +245,10 @@ literal.
 
 ### The prompt-lane instrument the old plan says does not exist
 
-`plan:9397` gates the six-class prompt promotion *"on the Wave 3 decision-level shadow and on nothing
-else"*, and `plan:9390-9396` justifies it by counting five `promptrisk` cases in
-`neutral-corpus.all.jsonl`. That count is right for `all.jsonl` and it is the wrong file.
+`plan:9398` gates the six-class prompt promotion *"on the Wave 3 decision-level shadow and on nothing
+else"*, and `plan:9391-9396` justifies it by counting five `promptrisk` cases in
+`neutral-corpus.all.jsonl`. That count is right for `all.jsonl` — measured, `all.jsonl` carries 1
+ATTACK + 3 BENIGN + 1 BOUNDARY on `surface: promptrisk` — and it is the wrong file.
 
 Two sealed prompt-lane instruments already ship and are scored nightly:
 
@@ -265,8 +308,8 @@ Using `ScanAll` in the shadow's re-scan guard is *strictly stronger* — more fi
 to refuse to store — so this correction never softens anything.
 
 **Never weaken this guard, and never add an exemption for a measurement surface.** The plan's stated
-justification is also stale: it cites `dlp.go:1519-1520` in four places (`plan:4617`, `:5638`, `:5690`,
-`:5773`) and `dlp.go` is **1510 lines**. The real citation is `Redact` at `internal/dlp/dlp.go:1479`
+justification is also stale: it cites the `dlp.go:1518-1520` range in four places (`plan:4617`,
+`:5638`, `:5690`, `:5773`) and `dlp.go` is **1510 lines**. The real citation is `Redact` at `internal/dlp/dlp.go:1479`
 with `if len(findings) == 0 { return text }` at **`:1480-1481`**. The underlying trap is real and
 important: `Redact` returns the raw text when handed an empty finding list, so a caller that scans,
 finds nothing, and redacts stores the plaintext while every line reads as if it redacted.
@@ -302,8 +345,10 @@ owner decision) and the note at `:18-21` records that. **Its own header at `:6` 
 states *"The job does NOT gate on a rate threshold today."*
 
 So the only automated detector-quality instrument in the workspace is a **non-gating nightly report
-whose version stamp is a constant**. Task 11 handles this and it is an **owner decision, not an
-engineering call**.
+whose version stamp is a constant**. Both halves have owners outside this wave and neither is an
+engineering call this wave may take: the **header truth and the trigger decision belong to Wave −1
+Task 5** (see this file's Task 11 headstone), and the **constant version stamp belongs to Wave 3B
+Task 1**. This section is the measurement, not the fix.
 
 ### The v1 shadow store, and why it is being replaced rather than extended
 
@@ -330,18 +375,27 @@ file.** Task 9 creates it.
 
 These were established by v1's own reading of the tree and remain true. Do not rediscover them.
 
-- **`hookFires.seedFromDisk(secPaths.ConfigDir)` at `internal/daemon/server.go:453` sits inside
-  `NewServer` (which begins at `server.go:365`), not inside `Start`.** Every daemon test helper —
+These three bullets carried v1's line numbers verbatim and **every daemon line number in them was
+stale** — v1 was written roughly 1,010 commits ago. The *facts* held; the citations did not. All four
+files below were re-resolved against `origin/main` `5b129523` on 2026-08-28. Re-resolve again if your
+`git fetch` moves the tree, and prefer the symbol search to the number.
+
+- **`hookFires.seedFromDisk(secPaths.ConfigDir)` at `internal/daemon/server.go:491` sits inside
+  `NewServer` (`server.go:396`, which runs to `:801`), not inside `Start`.** Every daemon test helper —
   `newAIServer` (`ai_handlers_test.go:83`), `newAIServerAtPaths` (`ai_session_continuation_test.go:40`)
   — calls `NewServer`. A store seeded there is armed by construction, so a test that seeds *before*
-  constructing the server has its persist directory silently replaced.
-- **`security.RecordEvents` (`internal/security/events.go:37-47`) is SOC-visible by construction** —
-  it writes the hash-chained tamper log *and* `appendEventQueue`, which the heartbeat uploads. D5's
-  "surfaces nothing" rules it out as the shadow sink. Use a local-only `0o600` file in the
-  `hookFireStore` pattern (`internal/daemon/observed_runtime.go:167` type, `:276` `seedFromDisk`,
-  `:329`/`:343` save/load).
-- **Privacy on capture:** reuse `redactedToolInputView` (`internal/daemon/ai_handlers.go:3843`), an
-  allowlist of seven safe scalar keys (`:3853-3856`), with `typedSecretMarkers` (`:3914`).
+  constructing the server has its persist directory silently replaced. *(v1 said `:453` inside a
+  `NewServer` at `:365`; both are stale.)*
+- **`security.RecordEvents` (`internal/security/events.go:37-46`) is SOC-visible by construction** —
+  it writes the hash-chained tamper log (`appendTamperLog`, `:44`) *and* `appendEventQueue` (`:45`),
+  which the heartbeat uploads. D5's "surfaces nothing" rules it out as the shadow sink. Use a
+  local-only `0o600` file in the `hookFireStore` pattern
+  (`internal/daemon/observed_runtime.go:201` the type, `:426` `seedFromDisk`, `:298` `persistLocked`).
+- **Privacy on capture:** reuse `redactedToolInputView` (`internal/daemon/ai_handlers.go:4072`), an
+  allowlist of **exactly seven** safe scalar keys (`:4081-4084` — `permission_mode`, `dry_run`,
+  `recursive`, `timeout`, `limit`, `offset`, `sandbox`), with `typedSecretMarkers` (`:4143`). *(v1's
+  `:3843`, `:3853-3856` and `:3914` are all stale by roughly 230 lines.)* Discovery:
+  `MSYS_NO_PATHCONV=1 git grep -n "func redactedToolInputView\|func typedSecretMarkers" origin/main -- internal/daemon`.
 - **The ratchet-with-a-banked-baseline idiom already exists twice in-workspace** —
   `Static-Worker/corpus/campaign-lib.cjs:364` `diffCatchBaseline` with
   `corpus/artifact-fixtures/CATCH_BASELINE.json`, and `measuredMentionFires = 6` at
@@ -351,8 +405,9 @@ These were established by v1's own reading of the tree and remain true. Do not r
 
 v1's Wave 3 Task 8 (`plan:7147-7413`, the Static-Worker benign gate and its ecosystem-blind TP
 predicate) **moves to Wave 7B** with the rest of the P1-04 corpus contract. It is not orphaned and it
-is not in this wave. v1's Task 5 — connecting `internal/toolrisk` to the harness that already computes
-rates — is **preserved** and becomes Task 8 lane C here; its instinct ("use the scorer that exists")
+is not in this wave. **v1's** Task 5 — connecting `internal/toolrisk` to the harness that already computes
+rates — is **preserved** and becomes Task 8 lane C here (v1's numbering; this file's own Task 5 is a
+headstone pointing at Wave 3B Task 2, and the two are unrelated); its instinct ("use the scorer that exists")
 was right and the review's P0-04 was wrong to call for a second generator.
 
 ---
@@ -412,16 +467,38 @@ red-on-revert**, and `TestHoldoutCorpusIsNotReferencedByAnyPerPRTest` is green w
       promptrisk class fires on the single promptrisk case. Assert the promptrisk class's row reads
       `BenignCases: 1, FalsePositives: 1, FPRate: 1.0`. Today it reads `BenignCases: 4,
       FPRate: 0.25`. Expected failure text: `BenignCases = 4, want 1`.
-- [ ] **Step 2 — declare the producer surface.** Add `ProducerSurfaces []string` to
-      `AiSecurityDetectorClass` (`detector_catalog_generated.go:22-36`) and populate it from the
-      contract spine, **not** from `Family`. Family correlates with producer; it is not the same
-      statement, and five classes (`internal-url`, `custom-blocklist`, `high-risk-file-type`,
-      `image-upload`, `kubeconfig`) have no Go producer at all. Regenerate; never hand-edit.
+- [ ] **Step 2 — declare the producer surface. READ THE SPINE TRAP BEFORE YOU BUDGET THIS STEP.**
+      Add `ProducerSurfaces []string` to `AiSecurityDetectorClass`
+      (`detector_catalog_generated.go:22-36`) and populate it from the contract spine, **not** from
+      `Family`. Family correlates with producer; it is not the same statement — see Defect 2b for the
+      re-measured producer table. Regenerate; never hand-edit a `DO NOT EDIT` file.
+
+      **The trap, stated in full by Wave 3B Task 3 and true here unchanged: the spine is generated
+      upstream and is not editable in this workspace.**
+      `internal/aipolicycontract/detector-catalog-consumer-pin.v1.json` pins it to
+      `@ceragon/shared-contracts` 0.7.0, canonical generator `ceragon-ai-security-contract-spine`
+      v1.0.0, `sourceCommit 1bc26573…`, and three vendored copies are byte-identical at
+      `sha256:4abd98c3…e245` (`Backend/packages/shared-contracts/generated/ai-security/0.7.0/`,
+      `Installers/internal/aipolicycontract/embedded/0.7.0/`,
+      `Installers/browser-extension/generated/ai-security/0.7.0/`). So adding one field to
+      `AiSecurityDetectorClass` is **a shared-contracts change, plus a regeneration, plus three
+      re-vendorings, plus two `detector-catalog-consumer-pin.v1.json` updates**, sequenced
+      Backend-before-agent. It is a cross-repo change, not a one-file edit. Budget it as one.
+
+      **Certificate contribution if that sequencing is not budgeted this release: `UNKNOWN`, never
+      zero.** The step is then satisfied by an in-repo companion map beside the generated catalog
+      rather than a spine field — same totality guard in Step 3, same denominators in Step 4 — and the
+      regenerated report must name which of the two produced its surfaces.
 - [ ] **Step 3 — totality guard.** In `detector_catalog_test.go`, assert every one of the 55 classes
-      has a non-empty `ProducerSurfaces`, and that every value is a surface the runner dispatches
-      (`internal/neutraleval/runner.go:219-263`: `dlp`, `promptrisk`, `policy`, `ingress`) or the
-      explicit token `none-go` for the five browser-only classes. A class with no declared producer
-      must fail the build, in the shape of `resolveToolRiskDefaults`' module-load throw.
+      has a non-empty `ProducerSurfaces`, and that every value is either a surface the runner
+      dispatches (`internal/neutraleval/runner.go:219-263`: `dlp`, `promptrisk`, `policy`, `ingress`)
+      or one of exactly two explicit tokens: **`none-go`** for the **two** classes with no Go producer
+      at all (`high-risk-file-type`, `image-upload`), and **`policy-synthesized`** for
+      `custom-blocklist`, which is produced by `internal/policyeval/policyeval.go:54` rather than by a
+      detector package. **Do not put `internal-url` or `kubeconfig` in either bucket** — they are
+      registered DLP classes at `internal/dlp/registry.go:186-187`, and bucketing them would delete
+      two real denominators while looking like a cleanup. A class with no declared producer must fail
+      the build, in the shape of `resolveToolRiskDefaults`' module-load throw.
 - [ ] **Step 4 — count exposure, not the corpus.** Replace `holdout.go:357-359`. In the BENIGN arm,
       after `report.Splits`/`report.Labels` are updated, increment `get(class).benign` for every
       catalog class whose `ProducerSurfaces` contains `entry.Surface`. Delete `benignCases` as a
@@ -444,8 +521,16 @@ red-on-revert**, and `TestHoldoutCorpusIsNotReferencedByAnyPerPRTest` is green w
 surface`.
 
 **Exit:** `HOLDOUT_REPORT.md`, regenerated from the exact rebased commit, contains **zero** occurrences
-of `/23` in the per-detector table. `jailbreak-persona` reads `1/6 (16.7%)`; `db-connection-string` and
-`aws-access-key` read `1/17 (5.9%)`; all six `INGRESS_RISK` classes read UNKNOWN.
+of `/23` in the per-detector table, and every published rate carries a per-surface denominator: `/6`
+for `promptrisk`, `/17` for `dlp`, UNKNOWN for all six `INGRESS_RISK` classes.
+
+**The numerators are a PRE-WAVE-4A BASELINE SNAPSHOT, not a standing exit value.** At the moment this
+task lands, `jailbreak-persona` reads `1/6 (16.7%)` and `db-connection-string` and `aws-access-key`
+read `1/17 (5.9%)`. **Wave 4A Task 2 closes `qa-fp-detections-finding-name`, which *is* the
+`jailbreak-persona` false positive** (`HOLDOUT_REPORT.md:110`), so after 4A that row is `0/6` and a
+re-run against a literal `1/6` would go red on a fix. Record the three values in the document as
+*"denominator repaired, detectors unmoved, measured at `<sha>`"*. The standing criterion is the shape,
+never the numerator.
 
 ---
 
@@ -465,10 +550,20 @@ of `/23` in the per-detector table. `jailbreak-persona` reads `1/6 (16.7%)`; `db
       `FNRate *float64` with `json:"fnRate,omitempty"` (`holdout.go:112`, `:116`). Leave
       `BenignCases`, `FalsePositives`, `AttackCasesExpecting`, `FalseNegatives`, `TruePositives`,
       `BoundaryFires` as plain ints — a count of zero **is** zero and carries no ambiguity.
-- [ ] **Step 3 — bump `holdoutReportFormatVersion`.** It is `2` at `holdout.go:44` and the comment
-      there records that version 2 was additive. This change is **not** additive: a consumer reading
-      `fpRate` as a number now sees absence. Set it to `3` and write the same style of comment saying
-      exactly which two fields changed shape and why absence is the honest value.
+- [ ] **Step 3 — bump `holdoutReportFormatVersion`. THIS WAVE OWNS THE BUMP TO 3.** It is `2` at
+      `holdout.go:44` and the comment at `:42-43` records that version 2 was additive. **This change
+      is not additive.** `FPRate` and `FNRate` become `*float64` with `omitempty`, so a consumer
+      reading `fpRate` as a number now sees absence. That is a breaking shape change, and version 3's
+      comment must say so in those words.
+
+      **Coordinate that comment with Wave 3B Task 1, which adds a `System` block to the same
+      envelope and also bumps to 3.** 3B's block genuinely *is* additive — every version-2 field
+      unchanged — and it **rides on top of this breaking bump**: it either lands inside version 3 or
+      bumps to 4. Whichever of the two commits lands second **appends to the ledger rather than
+      rewriting it**, so the file never carries two version-3 notes that contradict each other about
+      whether 3 was additive. Write it as a numbered ledger in the style already at `:42-43`:
+      *"3 — BREAKING: `fpRate`/`fnRate` are absent rather than 0 on a zero denominator (Wave 3
+      Task 3). Additive within 3: the `system` block (Wave 3B Task 1)."*
 - [ ] **Step 4 — the summary line must say UNKNOWN.** `summarizeHoldout` at `holdout.go:436-439`
       prints `fp=%d/%d (%.1f%%)`. A nil rate must print `fp=%d/0 (UNKNOWN)`, never `0.0%`. Do not
       change the skip condition at `:433-435` — a class with no fires and no boundary hits is still
@@ -487,88 +582,55 @@ measurement of this corpus and must be recomputed, not copied, whenever the corp
 
 ---
 
-## Task 4: Make `--engine-version` mandatory
+## Task 4: Make `--engine-version` mandatory — MOVED
 
-**Files:**
-- Modify: `Installers/cmd/ai-security-neutral/main.go:23`
-- Modify: `Installers/internal/neutraleval/runner.go:467-468`
-- Modify: `Installers/.github/workflows/holdout-score.yml:48-52` and `:62-66`
-- Modify: `Installers/internal/neutraleval/runner_test.go`
+**Owned by Wave 3B Task 1.**
 
-- [ ] **Step 1 — the failing test.** In `runner_test.go`, add
-      `TestNormalizeOptions_RejectsAnAbsentEngineVersion`: call `normalizeOptions` with
-      `EngineVersion: ""` and assert an error whose text names the flag. Today it silently returns
-      `"m4.7"`. Expected failure: `err = nil, want "engineVersion of the executed engine is required"`.
-- [ ] **Step 2 — the second failing test.** `TestNormalizeOptions_RejectsThePlaceholderVersion`:
-      assert `EngineVersion: "m4.7"` is **also** rejected, by name. A constant that was the default for
-      three months will otherwise be passed explicitly by the first person who hits the new error.
-      Expected failure text: `engineVersion "m4.7" is the retired placeholder default; pass the
-      version of the engine actually under test`.
-- [ ] **Step 3 — remove the defaults.** `main.go:23` becomes
-      `flag.String("engine-version", "", "executed engine version (required)")`; `runner.go:467-468`
-      returns an error instead of assigning. Keep the `safeTokenRE` validation at `:472`.
-- [ ] **Step 4 — pass a real value from CI.** Both `go run` invocations in `holdout-score.yml` gain
-      `--engine-version "$(git rev-parse --short HEAD)"` — or the agent version if one is available in
-      that step. Whichever is chosen, it must **move when a detector rule changes**, which a commit SHA
-      does and a release tag does not always.
-- [ ] **Step 5 — sweep the callers.** `MSYS_NO_PATHCONV=1 git grep -n "ai-security-neutral" origin/main`
-      and update every invocation, including anything under `scripts/` and `ci/`. A missed caller now
-      fails loudly rather than silently stamping a constant, which is the intended trade.
+*(Reconciliation D-1. This task and Wave 3B Task 1 specified the same two assertions against the same
+three files — `cmd/ai-security-neutral/main.go:23`, `internal/neutraleval/runner.go:467-468`, and both
+scorer invocations in `.github/workflows/holdout-score.yml` at `:48-52` and `:62-66` — under two
+different sets of test names. Version identity is Wave 3B's entire subject, so it owns the change.)*
 
-**Defeat test:** `TestNormalizeOptions_RejectsThePlaceholderVersion` — restore
-`out.EngineVersion = "m4.7"` at `runner.go:468` and it goes RED, because `normalizeOptions` returns nil
-error for an empty input.
+Do **not** re-specify it here and do **not** add a second pair of tests under this file's retired
+names (`TestNormalizeOptions_RejectsAnAbsentEngineVersion`,
+`TestNormalizeOptions_RejectsThePlaceholderVersion`). Wave 3B Task 1's names are
+`TestNormalizeOptionsRejectsAbsentEngineVersion` (in `runner_test.go`) and `TestEngineVersionM47IsRejected`
+(in `main_test.go`), and its exit criterion 1 is the measurement.
 
-**Exit:** `MSYS_NO_PATHCONV=1 git grep -c '"m4.7"' origin/main -- cmd internal` returns **0** outside
-the two rejection tests. No result artifact produced after this task carries
-`"engineVersion": "m4.7"`.
+**What this wave still depends on:** every number below is invalid while the stamp is the constant
+`"m4.7"` (D18). See wave exit criterion 4, which is now an inherited reference rather than a
+measurement this wave takes.
 
 ---
 
-## Task 5: Widen the environment digest into a real system-under-test tuple
+## Task 5: Widen the environment digest into a real system-under-test tuple — MOVED
 
-**Files:**
-- Modify: `Installers/internal/neutraleval/contract.go:124-130` (`RunnerIdentity`), `:132-137`
-  (`ResultProvenance`)
-- Modify: `Installers/internal/neutraleval/runner.go:480-491` (`normalizeOptions` digest derivation),
-  `:165-175` (result assembly)
-- Modify: `Installers/internal/neutraleval/runner_test.go`
+**Owned by Wave 3B Task 2.**
 
-- [ ] **Step 1 — the failing test.** `TestEnvironmentDigestMovesWhenTheRulesetMoves`: compute the
-      digest, mutate the declared ruleset digest input, recompute, assert the two differ. Today the
-      digest is over `{goVersion, goos, goarch, runner}` only (`runner.go:482-487`) and does not move.
-      Expected failure: `digest unchanged after ruleset change`.
-- [ ] **Step 2 — widen `EnvironmentDigest`.** Add OS build, shell, and tool schema to the JCS map at
-      `runner.go:482-487`. Keep the existing four keys; this is additive to the digest input and
-      therefore changes the digest value once, deliberately.
-- [ ] **Step 3 — add the system-under-test axes as their own fields**, not folded into one digest.
-      On `RunnerIdentity`: `RulesetDigest`, `DetectorCatalogDigest`, `NormalizerVersion`,
-      `ParserVersion`. On `ResultProvenance`: `EffectivePolicyDigest`. Each must be a `sha256:` or a
-      version token; each must be **required**, in the shape `normalizeOptions` already uses for
-      `ArtifactDigest` (`runner.go:474-478`).
-- [ ] **Step 4 — source the catalog digest from the pin that exists.**
-      `aipolicycontract.DetectorCatalogDigest` is already a constant
-      (`detector_catalog_generated.go:13`, `sha256:b252ee02…7553`) alongside
-      `DetectorCatalogSpineDigest` and `DetectorCatalogSourceCommit` (`:14`, `:16`). Read those; do
-      not compute a second one.
-- [ ] **Step 5 — record what is NOT covered.** In a comment beside the new fields, state that the LLM
-      code-scanner lane is not executed by `neutraleval` at all and therefore needs its own
-      model-version and system-prompt-version capture. Wave 7B owns that; naming it here stops it from
-      being assumed covered.
-- [ ] **Step 6 — do not rebuild `artifactDigest`.** Add a one-line comment at `main.go:28` pointing at
-      it as the axis that already works.
+*(Reconciliation D-2 and C-3. Both waves widened `EnvironmentDigest` (`runner.go:480-491`) and added
+the missing identity axes to `RunnerIdentity` (`contract.go:124-130`) and `ResultProvenance`
+(`:132-137`) — and they disagreed. This file specified a 7-field tuple including
+`detectorCatalogDigest` plus `effectivePolicyDigest`; Wave 3B specified eight `RunnerIdentity` fields
+**without** `detectorCatalogDigest`, plus `policyDigest`. Two names for one fact is exactly the defect
+these waves exist to remove, so there is one owner and one union.)*
 
-**Defeat test:** `TestEnvironmentDigestMovesWhenTheRulesetMoves` — remove `rulesetDigest` from the JCS
-map and it goes RED with `digest unchanged after ruleset change`.
+**The union Wave 3B Task 2 carries, recorded here so this file's two contributions are not lost in
+the move:**
 
-**Second defeat test:** clear `RulesetDigest` in a runner options struct and assert `normalizeOptions`
-errors, exactly as it does today for an absent `ArtifactDigest`
-(`artifactDigest of the executed shipping module is required`).
+- **`detectorCatalogDigest` is a required identity field**, on top of Wave 3B's eight. Do not compute
+  a second one: `aipolicycontract.DetectorCatalogDigest` is already a shipped constant at
+  `internal/aipolicycontract/detector_catalog_generated.go:13`
+  (`sha256:b252ee021229da77cc36a302898a0843758326084e8504ac4ce32d9f8ecf7553`), beside
+  `DetectorCatalogSpineDigest` (`:14`) and `DetectorCatalogSourceCommit` (`:16`). Read those.
+- **The provenance field is named `policyDigest`, once, everywhere.** `effectivePolicyDigest` — this
+  file's retired spelling — is dead; nothing in the packet may reintroduce it.
 
-**Exit:** Every `Result` produced after this task carries a **7-field** system tuple —
-`engineVersion`, `artifactDigest`, `environmentDigest`, `rulesetDigest`, `detectorCatalogDigest`,
-`normalizerVersion`, `parserVersion` — plus `effectivePolicyDigest` on provenance, and
-`normalizeOptions` rejects a run missing any of them.
+**What did NOT move, and is carried elsewhere in this wave:** the note that the LLM code-scanner lane
+is not executed by `neutraleval` at all, and therefore needs its own model-version and
+system-prompt-version capture, now lives in **Task 8 Step 4**, where lane D is declared. It is not a
+version-tuple axis and must not be assumed covered by one.
+
+See wave exit criterion 5, which is now an inherited reference.
 
 ---
 
@@ -576,6 +638,14 @@ errors, exactly as it does today for an absent `ArtifactDigest`
 
 The plan has no task for this today. It is in this wave because a rate computed over
 under-inspected input is not a rate.
+
+**Ownership, so this is not declared twice.** This task owns the **package-level inspection budget for
+`internal/dlp` and `internal/toolrisk`** — the max bytes / items / depth / wall-time constants and the
+completeness record they feed. **Wave 4B Task 2 declares only its own resolver budget** (argv count,
+nesting depth, resolver wall time) and **consumes the `internal/toolrisk` budget declared here**; it
+does not redeclare it, and a second set of package constants is a defect. This task also owns the
+**first** production consumer of `InspectionDegraded` — Wave 4B Task 2's effect resolver is the
+**second**, and its text says so.
 
 **Files:**
 - Modify: `Installers/internal/dlp/scanall.go` (budget declaration and the completeness field)
@@ -587,9 +657,9 @@ under-inspected input is not a rate.
 
 **What is true today.** `dlp.Result` (`dlp.go:410-422`) has `Findings`, `PrivateKeyEvidence`,
 `CredentialEvidence`, `MustBlock` — **no completeness field**. Two silent caps exist:
-`base64MaxRunLen = 8 * 1024` and `base64MaxRuns = 256` (`dlp.go:374-375`), consumed at `:725`,
-`:748` and `:766-771`. A text with more than 256 base64 runs is under-inspected and **nothing reports
-it**. `internal/toolrisk` declares no budget of any kind — `grep -nE 'maxBytes|maxItems|maxDepth|budget'`
+`base64MaxRunLen = 8 * 1024` and `base64MaxRuns = 256` (`dlp.go:374-375`), consumed at `:725` (the
+run budget) and `:751`, `:767` and `:797` (the run-length skip). A text with more than 256 base64 runs
+is under-inspected and **nothing reports it**. `internal/toolrisk` declares no budget of any kind — `grep -nE 'maxBytes|maxItems|maxDepth|budget'`
 over the package returns zero.
 
 `OutputStreamObservation.InspectionComplete` / `.InspectionDegraded`
@@ -648,18 +718,19 @@ returning a non-empty result. `runner.go` contains **0** hard-coded `Inspection:
 - [ ] **Step 1 — the failing test.** `TestLaneShadow_AgreementAdvancesThePerClassDenominator`: observe
       two agreements on class `X` and one delta on class `X`. Assert the class row reads
       `candidateTriggers: 3, agreements: 2, deltas: 1`. v1's store cannot express this: an agreement
-      returns before the record is kept (`plan:5103-5105`), so the class context is discarded.
+      returns before the record is kept (`plan:5102-5105`), so the class context is discarded.
       Expected failure: `undefined: laneShadowStore`.
 - [ ] **Step 2 — the record shape.** One row per `(lane, classId)`, carrying: `lane`, `classId`,
       `catalogDigest`, `eligible`, `candidateTriggers`, `activeTriggers`, `agreements`, `deltas`,
       `unknown`, `dropped`, `uniqueSessions`, `uniqueEndpoints`, `windowStart`, `windowEnd`, the
-      version tuple from Task 5, and `adjudication`. **`eligible` is the denominator** and it is
-      per-class, not per-store.
+      system tuple **Wave 3B Task 2** defines (its eight `RunnerIdentity` fields plus
+      `detectorCatalogDigest`, and `policyDigest` on provenance — read it, do not redefine it), and
+      `adjudication`. **`eligible` is the denominator** and it is per-class, not per-store.
 - [ ] **Step 3 — keep what v1 got right.** The `maxToolShadowDeltas = 500` cap with an explicit
       `dropped` counter (`plan:5034`, `:5106-5112`), and the rule that the **new** record is dropped
       rather than an old one evicted — evicting rewrites the history a reader is about to draw a
       conclusion from. Keep the local-only `0o600` file and the `hookFireStore` pattern.
-- [ ] **Step 4 — the seeding trap.** Seed from `NewServer` (`server.go:365`, seeding site at `:453`),
+- [ ] **Step 4 — the seeding trap.** Seed from `NewServer` (`server.go:396`, seeding site at `:491`),
       **not** `Start`, matching `hookFires`. Write the test that proves it: construct the server, then
       assert the store's persist directory is the one you passed. A test that seeds before
       constructing has its directory silently replaced.
@@ -674,7 +745,7 @@ returning a non-empty result. `runner.go` contains **0** hard-coded `Inspection:
       output must not itself scan as carrying a secret; otherwise store nothing.
 
 **Defeat test:** `TestLaneShadow_AgreementAdvancesThePerClassDenominator` — make `observe` return early
-on `active == candidate` without recording, exactly as `plan:5103-5105` does, and it goes RED with
+on `active == candidate` without recording, exactly as `plan:5102-5105` does, and it goes RED with
 `candidateTriggers = 1, want 3`.
 
 **Second defeat test:** replace one `dlp.ScanAll` with `dlp.Scan` in the new daemon file and run
@@ -690,14 +761,15 @@ and `grep -c '"observed"' ai_lane_shadow.go` returns 0 — the single global cou
 
 ## Task 8: Four declared lane seams, each with its own denominator
 
-`plan:9397` gates the prompt promotion "on the Wave 3 decision-level shadow and on nothing else."
+`plan:9398` gates the prompt promotion "on the Wave 3 decision-level shadow and on nothing else."
 That sentence is deleted here; Wave 4C gates on lane A below.
 
 **Files:**
 - Create: `Installers/internal/neutraleval/lanes.go` (the seam declarations)
 - Modify: `Installers/internal/neutraleval/ingress.go:58-71` (`LaneOf` and the lane constants)
 - Modify: `Installers/internal/neutraleval/runner.go:219-263` (`execute` dispatch)
-- Create: `Installers/internal/neutraleval/toolrisk.go` + `toolrisk_test.go` (v1 Task 5, preserved)
+- Create: `Installers/internal/neutraleval/toolrisk.go` + `toolrisk_test.go` (**v1's** Task 5,
+  preserved — unrelated to this file's Task 5 headstone)
 - Modify: `Installers/cmd/ai-security-neutral/holdout.go:46-51` (lane re-exports)
 
 Four seams. Each declares, in code and in the report: **eligibility**, **denominator**,
@@ -714,32 +786,60 @@ cohort**, **freshness**.
 - [ ] **Step 1 — the failing test.** `TestLaneSeams_EveryDeclaredLaneNamesItsDenominator`: table-drive
       the four seams and assert each declares a non-nil eligibility predicate and a denominator source.
       Lanes C and D must fail with an explicit `NOT_INSTRUMENTED` value, **not** with a zero.
-- [ ] **Step 2 — build lane C.** This is v1 Task 5 preserved: add a `toolrisk` surface to
-      `runner.go`'s dispatch and to `LaneOf`, add `internal/neutraleval/toolrisk.go`, and extend
-      `validateEntry` and `projection.go`'s `requestedEffect`. v1's file list at `plan:5871-5882` is a
-      good starting point; re-resolve every line number against current `origin/main` before using it.
+- [ ] **Step 2 — build lane C. THIS WAVE OWNS THE `LaneOf` CODE CHANGE.** This is v1's Task 5
+      preserved: add a `toolrisk` surface to `runner.go`'s dispatch (`:219-263`) and to `LaneOf`
+      (`internal/neutraleval/ingress.go:66-71`, with the lane constants at `:58-63`), add
+      `internal/neutraleval/toolrisk.go`, and extend `validateEntry` and `projection.go`'s
+      `requestedEffect`. v1's file list at `plan:5871-5882` is a good starting point; re-resolve every
+      line number against current `origin/main` before using it — v1 was written roughly 1,010 commits
+      ago and its daemon citations have already been measured stale in this file's context section.
+      **The matching refusal test is Wave 3B Task 9's, not this task's** (reconciliation D-7): Wave 3B
+      exit criterion 12 reads *"a two-lane corpus is refused for every registered lane pair, not only
+      ingress/egress"*, and it goes red today precisely because `LaneOf` maps both surfaces to EGRESS.
+      Land the constant here; land the proof there. Do not write a second copy of either.
 - [ ] **Step 3 — the tool lane needs catalog rows before it can be scored.**
       `detector_catalog_generated.go` contains **zero** tool-risk classes; verify with
       `MSYS_NO_PATHCONV=1 git show "origin/main:internal/aipolicycontract/detector_catalog_generated.go" | grep -c 'destructive-rm\|privilege-escalation\|dynamic-eval'`
       → `0`, while `parity-vectors/toolrisk-classes.v1.json` declares `"classCount": 40`. Without
-      catalog rows every tool class scores as `Lifecycle: "UNCATALOGED"` (`holdout.go:196-201`). Extend
-      the spine and regenerate; do not special-case the scorer.
+      catalog rows every tool class scores as `Lifecycle: "UNCATALOGED"` (`holdout.go:196-201`).
+
+      **"Extend the spine and regenerate" is not a one-file edit, and this step previously said it
+      without saying what it costs.** The trap is stated in full by Wave 3B Task 3 and applies here
+      unchanged: the spine is generated upstream in `@ceragon/shared-contracts` 0.7.0 —
+      `detector-catalog-consumer-pin.v1.json`, generator `ceragon-ai-security-contract-spine` v1.0.0,
+      `sourceCommit 1bc26573…` — and is **not editable in this workspace**. Putting 40 tool-risk
+      classes into it is a shared-contracts change, plus a regeneration, plus three re-vendorings of
+      the byte-identical `sha256:4abd98c3…e245` copies, plus two pin updates, sequenced
+      Backend-before-agent. **Do not hand-edit a JCS file** and do not special-case the scorer.
+
+      **Certificate contribution if that sequencing is not budgeted this release: lane C stays
+      `UNKNOWN` and the 40 classes stay `UNCATALOGED`.** That is the honest published state — the
+      report already renders it as such — and it is strictly better than a scorer taught to pretend
+      the catalog covers a lane it does not.
 - [ ] **Step 4 — lane D is declared, not built.** Record it as `NOT_INSTRUMENTED` with a named owner
       and the packet that will build it (Wave 7B). **Blocked, external:** it needs the exact release
       model and system prompt of every enabled Anthropic/Gemini route, which is a vendor-artifact
       dependency this wave does not control. Its certificate contribution is `UNKNOWN`, never zero.
-- [ ] **Step 5 — delete the wrong gate sentence.** Remove `plan:9397`'s "on the Wave 3 decision-level
+      **Carried here from this file's deleted Task 5, so lane D is not assumed covered by the system
+      tuple:** `neutraleval` does not execute the LLM code-scanner lane at all, so nothing in Wave 3B
+      Task 2's version axes says anything about it. Lane D needs its own **model version** and
+      **system-prompt version** capture, and declaring that in the seam is what stops a reader from
+      reading a fully populated `RunnerIdentity` as coverage of a lane the runner never ran.
+- [ ] **Step 5 — delete the wrong gate sentence.** Remove `plan:9398`'s "on the Wave 3 decision-level
       shadow and on nothing else" and replace it with a reference to lane A's report. Fix the
-      justification at `plan:9390-9396`, which counts promptrisk cases in the wrong file.
+      justification at `plan:9391-9396`, which counts promptrisk cases in the wrong file.
 
 **Defeat test:** `TestLaneSeams_EveryDeclaredLaneNamesItsDenominator` — give lane D a denominator of
 `0` instead of `NOT_INSTRUMENTED` and it goes RED with `lane D reports a zero denominator; an
 uninstrumented lane is UNKNOWN, never zero`.
 
-**Second defeat test:** feed a corpus mixing lane A and lane C entries into `scoreHoldout`. It must
-refuse, in the same shape as the existing INGRESS/EGRESS refusal (`holdout.go:222-238`). **That
-existing refusal already works and is the pattern to copy**, so this defeat test proves the new lane
-constants were added to `laneSet` rather than bypassing it.
+**Second defeat test — owned by Wave 3B Task 9.** A corpus mixing lane A and lane C entries must be
+refused by `scoreHoldout` in the same shape as the existing INGRESS/EGRESS refusal
+(`holdout.go:222-238`); that existing refusal already works and is the pattern to copy. **Wave 3B
+Task 9 writes the test and Wave 3B exit criterion 12 measures it** — *"a two-lane corpus is refused
+for every registered lane pair, not only ingress/egress"*. This step's own obligation is narrower and
+is what makes that test able to go red at all: the new lane constant must be added to `laneSet` at
+`holdout.go:222-227` rather than bypassing it.
 
 **Exit:** `neutral-corpus.toolrisk.jsonl` exists and lane C reports a per-class FP denominator over a
 stated number of benign cases. Lanes A and B report against **6/5** and **18/8** respectively. Lane D
@@ -790,7 +890,9 @@ Any one of these makes a measurement `UNKNOWN`, never green:
 1. `dropped > 0`
 2. any store error
 3. any catalog digest mismatch against `aipolicycontract.DetectorCatalogDigest`
-4. any version-tuple mismatch inside one report (Task 5's seven fields)
+4. any version-tuple mismatch inside one report — the system tuple **Wave 3B Task 2** defines (its
+   eight `RunnerIdentity` fields plus `detectorCatalogDigest`, and `policyDigest` on provenance). This
+   wave consumes that tuple; it does not define it.
 5. a stale window — `windowEnd` older than a declared freshness bound
 6. any cross-lane record in a single-lane report
 7. **any class with a zero eligible denominator** (Task 2/3)
@@ -815,52 +917,52 @@ failure text. One implementation, two callers, zero copies.
 
 ---
 
-## Task 11: The `holdout-score.yml` regression — OWNER DECISION, not an engineering call
+## Task 11: The `holdout-score.yml` regression — MOVED
 
-**Files:**
-- Modify: `Installers/.github/workflows/holdout-score.yml:6` (the header), `:22-25` (`on:`)
+**Owned by Wave −1 Task 5** ("Restore the two instruments that no longer gate"), which is
+critical-path step 2 and lands before this wave.
 
-**This task cannot be completed by an engineer.** The `push` trigger was removed on 2026-08-25
-(`cd657c77`) as a deliberate cost gate by owner decision, after GitHub billed roughly $600 for July
-2026. Restoring it spends money. Not restoring it leaves detector quality on a nightly non-gating
-report. Both are defensible; neither is mine to choose.
+*(Reconciliation D-3. The header-truth fix and the trigger decision were specified in three places —
+Wave −1 Task 5, this task, and Wave 3B Task 1 — with two different defeat tests,
+`ci/lib/workflow-header-truth.mjs` and `TestHoldoutWorkflowHeaderMatchesItsTriggers`. One owner, one
+test: Wave −1's `ci/lib/workflow-header-truth.mjs`, whose expected RED is
+`holdout-score.yml:6 claims a push trigger; on: at :22 has none`.)*
 
-**What is unambiguously a defect and must be fixed either way:** the header at `:6` reads
-*"This runs on PUSH TO MAIN and NIGHTLY"* while `on:` at `:22-25` is `workflow_dispatch` plus
-`schedule: '17 3 * * *'`. That is a live self-contradiction in shipped source and it is exactly the
-"obscure event records / accountability opacity" failure class this workspace keeps repeating.
+**Wave −1 Task 5 now carries this file's A/B/C option analysis**, which the reconciliation judged the
+best version of the three. Handoff record below, so nothing is lost in transit. **It is a receipt, not
+a task** — do not implement from it, and delete it once Wave −1 Task 5 carries the same three options
+in full.
 
-- [ ] **Step 1 — fix the header regardless of the decision.** Make `:6` describe the actual triggers,
-      and cross-reference the cost-gate note at `:18-21` which already explains why.
-- [ ] **Step 2 — put the decision to the owner, in plain terms.**
-      - **Option A — restore `push:` on `main`.** Detector quality gates on merge. Costs one
-        ubuntu-latest job per push to `main`. The job is Go-only with `cache: true`; measure the real
-        figure with `node ci/lib/drift.mjs --cost` before quoting one.
-      - **Option B — write the decision down.** Detector quality is a nightly, non-gating report. Then
-        the compensating control must be named: the local mirror runs it for free, and every promotion
-        PR must attach its output. `ci/gates.json` already mirrors `holdout-score:score`, so
-        `node ci/lib/run.mjs Installers holdout-score:score` is available today at zero cost.
-      - **Option C — the middle.** Keep the nightly, and add a **required attachment** rule: no
-        promotion PR merges without a locally-produced report from the exact commit. This is the only
-        option that costs nothing and still gates, and it is the one to recommend.
-- [ ] **Step 3 — record the decision in the file itself**, in the style of the existing cost-gate note,
-      naming the date and the person. A decision that lives only in a chat log regresses.
-- [ ] **Step 4 — the same question, once, for `vendored-upstream-drift.yml`.** Its own written
-      instruction — *"WHEN T-M2 LANDS: add `pull_request:` to the triggers in the SAME change that
-      re-vendors the files"* — was not followed; T-M2 landed (`MANIFEST.json` pin = `254d24fc`). That
-      belongs to Wave 5, and it is named here only so the two are decided together rather than
-      separately.
+- **Option A — restore `push:` on `main`.** Detector quality gates on merge. Costs one ubuntu-latest
+  job per push to `main`; the job is Go-only with `cache: true`. Measure the real figure with
+  `node ci/lib/drift.mjs --cost` before quoting one.
+- **Option B — write the decision down.** Detector quality is a nightly, non-gating report, and the
+  compensating control is then named rather than assumed: `ci/gates.json` already mirrors
+  `holdout-score:score`, so `node ci/lib/run.mjs Installers holdout-score:score` runs it locally at
+  zero cost today.
+- **Option C — the middle, and the recommendation.** Keep the nightly and add a required-attachment
+  rule: no promotion PR merges without a locally-produced report from the exact commit. The only one
+  of the three that costs nothing and still gates.
+- Whichever is chosen, **record it in the workflow file itself**, in the style of the existing
+  cost-gate note at `:18-21`, naming the date and the person. A decision that lives only in a chat log
+  regresses. The `push` trigger was removed on 2026-08-25 (`cd657c77`) as a deliberate owner cost
+  decision; **do not restore it on your own authority.**
 
-**Defeat test:** none is possible for the trigger half — a workflow trigger cannot be unit-tested. For
-the header half: `TestHoldoutWorkflowHeaderMatchesItsTriggers` in
-`internal/neutraleval/holdout_seal_test.go`'s package — parse the YAML, extract the `on:` keys, and
-assert the first 20 comment lines do not name a trigger that is absent. Revert the header to
-"PUSH TO MAIN" and it goes RED with `header claims trigger %q which on: does not declare`.
+**The `vendored-upstream-drift.yml` half is Wave −1 Task 5's too, not Wave 5's.** This file previously
+routed it to Wave 5 and that pointer was wrong: Wave −1 Task 5 specifies it and makes it exit
+criterion 7.
 
-**Exit criterion — BLOCKED, external dependency: owner decision on GitHub Actions spend.**
-The header test is not blocked and ships regardless: **1 new test, proven red on revert.** The trigger
-state is recorded as `DECIDED: <A|B|C> by <owner> on <date>` in the workflow file, or the wave's
-certificate contribution for "detector quality is gated" stays **UNKNOWN**.
+**It is BLOCKED there, and an earlier revision of this paragraph wrongly concluded otherwise.** The
+T-M2 precondition being satisfied — T-M2 landed, `MANIFEST.json` pins `254d24fc` — is not the only
+condition. Adding a `pull_request:` trigger to a Frontend workflow is an **owner spend decision**,
+because `Frontend/.github/workflows/pr-checks.yml` is `on: workflow_dispatch: {}` only: every push and
+PR trigger was removed on 2026-08-25 as a deliberate cost gate. Reading the T-M2 condition and not the
+spend one is what produced the wrong answer here. Wave −1 Task 5 Step 5 holds BLOCKED as a state, and
+the unblocked offline half lives in Wave 5 Task 9.
+
+**What this wave still depends on:** while the trigger question is open, this wave's certificate
+contribution for *"detector quality is gated"* stays **UNKNOWN**. See wave exit criterion 12, now an
+inherited reference.
 
 ---
 
@@ -869,26 +971,40 @@ certificate contribution for "detector quality is gated" stays **UNKNOWN**.
 Each is a number or a named artifact, measured with the local Docker mirror
 (`node ci/lib/run.mjs Installers`) because `pr-checks.yml` has no automatic GitHub trigger.
 
-1. **`cmd/ai-security-neutral/holdout_test.go` exists with ≥ 8 tests**, and
+1. **`cmd/ai-security-neutral/holdout_test.go` exists and carries the 5 tests this wave names** —
+   `TestScoreHoldout_RefusesAMixedLaneCorpus`, `…_ACaseThatCannotRunIsAnErrorNotAPass`,
+   `…_EveryCatalogClassGetsARow` (Task 1), `…_FPDenominatorIsPerSurfaceExposure` (Task 2) and
+   `…_ZeroExposureReportsUnknownNotZero` (Task 3) — and
    `go test ./internal/neutraleval/ -run TestHoldoutCorpusIsNotReferencedByAnyPerPRTest` is green with
-   that file present. *Defeat: `TestScoreHoldout_RefusesAMixedLaneCorpus`, revert `holdout.go:228-234`.*
-2. **Zero occurrences of `/23` in the regenerated `HOLDOUT_REPORT.md` per-detector table.**
-   `jailbreak-persona` reads `1/6`, `db-connection-string` and `aws-access-key` read `1/17`, the six
-   `INGRESS_RISK` classes read UNKNOWN. *Defeat:
+   that file present. The count is derived from the task list above, not written down independently;
+   *(it read ≥ 8 before this pass, which no version of the task list ever reached — the engine-version
+   and system-tuple tests were always in `runner_test.go`, and both of those tasks are now Wave 3B's).*
+   *Defeat: `TestScoreHoldout_RefusesAMixedLaneCorpus`, revert `holdout.go:228-234`.*
+2. **Zero occurrences of `/23` in the regenerated `HOLDOUT_REPORT.md` per-detector table**, and every
+   published rate carries a per-surface denominator: `/6` for `promptrisk`, `/17` for `dlp`, UNKNOWN
+   for the six `INGRESS_RISK` classes. **The numerators — `jailbreak-persona 1/6`,
+   `db-connection-string` and `aws-access-key 1/17` — are a pre-Wave-4A baseline snapshot and are not
+   part of this criterion:** Wave 4A Task 2 closes `qa-fp-detections-finding-name` and drives
+   `jailbreak-persona` to `0/6`. The criterion is the shape, never the numerator. *Defeat:
    `TestScoreHoldout_FPDenominatorIsPerSurfaceExposure`, restore `holdout.go:357-359`.*
 3. **43 of 55 classes carry no `fnRate` key** in the machine report, and `detectorsWithNoExposure`
    names them. The 43 is recomputed from the corpus, never copied. *Defeat:
    `TestScoreHoldout_ZeroExposureReportsUnknownNotZero`, revert `FNRate` to `float64`.*
-4. **`git grep -c '"m4.7"' -- cmd internal` returns 0** outside the two rejection tests, and no result
-   artifact carries `"engineVersion": "m4.7"`. *Defeat:
-   `TestNormalizeOptions_RejectsThePlaceholderVersion`, restore `runner.go:468`.*
-5. **Every `Result` carries a 7-field system tuple** plus `effectivePolicyDigest`, and
-   `normalizeOptions` rejects a run missing any of them. *Defeat:
-   `TestEnvironmentDigestMovesWhenTheRulesetMoves`, remove `rulesetDigest` from the JCS map.*
-6. **`internal/dlp` and `internal/toolrisk` each declare 4 budget dimensions**, and
-   `InspectionDegraded` has ≥ 1 production consumer outside its defining file and test. `runner.go`
-   contains 0 hard-coded `Inspection: "COMPLETE"`. *Defeat:
-   `TestScanAll_ReportsExhaustionWhenTheBase64BudgetIsSpent`.*
+4. **INHERITED — not measured by this wave.** No artifact carries `"engineVersion": "m4.7"`.
+   **Owned by Wave 3B Task 1** (its exit criterion 1; defeat test
+   `TestNormalizeOptionsRejectsAbsentEngineVersion`, restore the default at `runner.go:468`). It is
+   listed here because D18 makes every number this wave publishes invalid until it passes — this wave
+   does not close it and must not report it closed.
+5. **INHERITED — not measured by this wave.** `RunnerIdentity` carries its eight required identity
+   fields **plus `detectorCatalogDigest`**, `ResultProvenance` carries **`policyDigest`** (never
+   `effectivePolicyDigest`), and `normalizeOptions` rejects a run missing any of them. **Owned by
+   Wave 3B Task 2** (its exit criteria 3 and 4; defeat test `TestEnvironmentDigestCoversDeclaredAxes`).
+   Task 10's invalidation trigger 4 in this wave consumes that tuple; it does not define it.
+6. **`internal/dlp` and `internal/toolrisk` each declare 4 package-level budget dimensions** — this
+   wave owns both, and Wave 4B Task 2 consumes the `internal/toolrisk` one rather than redeclaring it —
+   and `InspectionDegraded` has **its first** production consumer outside its defining file and test
+   (Wave 4B Task 2's resolver is the second). `runner.go` contains 0 hard-coded
+   `Inspection: "COMPLETE"`. *Defeat: `TestScanAll_ReportsExhaustionWhenTheBase64BudgetIsSpent`.*
 7. **The shadow store emits one row per `(lane, classId)`** with a per-class `eligible` count, and the
    single global `observed` counter is gone. *Defeat:
    `TestLaneShadow_AgreementAdvancesThePerClassDenominator`, restore v1's early return.*
@@ -898,15 +1014,21 @@ Each is a number or a named artifact, measured with the local Docker mirror
    has exactly 1 entry.**
 9. **Lanes A and B report against 6/5 and 18/8**; lane C reports a per-class denominator over
    `neutral-corpus.toolrisk.jsonl`; **lane D reports `NOT_INSTRUMENTED` with a named owner.**
-   *Defeat: `TestLaneSeams_EveryDeclaredLaneNamesItsDenominator`, give lane D a zero.*
+   *Defeat: `TestLaneSeams_EveryDeclaredLaneNamesItsDenominator`, give lane D a zero.* The proof that
+   a mixed `toolrisk`+`dlp` corpus is **refused** is **Wave 3B exit criterion 12**, not this one —
+   this wave lands the lane constant, Wave 3B Task 9 lands the refusal test.
 10. **`cmd/ai-lane-shadow-report` exists and is exercised by `holdout-score:score`**, and the promotion
     predicate is a function with a test rather than a sentence at `plan:9568`. *Defeat:
     `TestShadowReport_RefusesAStoreWithDroppedRecords`.*
 11. **8 of 8 invalidation triggers force `UNKNOWN`**, one implementation, two callers, each trigger
     named in its own failure text. *Defeat: `TestInvalidation_EachTriggerForcesUnknown`, remove any
     one trigger.*
-12. **`holdout-score.yml:6` describes the triggers it actually has**, pinned by
-    `TestHoldoutWorkflowHeaderMatchesItsTriggers`. *Defeat: restore "PUSH TO MAIN" to the header.*
+12. **INHERITED — not measured by this wave.** `holdout-score.yml:6` describes the triggers it
+    actually has. **Owned by Wave −1 Task 5** (its exit criterion 8), pinned by
+    `ci/lib/workflow-header-truth.mjs`, whose expected RED is
+    `holdout-score.yml:6 claims a push trigger; on: at :22 has none`. Do **not** also write
+    `TestHoldoutWorkflowHeaderMatchesItsTriggers` — this file's retired name for the same check — or
+    the packet ships two header tests for one header.
 
 ### Criteria this wave cannot measure, and what they need
 
@@ -922,11 +1044,14 @@ Each is a number or a named artifact, measured with the local Docker mirror
   contribution: `UNKNOWN`. Blocked, external: vendor-artifact dependency** — it needs the exact release
   model and system-prompt version of every enabled Anthropic and Gemini route. Owned by Wave 7B.
 - **Whether detector quality gates on merge.** **Blocked, external: owner decision on GitHub Actions
-  spend** (Task 11). Until it is recorded in the workflow file, the "detector quality is gated"
-  contribution is **`UNKNOWN`**, and Option C — a required locally-produced report attached to every
-  promotion PR — is the recommendation because it costs nothing and still gates.
-- **The producer-surface map for all 55 catalog classes.** Families were enumerated and six classes
-  were spot-resolved by hand this pass; the full map was not machine-resolved. Task 2 Step 2 must run
-  the discovery command in the context section and populate the field from the contract spine, and
-  Step 3's totality guard is what makes an unresolved class a build failure rather than a silent
-  `fp=0/23` row.
+  spend.** Owned by **Wave −1 Task 5**, which carries the A/B/C option analysis (see this file's
+  Task 11 headstone for the handoff record). Until the decision is recorded in the workflow file, this
+  wave's "detector quality is gated" contribution is **`UNKNOWN`**, and Option C — a required
+  locally-produced report attached to every promotion PR — is the recommendation because it costs
+  nothing and still gates.
+- **The producer-surface map for all 55 catalog classes.** Families were enumerated and five classes
+  were re-resolved by hand on 2026-08-28 (Defect 2b); the full map was not machine-resolved. Task 2
+  Step 2 must run the discovery command in the context section — **including `internal/policyeval` and
+  `internal/proxy` in the search paths** — and Step 3's totality guard is what makes an unresolved
+  class a build failure rather than a silent `fp=0/23` row. **Certificate contribution while the spine
+  field is unbudgeted: `UNKNOWN`**, per the trap in Task 2 Step 2.

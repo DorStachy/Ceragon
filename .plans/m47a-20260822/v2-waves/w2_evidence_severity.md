@@ -4,8 +4,24 @@
 only — the totality claim in Task 6 has no denominator until Wave 1 widens `AI_DLP_CLASSES` from
 **30 to 81**; until then that criterion reads `UNKNOWN (blocked on Wave 1)`, not `PASS`. Wave 0A runs
 in parallel and is not blocked by anything here.
+**Blocks:** every enforcement change in Wave 4 (**O-14** — the severity spine decides what may block
+at all, and Wave 4B's proposals are typed against `evidenceStrength` / `baseCapabilityImpact` /
+`resolvedConsequence`, which do not exist until this wave lands).
 **Implements decisions:** D6 (rewritten — the four objects, and "monitoring must be non-tainting"),
 D7 (substance unchanged; its **word** "confidence" is retired here), D8, D9, D10.
+
+**This wave is the single owner of three things other waves also touch.** Each is written down here
+once and cited from there, never re-specified:
+
+| Owned here | Where the rest of it lives |
+|---|---|
+| `parity-vectors/toolrisk-classes.v1.json` **formatVersion 3** — the `grades` block and `gradesSha256` (Task 6) | Wave 4B Task 1 adds `proposalKind` and **bumps explicitly to formatVersion 4**; the reasoning and the rule are in Task 6 |
+| The **`prClassAction` branch ladder** — the whole precedence, numbered, in §8 | Wave 4C Task 4 lands rung **6a** (provenance); Wave 4A Task 2 lands rung **6b** (Tier-C release); Task 10 here rewrites rung **7** in place |
+| The **`taintRisky` signature and attribution** (Task 9c) — it ships here | Wave 4B Task 9 owns a later *narrowing* of the taint-eligible set and ships nothing; Wave 8 must not touch the function at all |
+
+**Two deploy orders in this wave are destructive if inverted** and are stated in the tasks that carry
+them: **O-6** (Task 2 Backend before Task 4 console) and **O-7** (Task 7 steps 1–4 Backend before
+steps 5–8 agent).
 **Certificate impact:** the **evidence-grade** dimension is `UNKNOWN` until this wave passes, and
 `metrics.precision`, `metrics.falsePositiveRate` and `metrics.inspectionCompleteness` cannot even be
 *populated* for the tool lane, because `toolrisk.Finding` carries no evidence axis to bin them by.
@@ -34,11 +50,11 @@ wave says "the D4 tier table" it means the Backend constant. Say which one you m
 ### 1. There are two live declarations of one type, and they have never agreed
 
 The producer builds the basis object at
-`Backend/src/ai-governance/services/ai-event-severity.util.ts:648-657`:
+`Backend/src/ai-governance/services/ai-event-severity.util.ts:649-658`:
 
 ```ts
     basis: {
-      formulaVersion: AI_EVENT_SEVERITY_FORMULA_VERSION,   // = 4  (util.ts:48)
+      formulaVersion: AI_EVENT_SEVERITY_FORMULA_VERSION,   // = 4  (util.ts:48, emitted at :650)
       class: cls,
       ruleId,
       base,
@@ -55,8 +71,9 @@ contract declares a different type of the same name at
 `baseSeverity`, no `formulaVersion`, `evidenceTier` narrowed to `'A'|'B'|'C'|'D'|null`. The column is
 stored untyped and forwarded verbatim. **There is no mapper anywhere.**
 
-Consequence, measured: `Frontend/app/ai-control-plane/events/events-content.tsx:342-362`
-(`severityTitle`) reads `basis.findingClass`, `basis.evidenceTier`, `basis.baseSeverity`. Only
+Consequence, measured: `Frontend/app/ai-control-plane/events/events-content.tsx:342-363`
+(`severityTitle`, reads at `:351-356`) takes `basis.findingClass`, `basis.evidenceTier`,
+`basis.baseSeverity`. Only
 `evidenceTier` is a key the producer writes. So an Events row's severity tooltip **has never named
 the governing class or the pre-adjustment base** — it renders `tier <x>` plus the adjustment list and
 nothing else, and on a tool-lane row (which sends no `evidenceTier` at all — see §3) it renders the
@@ -68,9 +85,13 @@ Detections escapes only by casting past the wrong type:
 
 Three test files pin the wrong shape and will move:
 
-- `Frontend/app/ai-control-plane/events/__tests__/events-content.test.tsx:471-478` fabricates the
-  fixture in the contract's shape (`findingClass`, `baseSeverity`), so the renderer is green against
-  keys production never sends. **It also writes `formulaVersion: 3`; the producer is at 4.**
+- `Frontend/app/ai-control-plane/events/__tests__/events-content.test.tsx:471-479` fabricates the
+  fixture in the contract's shape (`findingClass` `:472`, `baseSeverity` `:477`), so the renderer is
+  green against keys production never sends. **The fixture also carries no `formulaVersion` key at
+  all** — the published contract type has no such member (`ai-governance-contract.ts:169-177`) while
+  the producer emits `formulaVersion: 4` on every basis (`util.ts:650`). Re-verified at
+  `origin/main cac574ae` on 2026-08-28: an earlier draft of this wave said the fixture "writes
+  `formulaVersion: 3`". It does not. The defect is an **absent** member, not a stale one.
 - `Frontend/app/ai-control-plane/detections/__tests__/detection-view-model.test.ts:331` writes
   `severityBasis: { class: "jwt" } as never` — the `as never` exists because the type disagrees with
   reality, and it is an inert assertion: no change to the type can make it fail.
@@ -88,34 +109,39 @@ debugging a stale type.
 
 ### 2. Five bands are half-built, and five server-side gates refuse the fifth
 
-`METER_SEVERITY` (`Frontend/app/ai-control-plane/detections/detection-view-model.ts:78`) and
-`SPARK_SEVERITIES` (`:99`) already contain `info`, and `Frontend/components/ui/severity-badge.tsx`
+`METER_SEVERITY` (`Frontend/app/ai-control-plane/detections/detection-view-model.ts:78-84`, `info` at
+`:83`) and `SPARK_SEVERITIES` (`:99`) already contain `info`, and `Frontend/components/ui/severity-badge.tsx`
 maps `INFO` in both of its tables (`:60`, `:70`). What does not work is the other three AI-detection band declarations:
 
 - `Frontend/app/ai-control-plane/detections/detection-read-model.ts:52` —
   `SEVERITY_BANDS = ["critical","high","medium","low"]`, four members, and it drives the facet
   checkboxes, the distribution bar and the URL filter serialisation.
-- `Frontend/app/ai-control-plane/ai-sessions/[id]/session-severity.ts:40-44, 47-51, 185-192` — a
-  third, independent four-band rank map, label map and `severitySignalVar` switch, all missing `info`.
-- `Frontend/app/globals.css:1594-1599` — the row-spine block has rules for
-  `critical/high/medium/low/unknown` and **no `info` rule**, while `:1397` and `:1533` already light
-  the info meter. An info row draws a coloured meter above a transparent spine.
+- `Frontend/app/ai-control-plane/ai-sessions/[id]/session-severity.ts:39-44` (`RANK`), `:46-51`
+  (`SEVERITY_LABEL`), `:183-196` (`severitySignalVar`) — a third, independent four-band rank map,
+  label map and signal-var switch, all missing `info`.
+- `Frontend/app/globals.css:1594-1599` — the row-spine block: `:1594` is the shared
+  `.tbl-row[data-sev]` shadow, `:1595-1598` are `critical/high/medium/low`, `:1599` opens the
+  `unknown` hatch, and there is **no `info` rule** — while `:1397` and `:1533` already light the info
+  meter. An info row draws a coloured meter above a transparent spine.
 
 Five server-side gates refuse or mis-rank `info`, and **all five must be deployed before any console
-change ships**:
+change ships** — this is **O-6**, and it is not a preference. `@IsIn` on an array query parameter
+rejects the *whole request*, so a console that can emit `?severity=info` against an undeployed
+Backend does not degrade, it 400s; and an info-banded INSERT violates a live CHECK constraint.
 
 | Gate | Location (origin/main `0cf9021e`) | Failure today |
 |---|---|---|
 | Query DTO | `Backend/src/ai-governance/dto/list-ai-detections.dto.ts:86` — `@IsIn([...AI_EVENT_SEVERITIES], { each: true })` | `?severity=info` 400s the **whole** request |
 | Vocabulary | `packages/shared-contracts/src/ai-governance-contract.ts:165` | four-member tuple |
 | DB CHECK | `Backend/src/migrations/1787100000000-AddAiEventSeverity.ts:45-52` — `CHK_ai_events_severity` | an info-banded INSERT fails |
-| Sort rank | `Backend/src/ai-governance/services/ai-query.service.ts:755-757` — `DETECTION_SEVERITY_RANK_SQL` | info ranks `NULL`, sorting with the unassessed |
+| Sort rank | `Backend/src/ai-governance/services/ai-query.service.ts:756-758` — `DETECTION_SEVERITY_RANK_SQL` | info ranks `NULL`, sorting with the unassessed |
 | Counts | `ai-query.service.ts:6577` (`detectionSeverityCounts`) + `dto/ai-response.dto.ts:2598-2603` (`AiDetectionSeverityCountsDto`) | exactly four members |
 
 ### 3. The evidence axis exists on one lane, is dropped on the wire, and is absent from the other lane
 
-`Installers/internal/dlp/dlp.go:56-63` — `dlp.Finding` carries `EvidenceTier` and
-`EnforcementEligible`, and the endpoint already **gates** on them locally in four independent places:
+`Installers/internal/dlp/dlp.go:56-64` — `dlp.Finding` carries `EvidenceTier` (`:60`) and
+`EnforcementEligible *bool` (`:61`), and the endpoint already **gates** on them locally in four
+independent places:
 
 - `Installers/internal/contenttransform/transform.go:121-125` — refuses to transform on tier B/C/D or
   an explicit non-eligible finding (`ErrIneligibleEvidence`);
@@ -126,9 +152,10 @@ change ships**:
 **Four copies of one predicate, none of them a shared exported helper. Do not add a fifth.**
 
 The vocabulary behind it is richer than anyone reading only `dlp.Finding` would guess.
-`Installers/internal/dlp/private_key.go:30-99` declares `EvidenceTier` (A/B/C/D, *"the canonical local
-evidence strength"*), `CredentialRole`, `ExploitabilityState`, `ValidationState`, `AssertionState`
-and `InspectionStatus`. And `Installers/internal/aipolicycontract/detector_catalog_generated.go`
+`Installers/internal/dlp/private_key.go:31-99` declares six vocabularies — `EvidenceTier` (`:32`,
+A/B/C/D at `:34-39`, *"the canonical local evidence strength"*), `CredentialRole` (`:42`),
+`ExploitabilityState` (`:55`), `ValidationState` (`:67`), `AssertionState` (`:77`) and
+`InspectionStatus` (`:87`). And `Installers/internal/aipolicycontract/detector_catalog_generated.go`
 already ships a **55-class** catalog carrying, per class: `Family`, `Owner`, `Lifecycle`,
 `DefaultEvidenceTier`, `CredentialRole`, `Exploitability`, `HardStopEligible`,
 `HardStopEvidenceTiers`, `HardStopRationale`.
@@ -170,17 +197,26 @@ grades. Do not mistake one for the other.
 
 The Backend end is already waiting for the data. `sanitizeStructuredFindings`
 (`Backend/src/ai-governance/services/ai-event.service.ts:2946`) validates all three against closed
-vocabularies at `:3014-3016`, and the derivation consumes them at
-`ai-event-severity.util.ts:541-585` with the correct rule already written down at `:447`:
+vocabularies at `:3014-3020` (`evidenceTier` `:3014`, `tier` `:3016`, `enforcementEligible`
+`:3018-3020`), and the derivation reads them at `ai-event-severity.util.ts:541-545` and acts on them
+at `:559-585`, with the correct rule already written down at `:447`:
 *"ABSENT IS NOT FALSE. `enforcementEligible` caps only on an explicit `false`… The agent does not yet
 emit these fields (W2/W3 work)."* **That comment names this wave.**
 
 **TRAP — do not put a closed enum on an agent-supplied scalar.**
 `Backend/src/ai-governance/dto/ai-prompt-check.dto.ts:41-58` records that `@IsIn(['cli','browser','ide'])`
 on `surface` cost three production incidents on this exact route family: `AgentIngestValidationPipe`
-(`src/common/pipes/agent-ingest-validation.pipe.ts:90-97`) leniency covers undeclared **keys**, not
-out-of-vocabulary **values**, so an unknown value 400s the whole report and the event loses its
-findings *and* its band. Every new grade field is bounded free text on the wire and closed at
+leniency (`src/common/pipes/agent-ingest-validation.pipe.ts:89-93` chooses the branch; the rule is
+written out at `:49-55`) covers undeclared **keys**, not out-of-vocabulary **values**, so an unknown
+value 400s the whole report and the event loses its findings *and* its band.
+
+**The same file states the other half of the trap, and it is what makes O-7 destructive if inverted.**
+`:52-55`: *"`whitelist: true` is on BOTH paths. An undeclared member is still stripped from the
+instance before it reaches a service… the agent path drops the key instead of dropping the request."*
+So an agent that ships a new grade field **before** the Backend DTO declares it does not fail — the
+key is silently removed. No error, no data, and the aggregation fold looks like it works.
+
+Every new grade field is bounded free text on the wire and closed at
 **storage**, exactly like `surface`. A spec that imports only the DTO gets the STRICT branch (the
 lenient one is keyed on `Reflect` metadata stamped by the controller's auth decorator); construct the
 pipe from the exported `LENIENT_AGENT_INGEST_VALIDATION_OPTIONS` instead of importing the controller.
@@ -211,10 +247,11 @@ also declares 13 classes CRITICAL by assertion, which is P1-01 verbatim.
 
 `Backend/src/ai-security-policy/ai-class-metadata.ts:30` states: *"`label` / `category` /
 `confidence` / `mechanism` remain purely descriptive."* **That sentence is false.**
-`confidenceForMechanism` (`:89-99`) maps `structural|exact-match → high`, `regex-context → medium`,
-`entropy|keyword-heuristic → low`, and `confidenceOf` (`:435`) feeds
-`Backend/src/ai-security-policy/ai-policy-presets.ts:258-264` (`dlpActionsByConfidence`) and `:275-283`
-(`promptActionsByConfidence`), which place **every** class's shipped preset action on its tier:
+`confidenceForMechanism` (`:89-100`) maps `structural|exact-match → high`, `regex-context → medium`,
+`entropy|keyword-heuristic → low`; `meta()` stamps it onto every class at `:104`; and `confidenceOf`
+(`:435`) feeds `Backend/src/ai-security-policy/ai-policy-presets.ts:258-264`
+(`dlpActionsByConfidence`) and `:271-283` (`promptActionsByConfidence`), which place **every** class's
+shipped preset action on its tier:
 
 ```ts
   for (const cls of AI_SECURITY_DLP_CLASSES as readonly AiDlpClass[]) {
@@ -224,11 +261,24 @@ also declares 13 classes CRITICAL by assertion, which is P1-01 verbatim.
 
 So a hand-authored mechanism label — with no heldout labels, no PPV, no support, no interval, no
 calibration error — decides what a customer's policy does. That is the exact thing the forbidden-claims
-list bans, wired to enforcement. It is also rendered to the admin as a chip at
-`Frontend/components/admin/ai-security-policy-section.tsx:1071`, and the same file's copy claims
-*"High-confidence combination of override and hidden-context theft"* (`:453-465`) and
-*"Automatic high-confidence taint hold enabled"* (`:4268`) — while the taint predicate is
-`severity != INFO` (see §6). Console says X, endpoint does Y, for the fourth time in this workspace.
+list bans, wired to enforcement. It is also carried onto the admin board's row model at
+`Frontend/components/admin/ai-security-policy-section.tsx:1071` (`confidence: meta?.confidence`) and
+attached as a row chip by the block whose docblock is at `:976`. The same file's customer-facing copy
+claims *"High-confidence combination of override and hidden-context theft"* (`:453`, and three more
+at `:457`, `:461`, `:465`), *"a high-confidence match taints the session"* (`:4251`),
+*"Automatic high-confidence taint hold enabled"* (`:4268`) and *"Automatic taint hold only reacts to
+high-confidence correlations"* (`:4306`) — while the taint predicate is `severity != INFO` (see §6).
+Console says X, endpoint does Y, for the fourth time in this workspace.
+
+Do not count these by hand. The census is:
+
+```bash
+cd /c/Users/Owner/Documents/Ceragon/Frontend
+git show origin/main:components/admin/ai-security-policy-section.tsx | grep -ni confidence
+```
+
+which prints **12** lines today, of which four are code (`:120` type import, `:1071` model field,
+`:2910` comment, `:5597` `enableConfidenceSort`) and the rest are rendered copy.
 
 **C16 is the counter-example to copy, not to rebuild.** A measured per-class FP rate with a real
 denominator has shipped since 2026-08-06: `ai-security-policy.service.ts:3195-3215` explains it and
@@ -249,7 +299,7 @@ Verified end to end on `origin/main`, in order:
 4. `Backend/src/ai-governance/controllers/ai-agent.controller.ts:875-883` — the tool-lane mapper
    folds **every** finding class into `dataClasses`.
 5. `isDetectionEvent` (`Backend/src/ai-governance/services/activity-kind.util.ts:380-394`) returns
-   true when `dataClasses.length > 0`. A monitored finding is therefore a **customer-visible
+   true when `dataClasses.length > 0` (`:385`). A monitored finding is therefore a **customer-visible
    detection row**, and it counts against the FP and precision budget. (The path is
    `services/activity-kind.util.ts`, not `utils/` — the bare-basename citation in the disposition
    material does not resolve.)
@@ -269,9 +319,9 @@ func taintRisky(toolName string, toolInput map[string]any, findings []toolrisk.F
 }
 ```
 
-   No policy input. No provenance. `toolName` is accepted and never read. It is called at
-   `ai_handlers.go:3054-3055`, and a `true` converts an ALLOW into a **HOLD** on an independently
-   tainted session. `TestTaintRisky` (`internal/daemon/ai_taint_test.go:80-104`) pins the defect in
+   No policy input. No provenance. `toolName` is accepted and never read. It has exactly **one**
+   production caller, `ai_handlers.go:3055`, and a `true` there converts an ALLOW into a **HOLD** on an
+   independently tainted session. `TestTaintRisky` (`internal/daemon/ai_taint_test.go:80-104`) pins the defect in
    its first case: `privilege-escalation` at MEDIUM must be risky — and `privilege-escalation` is on
    **`monitor`** in the Backend D4 tier table (`ai-security-policy.constants.ts:1254`), alongside
    `docker-cp-host` (`:1247`), `content-spawn-shell` (`:1246`) and `content-pipe-shell` (`:1245`).
@@ -305,14 +355,90 @@ Measured, the enforcing ones are:
 | `internal/daemon/ai_handlers.go:3909-3922` — `defaultToolDecision` | HIGH → block, MEDIUM → warn, else allow |
 | `internal/daemon/ai_handlers.go:3789` | legacy DLP-shaped tool lane: monitor arm gated on `!= SeverityHigh` |
 | `internal/daemon/ai_taint.go:161` | `severity != INFO` → taint-risky |
-| `internal/policyeval/policyeval.go:511-551` — `prClassAction` | severity fallback: HIGH → block, MEDIUM → warn |
-| `internal/proxy/ai_replay_promptrisk.go:268` | HIGH-or-MEDIUM gate |
+| `internal/policyeval/policyeval.go:544-551` — the `prClassAction` floor | severity fallback: HIGH → block, MEDIUM → warn, else allow |
+| `internal/proxy/ai_replay_promptrisk.go:265-272` — `enforcingPromptFindings` | HIGH-or-MEDIUM gate at `:268` |
 
 **These are fallback lanes and they cannot simply be deleted.** Rule 5 says the local rulebook must
 always reach a verdict, and `decideTool:3745-3752` documents deliberately keeping the legacy lane so
 an agent that outlives its backend still governs. The fix is to make the fallback read the
 **catalog's declared capability impact and evidence strength** — data that ships in the pinned
 contract and is available offline — instead of the detector's syntactic tier. Nothing relaxes.
+
+**The replay site is not an independent judgement — it is a second copy of the floor, and Task 10
+must move it in lockstep.** Verified at `origin/main 5b129523`: `enforcingPromptFindings`'
+own docblock (`ai_replay_promptrisk.go:262-264`) reads *"returns the findings at or above the WARN
+floor — the set that actually gates under the built-in severity default (prClassAction: high→block,
+medium→warn, low→allow)."* The moment rung 7 of the ladder in §8 stops being a function of
+`Finding.Severity`, that sentence is false and `:268` selects a different set than the resolver it
+claims to mirror. This answers the open question the earlier draft of Task 10 left to the engineer.
+
+### 8. The `prClassAction` ladder — written down once, here, and cited from everywhere else
+
+Three waves modify `prClassAction` (`Installers/internal/policyeval/policyeval.go:511-552`): Task 10
+of this wave, Wave 4A Task 2 and Wave 4C Task 4. Each of them once described the branch order in its
+own words, and two of those descriptions disagreed about how many branches there are — a tally is
+correct on the day it is written and wrong on the day the other wave lands. Both sibling tasks now
+defer here by name. **This is the only place in the packet where that order is written. Cite a rung
+number; never count branches.**
+
+Measured at `origin/main 5b129523`, in evaluation order:
+
+| Rung | Line | Condition | Result |
+|---:|---|---|---|
+| **1** | `:514` | `IsShadowClass(class)` | `allow` + MONITOR marker |
+| **2** | `:519` | policy present, prompt-risk enabled, class in `PromptRisk.MonitorClasses` | `allow` + MONITOR marker |
+| **3** | `:522` | policy present, prompt-risk enabled, `validAction(PromptRisk.Actions[class])` resolves | the configured action |
+| **4** | `:528` | policy present, DLP enabled, class in legacy `DLP.BlockClasses` | `block` |
+| **5** | `:530` | policy present, DLP enabled, class in legacy `DLP.WarnClasses` | `warn` |
+| **6** | `:541` | policy present **and** `PromptRisk.Enabled == false` | `allow` + MONITOR marker |
+| **7** | `:544-551` | built-in floor on `severity` | high→`block`, medium→`warn`, else `allow` |
+
+Rung 1 sits above every policy-dependent branch on purpose, and the comment at `:512-513` says why: a
+nil policy (backend unreachable) falls through to rung 7, and rung 7 can `warn`, which is an
+interruption. `dlpClassAction` places the identical gate at `:405` for the same reason.
+
+**Rungs 4 and 5 are the two arms of one `switch` inside one `if` block (`:526-533`)** and other wave
+files refer to them jointly as *"the legacy DLP arrays"*. They are numbered separately here because
+they return different verdicts. Either citation finds the same code; do not read the two spellings as
+a disagreement about how many rungs exist.
+
+**The two reserved positions, and who fills them.** Both new branches sit **below rung 6 and above
+rung 7** — the same place `dlpClassAction` puts its evidence arm (`:443-445`), which is below the
+policy branches and above the built-in defaults at `:464` and `:478`.
+
+- **Rung 6a — provenance restriction. Owned by Wave 4C Task 4.** A finding whose `ContentOrigin` is
+  not `DEVELOPER_AUTHORED` and whose class is a declared *instruction* class resolves to the
+  restricting disposition rather than falling to the floor.
+- **Rung 6b — uncorroborated Tier-C evidence release. Owned by Wave 4A Task 2.** An uncorroborated
+  Tier-C prompt finding resolves to `allow` + MONITOR marker; a corroborated one resolves as today.
+
+**6a is evaluated before 6b, and a finding restricted at 6a never reaches 6b.** The release at 6b is
+a false-positive remedy for a weak keyword match in text the principal typed. Provenance says the
+principal did not type it, which is precisely the corroborating context whose absence 6b requires.
+This is the same rule Wave 4A already states for obfuscation — *"anything obfuscation-derived
+(`NormalizedOnly`) is never released"* — extended to derived origin, and it relaxes nothing.
+
+**Rung 7 is rewritten in place by Task 10 of this wave.** Same position, same precedence, different
+input: it stops reading `Finding.Severity` and reads `baseCapabilityImpact` + `evidenceStrength` from
+the catalog grades. No wave may delete it — rule 5 requires the local rulebook to reach a verdict
+with no backend.
+
+**Standing rules for anyone inserting a rung.**
+
+1. Insert by rung number. **Do not write "the four existing branches", "the fifth branch", or any
+   other count** — the count changes as this ladder fills, and a phrase like that is correct on the
+   day it is written and wrong on the day it lands.
+2. A wave may add its own rung and rewrite the rung it owns. It may not reorder, merge or delete any
+   other rung.
+3. Every new rung is added to this table in the same commit that lands it, with its measured line
+   number. A rung that exists in code and not here is the drift this section exists to stop.
+4. **The browser extension carries a full twin of this ladder and it moves in lockstep.**
+   `browser-extension/src/policyeval.js:298-320` is `prClassAction` with all seven rungs in the same
+   order — shadow `:302`, monitor lane `:304`, actions map `:305`, legacy block `:309`, legacy warn
+   `:310`, explicit-disable `:316`, floor `:317-319` — and its docblock at `:295-297` says it mirrors
+   the Go function. `policyeval.go:462-463` states the lockstep rule for the DLP twin in the same
+   file; it holds identically here. A rung landed on one engine and not the other means the Codex and
+   Claude lanes decide differently on the same finding.
 
 ### Working discipline
 
@@ -370,12 +496,27 @@ the Events tooltip (today 1 of 3). `as never` count in `detection-view-model.tes
 
 ---
 
-## Task 2: Five bands in the Backend vocabulary — HARD GATE, deploy before Task 4
+## Task 2: Five bands in the Backend vocabulary — HARD GATE (O-6), deploy before Task 4
+
+**Deploy ordering — O-6, and it is destructive if inverted.** Every artifact this task produces is
+Backend-side and must be **deployed to production** before Task 4's console change ships. Two
+independent failures, both fleet-wide, both immediate:
+
+- `?severity=info` against a four-member `@IsIn` (`list-ai-detections.dto.ts:86`) 400s the **whole
+  request**, not the offending member. A detections page that renders a five-band facet rail against
+  an undeployed Backend returns nothing at all the first time an operator ticks *Info*.
+- An info-banded row violates `CHK_ai_events_severity`
+  (`migrations/1787100000000-AddAiEventSeverity.ts:45-52`), so the INSERT fails and the event is lost
+  rather than mis-banded.
+
+The console change is Task 4 and it carries the matching `**Depends on:**` line. Verify the order by
+the **Deploy-to-ECS job** result, not the workflow run conclusion — the run conclusion has lied here
+before.
 
 **Files:**
 - `Backend/packages/shared-contracts/src/ai-governance-contract.ts:165`
 - `Backend/src/migrations/<new>-WidenAiEventSeverityToFiveBands.ts` (create)
-- `Backend/src/ai-governance/services/ai-query.service.ts:755-757, 6577+`
+- `Backend/src/ai-governance/services/ai-query.service.ts:756-758, 6577`
 - `Backend/src/ai-governance/dto/ai-response.dto.ts:2598-2603`
 - `Backend/src/ai-governance/dto/list-ai-detections.dto.info-band.spec.ts` (create)
 - `Backend/src/ai-governance/services/ai-query.detections-aggregates.live-pg.spec.ts` (expectations)
@@ -388,9 +529,10 @@ the Events tooltip (today 1 of 3). `as never` count in `detection-view-model.tes
 - [ ] Extend `DETECTION_SEVERITY_RANK_SQL` with `WHEN 'info' THEN 0`. Keep the `ELSE NULL` arm and the
       `NULLS LAST` ordering — an unassessed row must still never outrank an assessed one, and must
       never be bucketed as `info`.
-- [ ] Add `info` to `detectionSeverityCounts` and to `AiDetectionSeverityCountsDto`. Preserve the
-      existing rule at `ai-response.dto.ts:2590-2597`: a NULL severity is counted **nowhere**, never
-      folded into the lowest band.
+- [ ] Add `info` to `detectionSeverityCounts` (`ai-query.service.ts:6577`) and to
+      `AiDetectionSeverityCountsDto` (`ai-response.dto.ts:2598-2603`). Preserve the existing rule
+      written at `ai-response.dto.ts:2588-2596`: a NULL severity is counted **nowhere**, never folded
+      into the lowest band, and the counts may therefore sum to less than `total`.
 - [ ] `npx jest src/ai-governance` plus the live-pg aggregates spec against a real Postgres. **C5:
       ~97 live-pg specs now fail dark rather than green when Postgres is absent — a "green" run with
       no container is a NOT-RUN.**
@@ -402,7 +544,8 @@ with `violates check constraint "CHK_ai_events_severity"`.
 
 **Exit:** **5 of 5** server gates in the §2 table accept `info` (today 0 of 5).
 `GET /api/v1/ai/detections?severity=info` returns 200. **Deployed to production before any Frontend
-change in Task 4 ships** — Backend before agent/console, no exceptions.
+change in Task 4 ships (O-6)** — Backend before console, no exceptions, and the evidence is the
+Deploy-to-ECS job result.
 
 ---
 
@@ -413,7 +556,7 @@ change in Task 4 ships** — Backend before agent/console, no exceptions.
 - `Frontend/lib/__tests__/severity.test.ts` (create)
 - `Frontend/types/ai-governance.ts` (band type)
 - `Frontend/app/ai-control-plane/detections/detection-view-model.ts:78-112`
-- `Frontend/app/ai-control-plane/ai-sessions/[id]/session-severity.ts:40-51, 185-192`
+- `Frontend/app/ai-control-plane/ai-sessions/[id]/session-severity.ts:39-51, 183-196`
 
 - [ ] Write the test first: one exported `bandOfStored(value)` that lowercases, validates against the
       five-band tuple, and returns `"unknown"` for anything else — including `""`, `null`, and a band
@@ -443,15 +586,16 @@ git grep -nE '\["critical", "high"|^\s+critical:' origin/main -- \
 ```
 
 **0** independent detection-band declarations remain in those three files (today **4**:
-`detection-read-model.ts:52`, `detection-view-model.ts:78` and `:99`, `session-severity.ts:40`,
-with matching label and signal-var maps at `session-severity.ts:47` and `:185`). `Frontend/lib/severity.ts`
+`detection-read-model.ts:52`, `detection-view-model.ts:78` and `:99`, `session-severity.ts:39`,
+with matching label and signal-var maps at `session-severity.ts:46` and `:183`). `Frontend/lib/severity.ts`
 is the only definition site.
 
 ---
 
 ## Task 4: The fifth band reaches the filter, the bar and the row spine
 
-**Depends on:** Task 2 deployed to production.
+**Depends on:** Task 2 **deployed to production** (O-6). Not merged — deployed, and confirmed by the
+Deploy-to-ECS job. Shipping this first makes the Info facet a 400 on the whole detections request.
 
 **Files:**
 - `Frontend/app/ai-control-plane/detections/detection-read-model.ts:42-53, 134-160`
@@ -464,10 +608,13 @@ is the only definition site.
 - [ ] Test first: an `info` row is filterable, appears in the distribution bar, and paints a spine.
 - [ ] Point `SEVERITY_BANDS` at the Task 3 tuple. Widen the facet rail, the `SegBar` and the URL
       filter serialisation with it.
-- [ ] Add `.tbl-row[data-sev="info"] { --sev-spine: var(--signal-info); }` at `globals.css:1599`.
+- [ ] Add `.tbl-row[data-sev="info"] { --sev-spine: var(--signal-info); }` immediately after the
+      `low` rule at `globals.css:1598`, before the `unknown` hatch that opens at `:1599`. The hatch
+      must stay last — `unknown` is a warning state, not a band, and it may not inherit a spine.
 - [ ] `readSeverityCounts` must answer `null` when the server returns a four-member aggregate.
-      **A missing band is NOT MEASURED, never zero** — this is the same rule as RULE 7 and the same
-      rule Wave 5's defeat test exercises.
+      **A missing band is NOT MEASURED, never zero** — the same rule as RULE 7
+      (`ai-security-policy.service.ts:725-727`) and the same rule Wave 5 Task 10's defeat test
+      exercises on the certificate manifest.
 
 **Defeat test:** `severity-five-bands.test.tsx` — delete the `info` case from `SEVERITY_BANDS`; the
 filter assertion goes red with `Unable to find an element with the text: Info`. Separately, feed
@@ -486,7 +633,8 @@ returns `null` on a four-band aggregate.
 - `Backend/src/ai-security-policy/ai-class-metadata.ts:9-31, 33, 44-46, 89-104, 435-437`
 - `Backend/src/ai-security-policy/ai-policy-presets.ts:15, 253, 258-283`
 - `Backend/src/ai-security-policy/ai-policy-presets.evidence-mechanism.spec.ts` (create)
-- `Frontend/components/admin/ai-security-policy-section.tsx:453-465, 976-1071, 4251, 4268`
+- `Frontend/components/admin/ai-security-policy-section.tsx:120, 453-465, 976, 1071, 2910, 4251, 4268, 4306, 5597`
+  (the twelve sites the §5 census prints)
 
 - [ ] Test first. Assert that (a) no exported symbol under `src/ai-security-policy/` is named
       `confidence*` unless it carries a calibration record, and (b) the preset builder receives its
@@ -500,13 +648,15 @@ returns `null` on a four-band aggregate.
       every DLP and prompt-risk class via `ai-policy-presets.ts:258-283`, and it is an authored
       mechanism label with no heldout labels, PPV, support, interval or calibration error — so it may
       never be presented to a customer as confidence.
-- [ ] Frontend: rename the chip and its label. Rewrite the four
-      *"High-confidence combination…"* descriptions (`:453-465`) to name the **mechanism** — e.g.
-      *"Two named signals in one message: override plus hidden-context theft"*. Rewrite
-      *"a high-confidence match taints the session"* (`:4251`) and
-      *"Automatic high-confidence taint hold enabled"* (`:4268`) to state what actually happens: a
+- [ ] Frontend: rename the chip, its label, and the `enableConfidenceSort` prop (`:5597`). Rewrite
+      the four *"High-confidence combination…"* descriptions (`:453`, `:457`, `:461`, `:465`) to name
+      the **mechanism** — e.g. *"Two named signals in one message: override plus hidden-context
+      theft"*. Rewrite all three taint strings — *"a high-confidence match taints the session"*
+      (`:4251`), *"Automatic high-confidence taint hold enabled"* (`:4268`) and *"Automatic taint hold
+      only reacts to high-confidence correlations"* (`:4306`) — to state what actually happens: a
       finding above the INFO tier, or a sensitive path/op, taints. **State the fact, never the
-      in-house rationale.**
+      in-house rationale.** `:4306` is the one an earlier draft of this wave missed; run the §5
+      census, do not work from this list.
 - [ ] Add the ban as a lint-shaped guard beside the existing `check:no-em-dash` pattern: the word
       `confidence` is forbidden in customer-facing copy under `Frontend/components/admin/` and
       `Frontend/app/ai-control-plane/` unless the same JSX subtree renders a support count.
@@ -529,6 +679,38 @@ snapshot (**0 of 30 DLP classes and 0 of N prompt-risk classes change action**).
 Replaces v1 Task 8's single `ClassImpact`. **The invariant "impact equals the detector tier" is
 deleted, and no replacement invariant may derive one axis from another.**
 
+### This wave owns `formatVersion 3`, and Wave 4B bumps to 4 — decided here, once (D-6)
+
+`Installers/parity-vectors/toolrisk-classes.v1.json` is a digest-pinned file vendored into **three**
+repos. Two waves add columns to it: this one adds the `grades` block, Wave 4B Task 1 adds
+`proposalKind`. **Wave 4B bumps `formatVersion` to 4 explicitly.** It does not ride this wave's bump.
+
+The reasoning, because a later reader will want to reopen it:
+
+- **This wave cannot truthfully populate `proposalKind`.** Its producer is `ClassCatalog()`
+  (`internal/toolrisk/class_catalog.go:57-68`), which loops the live rule tables, and the field does
+  not exist on it. Adding it is Wave 4B Task 1's own first step. A column emitted here would be a
+  value no producer sets — the declared-not-measured defect this wave exists to remove.
+- **The two changes cannot be one commit anyway.** O-14 puts this whole wave before every Wave 4
+  enforcement change, so the file is regenerated and re-vendored twice regardless. The only question
+  is whether `formatVersion` moves with it.
+- **A schema change under an unchanged `formatVersion` is exactly the silent drift the pin exists to
+  catch.** Both consumer specs assert the version literally — `expect(vector.formatVersion).toBe(2)`
+  at `ai-security-policy.tool-risk-class-parity.spec.ts:171` — so a new column landing under an
+  unchanged 3 passes a green check that is measuring nothing.
+- **Neither bump disturbs the tier digest.** Verified: `canonicalCatalogDigest`
+  (`tool-risk-class-parity.spec.ts:159-166`) hashes `vector.tiers` and nothing else, and the spec
+  compares it to `vector.sha256` at `:176-178`. `grades` gets its own `gradesSha256`; `proposalKind`
+  changes `gradesSha256` and leaves `sha256` alone.
+
+**Standing rule for this file, from here on: no schema change lands under an unchanged
+`formatVersion`.** Every bump updates, in the same commit, both consumer parity specs
+(`Backend/src/ai-security-policy/ai-security-policy.tool-risk-class-parity.spec.ts` and
+`Frontend/components/admin/__tests__/ai-security-policy-toolrisk-class-parity.test.ts`) and re-vendors
+a byte-identical file to `Backend/packages/shared-contracts/` and `Frontend/types/vendored/`, with
+`node ci/lib/vocab-parity.mjs` reporting PASS across all three — never `NOT CHECKED`, which is what it
+prints on a missing checkout.
+
 **Files:**
 - `Installers/internal/toolrisk/class_grades.go` (create)
 - `Installers/internal/toolrisk/class_grades_test.go` (create)
@@ -541,7 +723,7 @@ deleted, and no replacement invariant may derive one axis from another.**
 - `Backend/scripts/generate-ai-event-impact-catalog.cjs` (create)
 - `Backend/src/ai-governance/services/ai-event-impact-catalog.generated.ts` (create)
 - `Backend/src/ai-governance/services/ai-event-impact-catalog.spec.ts` (create)
-- `Backend/src/ai-governance/services/ai-event-severity.util.ts:288-335, 437, 549`
+- `Backend/src/ai-governance/services/ai-event-severity.util.ts:289-335, 432-437, 549`
 
 The three fields, and what each one is **allowed** to say:
 
@@ -553,7 +735,7 @@ The three fields, and what each one is **allowed** to say:
 
 - [ ] **Reuse, do not invent.** Map `evidenceStrength` onto the tiers that already ship:
       `dlp.EvidenceTierA→validated, B→corroborated, C→probable, D→weak`, empty/absent→`unknown`
-      (`Installers/internal/dlp/private_key.go:33-38`). Take `baseCapabilityImpact` for the 55
+      (`Installers/internal/dlp/private_key.go:34-39`). Take `baseCapabilityImpact` for the 55
       catalogued classes from `internal/aipolicycontract/detector_catalog_generated.go`
       (`HardStopEligible`, `Exploitability`, `CredentialRole` already encode it). **Only the 40
       tool-risk classes need a new declaration**, because the detector catalog contains zero of them.
@@ -570,20 +752,25 @@ The three fields, and what each one is **allowed** to say:
       tool lane** — no tool-risk detector validates anything today, and saying otherwise is the
       declared-not-measured defect.
 - [ ] Regenerate the parity vector to **formatVersion 3** with a `grades` block and its own
-      `gradesSha256`. The existing `sha256` covers `tiers` only
-      (`ai-security-policy.tool-risk-class-parity.spec.ts:159-166`); do not fold the new block into it
-      or every consumer digest breaks for a reason unrelated to tiers.
-      `TOOLRISK_CLASSES_UPDATE=1 go test ./internal/toolrisk/`, then copy the byte-identical file into
-      both consumer repos (`ci/lib/vocab-parity.mjs` verifies all three; C14 — it currently runs at
-      the workspace root only, and Wave 1 moves it into a repo's CI).
-- [ ] Update both consumer parity specs: `formatVersion` 2 → 3, plus a new assertion that the grades
+      `gradesSha256`. The existing `sha256` covers `tiers` only —
+      `canonicalCatalogDigest(vector.tiers)` at
+      `ai-security-policy.tool-risk-class-parity.spec.ts:159-166`, compared to `vector.sha256` at
+      `:176-178` — so do not fold the new block into it, or every consumer digest breaks for a reason
+      unrelated to tiers. `TOOLRISK_CLASSES_UPDATE=1 go test ./internal/toolrisk/`, then copy the
+      byte-identical file into both consumer repos (`ci/lib/vocab-parity.mjs` verifies all three;
+      C14 — it currently runs at the workspace root only, and Wave 1 moves it into a repo's CI).
+      **Do not add a `proposalKind` column here.** It is Wave 4B Task 1's, on formatVersion 4 — the
+      decision block above says why.
+- [ ] Update both consumer parity specs: `formatVersion` 2 → 3 (the literal is at
+      `ai-security-policy.tool-risk-class-parity.spec.ts:171`), plus a new assertion that the grades
       block is total over `vector.classes`.
 - [ ] Create `dlp-classes-grades.v1.json` from the detector catalog plus the DLP registry, and
       `generate-ai-event-impact-catalog.cjs` that emits
       `ai-event-impact-catalog.generated.ts` from both files. Its spec asserts byte-equality with a
       fresh generation, and totality over both producer vocabularies.
-- [ ] Delete `BASE_BY_CLASS` (`ai-event-severity.util.ts:301-335`) and point `baseForFinding:437` and
-      the `unknown-class-default` marker at `:549` at the generated table. Keep the `?? 'medium'`
+- [ ] Delete `BASE_BY_CLASS` (`ai-event-severity.util.ts:301-335`) and point `baseForFinding`
+      (`:432-438`, the lookup at `:437`) and the `unknown-class-default` marker at `:549` at the
+      generated table. Keep the `?? 'medium'`
       fallback — `sanitizeStructuredFindings` accepts any 64-char class, so an unrecognised class is
       an unknown secret, not a safe one. `git grep -n BASE_BY_CLASS -- Backend/src/` must print nothing.
 
@@ -596,9 +783,13 @@ omit it from `class_grades.go`; expected `class "x" has no grade row`. (b)
 byte-diff against `build()`.
 
 **Exit:** `parity-vectors/toolrisk-classes.v1.json` is formatVersion 3, `gradesSha256` recomputes,
-**byte-identical across all 3 repos**. `AI_EVENT_IMPACT_BY_CLASS` covers **40 of 40** tool-risk
-classes and **every member of `AI_DLP_CLASSES`**. `resolvedConsequence` is `unresolved` for **40 of
-40** tool classes.
+**byte-identical across all 3 repos**, and `node ci/lib/vocab-parity.mjs` prints PASS rather than
+`NOT CHECKED`. The tiers digest `sha256` is **unchanged** at
+`sha256:2cc7caeff31a09169d5d947fddf805f5d1f4f7eddcfcc984be5f83e69d1af922` — a moved tiers digest means
+a class changed tier, which this task does not do. **`proposalKind` is absent from the file at this
+wave's exit**; it arrives at formatVersion 4, owned by Wave 4B Task 1.
+`AI_EVENT_IMPACT_BY_CLASS` covers **40 of 40** tool-risk classes and **every member of
+`AI_DLP_CLASSES`**. `resolvedConsequence` is `unresolved` for **40 of 40** tool classes.
 **Totality over the producer set is `UNKNOWN (blocked on Wave 1)`.** The generated table can only be
 total over `AI_DLP_CLASSES` = **30**, which is 30 of the DLP producer's **81**. Counted at
 `origin/main`, the classes that can reach `deriveAiEventSeverity` are:
@@ -607,7 +798,7 @@ total over `AI_DLP_CLASSES` = **30**, which is 30 of the DLP producer's **81**. 
 |---|---:|---|
 | DLP | **81** | `RegisteredClasses()`, `internal/dlp/registry.go:221` (33 + 48) |
 | tool-risk | **40** | `ClassCatalog()`, `internal/toolrisk/class_catalog.go:57` |
-| prompt-risk | **14** | class constants, `internal/promptrisk/promptrisk.go:53-85` — folded into the same findings array by `foldPromptRiskFindings` (`ai_handlers.go:1448`), so they hit `BASE_BY_CLASS` too |
+| prompt-risk | **14** | class constants, `internal/promptrisk/promptrisk.go:53-86` — folded into the same findings array by `foldPromptRiskFindings` (`ai_handlers.go:1448`), so they hit `BASE_BY_CLASS` too |
 | ingress-risk | **7** | `git grep -oE '= "ingress-[a-z-]+"' origin/main -- internal/ingressrisk` — **reachability of `deriveAiEventSeverity` NOT VERIFIED this pass; confirm before counting it** |
 
 So the true denominator is **135 verified + 7 unverified = 142**, against a table that covers 30 today
@@ -623,9 +814,22 @@ records it as not-yet-measurable rather than claiming totality over a truncated 
 
 ## Task 7: The grade reaches the Backend on both lanes
 
-**Ordering inside this task is load-bearing.** Steps 1-4 are Backend and must be **deployed** before
-steps 5-8 (the agent) are released. An undeclared key is dropped by `AgentIngestValidationPipe`, not
-400'd, so shipping the agent first loses the data silently.
+**Ordering inside this task is load-bearing — this is O-7, and it fails silently, which is worse than
+failing loudly.** Steps 1-4 are Backend (the DTO at `ai-prompt-check.dto.ts:76-96`, the storage
+vocabulary, and **both** controller mappers) and must be **deployed** before steps 5-8 (the agent) are
+released.
+
+The mechanism, verified: `AgentIngestValidationPipe` routes an agent wire DTO down the lenient branch
+(`src/common/pipes/agent-ingest-validation.pipe.ts:89-93`), and its own docblock at `:52-55` states
+that `whitelist: true` is on **both** branches — *"An undeclared member is still stripped from the
+instance before it reaches a service… the agent path drops the key instead of dropping the request."*
+So an agent shipped first does not 400. It sends `evidenceStrength` and `enforcementEligible`, the
+pipe removes them, and the Backend stores a basis without them. **No error, no data, and the
+aggregation fold looks like it works** — the weakest-occurrence test in this task passes on a field
+that never arrives. There is no signal anywhere that tells you it happened.
+
+Deploy Backend, confirm by the **Deploy-to-ECS job** result rather than the workflow run conclusion,
+and only then cut the agent release.
 
 **Files:**
 - `Backend/src/ai-governance/dto/ai-prompt-check.dto.ts:76-96` (`AiPromptFindingDto`)
@@ -654,8 +858,9 @@ git show origin/main:src/ai-governance/controllers/ai-agent.controller.ts | grep
 - [ ] Declare the fields on `AiPromptFindingDto` as `@IsOptional() @IsString() @MaxLength(32)` /
       `@IsBoolean()`. **No `@IsIn`.** `AiToolCheckDto.findings` is the same DTO
       (`ai-prompt-check.dto.ts:1063`), so both lanes are covered by one declaration.
-- [ ] Extend `sanitizeStructuredFindings` (`ai-event.service.ts:3014-3016`) with a closed
-      `evidenceStrength` vocabulary beside the existing `evidenceTier` and `tier` checks.
+- [ ] Extend `sanitizeStructuredFindings` (`ai-event.service.ts:3014-3020`) with a closed
+      `evidenceStrength` vocabulary beside the existing `evidenceTier` (`:3014`), `tier` (`:3016`) and
+      `enforcementEligible` (`:3018-3020`) checks. Closed at **storage**, never on the wire.
 - [ ] Fix **both** mappers. Ship and deploy Backend.
 - [ ] Add `EvidenceStrength` and `EnforcementEligible *bool` to `toolrisk.Finding:50-62` and populate
       them from `class_grades.go`. Keep them `omitempty`: a legacy ungraded finding must send neither
@@ -723,10 +928,32 @@ render-harness fixture set (C15, `Frontend/scripts/render-harness/`).
 This is the P0-06 core. **Two halves: one ships whole here, one is deliberately handed to Wave 4B
 with a named external blocker. Do not merge them.**
 
+### Who owns `taintRisky` — decided once, here (D-10)
+
+Three waves have something to say about `taintRisky`
+(`Installers/internal/daemon/ai_taint.go:159-166`), and only one of them changes it.
+
+| Wave | What it owns | Ships? |
+|---|---|---|
+| **Wave 2 (here), 9b + 9c** | The **signature and the attribution**: the shadow gate, the resolved policy parameter, and the structured reason replacing the bare bool | **Yes — this is the wave that edits the function** |
+| **Wave 4B Task 9** | A later **narrowing of the taint-eligible disposition set** — "monitoring alone must remain non-tainting" | **No.** Blocked on Product/Security ratification plus paired benign-sequence precision and poisoned-sequence recall. See 9d |
+| **Wave 8** | **Nothing.** Its trap — *"Do not widen `taintRisky` or weaken it to widen mediation"* — is correct and stays | **No** |
+
+Two consequences a reader must carry away:
+
+- **Wave 8's trap is about behaviour, not about the source text.** By the time Wave 8 runs, this wave
+  has already changed the function's signature and return type. A Wave 8 engineer who reads the trap
+  as "this function is untouched" and finds a changed one will assume the trap is stale. It is not.
+  The trap forbids **widening or weakening what makes a session risky**; refactoring for attribution
+  is exactly what Wave 2 was asked to do.
+- **Wave 4B Task 9's "`taintRisky` ships unchanged" means the eligible set is unchanged**, not the
+  function. The function is already different by then. If 4B's ratification never arrives, what stays
+  frozen is *which dispositions can taint* — the signature and the recorded reason stay.
+
 **Files:**
 - `Installers/internal/policyeval/shadow.go` (docs), `internal/daemon/ai_handlers.go:3716-3856`
-- `Installers/internal/daemon/ai_taint.go:151-166`
-- `Installers/internal/daemon/ai_taint_test.go:80-104`
+- `Installers/internal/daemon/ai_taint.go:151-166` (`taintRisky` at `:159`), `:178` (`toolTargetsSensitive`)
+- `Installers/internal/daemon/ai_taint_test.go:80-105` (`TestTaintRisky`; its six assertions at `:82-104`)
 - `Installers/internal/daemon/ai_taint_shadow_test.go` (create)
 - `Backend/src/ai-governance/services/activity-kind.util.ts:370-394` (docs only)
 - `Backend/src/alerts/alerts.service.ts:840-881` (docs only)
@@ -776,7 +1003,8 @@ shipped); live the day M4.7A ships its first new detector.
       `ai_handlers.go:3072, :3078, :3085`) and onto the wire, so a held call records **why**. Note
       those functions already take a `taintReason` — that is why the **session** is tainted, not why
       **this call** was judged risky. Two different facts; today only the first is recorded.
-- [ ] Update `TestTaintRisky:80-104` to assert the reason as well as the bool. Its first case —
+- [ ] Update `TestTaintRisky` (`:80-105`) to assert the reason as well as the bool. Its first case
+      (`:82-85`) —
       `privilege-escalation` at MEDIUM → risky — **stays true and stays green**; it now additionally
       records `disposition=monitor`, which is the fact that makes 9d decidable.
 
@@ -817,10 +1045,18 @@ non-green on that line.
 
 ## Task 10: No enforcing disposition is a pure function of `Finding.Severity`
 
+**This task rewrites rung 7 of the §8 ladder, in place.** Same position, same precedence, different
+input. It does not add a rung, does not move one, and does not delete the floor — rule 5 requires the
+local rulebook to reach a verdict with no backend. Rungs 6a and 6b belong to Waves 4C and 4A; if
+either has already landed when you get here, the floor you are rewriting is still rung 7 and its
+position is unchanged.
+
 **Files:**
 - `Installers/internal/daemon/ai_handlers.go:3789, 3909-3922`
-- `Installers/internal/policyeval/policyeval.go:511-551`
-- `Installers/internal/proxy/ai_replay_promptrisk.go:268`
+- `Installers/internal/policyeval/policyeval.go:544-551` (rung 7 only — the ladder's other rungs are
+  out of scope for this task)
+- `Installers/browser-extension/src/policyeval.js:317-319` (the JS twin of rung 7 — §8 rule 4)
+- `Installers/internal/proxy/ai_replay_promptrisk.go:265-272`
 - `Installers/internal/daemon/ai_fallback_grades_test.go` (create)
 
 These are the **offline fallback** lanes and they may not be deleted: `decideTool:3745-3752` documents
@@ -831,13 +1067,20 @@ says the local rulebook must always reach a verdict.
       `class_grades.go` (`baseCapabilityImpact` + `evidenceStrength`) is **greater than or equal to**
       today's `defaultToolDecision` verdict. **0 of 40 may relax.** This is the non-weakening proof and
       it must be written before the change.
-- [ ] Repoint `defaultToolDecision` and the `prClassAction` severity fallback at the catalog grades.
+- [ ] Repoint `defaultToolDecision` and ladder rung 7 (`policyeval.go:544-551`) at the catalog grades.
       A `weak`-or-`unknown` evidenceStrength may never reach `block` on its own — that is D7's
       substance and the reason the axis exists.
-- [ ] Leave `ai_replay_promptrisk.go:268` alone if it is a replay/telemetry filter rather than a
-      decision; confirm which with
-      `git show origin/main:internal/proxy/ai_replay_promptrisk.go | sed -n '250,285p'` and record the
-      answer in the task, either way.
+- [ ] Move the JS twin's rung 7 (`browser-extension/src/policyeval.js:317-319`) in the same commit and
+      extend the cross-engine parity assertion. A floor changed on one engine and not the other means
+      the Codex and Claude lanes reach different verdicts on the same finding.
+- [ ] **Move `enforcingPromptFindings` (`ai_replay_promptrisk.go:265-272`) in lockstep — the earlier
+      open question is answered.** It is not an independent judgement. Its own docblock at `:262-264`
+      says it *"returns the findings at or above the WARN floor — the set that actually gates under
+      the built-in severity default (prClassAction: high→block, medium→warn, low→allow)"*, i.e. it is
+      a second copy of rung 7 written as a severity test at `:268`. Once rung 7 reads grades, that
+      docblock is false and the replay lane selects a different set than the resolver it claims to
+      mirror. Repoint it at the same grade predicate and keep the docblock true; do **not** relax the
+      set it returns — the non-relaxation proof in step 1 covers this site too.
 
 **Defeat test:** `ai_fallback_grades_test.go::TestFallbackNeverRelaxes` — lower any class's
 `baseCapabilityImpact` below its current fallback verdict and it goes red with
@@ -845,8 +1088,11 @@ says the local rulebook must always reach a verdict.
 `evidenceStrength: weak, baseCapabilityImpact: critical` and assert the fallback is at most `warn`;
 reverting the guard yields `block`.
 
-**Exit:** the §7 grep returns **0** enforcing severity switches (today **5**, of which 4 are enforcing
-and 1 is under review). **0 of 40** tool classes relax relative to the pre-change fallback.
+**Exit:** the §7 grep returns **0** enforcing severity switches (today **5**, all five in scope —
+the fifth, the replay site, is confirmed above to be a copy of rung 7 rather than an independent
+filter). **0 of 40** tool classes relax relative to the pre-change fallback. Rung 7 in
+`policyeval.go`, its JS twin at `policyeval.js:317-319` and `enforcingPromptFindings` all read the
+same grade predicate, and the §8 ladder table records rung 7's new input.
 
 ---
 
@@ -857,11 +1103,14 @@ Each is a number or a named artifact, and each names the test that goes red on r
 1. **One basis type.** `git grep -c "AiEventSeverityBasis = {"` across
    `Backend/packages`, `Backend/src`, `Frontend/types` returns **1** (today 3).
    Defeat: `ai-event-severity.contract-parity.spec.ts` (Task 1).
-2. **The Events tooltip tells the truth.** **3 of 3** producer key names resolve (today 1 of 3, and
-   the pinned fixture writes a stale `formulaVersion: 3` against a producer at 4).
+2. **The Events tooltip tells the truth.** **3 of 3** producer key names resolve (today 1 of 3), and
+   the Events fixture carries `formulaVersion` at all — today it carries **no** `formulaVersion` key,
+   because the contract type it was written against has no such member, while the producer emits
+   `formulaVersion: 4` on every basis.
    Defeat: `events-content.test.tsx` with the cast removed.
-3. **Five bands, server first.** **5 of 5** gates in the §2 table accept `info` (today 0 of 5); the
-   Backend carrying them is **deployed** before any console change ships.
+3. **Five bands, server first (O-6).** **5 of 5** gates in the §2 table accept `info` (today 0 of 5);
+   the Backend carrying them is **deployed** — evidenced by the Deploy-to-ECS **job** result, not the
+   workflow run conclusion — before any Task 4 console change ships.
    Defeat: `list-ai-detections.dto.info-band.spec.ts` + the live-pg CHECK-constraint assertion.
 4. **One band translator.** The Task 3 grep, scoped to `detection-read-model.ts`,
    `detection-view-model.ts` and `session-severity.ts`, returns **0** independent declarations
@@ -875,7 +1124,9 @@ Each is a number or a named artifact, and each names the test that goes red on r
    appears **0** times in admin-console copy.
    Defeat: `ai-policy-presets.evidence-mechanism.spec.ts` + the copy guard.
 7. **Three fields, generated, and impact is not the detector tier.** Parity vector is formatVersion 3
-   with a recomputing `gradesSha256`, **byte-identical across 3 repos**;
+   with a recomputing `gradesSha256` and an **unchanged** tiers `sha256`, **byte-identical across 3
+   repos**, `vocab-parity.mjs` PASS; `proposalKind` is **absent** (it lands at formatVersion 4, Wave
+   4B Task 1 — D-6, decided in Task 6);
    `AI_EVENT_IMPACT_BY_CLASS` covers **40 of 40** tool-risk classes and every `AI_DLP_CLASSES` member;
    `resolvedConsequence` is `unresolved` on **40 of 40** tool classes;
    `git grep -n BASE_BY_CLASS -- Backend/src/` prints nothing.
@@ -888,9 +1139,12 @@ Each is a number or a named artifact, and each names the test that goes red on r
    This wave records it as not-yet-measurable; it does not claim totality over a truncated
    denominator, and the static "all 30 DLP classes" wording at `plan:4566` is deleted.
    **Certificate contribution: UNKNOWN.**
-9. **The grade crosses the wire on both lanes.** `git grep -n "count: f.count" -- Backend/src/ai-governance/controllers`
+9. **The grade crosses the wire on both lanes, Backend first (O-7).** `git grep -n "count: f.count" -- Backend/src/ai-governance/controllers`
    returns **2** sites, both carrying the grade; a tool-check finding lands `evidenceStrength` in
-   `severity_basis`; the aggregate carries the **weakest** occurrence's grade.
+   `severity_basis`; the aggregate carries the **weakest** occurrence's grade. **The Backend half is
+   deployed before the agent release**, by Deploy-to-ECS job result — an agent shipped first loses the
+   fields to `whitelist: true` with no error and no data, and every test in this criterion still
+   passes.
    Defeat: `ai-prompt-check.dto.evidence-grade.spec.ts`,
    `TestToBackendToolFindings_FoldsToWeakestEvidence`,
    `TestToBackendFindings_LegacyUngradedSendsNeitherKey`.
@@ -914,13 +1168,31 @@ Each is a number or a named artifact, and each names the test that goes red on r
     exist until Wave 3 and whose sequence corpora do not exist until Suite 4.** Risk 4 and Risk 5 stay
     non-green on this line, and the certificate carries it as a named `downgradeTrigger`.
 15. **No enforcing disposition is a pure function of `Finding.Severity`.** The §7 grep returns **0**
-    enforcing severity switches (today 5, of which 4 enforce). **0 of 40** tool classes relax.
+    enforcing severity switches (today 5, all five in scope). **0 of 40** tool classes relax.
     Defeat: `TestFallbackNeverRelaxes`, `TestWeakEvidenceCannotBlock`.
-16. **The four disposition objects are written down once.** `DISPOSITION_VOCABULARY.md` exists,
+16. **The `prClassAction` precedence is written down exactly once.** §8 carries all **7** rungs with
+    their measured line numbers, the **2** reserved positions (6a Wave 4C Task 4, 6b Wave 4A Task 2)
+    and the 6a-before-6b tie-break; the Go ladder and its JS twin
+    (`browser-extension/src/policyeval.js:298-320`) agree rung for rung.
+    **No wave file instructs anyone by branch count.** Measured over
+    `.plans/m47a-20260822/v2-waves/w*.md`:
+
+    ```bash
+    grep -n "existing branches\|fifth branch\|four existing" w*.md
+    ```
+
+    returns **3** lines today — §8 rule 1 here, `w4a_w4b_tool_effect.md:77` and
+    `w4c_prompt_ingress.md:555` — and **all three are prohibitions that quote the old wording and
+    name this ladder as the authority.** **0** are instructions. That is the criterion: zero
+    instructions phrased as a tally, not zero occurrences of the words.
+    Defeat: land a rung without adding its row to the §8 table and the cross-engine parity assertion
+    in Task 10 still passes while the table is short — which is why rule 3 makes the table edit part
+    of the same commit, and why the reviewer checks the table, not the diff.
+17. **The four disposition objects are written down once.** `DISPOSITION_VOCABULARY.md` exists,
     states that today's `monitor` is customer-visible and therefore counts against the FP budget,
     states that no class is on private telemetry, and is cross-referenced from
     `activity-kind.util.ts` and `alerts.service.ts`.
-17. **Suites green, and say which ran.** `cd Backend && npm test` (with a live Postgres — C5 means a
+18. **Suites green, and say which ran.** `cd Backend && npm test` (with a live Postgres — C5 means a
     container-less run is NOT-RUN, not green), `cd Frontend && npm test && npm run lint`,
     `cd Installers && go test ./internal/...`. Report per-repo, and name the gates that could not run
     locally. **Never report "all checks pass."**

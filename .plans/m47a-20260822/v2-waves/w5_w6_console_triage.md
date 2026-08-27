@@ -1,17 +1,42 @@
 # Wave 5 — Make every number on the console trace to a source
 
 **Depends on:** Wave −1 (rebase manifest and the repo-qualified citation repair). Wave 2 for the
-severity/evidence vocabulary the drawer renders — Tasks 1-7 and 9 below do not touch it and can start
-immediately. **One named cross-wave sequencing constraint:** Task 10 renders the certificate manifest,
-whose schema Wave 8 Task 6 owns (`Installers/internal/certificate/schema.json`). That file must land
-as a **schema-only commit before Task 10 starts**; Task 10 does not invent a second shape and does not
-wait for Wave 8's generator.
+severity/evidence vocabulary the certificate panel renders — **Tasks 1-9 and 11 do not touch it and can
+start immediately; Task 10 cannot begin until Wave 2's vocabulary exists**, which Wave 2 states itself
+(*"Wave 5 (console truth) cannot begin its manifest-field-to-rendered-number mapping until this wave's
+vocabulary exists"*). **One named cross-wave sequencing constraint:** Task 10 renders the certificate
+manifest, whose schema Wave 8 Task 6 owns (`Installers/internal/certificate/schema.json`). That file
+must land as a **schema-only commit before Task 10 starts**; Task 10 does not invent a second shape and
+does not wait for Wave 8's generator.
 **Implements decisions:** D6 as rewritten in the spine — private telemetry, customer-visible detection,
 SOC alert and enforcement are four objects and the console must not draw them as one. D14 (keep
 fail-open, make it visibly non-green). D17 (this wave delivers a *dimension*).
 **Certificate impact:** **console truth** — one of only four dimensions §5.4 says can reach PASS — is
 `UNKNOWN` until this wave passes, and stays `UNKNOWN` afterwards until Wave 8 issues an expiring
 manifest for it. No risk lane moves. R1-R5 are untouched by anything in this wave.
+
+---
+
+## What this wave CLAIMS, and what it hands back
+
+This file was written after the other nine, which deferred work to a "Wave 5" that did not exist. The
+reconciliation records those deferrals as gap **G-1**. Each is claimed here by task number, so a reader
+following a pointer from another wave lands on something.
+
+| Deferred by | What was deferred | Lands as |
+|---|---|---|
+| Wave −1 Task 6 | *"ASI09… requires a confirmation dialog to display the raw action, not an agent-authored summary — a control this product ships and does not test. **Add that test in Wave 5.**"* | **Task 8** |
+| Wave 1's "what this wave deliberately does not do" | The lane-tally under-count. *"That is console truth and belongs to **Wave 5**; it is recorded here so it is not lost."* | **Task 11** |
+| Wave 2's header | *"Wave 5 (console truth) cannot begin its manifest-field-to-rendered-number mapping until this wave's vocabulary exists."* | **Task 10** |
+| Wave 8's dependency line | *"Wave 5 (the console surface the certificate projects onto)."* | **Task 10** |
+| Source material §4 Wave 5 | The nine distinguishable objects; the defeat test *"set one manifest field to `null`; the console must render NOT MEASURED, not `0`."* | **Task 10** |
+
+**And one deferral is handed back rather than claimed.** Wave 3 Task 11 Step 4 and Wave 4C Task 9 both
+say the `pull_request:` trigger on `Frontend/.github/workflows/vendored-upstream-drift.yml` is "Wave 5's
+task". It is not. **Owned by Wave −1 Task 5**, where it is already a step and already exit criterion 7,
+and where it sits beside the other half of the same owner cost decision (`holdout-score.yml`'s trigger).
+Three waves pointing at a fourth is how a one-line change goes unmade for a month. Task 9 below keeps
+only the half no GitHub decision can block, and says so.
 
 ---
 
@@ -134,8 +159,13 @@ did not. **And the local Docker mirror does not cover it either**: `ci/gates.jso
 `vendored-upstream-drift:drift` under Frontend's `cannotMirror` with the reason *"Cross-repo and
 scheduled, not a PR gate."* So the only thing standing between the console and a silently stale
 detection engine is a daily cron on a GitHub account whose Actions were blocked org-wide as recently as
-2026-08-26. That is the whole guard. Task 9 closes it twice, once inside our own CI where nothing can
-switch it off.
+2026-08-26. That is the whole guard.
+
+**Two different fixes close it, and they belong to two different waves.** The GitHub-side one — adding
+`pull_request:` per the header's own instruction — is **Wave −1 Task 5**, because it is the same owner
+cost decision as `holdout-score.yml`'s trigger and must be decided once. The workspace-side one is
+**Task 9 below**: an offline comparison in `ci/lib/`, which needs no token, no network and no GitHub
+decision, and which nothing can switch off. Task 9 does not re-specify Wave −1's half.
 
 ### What CLOSED since the review, and must not be rebuilt
 
@@ -216,9 +246,9 @@ a confirmation dialog display **the raw action**, not an agent-authored summary.
 - `Installers/cmd/devoid/ai_tool_warn_confirm.go:108` — the **tool gate** asks the developer by calling
   `toolWarnDialogSeam(warnDialogBody(reason, false), false)`.
 - `warnDialogBody` (`cmd/devoid/ai_warn_dialog.go:305`) opens with the literal
-  `"DeVoid flagged this prompt:\n\n"` (`:322`), then a `reason` string trimmed and **truncated at 220
-  characters** (`:317-320`). Its docblock: *"It carries the resolved CLASS LABELS the daemon returned —
-  never prompt text or a credential value."*
+  `"DeVoid flagged this prompt:\n\n"` (`:320`), then a `reason` string trimmed and **truncated at 220
+  characters** (`:316-319`). Its docblock at `:302-304`: *"It carries the resolved CLASS LABELS the
+  daemon returned — never prompt text or a credential value."*
 - The window title is hardcoded twice: XAML `Text="DeVoid flagged this prompt"`
   (`ai_warn_dialog_windows.go:56`) and `DEVOID_WARN_TITLE=DeVoid — review this prompt` (`:201`).
 
@@ -548,8 +578,18 @@ managed endpoint blocks and injects nothing. `go build ./... && go test ./cmd/de
 - `Installers/cmd/devoid/ai_tool_warn_confirm.go:92-108`
 - `Installers/cmd/devoid/ai_warn_dialog.go:302-335` (`warnDialogBody`, `warnDialogHint`)
 - `Installers/cmd/devoid/ai_warn_dialog_windows.go:56, 201`
-- `Installers/cmd/devoid/ai_tool_warn_confirm_test.go` (extend)
-- `Installers/cmd/devoid/ai_warn_dialog_test.go` (extend; do **not** change the prompt-lane cases)
+- `Installers/cmd/devoid/ai_tool_warn_confirm_test.go` (extend; 9 tests today, `:55-215`)
+- `Installers/cmd/devoid/ai_warn_dialog_test.go` (extend; do **not** change the prompt-lane cases —
+  the six `TestWarnDialogBody_*` functions at `:16`, `:32`, `:42`, `:48`, `:94`, `:106`)
+
+**Claimed from Wave −1 Task 6**, which names the requirement and says *"Add that test in Wave 5."*
+Wave −1 keeps the standards **columns** in the class-catalog table; this task supplies the ASI09
+**control** and the test that makes it true. They are different objects: a class mapping says what a
+detector detects, a control mapping says what a UI is obliged to show.
+
+**Wave 8 Task 7 owns the generated standards mapping and `TestEveryClassCarriesStandardsIds`**
+(reconciliation D-12). This task does not build a mapping generator; it populates one entry in the
+array that generator emits, and the exit criterion below is written so Wave 8's totality test counts it.
 
 This is the one control in this wave mapped to a named external requirement, and it is the one the
 review does not have.
@@ -577,7 +617,7 @@ answer, and this task writes that reasoning into the code.
 - [ ] **Step 3: the title stops saying "prompt" on the action lane.** `ai_warn_dialog_windows.go:56`
   hardcodes `Text="DeVoid flagged this prompt"` in XAML and `:201` sets
   `DEVOID_WARN_TITLE=DeVoid — review this prompt`. Both must become parameters. **The 220-character
-  truncation at `ai_warn_dialog.go:317-320` must not silently swallow the action**: truncate the class
+  truncation at `ai_warn_dialog.go:316-319` must not silently swallow the action**: truncate the class
   prose, never the command, and if the command itself exceeds the budget, show its head and tail with an
   explicit elision marker rather than a clean-looking prefix.
 - [ ] **Step 4: keep `offerRedact` false on this lane and keep the comment that explains why**
@@ -586,10 +626,13 @@ answer, and this task writes that reasoning into the code.
 - [ ] **Step 5: assert every failure still lands on BLOCK.** The file's own contract at `:44-49`: a
   dialog that could not be drawn, a timeout, an unparseable answer, a daemon that refused to record.
   Adding a code path to the body builder must not add a way to return allow.
-- [ ] **Step 6: re-do the timeout arithmetic if — and only if — you change any constant.**
-  `ai_warn_dialog.go:38-83` carries it: 30s countdown + 10s PowerShell ceiling = 40s worst case against
-  a 60s host budget, leaving 20s. A previous version of that comment shipped a wrong headroom figure and
-  caused a production hang with an orphaned, clickable dialog. This task changes text, not timing.
+- [ ] **Step 6: re-do the timeout arithmetic if — and only if — you change any constant.** The
+  `CURRENT ARITHMETIC` table at `ai_warn_dialog.go:67-73` carries it verbatim: 30s dialog countdown +
+  10s PowerShell process cap = 40s worst case, against the 60s host budget we install ourselves
+  (`aihooks.hookTimeoutFor`, uniform per event), leaving 20s of margin. The comment's own instruction is
+  *"keep this paragraph exact — a previous version of this comment shipped a wrong headroom figure and
+  cost a production hang"*: the window stayed on screen and clickable with no parent left to receive the
+  answer. **This task changes text, not timing.** `warnDialogTimeoutSeconds` is at `:85` and does not move.
 
 **Defeat test:** `TestToolWarnDialogShowsTheProposedAction` — revert `ai_tool_warn_confirm.go:108` to
 `toolWarnDialogSeam(warnDialogBody(reason, false), false)`. Expected failure text:
@@ -597,37 +640,42 @@ answer, and this task writes that reasoning into the code.
 **Second defeat test:** `TestToolWarnDialogTruncationNeverEatsTheCommand` — feed a 400-character command
 and assert both head and tail survive with an elision marker. Revert to the flat 220-char cut and it
 goes RED with the command's tail missing.
-**Third defeat test:** the existing prompt-lane cases in `ai_warn_dialog_test.go:17-107` must remain
-green and **unmodified** — proof that the action lane was split off rather than the prompt lane
-loosened. A diff that touches them fails review.
+**Third defeat test:** the six existing `TestWarnDialogBody_*` prompt-lane cases in
+`ai_warn_dialog_test.go` (`:16`, `:32`, `:42`, `:48`, `:94`, `:106`) must remain green and
+**unmodified** — proof that the action lane was split off rather than the prompt lane loosened. A diff
+that touches those six functions fails review.
 **Exit:** on the tool lane, **1** dialog renders the raw proposed action, the tool name and the working
-directory, and **0** dialogs on that lane contain the string `"prompt"`. Mapped in the certificate's
-`system.standardsMapping.owaspAsi2026` as `ASI09` — the first entry in that array, and the only control
-in this wave that populates it.
+directory, and **0** dialogs on that lane contain the string `"prompt"`. **6** prompt-lane cases green
+and byte-identical. Mapped in the certificate's `system.standardsMapping.owaspAsi2026` as `ASI09` — the
+first entry in that array, and the only control in this wave that populates it. **The array itself, and
+the totality test over it, are Wave 8 Task 7's**; this task's contribution must survive that test
+unchanged.
 
 ---
 
-## Task 9: Close the vendored-engine upstream-drift gap, twice
+## Task 9: Close the vendored-engine upstream-drift gap with a check nothing can switch off
 
 **Files:**
-- `Frontend/.github/workflows/vendored-upstream-drift.yml` (the `pull_request:` trigger, per its own
-  header)
-- `ci/lib/vendored-engine-parity.mjs` (create — the offline half)
+- `ci/lib/vendored-engine-parity.mjs` (create — the offline check)
 - `ci/lib/vendored-engine-parity.test.mjs` (create — its mutation proof)
 - `ci/gates.json` (`workspaceChecks`)
 - `Frontend/lib/ai-security/vendored/__tests__/vendored-digest.test.ts` (READ ONLY — **do not weaken**)
+- `Frontend/.github/workflows/vendored-upstream-drift.yml` (READ ONLY here — see the pointer below)
 
-**Half A — the one-line trigger the file's own header asked for.** T-M2 landed as `9ce16d1a`; the
-trigger did not follow. That is a one-line change and a real regression risk.
+**The GitHub half is not this task's.** Adding `pull_request:` to `vendored-upstream-drift.yml`, per the
+instruction in its own header at `:29-31`, is **owned by Wave −1 Task 5** — it is a step there and exit
+criterion 7 there, and it is the same owner cost decision as `holdout-score.yml`'s trigger, which Wave
+−1 also owns. Wave 3 Task 11 Step 4 and Wave 4C Task 9 both point here instead; both pointers are wrong
+and both should read Wave −1 Task 5. Do not edit that workflow from this wave.
 
-**But state the cost honestly, because it is not free.** `Frontend/.github/workflows/pr-checks.yml` is
-`on: workflow_dispatch: {}` — every push and PR trigger in this repository was removed on 2026-08-25 as
-a cost gate. Adding `pull_request:` to the drift workflow re-introduces a per-PR GitHub run in a repo
-that deliberately has none, and it needs `secrets.INSTALLERS_READ_TOKEN` to be present
-(`vendored-upstream-drift.yml:72`). **Restoring a GitHub trigger is an owner decision on spend, not an
-engineering one**, and this task's Half A is blocked on it.
+What this task must carry, because its own exit criterion depends on it: **until Wave −1's half lands,
+the GitHub-side upstream check is a `workflow_dispatch` + daily cron** (`:39-43`, cron `15 6 * * *`) on
+an account whose Actions were blocked org-wide as recently as 2026-08-26, and it needs
+`secrets.INSTALLERS_READ_TOKEN` (`:72`) to run at all. So *"the console's detection engine is
+byte-identical to the shipped endpoint engine"* is guarded per-PR against **local edits only** by
+`vendored-digest.test.ts`, and against **upstream drift** only by the workspace check built below.
 
-**Half B — the check nobody can switch off, and it is unblocked today.** `ci/gates.json` already has the
+**The check nobody can switch off, and it is unblocked today.** `ci/gates.json` already has the
 right slot: `workspaceChecks`, currently holding `toolrisk-vocab-parity` and its self-test, whose stated
 reason is *"Nothing inside a single repo's CI can see this; that is why it is here and not under
 'mirrored'."* This is the identical shape. The Installers checkout is on disk in this workspace, so the
@@ -642,7 +690,7 @@ comparison needs no token and no network.
   everything from bytes on disk, normalises LF (a raw byte compare goes red on every Windows worktree —
   the manifest's own `refresh` note says the digest is over LF-normalised content), and uses the same
   closed exit vocabulary: **0 PASS, 1 DRIFT, 2 NOT CHECKED, 3 usage**.
-- [ ] **Step 3: preserve the NOT-CHECKED discipline exactly.** `vendored-upstream-drift.yml:32-37`
+- [ ] **Step 3: preserve the NOT-CHECKED discipline exactly.** `vendored-upstream-drift.yml:33-37`
   states the rule and it is the failure class this whole task exists to close: *"A drift check that
   exits 0 because it checked nothing reports the same green as one that checked and found nothing."*
   A missing checkout, an unreadable file or unparseable JSON exits non-zero.
@@ -664,13 +712,15 @@ Installers checkout: expected exit **2**, `NOT CHECKED`, still non-zero.
 stay **GREEN**, which is the proof that the two checks answer different questions and that the new one
 was necessary.
 **Exit:** `node ci/lib/vendored-engine-parity.mjs` covers **3 files × 2 locations = 6 comparisons** and
-reports `PASS`, with the digest triple recorded in this plan:
-`policyeval.js 724ed5a9…104c`, `dlp.js 2967a343…748c`, `promptrisk.js b3e998a4…6237`, all at
-`Installers@5b129523`. Registered as a `workspaceChecks` entry, so `node ci/lib/run.mjs workspace` fails
-on upstream drift. **Half A (the `pull_request:` trigger) is BLOCKED on an owner decision about GitHub
-Actions spend and on `secrets.INSTALLERS_READ_TOKEN` — neither is engineering.** Until Half A lands, the
-plan records that the GitHub-side check is a daily poll and says so wherever the claim
-*"the console's detection engine is byte-identical to the shipped endpoint engine"* appears.
+reports `PASS`, with the digest triple recorded in this plan and re-verified 2026-08-28 by recomputing
+sha256 over LF-normalised bytes straight out of `Installers@origin/main`:
+`policyeval.js 724ed5a9…104c`, `dlp.js 2967a343…748c`, `promptrisk.js b3e998a4…6237`, all matching
+`MANIFEST.json` at `Installers@5b129523`. Registered as a `workspaceChecks` entry, so
+`node ci/lib/run.mjs workspace` fails on upstream drift.
+**Owned by Wave −1 Task 5:** the `pull_request:` trigger on `vendored-upstream-drift.yml`, and the owner
+cost decision it is blocked on. Until it lands, every appearance of the claim *"the console's detection
+engine is byte-identical to the shipped endpoint engine"* carries the caveat that upstream drift is
+caught by a workspace check and a daily poll, **not** by a per-PR gate.
 
 ---
 
@@ -740,6 +790,98 @@ projection over a committed fixture and the console-truth dimension stays `UNKNO
 
 ---
 
+## Task 11: The three lane headers stop being the only answer to "is anything set to warn?"
+
+**Files:**
+- `Frontend/components/admin/policy/category-bucket-board.tsx:1758-1766, 2153, 2164-2167, 2251-2260`
+- `Frontend/components/admin/policy/ai-category-board-model.ts:179-190` (READ ONLY — `categoryDisposition`
+  is correct and does not move)
+- `Frontend/components/admin/policy/__tests__/category-bucket-board.test.tsx` (READ ONLY — **the T-U8,
+  T-U9 and T-U12 cases stay byte-identical**; that is this task's proof it did not re-open the over-count)
+- `Frontend/components/admin/policy/__tests__/category-board-lane-residual.test.tsx` (create)
+
+**Claimed from Wave 1**, which measured it, refused to fix it in a vocabulary wave, and wrote *"That is
+console truth and belongs to **Wave 5**; it is recorded here so it is not lost."*
+
+**The mechanism, verified line by line on `origin/main` (`cac574ae`) 2026-08-28.** Three things compose,
+and every one of them is individually correct:
+
+1. `categoryDisposition` (`ai-category-board-model.ts:179-188`) is **STRICTEST WINS** — it returns
+   `block` on the first blocked member and never looks further. Its docblock defends the choice, and the
+   defence is right: *"A category collapsed to its majority would show Monitor over a set containing a
+   blocked private key."*
+2. `byDisposition` (`category-bucket-board.tsx:1758-1766`) files each **category** into one of three
+   lanes by that folded value, and `inColumn = byDisposition[disposition]` (`:2153`) is what a lane
+   header iterates.
+3. `detectorCount` (`:2164-2167`) sums `membersAtDisposition(c, disposition).length` over `inColumn`
+   only. `membersAtDisposition` (`:483-489`) is itself exactly right — it filters to the members that
+   carry the lane's own disposition, which is the **T-U8** fix that stopped one blocked class reporting
+   thirty siblings as blocked.
+
+The header then prints, at `:2256-2260` on the span carrying `data-bucket-count` (`:2251`):
+`{inColumn.length} categories · {detectorCount} detectors`.
+
+**The residual is a member stored at disposition X inside a category whose fold is Y.** Lane X never
+sees it, because its category is filed under Y and so is absent from `inColumn`. Lane Y never counts it,
+because `membersAtDisposition` filters it out. It is in **no** lane header. Under strictest-wins that is
+not an edge case: it is what the board leaves behind every time an admin moves one class, and it is
+precisely what a pinned member (T-U8) is *for*.
+
+**This is already a recorded decision, not an unnoticed bug — and that is why the fix must be additive.**
+`category-bucket-board.test.tsx:298-306` asserts the consequence in prose and in an expectation: *"those
+29 are counted in NO lane header. A member is only counted in the lane its CATEGORY sits in, and dlp
+sits in Block… So the three headers do not sum to the catalogue, and the row split is the only place
+those 29 are accounted for."* The per-category split (`data-member-split`, `:569`, e.g.
+`"30 detectors · 1 Block / 29 Monitor"`) is real and is where they are accounted for — but it is
+**per row**, and the question an administrator asks the board is asked of the **lane header**. On a
+board whose categories all fold to Block, Warn answers *"is anything set to warn?"* with
+`0 categories · 0 detectors` while members warn.
+
+**Do not "fix" this by counting every member of every category in its lane.** That is the T-U8 defect
+restored, and `category-bucket-board.test.tsx:273-274` will go red naming it (`"24 detectors"` /
+`not "30 detectors"`). §20.3: never weaken a guard to fit a task. The fix is a **board-level residual
+statement** beside the three headers, so the headers' deliberate non-summation is disclosed once at the
+board, not only inside each collapsed row.
+
+- [ ] **Step 1 (RED): `category-board-lane-residual.test.tsx`, built as a discriminating pair.**
+  (a) A board where every category folds to Block while members are stored at `warn` and `monitor`: the
+  board states the residual, names the dispositions it is holding, and points at the row split. Expected
+  first run: nothing is rendered, and Warn reads `0 categories · 0 detectors`.
+  (b) The paired control — a board with a **genuinely uniform** posture (no member at a disposition its
+  category does not carry): the residual statement is **absent**. Without (b), a fix that always prints
+  a residual passes and teaches the admin to ignore it.
+- [ ] **Step 2: compute the residual from the same helper the headers use.** Derive it as
+  `every member` minus `the three lanes' detectorCounts`, using `membersAtDisposition` rather than a
+  second traversal. A second counting path is how the row split and the mini-bar disagreed before
+  (`:491-500` records that history) and it is not to be repeated.
+- [ ] **Step 3: the residual carries its dispositions, not just a total.** "7 detectors are set to Warn
+  or Monitor inside categories this board shows under Block" answers the administrator's question;
+  "7 detectors are not counted above" does not.
+- [ ] **Step 4: do not add a fourth `[data-bucket]`.** `category-bucket-board.test.tsx:37` and `:48` assert
+  exactly three columns and no fourth, with the reason written out — *"a fourth column is how 'allow'
+  comes back in through the side door."* The residual is a board-level line, not a lane.
+- [ ] **Step 5: photograph it** on `admin/policies/ai-security` with Task 1's fixture, under `populated`
+  and under a folded-board variant, and bank both `.txt` files. This is the surface Wave 1 Task 5 and
+  Wave 1 Task 7 attach screenshots of; the residual line must be legible in theirs too.
+
+**Defeat test:** `category-board-lane-residual.test.tsx` › the paired control — print the residual
+unconditionally. Expected failure text:
+`expect(screen.queryByText(/inside categories this board shows under/i)).toBeNull()` receiving an
+element, on a uniformly-dispositioned board.
+**Second defeat test:** the three existing suites. Revert the residual to a naive "count every member in
+its category's lane" and `category-bucket-board.test.tsx:273-274` goes RED with
+`expect(element).toContain("24 detectors")` receiving `30 detectors` — the T-U8 regression, caught by a
+test this task never touches.
+**Exit:** the accounting identity holds and is **asserted, not described** — the three lane detector
+counts plus the residual equal the total membership of every category that is not `modeOnly`
+(`modeOnly` categories carry `members: []` in the fixture and return `[]` from `membersAtDisposition`,
+so they contribute zero to both sides). Asserted over **3** fixtures — uniform, one-blocked-class,
+all-folded-to-Block — with **the total printed by the test** rather than written into this plan.
+**1** residual statement rendered on the folded board and **0** on the uniform one. **0** lines changed
+in `category-bucket-board.test.tsx`. **0** `[data-bucket]` columns added.
+
+---
+
 ## Wave 5 exit criteria
 
 Each is a number or a named artifact, and each names the test that goes red on revert.
@@ -767,15 +909,23 @@ Each is a number or a named artifact, and each names the test that goes red on r
    `PASS`**, registered under `ci/gates.json` `workspaceChecks`, with the three digests recorded in this
    plan. Defeat: the one-byte upstream mutation → exit 1 DRIFT; the removed checkout → exit 2 NOT
    CHECKED; and `vendored-digest.test.ts` stays green through both, which is the proof the new check was
-   needed. **The `pull_request:` trigger half is BLOCKED on an owner decision about GitHub Actions spend
-   and on `secrets.INSTALLERS_READ_TOKEN`.**
+   needed. **The `pull_request:` trigger on `vendored-upstream-drift.yml` is NOT this wave's criterion —
+   it is Wave −1 Task 5's criterion 7**, and it is blocked there on an owner decision about GitHub
+   Actions spend and on `secrets.INSTALLERS_READ_TOKEN`.
 9. **9 manifest objects rendered, 0 numbers without a `data-manifest-field` source, 0 denominators
    without a source under `absent-data`.** Defeat: add `?? 0` to the formatter; both the jest case and
    the harness `--forbid` run go red.
-10. **Deploy order:** nothing in this wave widens a contract, so no Backend-before-Frontend constraint
+10. **The lane accounting identity holds** — the three lane detector counts plus the residual equal the
+    total membership of every non-`modeOnly` category — over **3** fixtures, with the total printed by
+    the test; **1** residual statement on a folded board and **0** on a uniform one; **0** lines changed
+    in `category-bucket-board.test.tsx`; **0** `[data-bucket]` columns added. Defeat: print the residual
+    unconditionally; and separately, revert to counting every member in its category's lane, which
+    re-opens T-U8 and goes red at `category-bucket-board.test.tsx:273-274`.
+11. **Deploy order:** nothing in this wave widens a contract, so no Backend-before-Frontend constraint
     applies. Task 7 and Task 8 need an **agent release**; both are endpoint-local and neither changes
     floor membership, so no Backend deploy is required by them. **Deploying still needs a fresh explicit
-    owner ask.**
+    owner ask (O-19), and the deploy gates are fail-closed on MISSING runs — dispatch `pr-checks` and
+    `security` on `main` FIRST or the deploy refuses.**
 
 ### What this wave does **not** move, and must not be reported as moving
 
@@ -785,7 +935,10 @@ Each is a number or a named artifact, and each names the test that goes red on r
 - **The harness is not a Backend test.** Quote its own README wherever its output is cited.
 - **"The console's detection engine is byte-identical to the shipped endpoint engine"** remains
   claimable **with the caveat that upstream drift is guarded by a workspace check and a daily poll, not
-  by a per-PR gate**, until Half A of Task 9 lands.
+  by a per-PR gate**, until **Wave −1 Task 5** lands the `pull_request:` trigger.
+- **The lane headers still do not sum to the catalogue**, and that stays deliberate. Task 11 discloses
+  the residual; it does not fold it into a lane. Reporting "the board now counts every detector" would
+  be the T-U8 defect described as a feature.
 - **No false-positive claim of any kind.** Rendering a rate honestly is not measuring one. Every rate on
   these surfaces is `UNKNOWN` until Wave 3 repairs the instrument (D18) and Wave 3B supplies a
   denominator.
@@ -807,6 +960,37 @@ until this wave lands the second reviewer and the adjudication record on the row
 carries this verbatim — *"Do not treat the measured production FP rate as a certified quality label. A
 single reviewer can set it and `benign_expected` conflates two different verdicts."* Wave 8's
 `downgradeTriggers` has no governed input until this wave passes.
+
+---
+
+## What this wave CLAIMS, and where the seams are
+
+Gap **G-2** in the reconciliation: Wave 6 did not exist, **Wave 8 lists it as a dependency, and Wave 8
+Task 8 cannot pass without it.** Each deferral is claimed here by task number.
+
+| Deferred by | What was deferred | Lands as |
+|---|---|---|
+| Wave 3B Task 12 | *"This wave defines it; **Wave 6 performs the widening and the row migration.**"* — the 4 → 7 triage vocabulary and the live-row migration | **Task 8** |
+| Wave 8 Task 8 | *"one adjudicated false hard block (**Wave 6's adjudication record**, not a single reviewer's label)"* for `TestConfirmedBenignBlockHaltsTheRing` | **Task 9** |
+| Wave 8's dependency line | *"Wave 6 (adjudicated triage feeding `downgradeTriggers`)"* | **Tasks 9 + 12** |
+| Wave 3B Task 12 / §7 | The production FP rate is not citable as a quality label until this wave lands | **Tasks 9, 10, 11** |
+| Source material §4 Wave 6 | detector/class/version/policy attribution; reviewer agreement; a provenance-carrying promotion path; appeal / suppression / exception expiry with label-poisoning controls; *no threshold is ever updated online from untrusted user feedback* | **Tasks 10, 11** |
+| Source material §4 Wave 6 (G-3) | *"Inventory the autonomous FP-review agent that landed in Ceragon-Intelligence"* — **zero mentions across the other 8,510 lines** | **Task 13** |
+
+**The one seam that has two owners, stated so the halves meet.** `FALSE_POSITIVE_STORM` is picked up by
+**both** Wave 8 Task 8 (*"Wire `FALSE_POSITIVE_STORM`… to a change-point monitor over Wave 6's
+adjudicated rate. Declare the threshold numerically in the service"*) and **Task 12 below**. They are
+not the same work and neither is redundant:
+
+- **Task 12 (this wave) owns the monitor and its input.** The declared threshold and its arithmetic, the
+  minimum-denominator refusal, the read off `getMeasuredFpRates`, and the filing of a rollback intent.
+  It cannot be built before Tasks 9 and 10, because an ungoverned single-reviewer rate is not an input a
+  monitor may act on.
+- **Wave 8 Task 8 owns the consequence.** The halt conditions, `cohortBasisPoints` 500 → 2500 → 10000,
+  and the manifest `downgradeTriggers` entry the monitor's output becomes.
+- **Ordering: Task 12 before Wave 8 Task 8**, and both must name the same service
+  (`ai-policy-rollback-storm.service.ts`), the same constant, and the same number. Two thresholds for one
+  reason code is the two-vocabularies defect in its purest form.
 
 ---
 
@@ -933,13 +1117,23 @@ The old plan's W6 premises all still hold. Line numbers re-measured:
 Wave 3B Task 12 names three vocabularies for one question and tells you to leave the third
 (`Installers/scripts/aicontext-gate/adjudication.go`) alone. Measured 2026-08-28 there is a **fourth**,
 and it landed after the review: the autonomous FP-review agent in Ceragon-Intelligence
-(`30d6c6d8..486d937b`). It carries `BUCKETS` (4), `STATUSES` (8), `CAMPAIGN_STATES` (7) and
-`TERMINAL_STATES` (5) in `deploy/home/fp-agent/src/lib/store.js:40-98`.
+(`30d6c6d8..486d937b`). It carries `BUCKETS` (4, `store.js:50-55`), `STATUSES` (8, `:79-88`),
+`CAMPAIGN_STATES` (7, `:91-93`) and `TERMINAL_STATES` (5, `:96-98`) in
+`deploy/home/fp-agent/src/lib/store.js`, a 484-line file.
 
 **Correcting the source material's own count:** it says *"73 of 80 files under `deploy/home`."*
 Measured: `git diff --name-only 30d6c6d8..486d937b | wc -l` = **45**, and
-`… | grep -c '^deploy/home'` = **45**. Forty-five of forty-five, +11,420 lines across 20 commits.
+`… | grep -c '^deploy/home'` = **45**. Forty-five of forty-five, +11,420 insertions across 20 commits.
 Cite the measured number.
+
+**And it is still moving.** Re-measured 2026-08-28: Ceragon-Intelligence `origin/main` is now
+**`deb70e64`**, not the `486d937b` the spine's rebase manifest pins — **5 commits ahead, 36 files,
++12,372 insertions**, of which 31 are under `fp-agent/`. The range `30d6c6d8..origin/main` is 25
+commits, 61 files, +24,323 lines: **the agent has more than doubled since the SHA this plan verified
+against**, and the new commits add a *fix lane* and a *deploy probe*
+(`fixlane.js`, `deploy.js`, `redispatch.js`, `watch.js`). Task 13 verifies against `486d937b`, states
+that SHA in the inventory, and re-runs the range measurement at execution time. An inventory of a
+moving pipeline that does not name the commit it inventoried is a snapshot pretending to be a fact.
 
 It answers a **different question** — artifact and package **threat** detection quality, read from the
 DynamoDB analysis cache — and it refuses the policy lane structurally rather than filtering it
@@ -1311,7 +1505,7 @@ task, with **0** unmapped values in either direction.
 
 ---
 
-## Task 10: Attribute the rate to a version, not just to a class
+## Task 10: Attribute the rate to a detector, a version and a policy, not just to a class
 
 **Files:**
 - `Backend/src/ai-security-policy/ai-security-policy.service.ts:3217-3272` (`getMeasuredFpRates`)
@@ -1320,11 +1514,23 @@ task, with **0** unmapped values in either direction.
 - `Frontend/components/admin/policy/action-bucket-board.tsx:321-341`
 - `Backend/src/ai-security-policy/ai-security-policy.measured-fp-attribution.spec.ts` (create)
 
-`getMeasuredFpRates` keys the map off `finding.class` and nothing else. So a class whose rule was
-narrowed on Tuesday shares one number with the version that produced the false positives, and no
-consumer can tell which build the rate describes. §5.3 fixes exactly this on the evaluation side with
-`rulesetDigest`, `engineVersion`, `normalizerVersion` and `parserVersion`; the production side needs the
-same axes or the two can never be compared.
+`getMeasuredFpRates` keys the map off `finding.class` and nothing else — verified at `:3253-3258`, where
+the bucket key is the class string and the only other axis stored is `windowDays`. So a class whose rule
+was narrowed on Tuesday shares one number with the version that produced the false positives, and no
+consumer can tell which build the rate describes. A rate that cannot name its producer cannot be
+compared with an evaluation result, which is the entire point of measuring it.
+
+**Do not invent the axis names here. Wave 3B owns the version-identity vocabulary** — reconciliation
+C-3 and D-2 collapse two rival field sets into one union that Wave 3B Task 2 defines, and it is
+`RunnerIdentity`'s required identity fields plus **`policyDigest`** on provenance. `policyDigest` is the
+agreed name; `effectivePolicyDigest` was the losing spelling and must not reappear on the production
+side. Use Wave 3B's names verbatim: the evaluation side and the production side are only comparable if
+the two spell the same fact identically, and *"two field names for one fact"* is the defect these waves
+exist to remove.
+
+The four axes this task must be able to attribute a production rate to, in Wave 3B's spelling:
+**detector class · `engineVersion` · `rulesetDigest` · `policyDigest`.** Which of them are reachable
+today is a discovery question, answered in Step 2 — not a guess made here.
 
 - [ ] **Step 1 (RED): `TestMeasuredRateCarriesItsProducingVersion`.** Two events of the same class with
   different `engineVersion` must produce two buckets, not one. Expected first run: one bucket with a
@@ -1332,9 +1538,13 @@ same axes or the two can never be compared.
 - [ ] **Step 2: check what the wire already carries before adding a field.** Discovery, to be run first:
   ```bash
   cd /c/Users/Owner/Documents/Ceragon/Backend
-  git grep -n "engineVersion\|rulesetDigest\|analyzerVersion\|agentVersion" origin/main -- \
-    src/ai-governance/ src/entities/ai-event.entity.ts | head -40
+  git grep -n "engineVersion\|rulesetDigest\|policyDigest\|analyzerVersion\|agentVersion" \
+    origin/main -- src/ai-governance/ src/entities/ | head -40
   ```
+  Verified 2026-08-28 that this grep returns hits across `src/ai-governance/` (receipts, policy
+  integrity, delegated approval) — so **some** of these names already exist somewhere in this repo. That
+  is not the same as "the event carries one." Read the hits before concluding either way; do not take
+  their existence as the answer.
   If the agent already stamps a version on the event, key off it. If not, that is an **agent contract
   change** and it inherits the Backend-before-agent ordering rule: the Backend accepts the new key
   before any release stamps it, or every session-start 400s fleet-wide on `forbidNonWhitelisted`. That
@@ -1353,11 +1563,14 @@ denominator" — revert the key to `class` alone. Expected failure text:
 **Second defeat test:** › "an unknown version is not a version" — backfill it with a constant. Expected:
 `bucket for class %q carries engineVersion "unknown"; an unattributable rate is ABSENT, not attributed`.
 This is the D18 rule (`engineVersion` **must not** be a placeholder) applied on the production side.
-**Exit:** the rate map is keyed by **at least 2 axes** (class, producing version). Classes correctly
-reporting ABSENT after the split: report the **measured** number, not a target — it will rise, and the
-rise is the honest consequence. **Blocked if the version is not already on the wire:** that half needs an
-agent release, which goes **after** a Backend deploy, and this criterion is blocked on that ordering
-until it does.
+**Exit:** the rate map is keyed by **at least 2 axes** (class, producing version), and every axis it does
+carry is spelled **exactly as Wave 3B Task 2 spells it** — asserted by name, so `policyDigest` cannot
+come back as `effectivePolicyDigest`. Of the four target axes (class, `engineVersion`, `rulesetDigest`,
+`policyDigest`), the number reachable without an agent contract change is **whatever Step 2 prints** —
+record it, do not predict it. Classes correctly reporting ABSENT after the split: report the
+**measured** number, not a target — it will rise, and the rise is the honest consequence.
+**Blocked if the version is not already on the wire:** that half needs an agent release, which goes
+**after** a Backend deploy, and this criterion is blocked on that ordering until it does.
 
 ---
 
@@ -1413,11 +1626,20 @@ publishing half is `UNKNOWN`.
 - `Backend/src/ai-policy-delivery/ai-policy-rollback-storm.service.ts` (create)
 - `Backend/src/ai-policy-delivery/ai-policy-rollback-storm.spec.ts` (create)
 
+**This task is one half of a seam, and Wave 8 Task 8 is the other.** Wave 8 also says it will wire
+`FALSE_POSITIVE_STORM`. The split, restated here so an engineer in either wave finds the same sentence:
+**this task owns the monitor and its input** — the declared threshold, the minimum-denominator refusal,
+the read off `getMeasuredFpRates`, and the filing of an intent. **Wave 8 Task 8 owns the consequence** —
+the ring halt, `cohortBasisPoints` 500 → 2500 → 10000, and the `downgradeTriggers` manifest entry. This
+task lands **first**, and both waves name `ai-policy-rollback-storm.service.ts` and the same numeric
+constant. If Wave 8 declares a second threshold, one of the two is wrong and neither is authoritative.
+
 **Correct the citation first.** `FALSE_POSITIVE_STORM` lives at
 `Backend/src/ai-policy-delivery/ai-policy-rollback.service.ts:11`, not under `src/ai-security-policy/`.
-`git grep -ln FALSE_POSITIVE_STORM origin/main -- src` returns exactly one file. It is a member of
-`AI_POLICY_ROLLBACK_REASON_CODES` — a closed vocabulary an operator picks from by hand when filing a
-rollback intent. **Nothing computes it.**
+`git grep -ln FALSE_POSITIVE_STORM origin/main -- src` returns exactly one file. Verified on `origin/main`
+2026-08-28: it is the second of five members of `AI_POLICY_ROLLBACK_REASON_CODES` (`:9-14`, with the
+derived type at `:16`) — a closed vocabulary an operator picks from by hand when filing a rollback
+intent. **Nothing computes it.**
 
 The surrounding machinery is good and must not be rebuilt: the rollback intent is **forward-only** by
 construction (*"nothing in this file can name, compute, or compare an endpoint bundle revision, so
@@ -1449,7 +1671,12 @@ the minimum-denominator guard. Expected failure text:
 `intent %q resolved with no actorUserId; a rollback is resolved by a human`.
 **Exit:** either **1** declared threshold with its arithmetic written out and a monitor that cannot fire
 on a zero denominator, **or 1** committed written decision that the reason code stays operator-selected,
-naming the owner and the date. Not silence.
+naming the owner and the date. Not silence. **The seam is asserted, not assumed:** the constant this
+task declares is the one Wave 8 Task 8 reads — **1** threshold constant exists repo-wide for this reason
+code, asserted by `git grep -c` in the spec, so a second declaration in Wave 8 fails here rather than
+diverging silently. **Blocked, named:** the monitor's input is Task 9's adjudicated rate and Task 10's
+version axis; until both land, this task may declare the threshold and must **not** enable automatic
+filing — a monitor over a single-reviewer rate would roll a fleet back on one person's label.
 
 ---
 
@@ -1461,39 +1688,65 @@ naming the owner and the date. Not silence.
 - `.plans/m47a-20260822/v2-waves/artifacts/w6/fp-agent-boundary.md` (create — the inventory)
 - `Backend/src/ai-governance/services/ai-event-triage.service.ts` (a pointer comment, nothing more)
 
+**This task exists because the reconciliation found it in no other file.** Gap **G-3**: *"Zero mentions
+across 8,510 lines. A second, undocumented triage pipeline running against production while Wave 6
+designs a first one is exactly the two-vocabularies defect W11 names."* It needs a task, not a mention.
+
 **Measured, correcting the source material.** The agent landed in `30d6c6d8..486d937b`: **20 commits,
-45 files changed, all 45 under `deploy/home`, +11,420 lines.** (The source material's "73 of 80 files"
-does not reproduce; cite 45 of 45.) It reviews the latest 300 analysed artifacts per source every three
-hours, in two directions — false positives the detectors raised, and true positives they let through.
+45 files changed, all 45 under `deploy/home`, +11,420 insertions.** (The source material's "73 of 80
+files" does not reproduce; cite 45 of 45.) It reviews the latest 300 analysed artifacts per source every
+three hours, in two directions — false positives the detectors raised, and true positives they let
+through.
+
+**Re-run the range before you write the inventory.** As of 2026-08-28 the repo's `origin/main` is
+`deb70e64`, **5 commits past the `486d937b` this plan verified against**: +12,372 insertions over 36
+files, 31 of them under `fp-agent/`, adding a fix lane and a deploy probe. The inventory names the SHA
+it inventoried and reports the drift as a number.
 
 **It is a different lane and must stay one.** It reads the DynamoDB artifact analysis cache
 (`cera-artifact_analysis_cache-staging` — the live table, per the workspace's own standing note) through
-a projection that structurally cannot reach tenant policy: `assertProjectionIsThreatOnly()` fails the run
-if the projection ever grows a forbidden attribute, and **`verdict` is deliberately omitted** because a
-stored verdict can be policy-resolved. It derives its own threat band from `riskScore`. `store.js:72-76`
-**refuses** an artifact bucketed `policy`, with the reason written out: *"a tenant relaxing a CVE rule
-would read as the agent clearing false positives, and a tenant tightening one as a new FP wave to
-chase."*
+a projection that structurally cannot reach tenant policy: `assertProjectionIsThreatOnly()`
+(`src/lib/intake.js:235`, called at `src/run.js:96` and `src/lib/aws.js:149`) fails the run if the
+projection ever grows a forbidden attribute, and **`verdict` is deliberately omitted** because a stored
+verdict can be policy-resolved. It derives its own threat band from `riskScore`. `store.js:72-76`
+**refuses** an artifact bucketed `policy`, with the reason written out at `:66-67`: *"a tenant relaxing a
+CVE rule would read as the agent clearing false positives, and a tenant tightening one as a new FP wave
+to chase."*
 
-Its vocabulary is a **fourth** one — `BUCKETS` (4), `STATUSES` (8), `CAMPAIGN_STATES` (7),
-`TERMINAL_STATES` (5), all at `store.js:40-98`. **Do not unify it**, for exactly the reason Wave 3B gives
-for leaving `scripts/aicontext-gate/adjudication.go` alone: it answers a different question, and
-unifying it would lose the property that makes it safe.
+Its vocabulary is a **fourth** one — `BUCKETS` (4, `store.js:50-55`), `STATUSES` (8, `:79-88`),
+`CAMPAIGN_STATES` (7, `:91-93`), `TERMINAL_STATES` (5, `:96-98`). **Do not unify it**, for exactly the
+reason Wave 3B gives for leaving `scripts/aicontext-gate/adjudication.go` alone: it answers a different
+question, and unifying it would lose the property that makes it safe.
 
 - [ ] **Step 1: write the inventory**, naming what the agent covers (artifact/package threat detection
-  quality: packages, mcp, plugin, skill) and what it does **not** (AI runtime governance events — prompt,
-  tool, DLP, ingress — which are this wave's lane and never enter its store).
+  quality: `SOURCES` at `store.js:100` is `['packages','mcp','plugin','skill']`) and what it does **not**
+  (AI runtime governance events — prompt, tool, DLP, ingress — which are this wave's lane and never enter
+  its store). **The inventory carries the SHA it inventoried and the drift since**, both printed rather
+  than typed:
+  ```bash
+  cd /c/Users/Owner/Documents/Ceragon/Ceragon-Intelligence && git fetch origin
+  git rev-parse origin/main
+  git rev-list --count 486d937b..origin/main
+  git diff --shortstat 486d937b..origin/main
+  ```
+  A pipeline this wave does not own, running against production, growing every week, is exactly the
+  thing an inventory dated by commit rather than by month is for.
 - [ ] **Step 2: harvest three design properties into this wave's tasks and cite the source.** Each is
   already implemented there and each is stronger than the default this wave would otherwise take:
-  - **No missing judgement becomes a default judgement.** *"'no file' is not a verdict — and an
-    unreadable or unknown-value verdict is refused rather than coerced."* → Task 8's `reviewed_unknown`
-    is a choice, never a column default.
-  - **The judgement is an input to the gates, never a substitute.** A false-positive judgement does not
-    open a PR; it moves the campaign to "run the gates", and a failing gate is terminal. → Task 12
-    Step 4 and Task 11 Step 4.
-  - **The two directions are not symmetric, and the asymmetry is enforced, not promised.** `store.js`
-    refuses a `missed_tp` artifact carrying `status: fixed`, because *"the agent must never widen a rule
-    and re-bank the benign baseline in the same PR."* → Task 11 Step 4's promotion rules.
+  - **No missing judgement becomes a default judgement.** `advance.js:33`: *"…default judgement, because
+    'no file' is not a verdict."* An unreadable or unknown-value verdict is refused rather than coerced
+    into `insufficient`. → Task 8 Step 6: `reviewed_unknown` is a choice a reviewer makes, never a
+    column default.
+  - **The judgement is an input to the gates, never a substitute.** `advance.js:271-272`, verbatim:
+    *"judged a false positive, but the gates have not run - a judgement is an input to the gates, never
+    a substitute for them"* — the campaign returns to `TRIAGED` with `action: 'run-gates'` (`:274`), and
+    a gate that did not pass is `GATE_ABORTED`, `terminal: true` (`:259-266`). Note the precise shape:
+    `PR_OPEN` **is** a campaign state, so the property is not "it never opens a PR" — it is that the
+    judgement alone never advances past the gates. → Task 12 Step 4 and Task 11 Step 4.
+  - **The two directions are not symmetric, and the asymmetry is enforced, not promised.**
+    `PROPOSE_ONLY_BUCKETS` (`store.js:109`) is `['missed_tp']`, and `:418` refuses a `missed_tp`
+    artifact claiming a landed fix. `README.md:98`: *"The agent must never widen a rule and re-bank the
+    benign baseline in the same PR."* → Task 11 Step 4's promotion rules.
 - [ ] **Step 3: add one pointer comment** in `ai-event-triage.service.ts` naming the agent, its lane, and
   why the two vocabularies are not merged — so the next reader does not "unify" them and lose the
   no-policy-bucket property.
@@ -1507,7 +1760,9 @@ intel agent's `BUCKETS` or `STATUSES` vocabulary (`detection_fp`, `missed_tp`, `
 `triage classification %q is intel FP-agent vocabulary; the two lanes answer different questions — see fp-agent-boundary.md`.
 Delete the boundary document and the linter's message loses its referent, which is itself detectable.
 **Exit:** **1** committed inventory naming **4** vocabularies (production triage, corpus governance,
-`aicontext-gate/adjudication.go`, intel fp-agent) and stating for each what question it answers. **0**
+`aicontext-gate/adjudication.go`, intel fp-agent) and stating for each what question it answers, with
+the **inventoried SHA** and the **measured drift from it** both printed by the commands in Step 1 rather
+than written down. **3** design properties harvested, each citing the file and line it came from. **0**
 values shared between the production triage taxonomy and the intel agent's buckets, enforced by the
 linter. **0** lines of the agent changed.
 
@@ -1549,16 +1804,22 @@ Each is a number or a named artifact, and each names the test that goes red on r
     absent-with-a-reason; **3** command render states; the prompt-lane diff **empty**. Defeat: make
     `detectionClassPivot` return a link unconditionally.
 11. **1 declared storm threshold with its arithmetic, or 1 committed written decision that the reason
-    code stays operator-selected.** A monitor that can fire on a zero denominator fails. Defeat: remove
-    the minimum-denominator guard.
-12. **1 committed lane-boundary inventory naming 4 vocabularies; 0 values shared between the production
-    taxonomy and the intel FP agent's buckets; 0 lines of that agent changed.** Defeat: the vocabulary
-    linter.
+    code stays operator-selected.** A monitor that can fire on a zero denominator fails. **Exactly 1
+    threshold constant exists repo-wide for this reason code**, asserted by `git grep -c` in the spec —
+    the seam with Wave 8 Task 8, which owns the halt and the `downgradeTriggers` entry the monitor's
+    output becomes and must not declare a second number. Defeat: remove the minimum-denominator guard;
+    separately, add a rival constant in the halt service and this criterion fails here.
+12. **1 committed lane-boundary inventory naming 4 vocabularies, carrying the SHA it inventoried and the
+    measured drift from it; 0 values shared between the production taxonomy and the intel FP agent's
+    buckets; 0 lines of that agent changed.** Defeat: the vocabulary linter.
 13. **Deploy order held and evidenced.** Task 4's Backend deploys **before** Task 5's console. Task 7's
     console waits on a deployed `ListAiDetectionsDto.channel` — check the running task definition, do not
     assume `origin/main` is deployed. Task 10's version axis, if it needs an agent stamp, deploys the
-    Backend first or `forbidNonWhitelisted` 400s every session start fleet-wide. **Deploying needs a
-    fresh explicit owner ask every time.**
+    Backend first or `forbidNonWhitelisted` 400s every session start fleet-wide. Task 8's tuple widening
+    is a **Backend-before-Frontend** change on the policy write path, not a Backend-before-agent one
+    (reconciliation C-6 corrects the imprecise form). **Deploying needs a fresh explicit owner ask every
+    time (O-19), and the deploy gates are fail-closed on MISSING runs — dispatch `pr-checks` and
+    `security` on `main` FIRST.**
 
 ### What this wave does **not** move, and must not be reported as moving
 

@@ -1,11 +1,36 @@
 # Wave 8 — Bind every consequential action to an authoritative checkpoint, then certify what that buys
 
-**Depends on:** every prior wave. Specifically: Wave −1 (repo-qualified references, catalog digests),
-Wave 2 (evidence grades — a certificate cannot report `evidenceStrength` the wire does not carry),
-Wave 3 + 3B (per-class denominators, mandatory `--engine-version` — D18 forbids citing a number this
-wave did not get from a repaired instrument), Wave 4A/4B/4C (the residuals and the effect resolver
-this wave binds approvals to), Wave 5 (the console surface the certificate projects onto), Wave 6
-(adjudicated triage feeding `downgradeTriggers`), Wave 7A/7B (the scanner rows of the manifest).
+**Depends on:** every prior wave. Specifically: Wave −1 (repo-qualified references, catalog digests,
+and the prose forbidden-claims checklist this wave's renderer must match — D-11), Wave 2 (evidence
+grades — a certificate cannot report `evidenceStrength` the wire does not carry — and Wave 2 Task 9,
+which has **already changed `taintRisky`'s signature and attribution**; see Traps), Wave 3 + 3B
+(per-class denominators, mandatory `--engine-version` — D18 forbids citing a number this wave did not
+get from a repaired instrument), Wave 4A/4B/4C (the residuals and the effect resolver this wave binds
+approvals to), **Wave 5 Task 10** (the console surface the certificate projects onto), **Wave 6
+Task 9** (the adjudication record feeding `downgradeTriggers`), Wave 7A/7B (the scanner rows of the
+manifest), and **Wave 7C Task 1 and Task 2** — Task 1 (`w7_scanner.md:1421`) hands Task 11's
+claimable entry 7 the test name it was missing, and Task 2 (`w7_scanner.md:1485`) owns P0-18, whose
+outcome this wave's R3 `prerequisites` row records.
+
+**Hard ordering. Three constraints are destructive if inverted, not merely inefficient.**
+
+- **O-16 — Wave 4B Task 2 (the effect resolver) lands before Task 2 below.** The widened binding's
+  `normalizedEffect` segment **is** the resolver's output. Without it the preimage still hashes the
+  raw `ToolInput`, so a respelled command is a different grant — the exact defect Task 2 exists to
+  close. Wave 4B Task 4 then binds `normalizedEffect` on the **tool lane** (its exit is a 9×9 matrix:
+  9 diagonal releases, **72** refusals). Task 2 below adds the remaining segments and generalises the
+  binding to every sink. **Do not rebuild Wave 4B Task 4 here.**
+- **O-17 — Task 5 (canary honesty) lands before Task 9 (live canary evidence).**
+  `Installers/internal/aicanary/exec.go:125` sets `WaitDelay = 5 * time.Second`, and a real deny was
+  reported as `canary-host-launch-failed` in **2 of 6** recorded runs. A canary that reports
+  enforcement successes as errors cannot be the evidence lane.
+- **O-18 — Task 1 (sink inventory) before Task 3 (mediation) before Task 12 (defeat matrix).**
+  `TestDirectAlternatePathToTheSameSinkFails` cannot know what "the same sink" is without the
+  inventory.
+
+**One outbound constraint.** Wave 5 Task 10 renders this manifest and deliberately does not invent a
+second shape, so **Task 6 lands `Installers/internal/certificate/schema.json` as a schema-only commit
+before Wave 5 Task 10 starts.** Wave 5 does not wait for the generator.
 
 **Implements decisions:** D14 (keep fail-open, force it into a non-green state), D17 (this packet
 delivers dimensions, not risk certificates), D15 and D16 as *recorded constraints on the certificate*
@@ -137,19 +162,33 @@ certificate.** Fix it before Task 9 runs.
 
 ### 6. Traps
 
-- **Do not widen `taintRisky` or weaken it to widen mediation.** Risk 5's poisoned-session HOLD is a
-  real control. Its input defect (any non-INFO raw finding, never policy-filtered) belongs to Wave 4B
-  and requires paired benign-sequence precision and poisoned-sequence recall *before* any narrowing.
+- **Do not widen `taintRisky` or weaken it to widen mediation — and do not read this trap as "the
+  function is untouched."** By the time this wave runs, **Wave 2 Task 9b/9c has already changed it**:
+  a SHADOW-lifecycle class no longer makes an action risky; the function takes the resolved policy and
+  returns a **structured reason** (class · effective disposition from `toolRiskDisposition` · which arm
+  fired) instead of a bare bool; the unused `toolName` parameter is dropped or used; and the reason is
+  carried into `emitToolCallHeld` / `emitToolCallReleased`. **Read the signature off `origin/main`
+  before you touch a call site** — `Installers/internal/daemon/ai_taint.go:159-166` is the
+  **pre-Wave-2** shape, and its one production caller is `ai_handlers.go:3055`.
+  What stays forbidden *here* is the **narrowing** — removing `monitor`-policy findings from the taint
+  input. That is **Wave 4B Task 9**, and it is **blocked on a Product/Security ratification decision**
+  with paired benign-sequence precision and poisoned-sequence recall measured first; until then
+  `taintRisky` ships unchanged in that respect. Risk 5's poisoned-session HOLD is a real control.
   Widening mediation to more sinks is orthogonal to that fix and must not be used as cover for it.
 - **Do not raise `warnDialogTimeoutSeconds`** (`Installers/cmd/devoid/ai_warn_dialog.go:85`, value 30).
   The arithmetic is 30 s dialog + 10 s PowerShell process cap = 40 s worst case inside a 60 s host
   budget, leaving 20 s for the daemon round-trip. Raising it reproduces the orphaned-dialog hang.
   Lowering the fail-open by shortening the *host* budget is equally wrong for the same reason.
-- **Do not widen the Codex hook-trust dialect pin.** `Installers/internal/codexmanaged/hookdialect.go:112`
-  carries two rows, `0.144.` and `0.147.`; the owner's client is `0.149.0-alpha.4.1`. Widening the pin
-  is forbidden by prior decision — the fix lives at `verify.go:608`. The Codex surface's
-  safeguards-on column therefore stays **UNKNOWN** on that box and belongs on the system card as
-  such (Task 11).
+- **Do not widen the Codex hook-trust dialect pin.** The two-row table is `knownHookTrustDialects` at
+  `Installers/internal/codexmanaged/hookdialect.go:166` — `hookTrustDialect144` (`:100-104`, prefix
+  `0.144.`) and `hookTrustDialect147` (`:111-115`, prefix `0.147.`). The owner's client is
+  `0.149.0-alpha.4.1`. **`:112` is a field inside one row, not the table**; earlier drafts of this
+  wave and the spine both cited it, and Wave 4C Task 11 is the one that has it right. The file's own
+  comment at `:163-165` records that 0.145, 0.146, 0.148 and the 0.149 alpha are unmeasured and that
+  `hookTrustDialectFor` must keep answering no. Widening the pin is forbidden by prior decision — the
+  fix lives in `verify.go`'s `classifyHookLedger` (docblock `:608-611`, function at `:612`). The Codex
+  surface's safeguards-on column therefore stays **UNKNOWN** on that box and belongs on the system
+  card as such (Task 11).
 - **F16 can permanently brick an endpoint.** `Installers/cmd/devoid/setup_installer.go:170-178`
   records the permanent 409 — *"Endpoint signing-key rotation requires the approved rotation
   protocol"* — with no client-side latch and no self-recovery. Any change to mint/convergence that
@@ -168,6 +207,9 @@ certificate.** Fix it before Task 9 runs.
 `Installers/internal/daemon/sink_inventory_test.go` (new),
 `Installers/internal/daemon/server.go` (route registration — read only, do not re-route yet),
 `.plans/m47a-20260822/v2-waves/artifacts/sink-inventory.json` (new, generated)
+
+**Ordering (O-18):** this task is first in the wave. Task 3 cannot migrate a sink it cannot name, and
+Task 12's `TestDirectAlternatePathToTheSameSinkFails` cannot define "the same sink" without it.
 
 - [ ] Write the failing test first: `TestEverySinkIsClassified` walks the registered route table
       and the CLI command table and fails on any decision-producing entry point absent from
@@ -215,10 +257,17 @@ as `metrics.mediationGap.numerator` over the total. Today that number is **11 of
 ## Task 2: Widen the binding from four fields to the P0-16 field set
 
 **Files:**
-`Installers/internal/daemon/ai_tool_hold_approval.go` (`toolHoldBinding` at `:145`, record type at `:110-136`),
+`Installers/internal/daemon/ai_tool_hold_approval.go` (`toolHoldBinding` at `:145`, `toolHoldRecord` at `:113-135`),
 `Installers/internal/daemon/ai_tool_hold_approval_binding_test.go` (new),
 `Backend/src/ai-governance/dto/ai-delegated-approval.dto.ts`,
 `Backend/src/ai-governance/services/ai-delegated-approval-authority.service.ts`
+
+**Ordering (O-16): Wave 4B Task 2 lands before this task, and Wave 4B Task 4 lands the tool lane.**
+`normalizedEffect` below **is** Wave 4B Task 2's resolver output; started without it, the preimage
+still hashes the raw `ToolInput` and a respelled command remains a different grant. Wave 4B Task 4
+already carries the resolved-effect digest into the hold record and proves it with a 9×9 matrix
+(9 diagonal releases, **72** refusals). **This task does not rebuild that.** It adds the remaining
+P0-16 segments and generalises the binding beyond the tool lane to the sinks Task 3 migrates.
 
 - [ ] Failing test first: `TestBindingRejectsAChangedEffect` — build a grant for a normalized effect,
       then present the *same* raw `ToolInput` re-spelled (added trailing space, reordered flags,
@@ -235,7 +284,8 @@ as `metrics.mediationGap.numerator` over the total. Today that number is **11 of
       present), `useCount` (already present).
 - [ ] Keep the record content-free. The tool input stays hashed and unstored; add no raw argv, no
       resource names that are not already public identifiers. The file's own contract at
-      `ai_tool_hold_approval.go:31-37` is the standard.
+      `ai_tool_hold_approval.go:32-37` ("WHAT NEVER LEAVES THE ENDPOINT. Only digests and
+      identifiers.") is the standard.
 - [ ] **`normalizedEffect` is nullable and its absence is load-bearing.** When Wave 4B's resolver
       returns `INSPECTION_INCOMPLETE`, the binding carries `normalizedEffect: null` and the approval
       path must resolve to hold/restricted — never to a grant. Assert this, do not document it.
@@ -259,6 +309,9 @@ arm and `TestIncompleteInspectionNeverGrants` goes RED with `INSPECTION_INCOMPLE
 `Installers/internal/daemon/mediation.go` (new — one entry point, so a sink cannot acquire a second),
 per-sink handlers named by Task 1's inventory,
 `Installers/internal/daemon/mediation_coverage_test.go` (new)
+
+**Ordering (O-18):** after Task 1, before Task 12. The inventory is this task's progress meter and
+Task 12's definition of "the same sink".
 
 - [ ] Failing test first: `TestNoSinkPermitsAnEffectUnmediated` reads `sinkInventory` and fails for
       every row with `canPermitEffect: true && mediated != "authoritative"`. Expected failure text:
@@ -340,8 +393,14 @@ through the generator produces `status: "FAIL"` for R1 and R5 and a `downgradeTr
 **Files:**
 `Installers/internal/aicanary/exec.go` (`:125`, `finish` at `:144`),
 `Installers/internal/aicanary/exec_test.go`,
-`Installers/internal/codexmanaged/canary.go` (`:341-352`),
-`Installers/internal/codexmanaged/LIVE_PROOF_RUNBOOK.md:554-556`
+`Installers/internal/codexmanaged/canary.go` (`:341-352`; the slug constant is `:58`),
+`Installers/internal/codexmanaged/LIVE_PROOF_RUNBOOK.md:552-558`
+
+**Ordering (O-17): this task lands before Task 9.** Task 9 is the live-evidence lane, and until this
+lands the lane reports enforcement successes as errors — `2 of 6` recorded
+`TestLiveCanary_RealCodexHost` attempts returned `canary-host-launch-failed` on invocations where the
+client printed `hook: UserPromptSubmit Blocked` in the same launch. Evidence gathered before this
+task is not admissible into `proof.liveCanary`.
 
 - [ ] Failing test first: `TestWaitDelayExpiryIsNotALaunchFailure` — a stub runner returns
       `fmt.Errorf("exec: WaitDelay expired before I/O complete")` alongside a populated `Stdout`
@@ -379,6 +438,12 @@ it goes RED with `truncated capture reported an enforcement gap`.
 `Installers/internal/certificate/manifest_test.go` (new),
 `Installers/internal/certificate/schema.json` (new),
 `.plans/m47a-20260822/v2-waves/artifacts/certificate/<certificateId>.json` (generated)
+
+**Ordering (outbound): `schema.json` lands as a schema-only commit before Wave 5 Task 10 starts.**
+Wave 5 renders this manifest and is explicitly forbidden from inventing a second shape, so the schema
+is published early and the generator follows. Wave 5 does not wait for the generator; its console
+half runs on a committed fixture and its live half stays `UNKNOWN` until this task ships
+`cmd/devoid-certificate`.
 
 `grep -rn "certificateId" origin/main` across Installers, Backend and Frontend returns **zero hits**.
 Nothing like this exists; this is the one genuinely new subsystem in Wave 8.
@@ -542,6 +607,13 @@ or `UNKNOWN` — never `PASS` on a null.
 `Installers/internal/certificate/standards.go` (new),
 `Installers/internal/certificate/standards_test.go` (new)
 
+**Ownership, so this is not built twice (D-12).** **Wave −1 Task 6 owns only the *column declaration*** —
+three per-class columns (`atlasTechniques`, `owaspLlm2026`/`owaspAsi2026`, `aiuc1Controls`) declared in
+the manifest schema, plus the pinned `atlasRelease` string. **This task owns the generated mapping
+itself and `TestEveryClassCarriesStandardsIds`.** Wave −1's exit as written ("all producer DLP
+classes") is unreachable in Wave −1: the governed DLP vocabulary is 30 until **Wave 1** widens it to
+81, so the 81-class denominator below exists only after Wave 1 lands. **Depends on Wave 1.**
+
 `grep -ci owasp` over the v1 plan = **0**. `git grep -in aiuc` over `Installers@origin/main` = **0**
 hits. `git grep -in "AML\.T[0-9]"` = **0** hits. Nothing maps to anything today.
 
@@ -566,7 +638,8 @@ hits. `git grep -in "AML\.T[0-9]"` = **0** hits. Nothing maps to anything today.
 - [ ] **One commit.** ATLAS, OWASP and AIUC-1 ids land together, because a class mapped to one
       framework and not the others produces a certificate that is auditable in one direction only.
 - [ ] The mapping is a catalog column, generated like every other — never hand-maintained. Wave −1's
-      rule applies: no hand-written counts.
+      rule applies: no hand-written counts. The three columns are the ones Wave −1 Task 6 declared;
+      this task fills them and gates on totality.
 
 **Defeat test:** `TestEveryClassCarriesStandardsIds` — remove the mapping for one class and it goes RED
 with `class "<id>" has no atlasTechniques and no owaspAsi2026 id`. Second:
@@ -589,9 +662,13 @@ least one class. The counts are derived from the catalogs, not typed.
 `Backend/src/ai-policy-delivery/ai-policy-halt.service.spec.ts` (new)
 
 - [ ] Failing test first: `TestConfirmedBenignBlockHaltsTheRing` — record one adjudicated
-      false hard block (Wave 6's adjudication record, not a single reviewer's label) against a segment
-      in `CANARY` and assert the ring is halted and the certificate downgraded. Expected failure text:
+      false hard block against a segment in `CANARY` and assert the ring is halted and the certificate
+      downgraded. Expected failure text:
       `segment remained at cohortBasisPoints=2500 after an adjudicated false block`.
+      **The adjudication record is Wave 6 Task 9's** (`adjudicationStatus` ∈
+      `NOT_REQUIRED | AGREED | THIRD_REVIEW | UNRESOLVED`, adjudicator asserted distinct from both
+      labelers) — **not a single reviewer's label**, and not a second shape invented here. **Depends
+      on Wave 6 Task 9;** without it this test and criterion 10's drill cannot run.
 - [ ] Express 5% → 25% → 100% as `cohortBasisPoints` **500 → 2500 → 10000**. Do not add a new rollout
       field: `AI_DELIVERY_ROLLOUT_PHASES` already gives SHADOW/CANARY/ENFORCE, assignment is already a
       stable hash of `(org, segment, endpoint)` so raising the cohort only ever adds endpoints, and
@@ -603,9 +680,13 @@ least one class. The counts are derived from the catalogs, not typed.
       coverage, latency or utility regression beyond its declared bound; (e) `dropped > 0` in any
       contributing lane report; (f) a catalog, ruleset, normalizer, parser, policy or model digest
       change that is not in the certificate's `system` block.
-- [ ] Wire `FALSE_POSITIVE_STORM` — declared at `ai-policy-rollback.service.ts:11` with nothing
-      computing it — to a change-point monitor over Wave 6's adjudicated rate. Declare the threshold
-      numerically in the service, not in a comment.
+- [ ] **`FALSE_POSITIVE_STORM` — Owned by Wave 6 Task 12.** That task builds the change-point monitor
+      over the adjudicated rate, declares the threshold numerically (or commits the written decision
+      that the reason code stays operator-selected), and guarantees a zero or absent denominator can
+      never file an intent. **This task only consumes it:** a filed `FALSE_POSITIVE_STORM` intent is
+      halt condition (d) below and a `downgradeTriggers` entry. Do not write a second monitor here,
+      and do not read the reason code's presence at `ai-policy-rollback.service.ts:11` as evidence
+      that something computes it — today nothing does.
 - [ ] **Halt is not rollback.** Halt freezes the ring; rollback files a forward-only intent against a
       historical snapshot. Keep the rollback service's invariant intact: nothing in it may name,
       compute or compare a bundle revision, so nothing in it can lower one.
@@ -631,6 +712,8 @@ into the manifest's `proof.rollback`.
 `Installers/internal/aicanary/` (after Task 5),
 `Installers/internal/liveproof/register.json`,
 `scripts/ceragon-power-on.ps1`
+
+**Ordering (O-17): Task 5 lands first.** Nothing measured by an unfixed canary reaches `proof.liveCanary`.
 
 **This task has three named external dependencies. It is not fully engineering and must not be
 scheduled as though it were.**
@@ -692,11 +775,35 @@ the owner's own box.
 `Installers/cmd/devoid/ai_trust_converge.go` (`canConvergeEndpointTrustInThisProcess` at `:52-64`),
 `Installers/cmd/devoid/setup_installer.go:170-178`
 
-**The plan v1 mentions F16 zero times** (`grep -c F16` over 17,538 lines = 0). The respec is
-`docs/Devoid_Roadmap_To_Finished_Product.md:788` — **a separate repository**, last touched 2026-08-17.
-The review's §15 cites "plan line 788", which is an unrelated `aws iam put-role-policy` step in v1's
-Wave 0; the finding is valid, the citation is not. The ownership table repeats F16 as mandatory for
-R1, R3 and R4 at `roadmap:945`, `:947`, `:948`.
+**The plan v1 mentions F16 zero times** (`grep -c F16 M47A_IMPLEMENTATION_PLAN.md` over 17,538 lines
+= **0**, re-run 2026-08-28). **The citation an earlier draft of this wave carried was itself wrong,
+and this is the correction.** F16 is **not** in the roadmap: `git show
+origin/main:Devoid_Roadmap_To_Finished_Product.md | grep -c F16` in the `docs` repository returns
+**0** at `9f236fd` and **0** at the preceding `a2a867d`, and `:788` / `:945` / `:947` / `:948` there
+are unrelated lines about artifact hashing and inspection reporting. The review's §15 cites "plan line
+788", which is an unrelated `aws iam put-role-policy` step in v1's Wave 0. **The finding is valid; two
+successive citations for it were not.**
+
+**Where F16 actually lives — in this workspace, not in `docs`:**
+
+| Artifact | What it holds |
+|---|---|
+| `.plans/verify-prod-20260808/fix-specs/CREDS.md:24` | the F16 fix spec — *"Endpoint Ed25519 signing private key is stored on a deliberately Users-readable boundary; move it to a SYSTEM/Administrators-only file and self-heal the installed fleet"*; `:235` is the separate, descoped **F16b** |
+| `.plans/verify-prod-20260808/IMPLEMENTATION_PLAN.md:322` | §5.1 risk-register entry — *"a non-elevated shim mints a new signing key → permanent unrecoverable 409 fleet-wide"*, and `:272` records that F16 shipping without resolving the non-elevated reader is **the one item that can permanently brick endpoints** |
+| `.plans/verify-prod-20260808/F16-SAFETY-ANALYSIS.md` | the closed call-graph reader inventory, which is the shape Task 1 uses for sinks |
+
+Discovery command, so the next reader does not repeat either mistake:
+`grep -rn "^## F16" .plans/verify-prod-20260808/fix-specs/CREDS.md` and
+`grep -rln F16 .plans/verify-prod-20260808/`.
+
+**"Mandatory for R1, R3 and R4" traces to this plan's own spine**, whose risk table names *"F16 key
+custody absent"* as an R1 blocker and *"F16"* as an R3 and R4 blocker. Cite the spine, not a roadmap
+line number.
+
+**Note the scope difference and do not collapse it.** `CREDS.md`'s F16 is Windows-DACL custody — move
+the key off the `BUILTIN\Users`-readable boundary and self-heal the fleet. The **non-exportable**
+custody this task requires (privileged broker or KMS/HSM/TPM) is strictly larger and is what carries
+the procurement and key-ceremony lead time in the exit below.
 
 **What is true today, verified:**
 
@@ -741,9 +848,9 @@ non-elevated mint succeeded via performEnrollment`. Second: `TestReadOnlyVerific
 privileged broker **or** a KMS / HSM / TPM key owner. Both carry **procurement and key-ceremony lead
 time that is not engineering time.** Until a key owner is chosen and a ceremony is completed:
 **R1, R3, R4 and the shared trust gate stay `NOT_READY`**, and the manifest carries
-`prerequisites: ["F16-endpoint-signing-key-custody"]` on all three. The measurable engineering exit
-that is *not* blocked: **25 of 25** cells in the five-entry-point × five-verb table deny under a
-non-elevated token, on both install scopes.
+`prerequisites: ["F16-endpoint-signing-key-custody"]` on all three, per the spine's risk table. The
+measurable engineering exit that is *not* blocked: **25 of 25** cells in the five-entry-point ×
+five-verb table deny under a non-elevated token, on both install scopes.
 
 ---
 
@@ -754,12 +861,26 @@ non-elevated token, on both install scopes.
 `docs/ai-security/DEVOID_SYSTEM_CARD.md` (new),
 `Installers/internal/certificate/claim_test.go` (new)
 
+**Ownership, so the list does not exist twice with two counts (D-11).** **Wave −1 Task 2 owns the
+prose checklist** — ≥ 15 rows, each with a named source, guarded by `claim-contract-guard`
+(`ci/lib/claim-contract.mjs`), which greps the plan and any release note for the forbidden strings.
+**This task owns the executable renderer.** They are deliberately two artifacts, and the only thing
+that keeps them from drifting is the equality assertion below. Neither count is ever typed twice.
+
 - [ ] Failing test first: `TestForbiddenClaimsAreRefused` — the claim renderer takes a manifest plus a
       proposed claim string and refuses any claim on the forbidden list whose supporting field is
       `null` or whose lane is not `PASS`. Expected failure text:
       `claim "zero false positives" refused: falsePositiveRate.numerator = 1`.
+- [ ] **Second failing test, and it is the one that stops the drift:
+      `TestForbiddenListMatchesThePlanChecklist`** — parse Wave −1's prose checklist and assert
+      `len(forbiddenClaims) == <rows in the checklist>`, with **both counts printed by the test rather
+      than written down anywhere**, and every renderer entry resolving to a checklist row by its
+      source. Expected failure text: `renderer encodes 15 forbidden claims; the plan checklist carries
+      16`. Add a row to one and not the other and it goes RED. Neither artifact is the master; the
+      test is what makes them one list.
 - [ ] Encode the **forbidden-claims list** as data the renderer enforces, not prose a human is asked
-      to remember:
+      to remember. Today both sides hold **15** — 8 from §7 "forbidden outright" plus 7 "forbidden by
+      the research", which is Wave −1 Task 2's own split:
       - *"Zero false positives"* — measured today: 1 benign hard block per 51 ordinary commands and
         it is un-relaxable; 15/52 benign prompts at interrupt tier; 2/23 sealed benign interrupts.
       - *"All detections are high quality"* — 43 of 55 detector classes report `fnRate: 0` on **zero**
@@ -788,7 +909,7 @@ non-elevated token, on both install scopes.
         a per-user scheduled task does, roughly one minute after install.
       - **Do not claim a corpus is uncontaminated because it carries a canary.** The BIG-bench canary
         GUID was reproducible on demand by GPT-4 — the filter became the proof of contamination.
-      - **Do not treat the measured production FP rate as a certified quality label** until Wave 6's
+      - **Do not treat the measured production FP rate as a certified quality label** until Wave 6 Task 9's
         second reviewer and adjudication record exist on the row. A single reviewer can set it, and
         `benign_expected` conflates "policy too strict" with "authorized action."
       - **Do not claim the lexical/ML prompt classifier can be an enforcing tier** (D16). Published
@@ -801,24 +922,74 @@ non-elevated token, on both install scopes.
         round. The AIUC-1 audit is the substitute and must be named as such, never as "independently
         validated detection."
 - [ ] Encode the **claimable-today** list with its named test, so the template offers a true sentence
-      instead of only refusing false ones: the scanner false-green statement; *"the console's
-      detection engine is byte-identical to the shipped endpoint engine"* (pin `254d24fc`, three
-      digests, LF-normalised — **caveat: guarded per-PR only against local edits, upstream drift is a
-      daily poll**); *"tool shadow capture is local-only and behaviour-invariant on the named tool
-      path"*; *"the named policy floor is enforced on the tested write and read paths"*
-      (`Backend@dfbac545`, `ai-security-policy.phase-b-content.spec.ts:661-673`); *"the shipped
-      tool-risk default posture is 23 block / 2 warn / 12 monitor / 3 allow"*
-      (`ai-security-policy.tool-risk-d4-tiers.spec.ts`, red proof at `:302`); *"the agent's AI
-      rule-file walk is depth-unbounded and reports its own completeness"* (585 → 1,099 files
-      measured); *"a Linux sandbox run does not vouch for a non-Linux payload"*; *"the prompt lane's
-      false-positive rate is measured at 15/52 benign at warn-or-above and 0/52 at block tier, on an
-      87-case corpus."*
+      instead of only refusing false ones. **A claimable sentence with no named test is not
+      renderable.** An unguarded claim sitting on the claimable list is the exact failure this packet
+      exists to end, so the renderer holds an unbound sentence in a `pending` block that
+      `TestClaimableEntriesAreBound` refuses to emit — it is neither published nor quietly deleted.
+      **6 of the 8 are bound today; entries 3 and 8 are pending, with the discovery command that
+      closes them.**
+
+      **This wave owns that count, and the count is 2.** Wave 7C Task 1 binds entry **7** and
+      nothing else. Entry **3** (tool-shadow capture) and entry **8** (the 15/52 prompt-lane figure)
+      survive Wave 7C untouched and are this wave's to close — no other wave may report the list as
+      fully bound, and any criterion that does is corrected against this line rather than the
+      reverse. A sentence promoted out of the `pending` block to make somebody's exit criterion true
+      is exactly the unguarded claim the block exists to hold. *(Wave 7C exit criterion 3,
+      `w7_scanner.md:1574`, now states the same two entries and the same owner.)*
+
+      1. The scanner false-green statement — `scan-exit-decision.spec.ts` cases (c) and (d)
+         (Wave 7A Task 2; its criteria 5 and 6). The renderer's lane-`PASS` rule already withholds it
+         until Wave 7A ships, so it cannot be claimed early.
+      2. *"The console's detection engine is byte-identical to the shipped endpoint engine"* — pin
+         `Installers@254d24fc`, three digests, LF-normalised. **Caveat, and it rides the sentence:
+         guarded per-PR only against local edits; upstream drift is a daily poll.**
+      3. **PENDING — no test named.** *"Tool shadow capture is local-only and behaviour-invariant on
+         the named tool path."* The shadow tests that do resolve
+         (`internal/daemon/ai_policy_authority_test.go:323` `TestShadowPhaseWritesOnlyACandidate`,
+         `:361`, `:383`) are **policy-bundle** shadow, not the D4 decision-level tool shadow this
+         sentence claims. Do not substitute one for the other. Discovery:
+         `cd Installers && git grep -n "func Test" origin/main -- internal/daemon | grep -i shadow`
+         and Wave 2 Task 9, which owns the tool lane's shadow gate. Until a test is named this stays
+         in the `pending` block.
+      4. *"The named policy floor is enforced on the tested write and read paths"* —
+         `Backend@dfbac545`, `ai-security-policy.phase-b-content.spec.ts:661-672` (*"B9, floor half:
+         require_approval on a FLOOR class is raised, not projected"*).
+      5. *"The shipped tool-risk default posture is 23 block / 2 warn / 12 monitor / 3 allow"* —
+         `ai-security-policy.tool-risk-d4-tiers.spec.ts`, the tally assertion at `:302`.
+      6. *"The agent's AI rule-file walk is depth-unbounded and reports its own completeness"*
+         (585 → 1,099 files measured) — `Installers@5b129523`,
+         `internal/inventory/aitools/rule_walk_coverage_test.go:52`
+         `TestTruncatedRuleWalkReportsItsOwnIncompleteness`, `:100`
+         `TestCompleteRuleWalkReportsItselfComplete`, `:145`
+         `TestDefaultDepthReachesTheMeasuredMarketplaceSurface`.
+      7. *"A Linux sandbox run does not vouch for a non-Linux payload, on the npm and PyPI
+         ecosystems"* — `Sandbox-Worker@2831997d`,
+         `tests/platform-mismatch-routing.test.ts` › *"with the fold, the same clean run becomes
+         INCONCLUSIVE / COVERAGE_GAP"* and › *"a HARD signal still dominates"*, plus
+         `tests/platform-mismatch.test.ts` › *"forces coverage to false on a mismatch, whatever the
+         base was"*. **The ecosystem qualifier is load-bearing and must not be dropped:** the dispatch
+         test › *"leaves cargo and go alone — the toolchain gate already covers those runs"* records
+         that cargo and Go are deliberately outside this guard, so the unqualified sentence overstates
+         it. *(Reconciliation G-4 flagged this entry as carrying no named test. The guard and its
+         tests were confirmed present at `2831997d` in this editing pass; the citation above is that
+         confirmation. If a later pass cannot resolve them, the entry comes off the list — it is never
+         re-worded to survive.)*
+      8. **PENDING — no test named, and the numbers are pre-Wave-3.** *"The prompt lane's
+         false-positive rate is measured at 15/52 benign at warn-or-above and 0/52 at block tier, on
+         an 87-case corpus."* `git grep -rn "15/52" origin/main -- internal` in Installers returns
+         **0** hits, so no shipped artifact carries these figures. **D18 forbids publishing them at
+         all** until Wave 3 repairs the instrument, and Wave 4C Task 3 replaces aggregate prompt-lane
+         rates with four named per-surface denominators. Discovery: re-derive from Wave 4C's
+         `HOLDOUT_REPORT.md` after Wave 3, and bind to the test Wave 4C names. Until then this stays
+         in the `pending` block; **do not publish the 15/52 figure from this plan.**
 - [ ] **The system card** publishes, per surface: ASR raw and safeguarded, persistence scaled
       1 → 200 attempts, named attacker methodology (adaptive versus known), held-out environment
       count, external red-team evidence, and explicit regressions. **The safeguards-off column for
       the Codex surface belongs on that page**, not absorbed into a coverage claim: on the owner's own
       machine the client is `0.149.0-alpha.4.1` and the hook-trust dialect table
-      (`Installers/internal/codexmanaged/hookdialect.go:112`) carries two rows, `0.144.` and `0.147.`.
+      `knownHookTrustDialects` (`Installers/internal/codexmanaged/hookdialect.go:166`) carries two
+      rows — `hookTrustDialect144` at `:100-104` (`0.144.`) and `hookTrustDialect147` at `:111-115`
+      (`0.147.`). **Do not cite `:112`**; that is a field inside one row.
 - [ ] Cite the **Five Eyes** *Careful Adoption of Agentic AI Services* (CISA / NSA / ASD ACSC / CCCS /
       NCSC-NZ / NCSC-UK, 2026-05-01) in the template. Human approval at consequential actions and
       per-request least privilege are now government-stated requirements, which makes the broker
@@ -834,13 +1005,21 @@ non-elevated token, on both install scopes.
 
 **Defeat test:** `TestForbiddenClaimsAreRefused` — remove the `falsePositiveRate` guard and it goes RED
 with `claim "zero false positives" refused: falsePositiveRate.numerator = 1`. Second:
-`TestSystemCardHasAPerSurfaceRow` — delete the Codex safeguards-off row and it goes RED with
+`TestForbiddenListMatchesThePlanChecklist` — add a row to Wave −1's prose checklist and not to the
+renderer, and it goes RED with `renderer encodes 15 forbidden claims; the plan checklist carries 16`.
+Third: `TestSystemCardHasAPerSurfaceRow` — delete the Codex safeguards-off row and it goes RED with
 `system card publishes a single prompt-injection number`.
 
-**Exit:** the forbidden list contains **15** encoded entries, each bound to the manifest field that
-refuses it; the claimable list contains **8** entries, each bound to a named test; the system card
-carries **4** surface rows (Claude Code, Codex, MCP, browser/extension), with Codex safeguards-on
-explicitly `UNKNOWN`.
+**Exit:** the encoded forbidden list and Wave −1 Task 2's prose checklist carry **equal** row counts,
+**≥ 15**, both printed by `TestForbiddenListMatchesThePlanChecklist` rather than written down, with
+every renderer entry bound to the manifest field that refuses it and resolving to a checklist row by
+its source; the claimable list holds **8** candidate sentences of which **6 are bound to a named test
+that resolves against `origin/main` and are renderable, and 2 (entries 3 and 8 — still 2 after Wave
+7C lands, which binds entry 7 and no other) sit in the `pending` block** with the discovery command
+that closes them — `TestClaimableEntriesAreBound` refuses to emit a
+pending sentence, and an entry whose test cannot be resolved moves to pending, never gets re-worded to
+survive; the system card carries **4** surface rows (Claude Code, Codex, MCP, browser/extension), with
+Codex safeguards-on explicitly `UNKNOWN`.
 
 ---
 
@@ -850,6 +1029,10 @@ explicitly `UNKNOWN`.
 `Installers/internal/daemon/mediation_defeat_test.go` (new),
 `Installers/internal/certificate/downgrade_defeat_test.go` (new),
 `Backend/src/ai-policy-delivery/ai-policy-halt.defeat.spec.ts` (new)
+
+**Ordering (O-18): last in the wave.** `TestDirectAlternatePathToTheSameSinkFails` is defined against
+Task 1's inventory and Task 3's mediation entry point; written before them it asserts against a sink
+set that does not exist yet and passes vacuously.
 
 The review's §16.8 and §16.9 are a list. A list is not a gate. Each row below becomes one named test.
 
@@ -930,17 +1113,30 @@ rather than a number, and the named external dependency is stated rather than en
 9. **Standards mapping.** **121 of 121** catalogued classes (40 tool-risk + 81 DLP) carry ≥ 1 ATLAS
    technique id and ≥ 1 OWASP LLM:2026-or-ASI id; the four named AIUC-1 controls (A008, B010.3,
    B006.3, B006.1) each map to ≥ 1 class; `atlasRelease` is pinned to `v2026.07`. Defeat:
-   `TestEveryClassCarriesStandardsIds` → RED naming the unmapped class.
+   `TestEveryClassCarriesStandardsIds` → RED naming the unmapped class. **Wave −1 Task 6 owns the
+   column declaration only; the generated mapping and this test are this wave's.** The 81-class
+   denominator exists only after **Wave 1** widens the governed DLP vocabulary from 30 to 81 — before
+   that this criterion is `UNKNOWN`, never a smaller passing number.
 10. **Rings and halt.** A recorded drill moves a segment 500 → 2500 basis points, a seeded adjudicated
     benign block halts it, and rollback restores authority in **under 300 seconds**, with the measured
     seconds written into `proof.rollback`. Defeat: `TestConfirmedBenignBlockHaltsTheRing` → RED with
-    `segment remained at cohortBasisPoints=2500 after an adjudicated false block`.
+    `segment remained at cohortBasisPoints=2500 after an adjudicated false block`. **Blocked on
+    Wave 6 Task 9** — the drill needs the adjudication record, not a single reviewer's label; until it
+    exists this criterion is `UNKNOWN`. The `FALSE_POSITIVE_STORM` monitor behind halt condition (d)
+    is **owned by Wave 6 Task 12**; this wave consumes the filed intent and never computes it.
 11. **Defeat matrix.** **27 of 27** §16.8/§16.9 rows exist as named tests, each demonstrated red on a
     stated mutation. Any row that cannot be made red appears in `profile.exclusions` with an owner.
-12. **Claim discipline.** The forbidden list holds **15** encoded entries bound to the manifest field
-    that refuses each; the claimable list holds **8** entries bound to a named test; the system card
-    carries **4** surface rows. Defeat: `TestForbiddenClaimsAreRefused` → RED with
-    `claim "zero false positives" refused: falsePositiveRate.numerator = 1`.
+12. **Claim discipline.** The encoded forbidden list and Wave −1 Task 2's prose checklist hold
+    **equal** counts, **≥ 15**, both printed by the test rather than typed, each renderer entry bound
+    to the manifest field that refuses it; the claimable list holds **8** candidate sentences of which
+    **6 are bound to a named test that resolves against `origin/main` and are renderable**, and **2**
+    (tool shadow capture; the prompt-lane 15/52 figure, which D18 forbids publishing before Wave 3)
+    sit in the `pending` block and cannot be emitted; the system card carries **4** surface rows.
+    Defeat: `TestClaimableEntriesAreBound` — mark a pending entry renderable without a test → RED with
+    `claimable entry 3 has no bound test`; `TestForbiddenClaimsAreRefused` → RED with
+    `claim "zero false positives" refused: falsePositiveRate.numerator = 1`; and
+    `TestForbiddenListMatchesThePlanChecklist` → RED with
+    `renderer encodes 15 forbidden claims; the plan checklist carries 16` when one side gains a row.
 13. **F16 — BLOCKED.** Engineering half measurable: **25 of 25** cells in the five-entry-point ×
     five-verb table deny under a non-elevated token on both install scopes. Defeat:
     `TestNonElevatedCannotMintChooseReplaceReadOrExport`, restore the current gate → RED with
@@ -948,8 +1144,12 @@ rather than a number, and the named external dependency is stated rather than en
     **Certificate contribution: UNKNOWN.** Non-exportable custody needs a privileged broker or a
     KMS/HSM/TPM key owner — **procurement and key-ceremony lead time, not engineering time.**
     **R1, R3, R4 and the shared trust gate stay `NOT_READY`** and carry
-    `prerequisites: ["F16-endpoint-signing-key-custody"]` per `docs/Devoid_Roadmap_To_Finished_Product.md:788`
-    (separate repository; `roadmap:945`, `:947`, `:948` repeat it as mandatory).
+    `prerequisites: ["F16-endpoint-signing-key-custody"]`, per the spine's risk table. The F16 spec is
+    `.plans/verify-prod-20260808/fix-specs/CREDS.md:24` and the risk-register entry is
+    `.plans/verify-prod-20260808/IMPLEMENTATION_PLAN.md:322` — **both in this workspace.** F16 does
+    **not** appear in `docs/Devoid_Roadmap_To_Finished_Product.md`; `grep -c F16` there returns 0 at
+    `9f236fd` and at `a2a867d`, and the `:788` / `:945` / `:947` / `:948` citations an earlier draft
+    carried resolve to unrelated lines.
 14. **Live canary and independent reproduction — BLOCKED.** `proof.liveCanary` and
     `proof.independentReview` stay empty until: (a) the owner grants a **fresh explicit power-on ask**
     — ECS worker services have been at 0/0 since 2026-06-26 per `scripts/ceragon-power-state.json`,
@@ -980,8 +1180,8 @@ rather than a number, and the named external dependency is stated rather than en
 | P0-15 pre-egress data boundary | 1, 3 | S2/S12 rows of the sink inventory; the boundary itself is Wave 4A/4C work this wave *binds* |
 | P0-16 authoritative effect boundary | 1, 2, 3, 12 | premise corrected — W1; the transaction is connected at `ai_handlers.go:3063` |
 | P0-17 signed transport, live proof | 12 | `TestUnsignedWrongQueueWrongTenantWrongShaExpiredReplayedResultRejected`; the scanner lane's own proof is Wave 7A |
-| P0-18 sandbox containment | 6 | recorded as an R3 `prerequisite`; the containment change itself is not in this wave |
-| P0-19 F16 | 10 | citation corrected — W13; the respec is in a separate repo |
+| P0-18 sandbox containment | 6 | recorded as an R3 `prerequisite`. **The containment change is owned — Wave 7C Task 2** (`w7_scanner.md:1485`, *"Do not execute an untrusted package the sandbox cannot contain (P0-18, G-5)"*), whose exit criterion 6 (`w7_scanner.md:1585`) reads *"P0-18 has an owner and a merged change."* **Reconciliation G-5 is closed;** an earlier draft of this row called it unowned, which was staleness rather than a dispute, and rendering `profile.prerequisites` that way would have reported an open defect against the wave that closes it. Until 7C's change merges, `strace`/`direct` modes still execute the untrusted package before the inconclusive verdict is written, so the prerequisite renders as **open with a named owner** and never as an unowned defect. R3 stays `NOT_READY` on it independently of F16 — 7C closes **one** of the four blockers the spine's R3 row names |
+| P0-19 F16 | 10 | citation corrected **twice** — the review's "plan line 788" is an unrelated `aws iam put-role-policy` step, and an earlier draft of this wave's roadmap citation does not resolve either. F16 lives in this workspace at `.plans/verify-prod-20260808/fix-specs/CREDS.md:24` |
 | P1-09 exclusions drive certificate state | 6, 12 | `profile.exclusions` is a manifest field with a certificate consequence, not a footnote |
 | P1-10 rollback and drift triggers | 8 | `FALSE_POSITIVE_STORM` gets a monitor and a numeric threshold |
 | P1-12 independent review owns the hidden set | 9 | BLOCKED — owner UNKNOWN |

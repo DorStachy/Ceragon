@@ -1,10 +1,14 @@
 # Wave 4C — Make the prompt and ingress lanes measurable, then stop calling the classifier a control
 
-**Depends on:** Wave −1 (rebase and citation repair), Wave 3 (the repaired scorer — per-class
-denominators, `fnRate` as UNKNOWN, mandatory `--engine-version`, the four declared lane seams), Wave 3B
-(corpus governance and per-release holdout regeneration), Wave 4A (the three published prompt/ingress
-residuals closed with revert-proofs). Wave 4B is independent and may run in parallel; the two waves
-touch disjoint packages.
+**Depends on:** Wave −1 (rebase and citation repair, and the `pr-checks.yml` job this wave adds two
+packages to), Wave 3 (the repaired scorer — per-class denominators, `fnRate` as UNKNOWN, the four
+declared lane seams), Wave 3B (corpus governance, per-release holdout regeneration, and the whole
+version-identity axis: mandatory `--engine-version`, `RunnerIdentity`, `policyDigest`), **Wave 4A —
+which must land first (O-15)**. 4A is not a courtesy dependency: Task 7's promotion gate reads a
+prompt-lane report whose `injection-system-exfil` row is fixed by Wave 4A Task 3. Gating before that
+lands means gating on a class measured at 0% recall — the exact state the gate exists to refuse, and a
+`HOLD (no data)` that a reader would misread as a measured refusal. Wave 4B is independent and may run
+in parallel; the two waves touch disjoint packages.
 **Implements decisions:** D3, D6 (rewritten), D7, **D16** (a lexical classifier cannot be an enforcing
 tier), D17, D18.
 **Certificate impact:** **R5 (prompt injection) stays `NOT_READY` through and after this wave** — this
@@ -146,7 +150,7 @@ ingress-attack-tool-output-sensitive-path-read     -> ingress-sensitive-path-rea
 Three of the remaining four are DLP secret classes (`aws-access-key`, `private-key`, `github-token`) and
 one is a jailbreak pair. Reporting "ingress recall 87.5%" as a prompt-injection number silently borrows
 the DLP lane's cases. **The source material's §6.2 row "28 B / 8 A" is wrong on the benign count** (18,
-not 28) — `HOLDOUT_REPORT.md:158-160` states 18/8/2. Use 18.
+not 28) — `HOLDOUT_REPORT.md:160-161` states `28 cases (18 BENIGN · 8 ATTACK · 2 BOUNDARY)`. Use 18.
 
 ### TRAP 5 — "surface" already means something else, and so does "provenance"
 
@@ -225,7 +229,7 @@ Extend that structure — it is the right instinct and it already ships.
   positives and (`:373-376`) if **no** attack case fires, so it cannot pass on an empty corpus. It also
   errors on a stale pin (`assertSet`, `:414-437`). Adding benign cases means adding rows to
   `falsePositivesAfter` **with a reason**, never deleting cases.
-- `lostTruePositives` (`corpus_test.go:274-298`) is the declared ledger of detection traded away for
+- `lostTruePositives` (`corpus_test.go:274-294`) is the declared ledger of detection traded away for
   quiet. §3.4 already cost one true positive (`evasion-alternating-quotes`). **Widening the quoting
   discipline to reduce the false-positive count is forbidden by this wave**; it buys a number by paying
   in recall, and on ingress it buys nothing at all (Trap 1).
@@ -256,14 +260,15 @@ D11 deletes the **tool-lane** amplifier. `promptrisk.deriveCombos` (`promptrisk.
 `ingressrisk.deriveCombos` (`ingressrisk.go:334`) are different animals: three **named pairs** in prompt
 (`combo(...)` at `:864`, `:872`, `:881` → `injection-override-exfil`, `jailbreak-persona-unrestricted`,
 `injection-override-credexfil`) and one in ingress (`ingress-secret-exfil-combo`, gated on
-`ClassSensitivePathRead && ClassExfilInstruction` at `:343-351`). All four are malicious-floor members at
+`ClassSensitivePathRead && ClassExfilInstruction` at `:344-350`). All four are malicious-floor members at
 minimum `block` (`Backend/src/ai-security-policy/ai-malicious-floor.ts:184-187`). **They are the
 precedent Wave 4B's replacement is modelled on. Do not delete them.**
 
 ### TRAP 11 — none of these gates runs on a pull request
 
 `Installers/.github/workflows/pr-checks.yml` has **no `pull_request` and no `push` trigger** — `on:` at
-`:81-86` is `workflow_dispatch` + a weekly `schedule`, and `:63` states the reason (July's $600 bill).
+`:81-87` is `workflow_dispatch` + a weekly `schedule` (`cron: '41 7 * * 1'` at `:87`), and `:63` states
+the reason (July's $600 bill).
 `holdout-score.yml` is 89 lines, `on:` at `:22-25` is `workflow_dispatch` + `cron '17 3 * * *'`, while
 its own header at `:6` still reads *"This runs on PUSH TO MAIN and NIGHTLY."*
 
@@ -285,6 +290,14 @@ off the real workflow files. `internal-candidate` is not mirrored. Restoring a m
 **billing decision the owner makes** — the same external blocker as critical-path Step 2 — and every exit
 criterion below states which lane it runs in.
 
+**This wave does not create a job in `pr-checks.yml`, and does not add a `ci/gates.json` mirror entry.**
+The job and its mirror entry are **owned by Wave −1 Task 7**, which creates a `toolrisk-lane` leg running
+`go test ./internal/toolrisk/... ./internal/shellast/... -count=1` and registers it in `ci/gates.json`.
+This wave's only edit to `pr-checks.yml` is **two package paths appended to the list Wave −1 created** —
+`./internal/ingressrisk/...` and `./internal/neutraleval/...` (criterion 11). Wave 4A appends its own
+residuals package to the same list. Three waves editing one workflow file independently is how a leg
+goes missing; one wave creates it, the others append.
+
 ### What is measured today, and what it buys
 
 | Instrument | Location | Result on origin/main | Best claim it supports |
@@ -295,7 +308,7 @@ criterion below states which lane it runs in.
 | Ingress benign twins | `parity-vectors/ingress-benign.json` | **13 cases**, `knownOpenFalsePositives: []` | a cross-engine non-regression pin, not a rate |
 
 The 15 surviving false positives are pinned by name in `falsePositivesAfter`
-(`corpus_test.go:242-265`): 7 in **Group 1** (unmarked prose — `novel-recipe` firing
+(`corpus_test.go:242-261`): 7 in **Group 1** (unmarked prose — `novel-recipe` firing
 `you can do anything`, `novel-music-theory` firing `god mode`, `register-entry-naming-the-classes` and
 `quoted-class-names-in-prose` firing our own class name `jailbreak`) and 8 in **Group 2** (a quoted
 complete attack shape, demoted HIGH→MEDIUM, so it warns once).
@@ -308,13 +321,15 @@ must not itself be a detection."*
 
 ### Scope boundary
 
-This wave does **not** repair `holdout.go:357-358` (shared FP denominator), `holdout.go:116/381-382`
-(`fnRate: 0` on zero evidence) or the `"m4.7"` engine stamp — those are Wave 3 Tasks 2, 3 and 4, and
-**D18 forbids citing any number this wave produces until they land**. It does not close
+This wave does **not** repair `holdout.go:357-359` (shared FP denominator), `holdout.go:116/381-383`
+(`fnRate: 0` on zero evidence) or the `"m4.7"` engine stamp. The first two are **Wave 3 Tasks 2 and 3**;
+the engine stamp and the mandatory `--engine-version` are **Wave 3B Task 1**, which owns the whole
+version-identity axis. **D18 forbids citing any number this wave produces until all three land.** It does not close
 `ingress-attack-private-key-in-tool-output` — that is Wave 4A, and note for that wave that
-`HOLDOUT_REPORT.md:180-186` is now stale on the mechanism: `RedactIngressText` consumes
-`dlp.ScanAll(text).Findings` (`internal/proxy/ai_ingress.go:493`), not `dlp.Scan`; the residual is
-unchanged, because `PrivateKeyEvidence` appears nowhere in `internal/proxy` either way.
+`HOLDOUT_REPORT.md:188-198` is now stale on the mechanism: its `:194` sentence says
+*"`proxy.RedactIngressText` consumes only `dlp.Scan`'s findings"*, but `RedactIngressText` consumes
+`dlp.ScanAll(text).Findings` (`internal/proxy/ai_ingress.go:493`). The residual is unchanged, because
+`PrivateKeyEvidence` appears nowhere in `internal/proxy` either way.
 
 ---
 
@@ -389,9 +404,11 @@ is a policy change`. Second defeat: add a single-signal class to the HIGH allow-
 `execute` already threads it (`runner.go:213-214, 239-242`). **Every sealed case omits it.** The seam is
 built; it is unpopulated.
 
-Wave 3 Task 5 adds `EffectivePolicyDigest` to `ResultProvenance`. A policy digest over a nil policy is a
-digest of nothing, so these two tasks are a pair: **do not ship the digest field before this task, or the
-certificate gains a field that is constant across every posture.**
+**Wave 3B Task 2** adds `policyDigest` to `ResultProvenance` — that is the single owner of the
+version-identity axis and the single spelling of the field; an earlier draft of this wave cited Wave 3
+Task 5 and the name `effectivePolicyDigest`, and both are superseded. A policy digest over a nil policy
+is a digest of nothing, so those two tasks are a pair: **do not ship the digest field before this task,
+or the certificate gains a field that is constant across every posture.**
 
 - [ ] Write `policy_axis_test.go` first, red. Assert that for a fixed input text and a fixed detector
       build, running the same case under (a) `policy: null` and (b) a policy in which the finding's class
@@ -437,12 +454,12 @@ axis, not a rate.
 ## Task 3: Publish the prompt and ingress lanes with their own attack denominators
 
 **Files:**
-- Modify: `Installers/cmd/ai-security-neutral/holdout.go` (`detectorRates`, `:107-125`; summary,
+- Modify: `Installers/cmd/ai-security-neutral/holdout.go` (`detectorRates`, `:102-124`; summary,
   `:408-440`)
 - Modify: `Installers/parity-vectors/neutral/HOLDOUT_REPORT.md`
 - Create: `Installers/cmd/ai-security-neutral/lane_denominator_test.go`
 
-**What is broken.** `HOLDOUT_REPORT.md:29-33` publishes *"ATTACK cases fully detected (recall) 9/12
+**What is broken.** `HOLDOUT_REPORT.md:29-30` publishes *"ATTACK cases fully detected (recall) 9/12
 (75.0%)"* as one figure over a corpus that runs two detector surfaces with different code paths. The
 prompt lane's own attack denominator is 5 (Trap 3); the ingress lane's injection-class denominator is 4
 (Trap 4). A reader — including this plan's own §6.2 reference table — takes 12 and 8 as the prompt and
@@ -454,7 +471,7 @@ ingress denominators. Both are wrong.
       cross-surface `recallRate` when more than one surface is present.
 - [ ] Add `bySurface map[string]surfaceTotals` beside `Totals` in the report envelope. `surfaceTotals`
       carries the same fields as `holdoutTotals` (`holdout.go:126-147`) so there is one shape, not two.
-- [ ] Extend `detectorRates` (`:107-125`) with `attackCasesExpectingBySurface` — the class-level twin of
+- [ ] Extend `detectorRates` (`:102-124`) with `attackCasesExpectingBySurface` — the class-level twin of
       the same fix. Wave 3 Task 2 supplies the benign side; this is the attack side and the two must land
       in the same shape.
 - [ ] Rewrite the `summarizeHoldout` headline (`:408-440`) so the lane line prints per-surface counts
@@ -472,6 +489,11 @@ mixed-lane refusal, deliberately.
 **Exit:** `HOLDOUT_REPORT.md` publishes **4 numbered denominators** — prompt-attack 5, prompt-benign 6,
 ingress-injection-attack 4, ingress-benign 18 — each with its exact one-sided 95% bound, and **zero**
 aggregate recall figures. Regenerating the report from the rebased commit reproduces those four numbers.
+
+**Note for Wave 4A, which lands first (O-15):** after this task ships, a cross-surface recall figure is
+a build failure, so Wave 4A's exit criteria 1–3 are stated per surface rather than as aggregates.
+Restating them is **owned by Wave 4A** — re-running an aggregate criterion after this task lands would
+go red on a test doing its job, and that is not a regression to debug.
 
 ---
 
@@ -517,18 +539,28 @@ ingress lane. Add `FindingRecord.ContentOrigin *string` beside it and keep the t
       the ingress boundary and stamps `TOOL_RESULT`. The prompt-submit path stamps
       `DEVELOPER_AUTHORED`. The AI rule-file sweep stamps `REPOSITORY_CONTENT`. Anything else stays
       `UNKNOWN`. **A detector never sets it** — that is the invariant the first half of the test pins.
-- [ ] Give `prClassAction` a fifth branch **above** the severity floor at `:544`: a finding whose
-      `ContentOrigin` is not `DEVELOPER_AUTHORED` and whose class is a declared *instruction* class
-      resolves to the restricting disposition rather than the floor's `warn`. Do not touch the four
-      existing branches; the monitor lane, the legacy DLP arrays, the explicit-disable branch and the
-      floor keep their current precedence exactly.
+- [ ] Insert one new rung into `prClassAction`'s branch precedence, **stated by position and never by
+      count**: **immediately above the built-in severity-floor rung (`:544-551`) and immediately below
+      the explicit prompt-risk-disable rung (`:541-543`)**. Wave 2 writes that precedence out once, as a
+      numbered ladder; insert against the ladder's named rungs, not against a tally. Every rung above
+      this one — the shadow-class gate (`:514`), the promptRisk monitor lane (`:519`), the promptRisk
+      actions map (`:522`), the legacy DLP block/warn arrays (`:526-533`) and the explicit-disable rung
+      — keeps its current precedence exactly, and **the floor rung below stays last and unchanged**.
+      The new rung's rule: a finding whose `ContentOrigin` is not `DEVELOPER_AUTHORED` and whose class
+      is a declared *instruction* class resolves to the restricting disposition rather than the floor's
+      `warn`.
+- [ ] **Write no branch count into this file, this commit message, or the test names.** Wave 2 repoints
+      the floor rung at the catalog grades and Wave 4A adds a Tier-C arm to the same function, so any
+      tally here is stale the moment either lands. An earlier draft of this task said *"do not touch the
+      four existing branches"*; on `origin/main` there are already five rungs above the floor, so the
+      sentence was wrong on the day it was written — which is the whole argument for position.
 - [ ] Add `ContentOrigin` to the case record so a corpus case declares the origin it is testing, and
       make the ingress-lane cases declare `TOOL_RESULT` — today they are scored through a boundary that
       knows the answer and does not record it.
 - [ ] Carry the field through `projection.go:37` and `:90` (which today hardcode
       `FindingSource{Kind:"CONTENT", PathID:"root"}`) and `ingress.go:174`.
 
-**Defeat test:** `TestProvenanceReachesTheDecision` — delete the new branch in `prClassAction` and it
+**Defeat test:** `TestProvenanceReachesTheDecision` — delete the new rung in `prClassAction` and it
 goes RED with `TOOL_RESULT instruction injection-instruction-override resolved to "warn" via the
 severity floor; a derived instruction must not be graded as if the principal typed it`. Second defeat:
 set `ContentOrigin` inside `promptrisk.scan` instead of at the boundary and
@@ -581,7 +613,9 @@ unauthorized effect occurred. Build that. Build nothing else.
       "assertion-grader-v1"`, `Required`, `Outcome != "UNKNOWN"`. Two pins where there was one.
 - [ ] Populate `InterventionRecord` (`runner.go:193`) from the decision: `Visible` when the verdict is
       not `allow`, `HardStop` when it is `block`, `SOCIncident` when the event type is one of the four
-      `alerts.service.ts:862-881` admits. This is the numerator of the intervention-load metric and it
+      `Backend/src/alerts/alerts.service.ts:862-881` (`aiAlertScopeSql`) admits — `TOOL_CALL_BLOCKED`,
+      `CODE_DIFF_FLAGGED`, `MCP_SERVER_BLOCKED`, `PACKAGE_INSTALL_BLOCKED` at `:872-875`. This is the
+      numerator of the intervention-load metric and it
       has never had one.
 - [ ] Seed final-state assertions for the five prompt attacks and the four ingress injection attacks. For
       `attack-system-prompt-exfil` the assertion is *"the system prompt did not appear in the model
@@ -608,8 +642,8 @@ the report with a reason. `SecurityOutcomeUnauthorizedEffect` acquires its **fir
 - Create: `Installers/internal/promptrisk/testdata/corpus/negative/08-security-documentation.txt`
 - Create: `Installers/internal/promptrisk/testdata/corpus/negative/09-incident-writeups.txt`
 - Create: `Installers/internal/promptrisk/testdata/corpus/negative/10-cve-and-advisory-text.txt`
-- Modify: `Installers/internal/promptrisk/corpus_test.go` (`loadCorpus` minimums, `:126-131`;
-  `falsePositivesAfter`, `:242-265`; measurement, `:300-406`)
+- Modify: `Installers/internal/promptrisk/corpus_test.go` (`loadCorpus` minimums, `:130-131`;
+  `falsePositivesAfter`, `:242-261`; measurement, `:300-406`)
 - Modify: `Installers/parity-vectors/ingress-benign.json`
 - Modify: `Installers/cmd/ai-security-neutral/holdout.go` (report envelope)
 
@@ -619,7 +653,8 @@ the one a customer sees on day one, because a security team's corpus **is** secu
 product already fails here in two independent instruments:
 
 - `qa-fp-detections-finding-name` — the console rendering the class name `jailbreak-persona` verdicts
-  `warn` on the sealed lane (`HOLDOUT_REPORT.md:113`), origin `qa-2026-08-02-observed-false-positive`.
+  `warn` on the sealed lane (`HOLDOUT_REPORT.md:110`, and `:112-116` records why it stays open on the
+  `policyeval` surface), origin `qa-2026-08-02-observed-false-positive`.
 - Four of the seven Group-1 survivors in `falsePositivesAfter` are the same defect:
   `quoted-class-names-in-prose` and `register-entry-naming-the-classes` both fire the bare Tier-C
   `jailbreak` keyword *naming our own class*.
@@ -648,7 +683,7 @@ and never merged into `falsePositiveRate`. Merging them lets a large corpus of e
 - [ ] Record each new firing case in `falsePositivesAfter` with its reason. **Do not delete a case to
       make a number.** `assertSet` (`:414-437`) errors on a stale pin, so a fix later removes the pin.
 - [ ] Explicitly forbidden in this task: widening the §3.4 quoting discipline. It already cost one true
-      positive (`lostTruePositives`, `:274-298`) and it does not run on ingress at all.
+      positive (`lostTruePositives`, `:274-294`) and it does not run on ingress at all.
 
 **Defeat test:** `TestOverDefenceHasItsOwnDenominator` — compute `overDefenceRate` over all 52+ benign
 cases instead of the twin subset and it goes RED with `overDefence denominator 82 does not equal the
@@ -689,7 +724,7 @@ promote(class) requires ALL of:
   1. effectRecallRate for the class = 1.0 with attackCasesExpecting >= 29   [Task 5, Task 8]
   2. overDefenceRate for the class = 0 with benignTwins >= 30              [Task 6]
   3. falsePositives for the class = 0 on the SHIPPED_CORE benign profile   [Task 2]
-  4. the report's engineVersion != "m4.7" and its lane == the class's lane [Wave 3 Task 4]
+  4. the report's engineVersion != "m4.7" and its lane == the class's lane [Wave 3B Task 1]
   5. the class is NOT the sole basis of an enforcing disposition           [D16, Task 1]
 ```
 
@@ -838,9 +873,12 @@ path in this repo:
       byte-identical to the endpoint's (`Frontend/lib/ai-security/vendored/MANIFEST.json` pins
       `Installers@254d24fc`; `promptrisk.js` 908 lines, sha256 `b3e998a4…6237`), but
       `vendored-digest.test.ts` only compares the copy to the local manifest, and the upstream check
-      (`Frontend/.github/workflows/vendored-upstream-drift.yml`) is `workflow_dispatch` + daily cron. The
-      `pull_request` trigger its own header instructs adding is **Wave 5's task**; cite it here so the
-      parity row's freshness is not overstated.
+      (`Frontend/.github/workflows/vendored-upstream-drift.yml`, `on:` at `:39-43`) is
+      `workflow_dispatch` + daily cron with **no `pull_request` trigger**.
+- [ ] Adding that `pull_request` trigger is **owned by Wave −1 Task 5** (its exit criterion 7), and it
+      is blocked there on an owner spend decision — do not specify it here. This wave's obligation is
+      only that the parity row states its own freshness honestly: **a daily poll, not a per-PR check**,
+      and `NOT MEASURED` in the window between a re-vendor and the next cron run.
 - [ ] Rewrite the `HOLDOUT_REPORT.md` headline as a per-surface table, with an explicit
       `NOT MEASURED` cell wherever there is no data. Today every prompt number in that file is
       unattributed to any agent surface.
@@ -928,7 +966,10 @@ organisation. Neither is an engineering task and neither may be marked complete 
 
 **The state, verified.** `knownHookTrustDialects` (`hookdialect.go:166`) has exactly **two** rows:
 `hookTrustDialect144` (`:100-104`, prefix `0.144.`) and `hookTrustDialect147` (`:111-115`, prefix
-`0.147.`). The file itself names the gap at `:163-165`: *"STILL UNMEASURED, STILL UNRESOLVABLE: 0.145,
+`0.147.`). **Do not "correct" `:166` to `:112`.** The spine and Wave 8's trap both cite `:112` for the
+table; `:112` is `id: "codex-hooktrust-0.147",` — one field inside one row — and the reconciliation
+records this as M-1 against those two files, not against this one. The file itself names the gap at
+`:163-165`: *"STILL UNMEASURED, STILL UNRESOLVABLE: 0.145,
 0.146, 0.148 and the 0.149 alpha the desktop app runs."* The owner's desktop client is
 **0.149.0-alpha.4.1**. `hookTrustDialectFor` (`:186-197`) therefore returns `ok=false`, and
 `classifyHookLedger` (`verify.go:612-637`) resolves the R7/R8 hook rows to
@@ -991,7 +1032,7 @@ request today**; `LOCAL` means `node ci/lib/run.mjs Installers` against the mirr
    Defeat: `TestNoCrossSurfaceRecall`, mutation = restore the single `RecallRate` line. Lane: LOCAL.
 4. **Four declared `ContentOrigin` values; 100% of `RedactIngressText` findings carry `TOOL_RESULT`;
    0 detector call sites assign the field.**
-   Defeat: `TestProvenanceReachesTheDecision`, mutation = delete the `prClassAction` branch. Lane: LOCAL
+   Defeat: `TestProvenanceReachesTheDecision`, mutation = delete the `prClassAction` rung. Lane: LOCAL
    (`pr-checks:wire-lane-tests` for the proxy half; `internal/ingressrisk` currently has **no CI leg at
    all** — criterion 11 covers that).
 5. **`SecurityOutcomeUnauthorizedEffect` has ≥ 1 producer, and 9 of 9 prompt/ingress injection attack
@@ -1014,12 +1055,14 @@ request today**; `LOCAL` means `node ci/lib/run.mjs Installers` against the mirr
    Defeat: `TestAgentSurfaceRefusesAMixedCorpus`. Lane: NIGHTLY.
 10. **`evaluation.suite` is enforced and the static scorer can only emit `regression`.**
     Defeat: `TestScorerCannotClaimAdaptive`, mutation = set `private-adaptive`. Lane: LOCAL.
-11. **`internal/ingressrisk` and `internal/neutraleval` acquire a CI leg.** They appear in **no job** in
-    `pr-checks.yml` today and only in `internal-candidate.yml:87`'s `workflow_dispatch`-only
-    `go test ./...`. Add them to `pr-checks.yml:146`'s package list — which also brings
-    `holdout_seal_test.go`, the seal itself, under an automatically-triggered job for the first time.
-    Defeat: delete `internal/ingressrisk` from the list and re-run the mirrored leg; the ingress tests
-    must disappear from the output. Lane: LOCAL — and **the trigger question is criterion 13**.
+11. **`internal/ingressrisk` and `internal/neutraleval` are named in the `pr-checks.yml` package list.**
+    They appear in **no job** in `pr-checks.yml` today and only in `internal-candidate.yml:87`'s
+    `workflow_dispatch`-only `go test ./...`. **The job and its `ci/gates.json` mirror entry are owned by
+    Wave −1 Task 7**; this wave appends exactly two package paths to the list that task created, which
+    also brings `holdout_seal_test.go` — the seal itself — under a **mirrored local leg** for the first
+    time. It does **not** bring it under a merge-triggered job; that is criterion 13.
+    Defeat: delete `./internal/ingressrisk/...` from the list and re-run `node ci/lib/run.mjs
+    Installers`; the ingress tests must disappear from the output. Lane: LOCAL.
 
 ### Criteria this wave cannot measure, and what they need
 

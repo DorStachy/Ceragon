@@ -2,8 +2,16 @@
 
 **Depends on:** Wave −1 (rebase, path repair, claim contract) and Wave 3 (the per-class denominator
 and `fnRate` repairs land in the same file this wave extends — `Installers/cmd/ai-security-neutral/holdout.go`).
-Wave 4A/4B/4C consume this wave's suite registry; none of them may declare an exit number before
-Task 4 lands.
+**Wave 3 lands before Task 3 of this wave**: `metrics.byClassRepresentationSurface[]` is populated
+from Wave 3's per-class exposure counters, and emitting first publishes the corpus-wide denominator
+into a schema-validated artifact. Wave 4A/4B/4C/7B consume this wave's suite registry; none of them
+may declare an exit number before Task 4 lands.
+
+**This wave owns the version-identity axis, entire.** Wave 3 Task 4 (`--engine-version` mandatory) and
+Wave 3 Task 5 (the system-under-test tuple) are deleted there and point here; their content is merged
+into Tasks 1 and 2 below, including the two axes this wave's first draft omitted
+(`detectorCatalogDigest`, and the caller sweep). One field set, one name per field, one test name per
+assertion — two spellings for one fact is the defect this wave exists to remove.
 
 **Implements decisions:** D3 (build the measurement before turning anything on — the phrase is in
 the shipping source at `Installers/internal/promptrisk/corpus_test.go:137`), D6 / item 45 (two lanes,
@@ -19,7 +27,7 @@ source material is `UNKNOWN`, in all five risk lanes.** Specifically:
 |---|---|---|
 | `system.engineVersion` | UNKNOWN | Defaults to the constant `"m4.7"` in two places; never passed by the only automated job. |
 | `system.environmentDigest` | UNKNOWN | Covers 4 axes (`goVersion`, `goos`, `goarch`, `runner`) and no OS build, shell or tool schema. |
-| `system.rulesetDigest`, `normalizerVersion`, `parserVersion`, `policyDigest` | ABSENT | No such field exists anywhere in `RunnerIdentity` or `ResultProvenance`. |
+| `system.rulesetDigest`, `detectorCatalogDigest`, `normalizerVersion`, `parserVersion`, `policyDigest` | ABSENT | No such field exists anywhere in `RunnerIdentity` (`contract.go:124-130`, five fields) or `ResultProvenance` (`:132-137`, four fields). The catalog digest does exist as a shipped constant — `aipolicycontract.DetectorCatalogDigest`, `detector_catalog_generated.go:13` — and nothing stamps it onto a result. |
 | `evaluation.suite` | ABSENT | No corpus in any repo declares which of the six suites it belongs to. |
 | `evaluation.clusteringUnit`, `nEffective`, `rho` | ABSENT from every emitted artifact | The schema for them already ships (see Task 3) and nothing has ever written one. |
 | `multiplicity.tier` | ABSENT | No class is assigned to Tier A or Tier B anywhere. |
@@ -197,7 +205,9 @@ Everything that is not literally `"ingress"` is EGRESS. Two consequences:
    is the thing D6 exists to prevent one level up.
 2. **Adding a `toolrisk` or `scanner` surface will silently be classified EGRESS** and will merge
    into the egress denominator with no refusal. The old plan's Task 6 (`plan:6355`) adds exactly such
-   a lane and does not extend `LaneOf`. Extending `LaneOf` is a prerequisite, not a follow-up.
+   a lane and does not extend `LaneOf`. Extending `LaneOf` is a prerequisite, not a follow-up — and it
+   is **Wave 3 Task 8 Step 2's** to write. This wave owns the refusal test that proves the new pair is
+   caught (Task 9, criterion 12).
 
 Two different twelves live in this corpus and will be conflated: **12 promptrisk cases** (6 benign,
 5 attack, 1 boundary) and **12 ATTACK cases** (7 dlp, 5 promptrisk). The published "recall 9/12 =
@@ -255,36 +265,57 @@ contain either substring in their names. The old plan's `toolrisk-seed.json` /
 
 ## Task 1: Make the engine version mandatory and stamp it on the aggregate
 
+**Inherited.** Wave 3 Task 4 specified the same two assertions under two other names. It is deleted
+there and points here. **Two assertions, one name each** — the aliases
+`TestNormalizeOptions_RejectsAnAbsentEngineVersion` and
+`TestNormalizeOptions_RejectsThePlaceholderVersion` are **not** created; one behaviour with two test
+names is the same defect as one fact with two field names.
+
 **Files:**
 - `Installers/cmd/ai-security-neutral/main.go` (`:23`, `:40-46`)
 - `Installers/internal/neutraleval/runner.go` (`normalizeOptions`, `:459-496`; the default at `:467-469`)
-- `Installers/cmd/ai-security-neutral/holdout.go` (`holdoutReport`, `:57-84`; `summarizeHoldout`, `:410-414`)
+- `Installers/cmd/ai-security-neutral/holdout.go` (`holdoutReport`, `:57-84`; `summarizeHoldout`, `:408-414`)
 - `Installers/cmd/ai-security-neutral/main_test.go`
 - `Installers/internal/neutraleval/runner_test.go`
-- `Installers/.github/workflows/holdout-score.yml` (`:48-52`, `:62-66`)
+- `Installers/.github/workflows/holdout-score.yml` (`:48-52`, `:62-66` — the two scorer invocations only)
 
 - [ ] Write the failing test first, in `runner_test.go`: `TestNormalizeOptionsRejectsAbsentEngineVersion`
       asserts `normalizeOptions(RunnerOptions{ArtifactDigest: <valid>})` returns an error whose text
-      names `engineVersion`. It fails today because `:467-469` supplies `"m4.7"`.
+      names `engineVersion`. It fails today because `:467-469` supplies `"m4.7"`. Expected failure:
+      `err = nil, want "engineVersion of the executed engine is required"`.
 - [ ] Write the second failing test, in `main_test.go`: `TestEngineVersionM47IsRejected` asserts that
-      the literal string `m4.7` is refused with a message naming the constant, so the old default
-      cannot be re-supplied by hand from a workflow.
-- [ ] Remove the default at `main.go:23` (`flag.String("engine-version", "", …)`) and the fill at
-      `runner.go:467-469`. Keep `safeTokenRE` validation at `:470-474`.
-- [ ] Add a `System` block to `holdoutReport` (`holdout.go:57-84`) carrying `engineVersion`,
-      `engineId`, `runnerId`, `artifactDigest`, `environmentDigest`, `contractVersion`. Bump
-      `holdoutReportFormatVersion` to 3 (`holdout.go:44`) — additive, every version-2 field unchanged,
-      matching the comment convention already at `:42-43`.
-- [ ] Make `summarizeHoldout` (`:410-414`) print the version tuple on its own line after the lane
-      line. A summary that a human pastes into a PR must name the build.
+      the literal string `m4.7` is **also** refused, by name, so the retired default cannot be
+      re-supplied by hand from a workflow by the first person who hits the new error. Expected failure
+      text: `engineVersion "m4.7" is the retired placeholder default; pass the version of the engine
+      actually under test`.
+- [ ] Remove both defaults. `main.go:23` becomes
+      `flag.String("engine-version", "", "executed engine version (required)")`, and the fill at
+      `runner.go:467-469` returns an error instead of assigning. Keep the `safeTokenRE` validation at
+      `:470-474`.
+- [ ] **Sweep the callers.** `MSYS_NO_PATHCONV=1 git grep -n "ai-security-neutral" origin/main` and
+      update every invocation, including anything under `scripts/` and `ci/`. A missed caller now
+      fails loudly rather than silently stamping a constant, which is the intended trade.
+- [ ] Add a `System` block to `holdoutReport` (`holdout.go:57-84`) carrying the identity tuple Task 2
+      defines. **Format version: ride 3, do not bump again.** Wave 3 Task 3 owns the single
+      `holdoutReportFormatVersion` edit at `holdout.go:44` (2 → 3), and that generation is **breaking**,
+      not additive: `fpRate`/`fnRate` become nullable, so a consumer reading `fpRate` as a number sees
+      absence. This `System` block is additive *within* that breaking generation. Do not describe it as
+      an additive bump and do not restate the `:42-43` additive-convention comment over it — write a
+      new comment naming both changes, because version 3 must mean one shape, not two. **Ordering:**
+      this block does not merge before Wave 3 Task 3's bump, or a version-3 report ships without half
+      of what version 3 means.
+- [ ] Make `summarizeHoldout` (`:408-414`, the lane line at `:413-414`) print the version tuple on its
+      own line after the lane line. A summary that a human pastes into a PR must name the build.
 - [ ] Pass `--engine-version` from `holdout-score.yml:48-52` and `:62-66`. Derive it from the build,
       not a literal: the value must change when a detector changes. Use the ruleset digest from
       Task 2 as the version token, or `git rev-parse --short HEAD` as an interim with a written note
       that a commit sha moves for unrelated commits too and is therefore over-sensitive, not
       under-sensitive.
-- [ ] Fix `holdout-score.yml:6`, which still reads *"This runs on PUSH TO MAIN and NIGHTLY"* when
-      `on:` at `:22-25` is `workflow_dispatch` + `cron '17 3 * * *'`. Whether the push trigger comes
-      back is Wave −1 step 7 and an owner decision; the header must match reality either way.
+- [ ] The `holdout-score.yml` **header truth** at `:6` (*"This runs on PUSH TO MAIN and NIGHTLY"* while
+      `on:` at `:22-25` is `workflow_dispatch` + `cron '17 3 * * *'`) and the trigger decision itself
+      are **owned by Wave −1 Task 5**, together with the single header-truth check
+      (`ci/lib/workflow-header-truth.mjs`). This wave edits only the two scorer invocation lines and
+      writes no second header test.
 
 **Defeat test:** `TestNormalizeOptionsRejectsAbsentEngineVersion` — restore
 `out.EngineVersion = "m4.7"` at `runner.go:468` and it goes RED with
@@ -292,44 +323,77 @@ contain either substring in their names. The old plan's `toolrisk-seed.json` /
 `--engine-version` argument in `holdout-score.yml:50` and the job fails at the scorer with
 `runner identity is invalid` / the new engineVersion error, before any case runs.
 
-**Exit:** `grep -rn '"m4.7"' Installers/cmd Installers/internal` returns **0** matches outside a test
-that asserts the string is rejected. `holdout-report.json` from a clean nightly run contains a
+**Exit:** `MSYS_NO_PATHCONV=1 git grep -c '"m4.7"' origin/main -- cmd internal` returns **0** outside
+the two rejection tests. `holdout-report.json` from a clean nightly run contains a
 `system.engineVersion` that is not `m4.7`, and re-running after a one-line detector change produces a
-**different** value.
+**different** value. The emitted report carries `formatVersion: 3` and both version-3 changes — the
+`System` block and the nullable rates.
 
 ---
 
-## Task 2: Widen the environment digest and add the four missing system axes
+## Task 2: The system-under-test tuple — one field set, one name per field
+
+**Inherited.** Wave 3 Task 5 specified a rival version of this tuple: seven system fields including
+`detectorCatalogDigest`, and `effectivePolicyDigest` on provenance. It is deleted there and points
+here. **The union set below is authoritative, and the provenance field is named `policyDigest`** —
+`effectivePolicyDigest` is not created, not aliased, and not accepted as a second spelling. Verified
+against `origin/main` 2026-08-28: `RunnerIdentity` (`contract.go:124-130`) carries five fields today
+(`runnerId`, `engineId`, `engineVersion`, `contractVersion`, `artifactDigest`) and `environmentDigest`
+lives on `ResultProvenance` (`:132-137`), not on the identity — which is why the count below is nine
+and not eleven. Anyone re-deriving a different total has miscounted which struct holds which axis.
 
 **Files:**
-- `Installers/internal/neutraleval/runner.go` (`:480-491`, the `digestJCS` map)
+- `Installers/internal/neutraleval/runner.go` (`:480-491`, the `digestJCS` map; `:475-479`, the required-field shape)
 - `Installers/internal/neutraleval/contract.go` (`RunnerOptions` `:92-100`, `RunnerIdentity` `:124-130`, `ResultProvenance` `:132-137`)
 - `Installers/internal/neutraleval/digest.go`
 - `Installers/internal/neutraleval/runner_test.go`
+- `Installers/internal/aipolicycontract/detector_catalog_generated.go` (**read only** — `:13`)
 
 - [ ] Failing test first: `TestEnvironmentDigestCoversDeclaredAxes` asserts the digest input map has
       exactly the declared key set and fails on the current four (`goVersion`, `goos`, `goarch`,
-      `runner`). State the added axes explicitly: OS build/version, shell, tool-schema version.
-- [ ] Add to `RunnerOptions`/`RunnerIdentity`: `RulesetDigest`, `NormalizerVersion`, `ParserVersion`,
-      `PolicyDigest`. Each is **required** (same treatment as `ArtifactDigest` at `runner.go:475-479`)
-      — a nullable version axis becomes an absent one within a release.
+      `runner`, verified at `runner.go:483-486`). State the added axes explicitly: OS build/version,
+      shell, tool-schema version.
+- [ ] Add to `RunnerOptions`/`RunnerIdentity`: `RulesetDigest`, `DetectorCatalogDigest`,
+      `NormalizerVersion`, `ParserVersion`. Add `PolicyDigest` to `ResultProvenance`. Each is
+      **required** and each is a `sha256:` or a version token, in the shape `normalizeOptions` already
+      uses for `ArtifactDigest` (`runner.go:475-479`) — a nullable version axis becomes an absent one
+      within a release.
 - [ ] `RulesetDigest` must be computed from the rule tables themselves, by the same technique
       `ClassCatalog()` uses to make a catalog impossible to forget (`internal/toolrisk/class_catalog.go:57`
       loops the rule tables). A hand-pasted ruleset digest is the defect this task exists to remove.
+- [ ] **Source the catalog digest from the pin that already ships; do not compute a second one.**
+      `aipolicycontract.DetectorCatalogDigest` is a generated constant at
+      `detector_catalog_generated.go:13` (`sha256:b252ee021229da77cc36a302898a0843758326084e8504ac4ce32d9f8ecf7553`),
+      alongside `DetectorCatalogSpineDigest` (`:14`) and `DetectorCatalogSourceCommit` (`:16`), and it
+      is already guarded against drift by `detector_catalog_test.go:53-54`. Read it. A second
+      derivation would be a second answer to one question.
 - [ ] **Do not touch `artifactDigest`.** `main.go:28-39` derives it from the executing binary and the
       comment at `:30-33` explains why (*"a pasted digest can be wrong; this one cannot"*). It is the
-      one axis that already works.
-- [ ] Add the same four axes to the Task-1 `System` block on the report envelope.
+      one axis that already works; add a one-line comment at `main.go:28` saying so, so the next
+      person does not rebuild it.
+- [ ] **Record what this tuple does NOT cover**, in a comment beside the new fields: the LLM
+      code-scanner lane is not executed by `neutraleval` at all and therefore needs its own
+      model-version and system-prompt-version capture. **Wave 7B owns that.** Naming it here stops it
+      from being assumed covered by a tuple that never saw it.
+- [ ] Add the same axes to the Task-1 `System` block on the report envelope, under the same names.
 
 **Defeat test:** `TestEnvironmentDigestCoversDeclaredAxes` — delete `"shell"` from the digest map at
-`runner.go:482-487` and it goes RED naming the missing axis. Second defeat: change one rule constant
-in `internal/toolrisk` and assert `RulesetDigest` moves; revert the `ClassCatalog`-style derivation
-to a constant and the assertion goes RED.
+`runner.go:482-487` and it goes RED naming the missing axis. **Second defeat:**
+`TestRulesetDigestMovesWhenARuleMoves` — change one rule constant in `internal/toolrisk` and assert
+`RulesetDigest` moves; revert the `ClassCatalog`-style derivation to a constant and it goes RED with
+`rulesetDigest unchanged after a rule change`. (Wave 3 Task 5's
+`TestEnvironmentDigestMovesWhenTheRulesetMoves` is **not** created: the ruleset is its own required
+field, not an input to the environment digest, and a test named for the environment digest would
+assert the wrong containment.) **Third defeat:** clear `RulesetDigest` in a runner options struct and
+assert `normalizeOptions` errors, exactly as it does today for an absent `ArtifactDigest`
+(`artifactDigest of the executed shipping module is required`, `runner.go:475-479`).
 
 **Exit:** the environment digest input map has **7 named axes**, asserted by name. `RunnerIdentity`
-carries **8** required identity fields (`runnerId`, `engineId`, `engineVersion`, `contractVersion`,
-`artifactDigest`, `rulesetDigest`, `normalizerVersion`, `parserVersion`) and `ResultProvenance`
-carries `policyDigest`. A run with any one absent exits non-zero before scoring a case.
+carries **9** required identity fields — `runnerId`, `engineId`, `engineVersion`, `contractVersion`,
+`artifactDigest`, `rulesetDigest`, `detectorCatalogDigest`, `normalizerVersion`, `parserVersion` — and
+`ResultProvenance` carries `environmentDigest` (already present) plus `policyDigest`. A run with any
+one absent exits non-zero before scoring a case. Occurrences of `effectivePolicyDigest` anywhere in
+the tree: **0**.
 
 ---
 
@@ -464,32 +528,57 @@ assigns every one of the **55** catalog classes to Tier A or Tier B, and Tier A 
 
 ## Task 5: Suite 1 — the canonical regression set, seeded and immutable
 
+**This is the only registry.** Wave 4A Task 8 specified a second one —
+`internal/neutraleval/residuals_manifest.json`, 10 entries, over the same residuals. It is deleted
+there and points here: **Wave 4A populates `owningTest` into this file** as it writes each test, and
+creates no file of its own. Two registries for one immutable suite is how a member goes missing.
+
+**Why an index and not a folder.** The sealed-corpus rule (`holdout_seal_test.go`) forbids a per-PR
+test from reading the holdout, so these cases live scattered across `internal/dlp`,
+`internal/promptrisk`, `internal/proxy`, `internal/toolrisk` and Static-Worker. Without an index,
+deleting one test deletes the evidence silently.
+
 **Files:**
 - Create `Installers/parity-vectors/neutral/canonical-regression-index.json`
 - Create `Installers/internal/neutraleval/canonical_regression_test.go`
 
 - [ ] Failing test first: `TestCanonicalRegressionSetIsComplete` asserts every seed member below is
-      present, has a named owning test, and that removing a member fails the build.
+      present, has a named owning test, **that the named owning test actually exists** (a name in the
+      index pointing at nothing is the same failure as a missing member), and that removing a member
+      fails the build.
 - [ ] Seed, exactly (11 members). Seven from Wave 4A: `qa-fp-migration-timestamps`,
       `qa-fp-detections-finding-name`, `attack-private-key-block`, `attack-prod-db-connection-string`,
       `attack-system-prompt-exfil`, `ingress-attack-private-key-in-tool-output`,
       `cmd-benign-rm-home-var-with-tail`. Two C5 residuals: `cmdsubst-verb`, `non-ifs-unknown-sep`.
       Plus `chmod-broad-777` (measured 0/1 recall under the shipped policy) and
       `tp-zero-width-smuggled-directive [plugin]` (Static-Worker, ALLOW under the `plugin` ecosystem
-      at 38/39).
+      at 38/39). The eleventh is the reason this file wins over a manifest scoped to one repo's
+      packages: the suite spans repos.
 - [ ] Each member records: fixture id, lane, surface, owning test name, the exact mutation that turns
       that test red, first-seen version, and the certificate row it downgrades while open.
+- [ ] **Each member asserts four things, not one:** expected **class**, expected **decision**,
+      expected **enforcement result**, and expected **final system state** (for ingress: whether the
+      bytes left the box). An assertion on class alone is insufficient — three of Wave 4A's seven
+      produce the right class today and the wrong outcome — and **an aggregate-rate assertion is
+      explicitly insufficient**, which the index test states in its own failure message.
 - [ ] **Immutability rule, mechanical:** membership may grow, never shrink. The test asserts the
       current index is a superset of the committed baseline index.
+- [ ] **Where it runs:** the index test runs per-PR in the `internal/neutraleval` leg of the job
+      **Wave −1 Task 7** creates (`pr-checks.yml` has no `toolrisk`/`neutraleval` leg today —
+      `grep -c toolrisk` returns 0). This wave adds no job and edits no workflow package list; Wave 4A
+      adds its own packages to the list Wave −1 created.
 
 **Defeat test:** `TestCanonicalRegressionSetIsComplete` — delete one member from
 `canonical-regression-index.json` and it goes RED with
 `canonical regression member %q was removed; this suite proves non-regression and membership is append-only`.
+Second defeat: rename an owning test without updating the index and it goes RED naming the orphaned
+member.
 
-**Exit:** **11** seeded members, each naming an owning test that exists. Members whose owning test
-does not yet exist: **0** — where Wave 4A has not yet written the test, the member's entry records
-`owningTest: null` and the index test fails, which is the correct state until 4A lands. Say so in
-the certificate as `NOT_READY`, not as a passing suite.
+**Exit:** **11** seeded members, each naming an owning test that exists, in **one** file — indexes
+elsewhere in the tree covering the same residuals: **0**. Members whose owning test does not yet
+exist: where Wave 4A has not yet written the test, the member's entry records `owningTest: null` and
+the index test fails, which is the correct state until 4A lands. Say so in the certificate as
+`NOT_READY`, not as a passing suite.
 
 ---
 
@@ -520,8 +609,10 @@ the certificate as `NOT_READY`, not as a passing suite.
       report a Suite-2 pass off one family.
 - [ ] **Never weaken the control.** `:205-207` fatals if the literal-space control is not BLOCK. Keep
       it. **Never repurpose `quoting_bypass_pin_test.go`**, which asserts `rm -rf "$HOME"` stays
-      undetected — that pin is Wave 4B's to flip, in the same commit that fixes the detector, and it
-      must not be deleted here to make a number look better.
+      undetected — that pin is **Wave 4B Task 6's to flip**, in the same commit that fixes the
+      detector, and on top of the alternation **Wave 0A Task 3** rewrites first. Three waves touch one
+      regex and the order is 0A rewrites → 4B inverts the pin; this wave touches neither and must not
+      delete the pin here to make a number look better.
 
 **Defeat test:** revert the `t.Errorf` addition in the probe loop and
 `TestC5_UnknownTransforms_Inventory` returns to `--- PASS` while printing
@@ -645,14 +736,14 @@ enforcing-eligible population is **published**, currently **51**, with the certi
       certifiedSecurityOutcome}` (`contract.go:196-207`) and `result.finalState`. Use those field
       names.
 - [ ] **The Codex surface cannot be measured safeguards-on on the owner's own machine.**
-      `Installers/internal/codexmanaged/hookdialect.go` carries two accepted dialect rows (`0.144.`
-      and `0.147.`); the installed client is `0.149.0-alpha.4.1`. Widening the dialect pin is
-      forbidden by prior decision — the fix is `verify.go:608`. Until then the Codex row's
-      safeguards-on column is **UNKNOWN** and its safeguards-off column is the honest one. Discovery
-      command, since the line numbers here were not machine-resolved this pass:
-      ```bash
-      cd Installers && git grep -n "0.147.\|0.144." origin/main -- internal/codexmanaged/hookdialect.go
-      ```
+      `Installers/internal/codexmanaged/hookdialect.go` carries two accepted dialect rows —
+      `hookTrustDialect144` (`:100-104`, prefix `"0.144."`) and `hookTrustDialect147` (`:111-115`,
+      prefix `"0.147."`) — collected into `knownHookTrustDialects` at **`:166`** (verified against
+      `origin/main` 2026-08-28; `:112` is a field *inside* one row, not the table, and any citation of
+      `:112` as "the table" is stale). The installed client is `0.149.0-alpha.4.1`, and the file's own
+      comment at `:163-165` records 0.145/0.146/0.148/0.149 as unmeasured and unresolvable. Widening
+      the dialect pin is forbidden by prior decision — the fix is `verify.go:608`. Until then the Codex
+      row's safeguards-on column is **UNKNOWN** and its safeguards-off column is the honest one.
 - [ ] **The adaptive arm is external.** It needs multiple attacker models plus human expert attempts —
       contracted red-team time. Static-corpus results are labelled `suite: regression` in the
       manifest and are **never** presented as a release claim; adaptive attacks broke all eight
@@ -679,7 +770,8 @@ is **0**. Scenario count today, per stratum: **UNKNOWN — no scenario index exi
 - `Installers/parity-vectors/neutral/holdout-seed.json` (298 lines)
 - `Installers/parity-vectors/neutral/neutral-corpus.holdout.jsonl` (39 cases)
 - `Installers/parity-vectors/neutral/HOLDOUT_REPORT.md` (`:79-92`, `:123`)
-- `Installers/internal/neutraleval/ingress.go` (`LaneOf`, `:65-71`)
+- `Installers/internal/neutraleval/ingress.go` (`LaneOf`, `:65-71`) — **read only here; the extension
+  is Wave 3 Task 8 Step 2's**
 
 - [ ] **Keep the seal mechanism.** `TestHoldoutCorpusIsNotReferencedByAnyPerPRTest` (`:117-161`) is
       correct and is the only reason the published rates are not fitted. Do not weaken it, do not add
@@ -716,11 +808,13 @@ is **0**. Scenario count today, per stratum: **UNKNOWN — no scenario index exi
       per surface with separate denominators, or emit per-surface rows via
       `metrics.byClassRepresentationSurface[].surface` from Task 3 and stop publishing a single
       benign-interrupt rate. The second is cheaper and is what the spine already models.
-- [ ] **Extend `LaneOf` before any new lane corpus is added.** `ingress.go:66-71` returns EGRESS for
-      everything that is not literally `"ingress"`, so a `toolrisk` or `scanner` corpus would merge
-      into the egress denominator with the mixed-lane refusal silent. Add the lane, add its surface
-      tokens, and add a test that a two-lane corpus is refused for the *new* pair, not only for
-      ingress/egress.
+- [ ] **The `LaneOf` extension itself is owned by Wave 3 Task 8 Step 2** — the lane constants, the
+      surface tokens and the `runner.go` dispatch land there, with lane C (`toolrisk`). **This wave
+      owns the refusal test for the new pair, and only that.** The gap it closes: `ingress.go:66-71`
+      returns EGRESS for everything that is not literally `"ingress"` (`SurfaceIngress`, `:56`), so a
+      `toolrisk` or `scanner` corpus merges into the egress denominator with the mixed-lane refusal at
+      `holdout.go:222-234` silent. **No new lane corpus is added before Wave 3 Task 8 Step 2 lands** —
+      a corpus added first is scored into the wrong denominator with nothing saying so.
 - [ ] **Adapt, do not re-invent, the old plan's Task 6** (`plan:6355-6400`). Its content is good: a
       third lane on the existing single-code-path generator, with its own seed, digest, source id and
       UUID namespace, plus the seal-test naming constraint. Two corrections: it cites
@@ -735,9 +829,12 @@ is **0**. Scenario count today, per stratum: **UNKNOWN — no scenario index exi
 
 **Defeat test:** add a reference to `neutral-corpus.holdout.jsonl` in any `*_test.go` and
 `TestHoldoutCorpusIsNotReferencedByAnyPerPRTest` goes RED with the shipping message at `:155-159`:
-`the SEALED holdout is referenced by per-PR test file(s) [...]`. Second defeat, new: register a
-`toolrisk` surface, put one toolrisk and one dlp entry in the same corpus, and
-`TestScoreHoldoutRefusesMixedLanes` must go RED — today it does **not**, because both map to EGRESS.
+`the SEALED holdout is referenced by per-PR test file(s) [...]`. **Second defeat, new and owned
+here:** register a `toolrisk` surface, put one toolrisk and one dlp entry in the same corpus, and
+`TestScoreHoldoutRefusesEveryRegisteredLanePair` must go RED — today it does **not**, because both
+map to EGRESS. That test is the new-pair row of the mixed-lane family Wave 3 Task 1 starts with
+`TestScoreHoldout_RefusesAMixedLaneCorpus` (the ingress/egress pair), driven off the same `laneSet`
+at `holdout.go:222-234` — one family, two rows, not two rival tests.
 
 **Exit:** two named corpora exist (5a frozen at digest `790d7306…`, 5b regenerated). Per-class attack
 denominator for enforcing classes: currently **1–7 of a required 29**; the certificate row reads
@@ -828,8 +925,9 @@ with its denominator, or `null` — never a number without one.
 - [ ] Failing test first, in Backend: `TestTriageVocabularyMapsToCorpusGovernance` asserts a total,
       committed mapping exists from every production triage value to a corpus `governance` shape, and
       fails on any unmapped value. It fails today because no mapping exists.
-- [ ] Write the mapping table. This wave defines it; **Wave 6 performs the widening and the row
-      migration.** The two must not be done in the same commit as this wave's schema work, because
+- [ ] Write the mapping table. This wave defines it; **Wave 6 Task 8 performs the widening and the row
+      migration**, and **Wave 6 Task 9** lands the second reviewer and the adjudication record on the
+      production row. The two must not be done in the same commit as this wave's schema work, because
       the migration touches live tenant rows.
 
 | Production today (4) | Problem | Target (7) | Corpus `governance` counterpart |
@@ -869,13 +967,13 @@ with its denominator, or `null` — never a number without one.
 **Defeat test:** `TestTriageVocabularyMapsToCorpusGovernance` — add an eighth production value with no
 corpus counterpart and it goes RED with
 `triage value %q has no corpus governance counterpart; the two vocabularies must not diverge again`.
-Separately, in Wave 6's widening commit, reverting the pin update at
+Separately, in Wave 6 Task 8's widening commit, reverting the pin update at
 `detections-absent-facets.spec.ts:202-207` must turn that spec RED — proving the pin still guards.
 
 **Exit:** the mapping table is committed and **total**: unmapped production values **0 of 7**,
 unmapped corpus governance fields **0**. `MEASURED_FP_VERDICTS` membership asserted by name. The
-production FP rate remains explicitly **not citable as a certified quality label** until Wave 6 lands
-the second reviewer and the adjudication record on the row — §7's forbidden list stands.
+production FP rate remains explicitly **not citable as a certified quality label** until Wave 6 Task 9
+lands the second reviewer and the adjudication record on the row — §7's forbidden list stands.
 
 ---
 
@@ -946,19 +1044,25 @@ can reach PASS from this packet.
 Each is a number or a named artifact. Where a criterion cannot be measured today, the wave's
 certificate contribution is **UNKNOWN**, not a guessed number.
 
-1. **No artifact carries `engineVersion: "m4.7"`.** Measured by `grep -rn '"m4.7"' Installers/cmd Installers/internal`
-   → **0** hits outside the test that rejects the string, and by inspecting a nightly
-   `holdout-report.json`. Defeat: Task 1, `TestNormalizeOptionsRejectsAbsentEngineVersion` — restore
-   the default at `runner.go:468`, RED.
+1. **No artifact carries `engineVersion: "m4.7"`.** Measured by
+   `MSYS_NO_PATHCONV=1 git grep -c '"m4.7"' origin/main -- cmd internal` → **0** hits outside the two
+   tests that reject the string, and by inspecting a nightly `holdout-report.json`. The emitted report
+   carries `formatVersion: 3` — **one** bump, owned by Wave 3 Task 3, carrying both the nullable rates
+   and this wave's `System` block. Reports carrying `formatVersion: 4`: **0**. Defeat: Task 1,
+   `TestNormalizeOptionsRejectsAbsentEngineVersion` — restore the default at `runner.go:468`, RED.
 2. **A one-line detector change moves the stamped engine version.** Two consecutive report artifacts
    from trees differing by one rule constant must differ in `system.engineVersion`. **This is the red
-   state the wave starts from** — today the string is a constant. Defeat: Task 2, revert the
-   `ClassCatalog`-style ruleset digest to a literal, RED.
+   state the wave starts from** — today the string is a constant. Defeat: Task 2,
+   `TestRulesetDigestMovesWhenARuleMoves` — revert the `ClassCatalog`-style ruleset digest to a
+   literal, RED.
 3. **The environment digest covers 7 named axes** (from 4). Defeat: Task 2,
    `TestEnvironmentDigestCoversDeclaredAxes` — delete `"shell"`, RED naming the axis.
-4. **`RunnerIdentity` carries 8 required identity fields and `ResultProvenance` carries `policyDigest`;
-   a run with any one absent exits non-zero before scoring a case.** Defeat: Task 2, omit
-   `rulesetDigest`, the binary exits non-zero with `runner identity is invalid`.
+4. **`RunnerIdentity` carries 9 required identity fields** — `runnerId`, `engineId`, `engineVersion`,
+   `contractVersion`, `artifactDigest`, `rulesetDigest`, `detectorCatalogDigest`, `normalizerVersion`,
+   `parserVersion` — **and `ResultProvenance` carries `environmentDigest` plus `policyDigest`; a run
+   with any one absent exits non-zero before scoring a case.** Occurrences of `effectivePolicyDigest`
+   anywhere in the tree: **0** — one fact, one name. Defeat: Task 2, omit `rulesetDigest`, the binary
+   exits non-zero with `runner identity is invalid`.
 5. **`holdout-report.json` validates against the spine's `/schemas/neutralEvaluation/oneOf[2]`**, with
    a `byClassRepresentationSurface` row for each of the **55** catalog classes, `clusters` populated,
    and **0** classes publishing a non-null bound on a zero denominator. Defeat: Task 3,
@@ -973,18 +1077,22 @@ certificate contribution is **UNKNOWN**, not a guessed number.
    has exactly 2 entries, each with an owner.** Base families at ≥20 transforms: **1 of N**, with N
    published — this is a ratio, not a pass. Defeat: Task 6, drop `cmdsubst-verb` from the residual
    list, RED.
-9. **Canonical regression membership is append-only and seeded with 11 members.** Members with no
-   owning test are reported, not hidden; while any is `null`, this criterion is **NOT_READY**, not
-   green. Defeat: Task 5, delete a member, RED.
+9. **Canonical regression membership is append-only and seeded with 11 members, in exactly one file**
+   (`parity-vectors/neutral/canonical-regression-index.json`); rival indexes over the same residuals:
+   **0**. Members with no owning test are reported, not hidden; while any is `null`, this criterion is
+   **NOT_READY**, not green — Wave 4A fills `owningTest` as it writes each test. Defeat: Task 5,
+   delete a member, RED.
 10. **Adaptive-ASR rows publishing an interval off raw attempt counts: 0.** Every row carries
     `scenarios`, `attemptsPerScenario`, `rho`, `nEffective`, `safeguards`. Defeat: Task 8, set
     `nEffective = scenarios × attempts`, RED.
 11. **Two holdout artifacts exist: 5a frozen at digest `790d7306…`, 5b regenerated per release with
     `digest(N+1) != digest(N)`.** The seal test still fails on any per-PR reference. Defeat: Task 9,
     reference the corpus from a test file, RED at `holdout_seal_test.go:155-159`.
-12. **A two-lane corpus is refused for every registered lane pair, not only ingress/egress.** Defeat:
-    Task 9, register a `toolrisk` surface and mix it with `dlp`; `TestScoreHoldoutRefusesMixedLanes`
-    must go RED — **today it does not**, because `LaneOf` maps both to EGRESS.
+12. **A two-lane corpus is refused for every registered lane pair, not only ingress/egress.** The
+    `LaneOf` extension that makes a second pair exist is **Wave 3 Task 8 Step 2**; this criterion is
+    the refusal test over it, owned here. Defeat: Task 9, register a `toolrisk` surface and mix it
+    with `dlp`; `TestScoreHoldoutRefusesEveryRegisteredLanePair` must go RED — **today it does not**,
+    because `LaneOf` (`ingress.go:66-71`) maps both to EGRESS.
 13. **Tier-A cases with ≥2 distinct labelers: target 100%, currently 0 of 225 distinct cases.** Cases resolving
     conflicting labels without an adjudication record: **0**. Inter-rater reliability published with
     its denominator or as `null`. Defeat: Task 11, both named tests.

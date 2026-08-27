@@ -31,10 +31,18 @@ fetched by the 2026-08-27 disposition pass):
 | `Backend` | `15dd89bae54d` (`fix/remote-uninstall-command-timeout`) | `0cf9021e944b` | 773 |
 | `Frontend` | `1fe6e7a609de` (`feat/font-geist`) | `cac574ae063b` | 525 |
 | `Installers` | `8e49a6251bf5` (`fix/remote-uninstall-privileged-daemon`) | `5b12952307db` | 1010 |
-| `Ceragon-Intelligence` | `58404e0a3db5` (`feat/push-depth-cli-ui`) | `486d937bcbe0` | 168 |
+| `Ceragon-Intelligence` | `58404e0a3db5` (`feat/push-depth-cli-ui`) | `deb70e647794` | 173 |
 | `Static-Worker` | `a7326106e71c` (`feat/install-gate-scan-quality`) | `44d7aabb8b84` | 75 |
 | `Sandbox-Worker` | `1a9072538e09` (`chore/cleanup-unnecessary-files`) | `2831997dfe84` | 67 |
 | `GithubApp-Bot-Scanner-Worker` | `ed9209996148` (`codex/m42-scanner-reliability`) | `3d4116a5e5b1` | 20 |
+
+**The spine's rebase manifest is already one row stale, and this is not a hypothetical.** It records
+Ceragon-Intelligence at `486d937b`. The fetch run while editing this file on 2026-08-28 printed
+`486d937b..deb70e64` — five new commits. The spine's own standing rule covers exactly this (*"if your
+`git fetch` disagrees with this table, the instructions below are invalid until revalidated"*), and it
+is the reason Task 1 is a generator and a standing rule rather than a table someone maintains. No
+citation in this packet lives in Ceragon-Intelligence, so nothing here is invalidated by that move —
+but the next reader must re-run the generator rather than trust this paragraph either.
 
 Not one checkout is on `main`. Not one is at `origin/main`. **`sed -n '122p' internal/toolrisk/toolrisk.go`
 in the Installers working tree returns a different line than the same command against `origin/main`** —
@@ -55,9 +63,16 @@ they lost.**
   The only automated detector-quality instrument in the workspace is therefore a non-gating nightly
   report.
 - `Frontend/.github/workflows/vendored-upstream-drift.yml` is 73 lines. `on:` is at **:39-43** —
-  `workflow_dispatch` + `cron "15 6 * * *"`. Its header at **:30-31** carries a written instruction:
+  `workflow_dispatch` + `cron "15 6 * * *"`. Its header at **:29-31** carries a written instruction:
   *"WHEN T-M2 LANDS: add `pull_request:` to the triggers in the SAME change that re-vendors the
   files."* T-M2 landed (`MANIFEST.json` pin is now `254d24fc`). The trigger did not.
+  **Owned by Wave 5 Task 9**, which splits it into a blocked Half A (the `pull_request:` trigger) and
+  an unblocked Half B (an offline `workspaceChecks` parity check). Do not fix it here: verified
+  2026-08-28, `Frontend/.github/workflows/pr-checks.yml`'s `on:` at **:89-90** is
+  `workflow_dispatch: {}` and nothing else, so adding a `pull_request:` trigger to the drift workflow
+  re-introduces per-PR GitHub billing in a repository that deliberately has none. That makes it an
+  owner spend decision, which this wave's earlier draft did not know when it called that half
+  "not blocked."
 
 **There is a third, larger version of the same problem, and it is not in the review.**
 `Installers/.github/workflows/pr-checks.yml` is 801 lines and its `on:` at **:81-87** is
@@ -82,6 +97,30 @@ and `finding-b-e2e:shim-enforcement` — `internal-candidate` is not among them.
 this packet is about run in no CI gate and in no local mirror leg.** Any exit criterion that says
 "CI is green" is, for that package, measuring nothing.
 
+**There is a fourth instrument, and it IS wired at PR time — this section previously said it was not.**
+`check:ai-security-consumer` verifies the generated portable projection against its reviewed pin, and
+it is the only guard standing between the digest-pinned artifact described below and a hand edit.
+Verified 2026-08-28 against `Backend@origin/main`:
+
+- `package.json:7` `check:ai-security-consumer` = `node packages/shared-contracts/scripts/check-ai-security-backend-consumer.cjs`.
+- It is reachable through **two** npm lifecycle hooks, not one: `prebuild` (`package.json:5`) **and
+  `pretest` (`package.json:10`)**, both routing through `build:shared-contracts` (`:6`).
+- `pr-checks.yml` runs `npm test` at `:229`, `:245`, `:391` and `:721` — **11 `npm test` invocations
+  over its 728 lines** — so the guard runs on every one of them, at PR time, on a change under review.
+- It also runs locally: `ci/gates.json` mirrors `Backend build:build_and_test`, so
+  `node ci/lib/run.mjs Backend` executes it today.
+
+**An earlier revision of this section claimed the guard "fires after merge, on the deploy path … and
+never on a change under review." That was false**, and it was false because its discovery command
+grepped only for `npm run build` and therefore could not see any of the eleven `npm test` steps.
+**Wave 1's disposition is the authoritative one** (`w1_policy_authority.md:603-618`): the guard is
+wired, and reconciliation G-6 is closed as a mis-statement rather than as work.
+
+Task 8 survives on a narrower and honest justification: a **named, greppable, separately-mirrorable
+leg** is better than a guard reachable only as a side effect of a lifecycle hook, because the implicit
+form is invisible to anyone auditing which gates cover which contract. That is a real improvement. It
+is not a coverage fix, and this wave must not describe it as one.
+
 **The DLP catalog is generated, but from the wrong side.**
 `Backend/packages/shared-contracts/src/generated/ai-security-portable.generated.ts:54` holds
 `AI_DLP_CLASSES` — **30** entries, counted, from `private-key` to `national-id`. It is re-exported at
@@ -94,14 +133,25 @@ entries, plus `Installers/internal/dlp/codesecurity_rules.go:70` `codeSecurityPa
 have no console control at all.**
 
 ⚠️ **`d366f5f8c76fac253d9adf7914873e97a955a16d` does not resolve in any of the seven checkouts** —
-`git cat-file -t` fails in all of them. So the generated artifact is pinned to a commit this
-workspace cannot see. Do not assume it is an Installers commit. Task 3 opens with a discovery step,
-not an assumption.
+`git cat-file -t` fails in all of them, re-confirmed 2026-08-28 after a fresh fetch of all seven. So
+the generated artifact is pinned to a commit this workspace cannot see. Do not assume it is an
+Installers commit.
+
+**This is why Task 3 is discovery only.** `AI_DLP_CLASSES` is not a hand-maintained table that a
+generator can be pointed at the producer registry: `ai-governance-contract.ts:262` reads it out of
+`AI_SECURITY_PORTABLE_ORDERED_TUPLES`, a digest-pinned generated artifact
+(`AI_SECURITY_PORTABLE_ARTIFACT_DIGEST = "sha256:29006c25…"`, `:19`) whose generator
+`ceragon-ai-security-artifact` v1.3.1 (`:23-24`) exists in no checkout here. Closing "make
+`AI_DLP_CLASSES` 81" from this wave would mean hand-editing a digest-pinned generated file — the exact
+drift the pin exists to catch. **The governed-vocabulary decision and the widening are owned by
+Wave 1 Task 2 and Wave 1 Task 3.** This wave records the provenance finding and declares the fork.
 
 **Two plan citations in the source material are themselves wrong, and correcting them is part of
 this wave.** The dead per-session scratchpad path is **not** at `plan:781` (that line is
-`aws iam put-role-policy --role-name ecsTaskExecutionRole`). It is at `plan:217, 224, 231, 232, 278,
-293, 313, 330, …` — **15 occurrences, 12 of them inside Wave 0's line range**. And
+`aws iam put-role-policy --role-name ecsTaskExecutionRole`). Its first occurrence is `plan:217`, and
+it recurs through Wave 0's line range; **the count is whatever the resolver prints, and this plan does
+not carry a second one** — a hand count taken during drafting did not reproduce, which is the defect
+Task 4's own exit criterion forbids everyone else. And
 `dlp.Scan`/`dlp.ScanAll`: `Installers/internal/dlp/dlp.go` is **1510 lines**, so the plan's
 `dlp.go:1519-1520` justification is past EOF. `ScanAll` and `ScanAllAtRest` are not in `dlp.go` at
 all — they are at `Installers/internal/dlp/scanall.go:78` and `:101`. The nearest real anchor in
@@ -173,6 +223,12 @@ legitimate work, carry a severity that means something…"*. `plan:28` quotes th
       no claim that the lexical classifier can be an enforcing tier; no claim of safeguards coverage
       *at install time* (the MSI does not wire the AI hook lane — a per-user scheduled task does,
       about a minute later).
+- [ ] **This wave owns the PROSE checklist only. Wave 8 Task 11 owns the executable renderer**
+      (`Installers/internal/certificate/claim_test.go`, `TestForbiddenClaimsAreRefused`) that encodes
+      the same list as data. Two lists is how they drift, so write the coupling down here and make
+      Wave 8's test assert it: **the number of rows in this checklist and the number of encoded
+      entries in the renderer must be equal**, and the test fails naming the row that exists on one
+      side only. Today both are **15**. Neither side may grow alone.
 - [ ] Name `docs/superpowers/plans/2026-07-15-ai-security-detection-enforcement-master-plan.md:695-829`
       as the **sole** numeric SLO authority. Do not create a second table.
 - [ ] Add the certificate TTL: **90 days**, matching AIUC-1's quarterly re-test requirement.
@@ -183,70 +239,95 @@ complete", "9/10", "high-assurance") outside a fenced *forbidden* block. Re-inse
 positives" into the goal statement and it must go RED naming the line.
 
 **Exit:** the goal statement contains the sentence *"None of the five risk lanes can reach PASS from
-this packet"*, and the forbidden-claims checklist has **at least 15** rows (8 from §7 "forbidden
-outright" + 7 from "forbidden by the research"), each with a named source.
+this packet"*; the forbidden-claims checklist has **15** rows (8 from §7 "forbidden outright" + 7 from
+"forbidden by the research"), each with a named source; and that row count **equals** the count of
+encoded entries in Wave 8 Task 11's renderer, asserted by a test there rather than by a reader
+comparing two documents.
 
-## Task 3: Generate the DLP class catalog instead of hand-editing counts
+## Task 3: Resolve the provenance of the pinned DLP vocabulary — DISCOVERY ONLY
 
-**Files:**
-- `Installers/internal/dlp/registry.go` (`RegisteredClasses`, `:221`)
-- `Backend/packages/shared-contracts/src/generated/ai-security-portable.generated.ts` (`:54`)
-- `Backend/packages/shared-contracts/src/ai-governance-contract.ts` (`:262`)
-- `Backend/packages/shared-contracts/` **and** the workspace-root `packages/shared-contracts/` — see
-  the trap below
+**Files:** none. This task writes a finding and a fork into the plan. **It changes no source file, and
+it must not**: the thing it is about is a digest-pinned generated artifact, and the only way to close
+it from here is to hand-edit that artifact.
 
-- [ ] **Step 1, discovery — do not guess.** The generated file pins
-      `AI_SECURITY_PORTABLE_SOURCE_COMMIT = "d366f5f8c76fac253d9adf7914873e97a955a16d"`, which
-      resolves in **none** of the seven checkouts. Find where it lives before writing any generator:
+**Read, do not edit:**
+- `Backend/packages/shared-contracts/src/generated/ai-security-portable.generated.ts` (`:18` source
+  commit, `:19` artifact digest, `:23-24` generator name and version, `:54` the `AI_DLP_CLASSES` key)
+- `Backend/packages/shared-contracts/src/ai-governance-contract.ts` (`:262`, the re-export)
+- `Installers/internal/dlp/registry.go` (`classRegistry` `:133` = 33, `RegisteredClasses` `:221`)
+- `Installers/internal/dlp/codesecurity_rules.go` (`codeSecurityParityClasses` `:70` = 48)
+
+- [ ] **Step 1 — run the sweep, with a control.** The generated file pins
+      `AI_SECURITY_PORTABLE_SOURCE_COMMIT = "d366f5f8c76fac253d9adf7914873e97a955a16d"`. Fetch first
+      (Task 1), then:
 ```bash
 cd C:/Users/Owner/Documents/Ceragon
 for d in Backend Frontend Installers Ceragon-Intelligence Static-Worker Sandbox-Worker GithubApp-Bot-Scanner-Worker; do
   printf "%-30s " "$d"; git -C "$d" cat-file -t d366f5f8c76fac253d9adf7914873e97a955a16d 2>&1 | head -1
 done
+git -C Installers cat-file -t 5b12952307db          # CONTROL: must print `commit`
 grep -rn "generate:ai-security-backend-consumer" Backend/package.json Backend/scripts/ 2>/dev/null
+gh search repos --owner Ceragon-Prod 'shared-contracts'   # is there a repo this workspace does not have?
 ```
-      If it resolves nowhere, the generator's provenance is **UNKNOWN** and that is a finding: the
-      Backend's closed DLP vocabulary is pinned to a commit this workspace cannot verify. Record it
-      before proceeding.
-- [ ] **Step 2, write the failing test first.** A parity spec that asserts
-      `AI_DLP_CLASSES.length === RegisteredClasses().length` and that the sets are equal. It must
-      fail today at **30 vs 81**, naming the 51 missing classes.
-- [ ] **Step 3.** Make `AI_DLP_CLASSES` derive from the producer registry rather than from a
-      hand-maintained 30-entry tuple. Widening a closed action vocabulary is a **write-path** change:
-      `assertClosedActionMap` throws and `validateActionMap` 400s on any key outside the tuple, so
-      **Backend deploys before any agent release** or the console 400s on the first policy PUT that
-      carries a new class.
-- [ ] **Step 4.** Assign each of the 51 newly-governed classes a shipped default posture from
-      `classSpec.defaultAction` in the producer (`registry.go`), not an invented one. Note that
-      `private-key-candidate` is `familyInconclusive` at `PostureMonitor` **by design** — a parse
-      failure must not become an enforcement decision. Do not promote it.
+      Measured 2026-08-28, after fetching all seven: **`could not get object info` in 7 of 7**, and
+      the control printed `commit`. The generator `ceragon-ai-security-artifact` v1.3.1 is named by
+      the artifact and exists nowhere here.
+- [ ] **Step 2 — record the finding, in the plan and in the run log.** *The Backend's closed DLP
+      action vocabulary is pinned to a source commit that resolves in none of the seven checkouts, by
+      a generator that exists in none of them. The pin is therefore unverifiable from this workspace:
+      it can be checked for self-consistency and cannot be traced to a source.* This is a finding
+      about **provenance**, not about the 30-vs-81 gap, and it survives whichever fork Wave 1 takes.
+- [ ] **Step 3 — declare the fork and hand it over. Do not decide it here.**
+      - **Option A** — regenerate the portable artifact so `AI_DLP_CLASSES` itself becomes 81.
+        **Blocked on the external dependency Step 1 measured**: no generator, no source commit.
+      - **Option B** — the governed tuple becomes `AI_SECURITY_DLP_CLASSES` in
+        `Backend/src/ai-security-policy/ai-security-policy.constants.ts`, pinned against a producer
+        parity vector, and `AI_DLP_CLASSES` stays the frozen 30-member V1 wire tuple.
+      **Owned by Wave 1 Task 2** (the decision and the docblock) and **Wave 1 Task 3** (the widening
+      to 81 and the per-class shipped posture, read from `classSpec.defaultAction`, never invented).
+      **The deploy-ordering sentence goes with them:** the 400 comes from `validateActionMap` on a
+      **console** PUT, so the constraint is *Backend deploys before the Frontend ships the 81-row
+      board*. No agent release is required by that widening — and the standing rule still holds
+      underneath it: if one is cut for unrelated reasons it still goes after the Backend (Wave 1
+      criterion 9). Wave 1's wording is authoritative; an earlier draft of this task stated it as an
+      agent-release dependency, which put a false item on the critical path's third step.
+- [ ] **Step 4 — carry the count-forbidding rule forward, not the count.** Nothing in this wave may
+      write `30`, `51` or `81` as an exit number for a vocabulary. Wave 1's criterion 1
+      (`|AI_SECURITY_DLP_CLASSES| == |RegisteredClasses()|`) is where that number is asserted, printed
+      by a test rather than typed.
 
-**⚠️ Trap — three copies, two builds, one reference.** `@ceragon/shared-contracts` exists in three
-places. `Backend/package.json` resolves it to `Backend/packages/shared-contracts/` — that is the copy
-that ships. `Ceragon-Intelligence/packages/shared-contracts/` is the vendored standalone mirror. The
+**⚠️ Trap for whoever executes Wave 1 — three copies, two builds, one reference.**
+`@ceragon/shared-contracts` exists in three places. `Backend/package.json` resolves it to
+`Backend/packages/shared-contracts/` — that is the copy that ships.
+`Ceragon-Intelligence/packages/shared-contracts/` is the vendored standalone mirror. The
 **workspace-root** `packages/shared-contracts/` is on no build path but is the canonical reference
 that seven Backend parity specs compare against, including
 `Backend/src/shared-contracts-guard/shared-contracts-mirror.dev.spec.ts`, which runs in the default
 jest lane. Editing the root copy changes what the parity checks consider correct; editing the Backend
-copy changes what ships. Both are usually needed and they are different acts.
+copy changes what ships. Both are usually needed and they are different acts. Stated here because the
+discovery surfaces it; the edits themselves are Wave 1's.
 
-**Defeat test:** add one temporary class to `classRegistry` in `Installers/internal/dlp/registry.go`.
-The new DLP generator gate must go RED with the class name in the message. Separately, replace one
-shipping `dlp.ScanAll` call with `dlp.Scan` and confirm `TestNoSurfaceScansShallow` goes RED — this
-one is **already proven red** at `internal/dlp/scan_depth_guard_test.go:140` with
-`these surfaces reach internal/dlp through a PARTIAL detector set`.
+**Defeat test:** none is possible — this task produces a finding, not a change. Its integrity clause
+is the control in Step 1: **if `git cat-file -t 5b12952307db` does not print `commit`, the sweep is
+measuring a broken invocation rather than a missing object and the finding is void.** A sweep whose
+control was never run has not run.
 
-**Exit:** `AI_DLP_CLASSES.length === RegisteredClasses().length`, and the number is printed by the
-test rather than written in the plan. Today that number is **81**; if the producer changes, the exit
-criterion follows it without an edit.
+**Exit:** a recorded finding naming **7 of 7** checkouts in which the pinned source commit does not
+resolve, with the control result beside it; the two options written down with the blocker on Option A
+named; and the decision handed to **Wave 1 Task 2**. **This wave asserts no DLP class count.** The
+criterion that used to live here — `AI_DLP_CLASSES.length === RegisteredClasses().length` — is
+**Wave 1 exit criterion 1**, restated there as `|AI_SECURITY_DLP_CLASSES| == |RegisteredClasses()|`.
 
 ## Task 4: Repair every citation in the plan
 
 **Files:** the revised plan text only.
 
-- [ ] Delete the dead per-session scratchpad path — **15 occurrences**, first at `plan:217`, 12 of
-      them inside Wave 0. Replace with a discovered workspace-scratch root, resolved at run time.
-- [ ] Replace the **51 bare-basename references** with `<repo>/<path>:<symbol>`. Confirmed examples:
+- [ ] Delete the dead per-session scratchpad path — first occurrence `plan:217`, recurring through
+      Wave 0. Replace with a discovered workspace-scratch root, resolved at run time. **Do not write a
+      count here**; the resolver prints its own, and a hand count taken while drafting this wave did
+      not reproduce against `grep -c`.
+- [ ] Replace the bare-basename references with `<repo>/<path>:<symbol>` — again, the resolver's
+      printed total is the number, not a literal in this bullet. Confirmed examples:
       `plan:15290` cites `main.ts:429` and `main.ts:458-465` with no repo; `plan:7460` cites
       `constants.ts:150-165`; `plan:4621` cites `server.go:365` and `server.go:453` (that one is
       `Installers/internal/daemon/server.go`, and the trap it names — `hookFires.seedFromDisk` sitting
@@ -265,95 +346,323 @@ criterion follows it without an edit.
 **Defeat test:** `plan-citation-resolver` (new, `ci/lib/plan-citations.mjs`). For every `path:line` in
 the plan it resolves `git show origin/main:<path>` and asserts `line ≤ EOF` and that the path carries
 a repo qualifier. Point one citation at `dlp.go:1519` and it must go RED with
-`past EOF: internal/dlp/dlp.go has 1510 lines`.
+`past EOF: internal/dlp/dlp.go has 1510 lines`. Second, for the `dlp.Scan`/`ScanAll` correction
+specifically, an already-red guard exists: replace one shipping `dlp.ScanAll` call with `dlp.Scan` and
+`TestNoSurfaceScansShallow` fails at `internal/dlp/scan_depth_guard_test.go:140` with
+`these surfaces reach internal/dlp through a PARTIAL detector set` — which is why the corrected
+citation points at `scanall.go`, not at `dlp.go`.
 
 **Exit:** the resolver reports **0** unresolvable references, **0** past-EOF references, and **0**
 unqualified basenames, out of a count it prints itself.
 
-## Task 5: Restore the two instruments that no longer gate
+## Task 5: Restore the instrument that no longer gates — `holdout-score.yml` header truth, then the trigger decision
 
 **Files:**
-- `Installers/.github/workflows/holdout-score.yml` (`:6` header, `:13` header, `:22-25` `on:`)
-- `Frontend/.github/workflows/vendored-upstream-drift.yml` (`:30-31` instruction, `:39-43` `on:`)
+- `Installers/.github/workflows/holdout-score.yml` (`:6` and `:13` header, `:18-21` the existing
+  cost-gate note, `:22-25` `on:`)
+- `Frontend/.github/workflows/vendored-upstream-drift.yml` (73 lines; `:20-22` and `:29-31` header,
+  `:39-43` `on:`) — Half A of the sibling trigger decision, Step 5. **Owned here. Blocked, not handed on.**
+- `ci/lib/workflow-header-truth.mjs` (create), `ci/lib/workflow-header-truth.test.mjs` (create)
+- `ci/gates.json` (`workspaceChecks`)
 
-- [ ] **Fix the header first, whatever the trigger decision is.** `holdout-score.yml:6` currently
-      states a push trigger the file does not have. A file that describes a trigger it lost is worse
-      than a file with no comment: it is a live self-contradiction in source that a reader will trust.
-- [ ] **Owner decision, not an engineering one.** Either restore `push:` on `main` to
-      `holdout-score.yml`, or write into the file that detector quality is a nightly, non-gating
-      report. Actions were unblocked org-wide on 2026-08-27, so the constraint is budget, not
-      availability. **BLOCKED on: an explicit owner cost decision.** Do not restore the trigger on
-      your own authority — its removal was an owner decision on 2026-08-25.
-- [ ] Add `pull_request:` to `vendored-upstream-drift.yml`, per the file's own written instruction at
-      `:30-31`. T-M2 has landed and `MANIFEST.json` pins `254d24fc`, current — the precondition the
-      instruction names is satisfied, so this half is **not** blocked.
-- [ ] Record the honest caveat that survives either decision: the console-engine claim is guarded
-      **per-PR against local edits only**; upstream drift is a daily poll until the `pull_request`
-      trigger lands.
+**This wave owns the header truth and the trigger decision for this file.** Wave 3 Task 11 and
+Wave 3B Task 1 each specified a header half as well; both are **owned by Wave −1 Task 5**, and the
+A/B/C option analysis below is Wave 3 Task 11's, moved here intact. **One header test, not three.**
 
-**Defeat test:** for `vendored-upstream-drift`, open a PR that bumps `MANIFEST.json`'s pin without
-re-vendoring; the job must go RED. For `holdout-score`, the defeat test is the header itself: revert
-the header to claim a push trigger while `on:` has none, and `ci/lib/workflow-header-truth.mjs` (new)
-must go RED with `holdout-score.yml:6 claims a push trigger; on: at :22 has none`.
+**The engineering half is unambiguous and is not blocked.** `holdout-score.yml:6` reads *"This runs on
+PUSH TO MAIN and NIGHTLY"* while `on:` at `:22-25` is `workflow_dispatch: {}` plus
+`schedule: cron '17 3 * * *'` — the push trigger was removed on 2026-08-25. `:13` adds *"The job does
+NOT gate on a rate threshold today."* A file that describes a trigger it lost is worse than a file
+with no comment: it is a live self-contradiction in source that a reader will trust.
 
-**Exit:** `vendored-upstream-drift.yml` `on:` contains `pull_request`. `holdout-score.yml`'s header
-and its `on:` block agree, verified by the header-truth check. The trigger question itself is
-recorded as **BLOCKED — owner cost decision**, and the certificate contribution for detector-quality
-freshness is **UNKNOWN** until it is answered.
+- [ ] **Step 1 — fix the header regardless of the decision.** Make `:6` describe the triggers the file
+      actually has, and cross-reference the cost-gate note already at `:18-21`, which explains why
+      they changed. Leave `:13` alone; it is true.
+- [ ] **Step 2 — put the decision to the owner, in plain terms. It is not an engineering call.** The
+      push trigger's removal was an owner cost decision after GitHub billed roughly $600 for July
+      2026. Restoring it spends money; not restoring it leaves detector quality on a nightly
+      non-gating report. Actions were unblocked org-wide on 2026-08-27, so the constraint is
+      **budget, not availability**.
+      - **Option A — restore `push:` on `main`.** Detector quality gates on merge. Costs one
+        ubuntu-latest job per push to `main`. The job is Go-only with `cache: true`; measure the real
+        figure with `node ci/lib/drift.mjs --cost` before quoting one.
+      - **Option B — write the decision down.** Detector quality is a nightly, non-gating report, and
+        the compensating control is named: `ci/gates.json` already mirrors `holdout-score:score`, so
+        `node ci/lib/run.mjs Installers holdout-score:score` runs it locally at zero cost, and every
+        promotion PR attaches its output.
+      - **Option C — the middle, and the recommendation.** Keep the nightly and add a **required
+        attachment** rule: no promotion PR merges without a locally-produced report from the exact
+        commit. It is the only option that costs nothing and still gates.
+- [ ] **Step 3 — record the decision in the file itself**, in the style of the existing cost-gate note
+      at `:18-21`, naming the date and the person: `DECIDED: <A|B|C> by <owner> on <date>`. A decision
+      that lives only in a chat log regresses. The `push` trigger was removed on 2026-08-25 in
+      `cd657c77` as a deliberate owner cost decision. **BLOCKED on: an explicit owner cost decision.**
+      Do not restore the trigger on your own authority.
+- [ ] **Step 4 — one header-truth check, at the workspace level.** `ci/lib/workflow-header-truth.mjs`
+      parses a workflow's `on:` keys, reads the first 20 comment lines, and fails when the header
+      names a trigger `on:` does not declare. Register it and its self-test in `ci/gates.json`
+      `workspaceChecks`, in the same shape and voice as the existing `toolrisk-vocab-parity` /
+      `toolrisk-vocab-parity-selftest` pair. **Why here and not a Go test in the repo:** it runs today
+      via `node ci/lib/run.mjs workspace` with no repo CI trigger, and it covers every workflow in all
+      seven repositories rather than one file — whereas `internal/neutraleval` (where Wave 3 Task 11
+      proposed to put it) has **no CI leg at all** until Wave 4C adds one, so a Go test there would
+      run nowhere automatic at the time this wave lands.
+      **One false positive to design out before you write it,** because covering all seven repositories
+      means covering the file Step 5 claims: `vendored-upstream-drift.yml`'s header names
+      `pull_request` at `:29-31` in a *conditional instruction* — *"WHEN T-M2 LANDS: add
+      `pull_request:`"* — not as a claim about the triggers it has. The check must fail on a header
+      asserting a trigger in the present tense, not on one prescribing a future one, or it lands red on
+      its first commit against a file whose comment is correct. That distinction is a required case in
+      `workflow-header-truth.test.mjs`, not a heuristic left to the regex.
+- [ ] **Step 5 — the sibling trigger. This wave owns it; it does not hand it on.**
+      `Frontend/.github/workflows/vendored-upstream-drift.yml` is 73 lines. Its `on:` at **:39-43** is
+      `workflow_dispatch: {}` plus `schedule: cron "15 6 * * *"`, and its own header at **:29-31**
+      carries the standing instruction *"WHEN T-M2 LANDS: add `pull_request:` to the triggers in the
+      SAME change that re-vendors the files."* An earlier revision of this step said the trigger was
+      *"owned by Wave 5 Task 9"* — **it is not, and Wave 5 Task 9 says so in the same words**
+      (`w5_w6_console_triage.md:665-669`: *"**The GitHub half is not this task's.** … owned by Wave −1
+      Task 5 … **Do not edit that workflow from this wave.**"*), as do `w3_measurement_substrate.md:951-954`
+      and `w4c_prompt_ingress.md:878`, both of which point at this wave's exit criterion 7. Four files
+      pointing at each other is how a one-line change goes unmade for a month. **The pointer stops here.**
+      - **Half A — adding `pull_request:` — is this wave's, and it is BLOCKED.** Not on engineering: on
+        the same owner spend decision as `holdout-score.yml` above, one sitting, two questions.
+        `Frontend/.github/workflows/pr-checks.yml`'s `on:` at **:89-90** is `workflow_dispatch: {}` and
+        nothing else; its `push:` and `pull_request:` triggers were deleted on **2026-08-25** in
+        `3b5c5aa8` (*"ci: stop billing GitHub for push and merge"*), whose own note at `:84-88` states
+        the cost plainly — *"there is now NO automatic gate on GitHub."* That repository has **no
+        per-PR runs at all**, so a `pull_request:` trigger on the drift workflow is a request to start
+        paying for them again. Record the answer exactly as Step 3 records this file's:
+        `DECIDED: <yes|no> by <owner> on <date>` in the workflow header, or the literal words
+        **BLOCKED — owner spend decision** with the date the question was put. **Do not add the trigger
+        on your own authority.**
+        **Name the one precondition that IS satisfied, so the block is not over-stated.** The header's
+        other condition at `:20-22` — that a `pull_request` trigger must not *"paint every unrelated PR
+        red for a condition its author did not cause and cannot fix"*, i.e. T-M2 must have landed — is
+        met: `MANIFEST.json` pins `254d24fc` and Wave 5 Task 9 re-verified on 2026-08-28 that all three
+        digests still match `Installers@origin/main` (`w5_w6_console_triage.md:714-719`). So
+        **`w3_measurement_substrate.md:951-954` is right that the engineering precondition is clear,
+        and wrong to conclude from it that "that half is not blocked"** — it reads the T-M2 condition
+        and not the spend one. Nothing technical stands in the way. **Money does, and money is the
+        owner's call.**
+      - **Half B — the offline check — is unblocked, ships, and is built in Wave 5 Task 9, not here.**
+        `ci/lib/vendored-engine-parity.mjs` plus its self-test, registered in `ci/gates.json`
+        `workspaceChecks` beside `toolrisk-vocab-parity` (`:31`) and `toolrisk-vocab-parity-selftest`
+        (`:36`), modelled on `ci/lib/vocab-parity.mjs` — 24,024 bytes, already registered, already run
+        by `node ci/lib/run.mjs workspace`. It compares bytes on disk, needs no token and no network,
+        and **no GitHub decision can switch it off** — which is precisely why it is the half that ships
+        while Half A waits on a budget. This step neither duplicates it nor blocks it. **This wave must
+        not put a competing copy in a workflow**, the same rule as Task 7's last bullet.
+- [ ] **Step 6 — record the caveat that survives either decision:** until the trigger question is
+      answered, detector quality is measured nightly or locally and **never** by an automatic gate on
+      a change under review. Any wave that writes "CI is green" for a detector number is measuring
+      nothing.
 
-## Task 6: Add the standards columns to the class catalog
+**Defeat test:** revert `holdout-score.yml:6` to claim a push trigger while `on:` declares none;
+`node ci/lib/workflow-header-truth.mjs` must exit non-zero with
+`holdout-score.yml:6 claims a push trigger; on: at :22 has none`. Second, delete the
+`ci/gates.json` `workspaceChecks` entry and `node ci/lib/drift.mjs` must go RED — a check nobody runs
+is not a check.
 
-**Files:** the class-catalog table in the plan; the manifest schema from source material §5.3.
+**Exit:** `holdout-score.yml`'s header and its `on:` block agree, pinned by **exactly one**
+header-truth check, registered in `workspaceChecks` with a self-test that has been made red. The
+trigger question is recorded in the workflow file as `DECIDED: <A|B|C> by <owner> on <date>` or, until
+then, as **BLOCKED — owner cost decision**, and this wave's certificate contribution for
+detector-quality freshness is **UNKNOWN**, not green. **Both** trigger questions this wave owns — this
+file's and `vendored-upstream-drift.yml`'s Half A (Step 5, exit criterion 7) — are recorded in their
+own workflow headers by that same rule. A decision that lives only in a chat log regresses, and a
+decision handed to another wave does not get taken at all.
 
-- [ ] Add three per-class columns: **ATLAS technique id** (pin an `atlas-data` release; **v2026.07**
-      is current, and v2026.05 added a `platform` field that includes `Agentic`), **OWASP LLM:2026 /
-      ASI id**, **AIUC-1 control id**.
-- [ ] Use the **2026** OWASP edition. The 2026 Top 10 for LLM Applications shipped 2026-08-03 and
-      renumbered 8 of 10 — **Excessive Agency moved from LLM06 to LLM03**, which is the entry the
-      2026-08-23 review leans on hardest while citing `:2025` ids. Also map OWASP Top 10 for Agentic
-      Applications 2026 (ASI01–ASI10). ASI09 (Human-Agent Trust Exploitation) requires a confirmation
-      dialog to display **the raw action, not an agent-authored summary** — a control this product
-      ships and does not test. Add that test in Wave 5.
-- [ ] Map the AIUC-1 Q3-2026 controls that match this product's surface: **A008** (secrets in
-      generated code/logs/storage), **B010.3** (typosquatted and hallucinated dependencies),
-      **B006.3** (scanning configuration artifacts for prompt-injection risk — exactly the rule-file
-      walk that PR #179 un-capped), **B006.1** (approved MCP servers only). One corpus run then
-      serves the internal gate and the external audit.
-- [ ] `grep -ci owasp` over the current plan returns **0**. That is the baseline this task moves.
+## Task 6: Declare the standards columns in the manifest schema
 
-**Defeat test:** `standards-mapping-totality` (new). Every class in the generated catalog must carry
-a non-empty `owaspLlm2026` **or** an explicit `"n/a"` with a reason. Remove one mapping and it goes
-RED naming the class.
+**Files:** the manifest schema from source material §5.3; the class-catalog table in the plan.
 
-**Exit:** every one of the 40 tool-risk classes and all producer DLP classes carries a standards row,
-and `atlasRelease` is pinned to a named release string in the manifest.
+**Scope, stated first because this task used to claim more than it can deliver.** This wave declares
+the **columns**. It does not populate them. **The generated mapping and its totality test are owned by
+Wave 8 Task 7** (`Installers/internal/certificate/standards.go`, `TestEveryClassCarriesStandardsIds`,
+exit **121 of 121** = 40 tool-risk + 81 DLP producer classes). A totality criterion cannot be met from
+here anyway: the DLP half of that denominator does not exist until Wave 1 widens the governed
+vocabulary to 81, and this wave asserts no DLP class count at all (Task 3).
 
-## Task 7: Make the parity checker and the toolrisk tests run somewhere
+- [ ] Declare three per-class columns in the manifest schema: **`atlasTechniques`**,
+      **`owaspLlm2026` / `owaspAsi2026`**, **`aiuc1Controls`** — each required, each permitting an
+      explicit `"n/a"` **with a reason** rather than an empty value, so an unmapped class is a visible
+      decision and not a blank.
+- [ ] Declare **`system.standardsMapping.atlasRelease`** as a required pinned release string, so a
+      technique renumbering is a visible diff rather than silent drift. **v2026.07** is current;
+      v2026.05 added a `platform` field that includes `Agentic`.
+- [ ] Name the editions in the schema's documentation so the populating wave cannot pick a stale one:
+      **OWASP Top 10 for LLM Applications 2026** (shipped 2026-08-03; it renumbered 8 of 10, and
+      **Excessive Agency moved from LLM06 to LLM03** — the entry the 2026-08-23 review leans on
+      hardest while citing `:2025` ids), and **OWASP Top 10 for Agentic Applications 2026**
+      (ASI01–ASI10). The four AIUC-1 Q3-2026 controls that land on this product's surface — **A008**,
+      **B010.3**, **B006.3**, **B006.1** — are enumerated by Wave 8 Task 7; name them in the schema
+      documentation as the closed set the column accepts.
+- [ ] `grep -ci owasp` over the v1 plan returns **0**, verified. That is the baseline the column
+      declaration moves; the *mapping* baseline is Wave 8's (`git grep -in aiuc` = 0 hits).
+- [ ] **ASI09** (Human-Agent Trust Exploitation) requires a confirmation dialog to display **the raw
+      action, not an agent-authored summary** — a control this product ships and does not test.
+      **Owned by Wave 5 Task 8.**
 
-**Files:** `ci/lib/vocab-parity.mjs`; `ci/gates.json`; one repo's workflow.
+**Defeat test:** `standards-schema-declaration` (new) — validate a manifest instance whose class rows
+omit `atlasTechniques`, or whose `system.standardsMapping.atlasRelease` is blank, against the schema.
+Both must be rejected, the second with `standards mapping has no pinned ATLAS release`. Delete the
+column from the schema and the invalid instance validates, which is the regression.
 
-- [ ] `ci/lib/vocab-parity.mjs` exists (24,024 bytes, added `221bd5b` 2026-08-26) and prints
-      `PASS -- all three repos carry the same 40 classes…`, reporting `NOT CHECKED` rather than
-      passing on a missing checkout. It lives at the **workspace root, outside all three repos**, so
-      **no repo's own CI runs it**. Give it a home inside at least one repo's CI.
-- [ ] Record the harder fact and act on it: **`internal/toolrisk` runs in no PR-time job and in no
-      mirrored leg.** `grep -c toolrisk Installers/.github/workflows/pr-checks.yml` = 0. `go test ./...`
-      reaches it only from `internal-candidate.yml:87` (`workflow_dispatch`). `ci/gates.json` mirrors
-      `pr-checks:{hot-path-audit-imports, scanner-parity, wire-lane-tests, codex-vendor-lane,
-      ai-checkpoint-observation, codex-hook-lane-live-proof, release-workflow-contract,
-      self-update-lane, macos-legacy-identity}`, `holdout-score:score` and
-      `finding-b-e2e:shim-enforcement` — none of which runs `./internal/toolrisk/...`.
-- [ ] Add a `toolrisk-lane` job that runs `go test ./internal/toolrisk/... ./internal/shellast/... -count=1`
-      and mirror it in `ci/gates.json`, so Wave 0A's defeat tests have a gate to be red in. Adding a
-      job to `pr-checks.yml` while it has no `pull_request` trigger buys nothing on GitHub but does
-      buy the mirrored local leg — say which of the two you are getting.
+**Exit:** the manifest schema declares **3** per-class standards columns plus a required
+`atlasRelease`, each with its accepted edition named, and rejects an instance missing any of them.
+**Population is Wave 8 Task 7's exit criterion (121 of 121), not this wave's.**
+
+## Task 7: Create the `toolrisk-lane` job and its mirror entry — the one every later wave appends to
+
+**Files:** `Installers/.github/workflows/pr-checks.yml`; `ci/gates.json`.
+
+**This task creates the job and the mirror entry. Later waves add packages to the list it creates and
+do not create jobs of their own** — otherwise three waves race on one file. Named consumers:
+**Wave 4A Task 8** (the residuals suite) and **Wave 4C exit criterion 11** (`internal/ingressrisk` and
+`internal/neutraleval`, which also brings `holdout_seal_test.go` under an automatically-triggered job
+for the first time). Both append to `toolrisk-lane`'s package list, not to `scanner-parity`'s step at
+`pr-checks.yml:146`.
+
+- [ ] Record the fact this task exists for: **`internal/toolrisk` runs in no PR-time job and in no
+      mirrored leg.** `grep -c toolrisk Installers/.github/workflows/pr-checks.yml` = **0** over its
+      801 lines, verified. `go test ./...` reaches it only from `internal-candidate.yml:87`
+      (`workflow_dispatch`-only). `ci/gates.json` mirrors `pr-checks:{hot-path-audit-imports,
+      scanner-parity, wire-lane-tests, codex-vendor-lane, ai-checkpoint-observation,
+      codex-hook-lane-live-proof, release-workflow-contract, self-update-lane, macos-legacy-identity}`,
+      `holdout-score:score` and `finding-b-e2e:shim-enforcement` — none of which runs
+      `./internal/toolrisk/...`.
+- [ ] Add a `toolrisk-lane` job whose single test step runs
+      `go test ./internal/toolrisk/... ./internal/shellast/... -count=1`, and mirror it in
+      `ci/gates.json` as `pr-checks:toolrisk-lane`, so Wave 0A's defeat tests have a leg to be red in.
+- [ ] **Say which of the two you are buying.** `pr-checks.yml`'s `on:` at `:81-87` is
+      `workflow_dispatch` + `schedule: cron '41 7 * * 1'`, and every job but
+      `codex-hook-lane-live-proof` carries `if: github.event_name != 'schedule'`. Adding a job there
+      buys **nothing on GitHub** until the trigger question (Task 5) is answered; it buys **the
+      mirrored local leg**, which is real and free. Write that sentence into the PR body rather than
+      "CI now covers toolrisk".
+- [ ] **The cross-repo vocabulary checker already has a home; do not give it a second one.**
+      `ci/lib/vocab-parity.mjs` (24,024 bytes, added `221bd5b` 2026-08-26) is registered in
+      `ci/gates.json` `workspaceChecks` together with its self-test, and runs today via
+      `node ci/lib/run.mjs workspace`. Making it run *inside a repository's* PR gate is
+      **owned by Wave 1 Task 6**, which carries the fetch-over-contents-API shape, the NOT-CHECKED
+      discipline, and the `secrets.INSTALLERS_READ_TOKEN` blocker. This wave must not put a competing
+      copy in a workflow — the token question is not answered here.
 
 **Defeat test:** `node ci/lib/drift.mjs` must report the new leg as mirrored. Delete the
-`ci/gates.json` entry and drift must go RED.
+`ci/gates.json` entry and drift must go RED naming `pr-checks:toolrisk-lane`.
 
 **Exit:** `node ci/lib/run.mjs Installers` executes a leg whose command contains
-`./internal/toolrisk/`, and `node ci/lib/vocab-parity.mjs` is invoked from inside at least one repo's
-workflow file rather than only from the workspace root.
+`./internal/toolrisk/`, and `node ci/lib/drift.mjs` reports the mirror complete. The GitHub-side value
+of that job is recorded as **UNKNOWN until the Task 5 trigger decision**, not as a gate.
+
+## Task 8 (NEW): Give the pinned-artifact guard a named, separately-runnable leg
+
+**Files:**
+- `Backend/.github/workflows/pr-checks.yml` (the new named step)
+- `ci/gates.json` (mirror the leg)
+- READ ONLY: `Backend/package.json`,
+  `Backend/packages/shared-contracts/scripts/check-ai-security-backend-consumer.cjs`
+
+**Why this artifact matters.** Task 3 established that the Backend's closed DLP action vocabulary is
+read out of a digest-pinned generated artifact whose source commit resolves in no checkout here.
+`check:ai-security-consumer` is the **only** guard standing between that artifact and a hand edit.
+
+**Premise corrected before anything else — this task used to claim that guard does not run at PR time,
+and that was false.** An earlier revision justified the whole task with *"the guard fires **after**
+merge, on the deploy path … and never on a change under review."* **Wave 1 measured the opposite, and
+its disposition is the authoritative one** (`w1_policy_authority.md:603-615`: *"The guard is wired.
+**What it lacks is a trigger, not a workflow** … **G-6 is closed as a mis-statement, not as work.**"*),
+independently confirmed at `w2_evidence_severity.md:103-108`. Re-measured here against `Backend`
+`origin/main` `0cf9021e`: `package.json:10` makes `pretest` run `build:shared-contracts`, and `:6`
+makes that run `check:ai-security-consumer` (`:7`) **first** — so every `npm test` reaches the guard,
+and Backend's `pr-checks.yml` runs `npm test` at `:229`, `:245`, `:391` and `:721`, inside
+`audit_integration` (`:146`), `alerts_integration` (`:321`) and `full_test` (`:497`).
+`grep -cE 'npm test|npm run test'` over that 728-line file returns **11**. All three of those jobs are
+already mirrored (`ci/gates.json:49`, `:51`, `:53`). **The guard already runs at PR time and already
+runs in the local mirror. Nothing below is about wiring it.**
+
+**What is actually missing, and it is the whole of this task: the guard has no name anyone can call.**
+It is reachable only through an npm lifecycle hook, so
+`grep -rl "check:ai-security-consumer" Backend/.github/workflows/` names **0** files (verified at
+`origin/main`). A reviewer reading the workflow cannot see it, `ci/gates.json` cannot mirror it as its
+own leg, and nobody can run *just* this guard without running a live-Postgres job or a quarter of the
+suite. **A named, greppable, separately-mirrorable leg is better than an implicit one — that is the
+only claim this task makes**, and it stands on its own without the false premise it used to lean on.
+
+- [ ] **Step 1 — reproduce the mechanism with a command that can actually see it.** The previous
+      revision of this step grepped for `npm run build` and nothing else. **That command is what
+      produced the false premise above** — it returns `build=2 pr-checks=0 security=0` and cannot see a
+      single one of the `npm test` invocations that reach the guard through `pretest`. There are two
+      lifecycle entrypoints, `prebuild` and `pretest`; count **both**, never one:
+```bash
+cd C:/Users/Owner/Documents/Ceragon/Backend
+git fetch origin --quiet
+git show origin/main:package.json | grep -nE '"(prebuild|pretest|build:shared-contracts|check:ai-security-consumer)"'
+for f in build pr-checks security; do
+  printf "%-12s " "$f"
+  MSYS_NO_PATHCONV=1 git show "origin/main:.github/workflows/$f.yml" \
+    | grep -cE 'npm run build|npm test'      # BOTH hooks. `npm run build` alone is the wrong question.
+done
+MSYS_NO_PATHCONV=1 git show "origin/main:.github/workflows/pr-checks.yml" | grep -nE 'npm test'
+MSYS_NO_PATHCONV=1 git show "origin/main:.github/workflows/pr-checks.yml" | sed -n '35,38p'  # the on: block
+grep -rl "check:ai-security-consumer" .github/workflows/ 2>/dev/null   # no output — and THAT is the gap
+```
+      Measured at `origin/main` `0cf9021e` on 2026-08-28: `package.json:5` `prebuild` and `:10`
+      `pretest` both run `build:shared-contracts` (`:6`), which runs `check:ai-security-consumer` (`:7`)
+      before anything else. `pr-checks.yml` runs `npm test` at `:229`, `:245`, `:391` and `:721`, so the
+      guard executes in three PR-time jobs. Note the shape of the count: only a literal `npm test`
+      fires `pretest` — `npm run test:worker-contract` (`:120`) and `npm run testdb:prepare-live-pg`
+      (`:182`) fire `pretest:worker-contract` and `pretestdb:prepare-live-pg`, which do not exist. The
+      last line is the one finding that survives: **0** workflow files name the script, so it is
+      invisible to `grep` and unmirrorable as its own leg.
+- [ ] **Step 2 — give the guard its own named job.** Add `shared-contracts-pin` to
+      `Backend/.github/workflows/pr-checks.yml`, invoking `npm run check:ai-security-consumer`
+      **by name**. A guard reachable only through an npm lifecycle hook is invisible to `grep` and to
+      every reviewer, which is how it stayed unnoticed. A step inside the existing `typecheck` job
+      (`:47`) would also run it, but it could not then be mirrored as its own leg — and being able to
+      run exactly this guard, alone, is the point.
+- [ ] **Step 3 — mirror it.** Add the leg to `ci/gates.json` under Backend, so
+      `node ci/lib/run.mjs Backend pr-checks:shared-contracts-pin` runs the guard **alone**, in seconds,
+      rather than only as a side effect of `build:build_and_test` and of the three mirrored PR legs that
+      already reach it through `pretest` — `pr-checks:audit_integration` (`ci/gates.json:49`),
+      `:alerts_integration` (`:51`), `:full_test` (`:53`), two of which need a live-Postgres service
+      container to get as far as running the guard at all. **Say what you are buying and what you are
+      not**, as in Task 7: this buys a leg that is greppable, separately runnable and separately
+      mirrorable. It does **not** buy new coverage — the guard already runs in those legs — and it does
+      not change what GitHub does, because Backend's `pr-checks.yml` `on:` at `:35-38` is
+      `workflow_dispatch` + `repository_dispatch: [backend-pr-checks]`, unchanged until the Task 5
+      trigger decision. Write that in the PR body rather than "CI now covers the pinned artifact".
+- [ ] **Step 4 — do not weaken the script to make it fit.** It verifies two things — the generated
+      projection against its pin, and every committed `dist` artifact — and its own comment records
+      why the second exists (`committedDist` was previously read by nothing before a build, so a stale
+      dist pin passed). Keep both calls and keep the ordering note: `prebuild` must run it **before**
+      the `dist` tree is deleted. Adding a PR-time invocation must not change `prebuild`.
+
+**Defeat test:** hand-edit one entry in
+`Backend/packages/shared-contracts/src/generated/ai-security-portable.generated.ts` — the file's own
+banner says `GENERATED FILE — DO NOT EDIT` — and run `npm run check:ai-security-consumer`. It must exit
+non-zero. Then run the mirrored leg: `node ci/lib/run.mjs Backend pr-checks:shared-contracts-pin` must
+go RED on the same edit. Revert.
+
+**The control, corrected — do not run the old one.** The previous revision's control read *"with the
+same edit in place and the new step removed, every PR-time job stays green — which is today's state."*
+**That is false**; it is the premise Wave 1 overturned (`w1_policy_authority.md:603-615`), and an
+implementer who ran it and saw red would conclude the mirror was broken. Run this instead: with the
+same edit in place and the new step removed, `node ci/lib/run.mjs Backend pr-checks:full_test` **also
+goes RED** — inside `pretest`, before a single test executes. That is the real control, and it measures
+the real gain: without the named leg the failure arrives as a whole-suite job dying in its install
+step, with no step name naming the pin, and a reviewer has to read the log to learn what broke; with
+it, `run.mjs` prints `pr-checks:shared-contracts-pin`. **Attribution is the deliverable, not
+coverage.** If that removed-step run comes back **green**, stop — `package.json`'s lifecycle chain has
+changed since 2026-08-28 and this whole task needs re-measuring from Step 1.
+
+**Exit:** `grep -rl "check:ai-security-consumer" Backend/.github/workflows/` names at least **1** file
+(today it names **0**, verified at `origin/main`), `ci/gates.json` mirrors the leg, and the hand-edit
+mutation has been driven RED **twice** — once in the new named leg, and once in `pr-checks:full_test`
+with the new step removed. The certificate contribution is *"the pinned artifact is guarded at PR time
+and at deploy time; this wave gave that guard a name a reviewer and the mirror can see"* — written in
+those words. **It is not** *"the pinned artifact is now guarded on a change under review"*: it already
+was, and a PR body claiming otherwise re-commits the mis-statement Wave 1 closed.
 
 ## Wave exit criteria
 
@@ -362,27 +671,72 @@ workflow file rather than only from the workspace root.
 2. The plan's goal statement contains *"None of the five risk lanes can reach PASS from this packet"*
    and the five per-lane blocker lists. Defeat: `claim-contract-guard` — re-insert "zero false
    positives", it goes RED.
-3. The forbidden-claims checklist has **≥ 15** rows, each with a named source. Defeat: same guard.
-4. `AI_DLP_CLASSES.length === RegisteredClasses().length` — today **81**, printed by the test, not
-   written down. Defeat: add a temporary class to `classRegistry`, the generator gate goes RED.
+3. The forbidden-claims checklist has **15** rows, each with a named source, **and that count equals
+   the number of encoded entries in Wave 8 Task 11's renderer**, asserted by a test there. Defeat:
+   `claim-contract-guard` for the prose half; add a 16th row on one side only and Wave 8's test goes
+   RED naming it.
+4. **Moved.** The DLP vocabulary count is not asserted by this wave. Task 3 is discovery only, and
+   `|AI_SECURITY_DLP_CLASSES| == |RegisteredClasses()|` is **Wave 1 exit criterion 1**. What this wave
+   asserts instead: a recorded provenance finding naming **7 of 7** checkouts in which
+   `d366f5f8c76fac253d9adf7914873e97a955a16d` does not resolve, with a passing control
+   (`git cat-file -t 5b12952307db` → `commit`), and the fork handed to Wave 1 Task 2.
 5. `ci/lib/plan-citations.mjs` reports **0** unresolvable, **0** past-EOF, **0** unqualified
    references out of a total it prints. Defeat: point one citation at `dlp.go:1519`, it goes RED.
 6. `grep -nE '\b(114|108|30 DLP|46 toolRisk)\b'` over the plan returns no *exit criterion* — the
    static denominators at `plan:9654` ("the governed-class denominator is 114") and `plan:4566`
    ("all 30 DLP classes") are gone, replaced by catalog digests. Defeat: re-add `plan:9654` verbatim
-   and criterion 4's test disagrees with it.
-7. `vendored-upstream-drift.yml` `on:` contains `pull_request`. Defeat: a PR bumping the manifest pin
-   without re-vendoring goes RED.
-8. `holdout-score.yml`'s header and its `on:` block agree. Defeat: `ci/lib/workflow-header-truth.mjs`.
-   **The trigger decision itself is BLOCKED on an owner cost decision — this wave's certificate
-   contribution for detector-quality freshness is UNKNOWN, not green.**
-9. `node ci/lib/run.mjs Installers` runs a leg covering `./internal/toolrisk/`, and
-   `node ci/lib/vocab-parity.mjs` runs inside a repo's CI. Defeat: `node ci/lib/drift.mjs`.
-10. Cross-repo defeat, run once at the end of the wave: add one temporary class to the **tool-risk**
-    producer and separately to the **DLP** producer. **Every** consumer gate must go red —
-    `Backend .../ai-security-policy.tool-risk-class-parity.spec.ts:226`, the Frontend toolrisk class
-    parity test, `TestClassCatalog_ParityVector` (`… parity vector is STALE`), and the new DLP
-    generator gate. A consumer that stays green is an ungovernable class waiting to ship.
+   and Wave 1 criterion 1's test disagrees with it.
+7. **Owned here — Task 5 Step 5. BLOCKED is a state this wave holds, not a hand-off.** The
+   `pull_request:` trigger on `Frontend/.github/workflows/vendored-upstream-drift.yml` (`on:` at
+   `:39-43` = `workflow_dispatch` + `cron "15 6 * * *"`; the instruction to add it is in the file's own
+   header at `:29-31`) is **Half A**, and it is blocked on an **owner spend decision, not on
+   engineering**: `Frontend/.github/workflows/pr-checks.yml`'s `on:` at `:89-90` is
+   `workflow_dispatch: {}` and nothing else, its `push:`/`pull_request:` triggers having been removed
+   on 2026-08-25 in `3b5c5aa8` — that repository has no per-PR runs at all. **This criterion is met by
+   a recorded decision, not by a merged trigger**: the workflow header carries either
+   `DECIDED: <yes|no> by <owner> on <date>` or the literal words **BLOCKED — owner spend decision**
+   with the date the question was put. Defeat: strip both strings from the header and the criterion is
+   unmet. **Half B — `ci/lib/vendored-engine-parity.mjs` as a `workspaceChecks` entry, offline, no
+   token, nothing can switch it off — is unblocked and ships in Wave 5 Task 9**, where it is built;
+   this wave does not duplicate it. Earlier revisions of this criterion pointed at Wave 5 Task 9 for
+   Half A while Wave 5 Task 9 pointed back here (`w5_w6_console_triage.md:665-669`), with
+   `w3_measurement_substrate.md:951-954` and `w4c_prompt_ingress.md:878` pointing at this criterion.
+   **The cycle is closed at this end.**
+8. `holdout-score.yml`'s header and its `on:` block agree, pinned by **exactly one** header-truth
+   check — `ci/lib/workflow-header-truth.mjs`, registered in `ci/gates.json` `workspaceChecks` with a
+   self-test. Defeat: revert `:6` to "PUSH TO MAIN" → non-zero with
+   `holdout-score.yml:6 claims a push trigger; on: at :22 has none`. **The trigger decision itself is
+   BLOCKED on an owner cost decision — this wave's certificate contribution for detector-quality
+   freshness is UNKNOWN, not green.**
+9. `node ci/lib/run.mjs Installers` runs a `toolrisk-lane` leg covering `./internal/toolrisk/`, and
+   `node ci/lib/drift.mjs` reports it mirrored. Defeat: delete the `ci/gates.json` entry → drift RED.
+   **Making `ci/lib/vocab-parity.mjs` run inside a repository's own PR gate is Wave 1 Task 6**, blocked
+   on `secrets.INSTALLERS_READ_TOKEN`; it already runs here as a `workspaceChecks` entry and that is
+   what this wave claims.
+10. `grep -rl "check:ai-security-consumer" Backend/.github/workflows/` names at least **1** file
+    (today: **0**) and the leg is mirrored in `ci/gates.json`. Defeat: hand-edit
+    `ai-security-portable.generated.ts` and the mirrored leg goes RED **naming
+    `pr-checks:shared-contracts-pin`**; remove the step and the same edit goes RED **anyway**, in
+    `pr-checks:full_test`, unattributed. **This criterion is about attribution, not coverage.** An
+    earlier revision ended *"remove the step and the same edit passes every PR-time job, which is
+    today's state"* — that is false: `package.json:10` `pretest` puts the guard in front of every
+    literal `npm test` step in Backend's 728-line `pr-checks.yml` (`:229`, `:245`, `:391`, `:721`,
+    across three jobs). Corrected from **Wave 1's G-6 disposition**, `w1_policy_authority.md:603-615`,
+    which closes G-6 as a mis-statement rather than as work.
+11. Cross-repo defeat, run once at the end of the wave: add one temporary class to the **tool-risk**
+    producer. **Every** tool-risk consumer gate must go red —
+    `Backend/src/ai-security-policy/ai-security-policy.tool-risk-class-parity.spec.ts:225-230`
+    (*"every tier tuple equals the producer catalog, class for class"*), the Frontend toolrisk class
+    parity test, and `TestClassCatalog_ParityVector` (`… parity vector is STALE`). A consumer that
+    stays green is an ungovernable class waiting to ship. **The DLP half of this drill — a temporary
+    class in `classRegistry` going red in a DLP consumer gate — needs a DLP producer parity vector,
+    which does not exist yet; it is Wave 1 Task 1 and Wave 1 exit criterion 1.**
+12. The manifest schema declares **3** per-class standards columns plus a required `atlasRelease`, and
+    rejects an instance missing any of them. Defeat: `standards-schema-declaration` — validate an
+    instance with a blank `atlasRelease` and get `standards mapping has no pinned ATLAS release`;
+    delete the column from the schema and the invalid instance validates. **Populating those columns
+    is Wave 8 Task 7 (121 of 121), not this wave** — this wave asserts the declaration only, because
+    the DLP half of that denominator does not exist until Wave 1 widens the governed vocabulary.
 
 ---
 
@@ -449,10 +803,10 @@ this wave.
 
 **Windows already got this right, and its comment says so.** `toolrisk.go:95-110` introduces
 `winBroadTarget` (`:111-114`) as *"the WINDOWS half of the 'broad target' idea the POSIX destructive
-rules already encode"*, and states the boundary explicitly at `:106-109`: *"Everything narrower is
+rules already encode"*, and states the boundary explicitly at `:101-104`: *"Everything narrower is
 deliberately outside it. Deleting `node_modules`, a `.\build` directory or a scratch path under the
 user's own workspace is ordinary developer work on this very box and must stay allowed"* — and at
-`:107-110`: *"Each alternative ends on a quote, whitespace or end-of-string so a LONGER path that
+`:106-110`: *"Each alternative ends on a quote, whitespace or end-of-string so a LONGER path that
 merely BEGINS with a system directory does not satisfy it."* `winBroadTarget`'s home arm is
 `\$home\b(?:["'\s]|$)` — terminator-anchored, bare-only. **The POSIX arm is the outlier.** This wave
 brings POSIX to the boundary the Windows dialect already documents and tests.
@@ -471,7 +825,10 @@ brings POSIX to the boundary the Windows dialect already documents and tests.
    message: *"FIXED: … Invert this pin and record how the scanner learned the value of a
    PROCESS-ENVIRONMENT variable."* Wave 0A must **not** change that residue — resolving process-env
    variables at scan time makes the scanner machine-dependent and is a separate design. If your
-   change flips it anyway, **invert the pin, never restore the evasion**.
+   change flips it anyway, **invert the pin, never restore the evasion**. **Wave 4B Task 6 inverts
+   that pin deliberately, on top of this change; Wave 0A lands first.** Inverting it first would mean
+   this wave rewrites the alternation around a pin that has already moved, and the two waves' benign
+   tables would then disagree about `rm -rf "$HOME"`.
 3. **RE2 has no lookahead.** A "no further path characters" assertion must be a **consumed**
    terminator character. That is exactly what `winBroadTarget` does. Consequence: the reported
    `Finding.Start/End` span widens by one byte on the new arms. Check
@@ -479,6 +836,14 @@ brings POSIX to the boundary the Windows dialect already documents and tests.
    `internal/toolrisk/expansion_fp_test.go:18` before assuming nothing downstream reads the span.
 4. **`internal/toolrisk` is in no CI gate.** See Wave −1 Task 7. Your defeat tests run when a human
    types `go test`, or in the mirrored leg Wave −1 adds — and nowhere else. State which.
+
+**Who owns this alternation, so three waves do not edit one regex.** **Wave 0A rewrites it (Task 3)
+→ Wave 4B Task 6 inverts the `"$HOME"` pin on top of it.** Nothing else touches it. An earlier draft
+of Wave 4A Task 7 specified a second, incompatible narrowing — *"`$HOME` followed by a non-empty path
+tail does not satisfy the broad-target requirement"* — which would release `~/.ssh/id_ed25519` and
+`$HOME/.aws/credentials`, reasons about no terminator, and cannot coexist with clause 3 below.
+**Wave 4A Task 7 keeps only its bank-drain rule and cites this task for the regex**; the benign
+`0 of 51` figure on `command-expansion.json` belongs to this wave, not to 4A.
 
 **What does *not* move.** `ClassCatalog()` (`internal/toolrisk/class_catalog.go:57-67`) is built from
 `rl.class` and `rl.severity` over `commandRules`, `sensitivePathRules`, `contentRules`, plus three
@@ -700,21 +1065,33 @@ verdict changed is exactly **16 removals + 1 addition = 17**, enumerated in the 
 
 **Files:** `Installers/internal/daemon/zz_c12_ordinary_work_probe_test.go`
 
-The C12 probe is the existing "DeVoid does not interrupt ordinary work" measurement. It runs
-`toolrisk.Scan → decideTool` over a corpus in two lanes — LANE A (no cached policy, severity default)
-and LANE B (a D4 policy fixture) — and fails unless interruptions are **zero**. Counted at
-`origin/main`: **109 cases** (69 POSIX commands, 29 PowerShell, 5 security-engineering, 6 non-Bash
-tool calls). Its precondition clause asserts the scanner is live before counting zeros, and
+The C12 probe is the existing "DeVoid does not interrupt ordinary work" measurement
+(`ordinaryWork()` at `:94`, `dangerProbes()` at `:263`, `TestC12_OrdinaryWork_ZeroInterruptions` at
+`:305`). It runs `toolrisk.Scan → decideTool` over a corpus in two lanes — LANE A (no cached policy,
+severity default) and LANE B (a D4 policy fixture) — and fails unless interruptions are **zero**. Its
+precondition clause asserts the scanner is live before counting zeros, and
 `TestC12_DangerProbesStillCaught` is its defeat clause.
 
-**The corpus contains no `rm -rf ~/…` case at all.** That is why 109 ordinary commands could pass
-while a pip-cache clean was hard-blocked fleet-wide.
+**Do not write the corpus size into this plan. The test prints its own denominator** (`:329`,
+`C12TOTAL lane=%-34s corpus=%d interruptions=%d`), and a hand count taken while drafting this wave did
+not reproduce against a syntactic count of `ordinaryWork()`. Read it:
 
-- [ ] **Step 1.** Add B1-B14 from Task 2 to `ordinaryWork()`. Denominator moves **109 → 123**.
+```bash
+cd C:/Users/Owner/Documents/Ceragon/Installers
+go test ./internal/daemon/ -run TestC12_OrdinaryWork -count=1 -v 2>&1 | grep C12TOTAL
+```
+
+Call that printed number **N**. Every criterion below is stated against `N`, never against a literal.
+
+**The corpus contains no `rm -rf ~/…` case at all.** That is why N ordinary commands could pass while a
+pip-cache clean was hard-blocked fleet-wide.
+
+- [ ] **Step 1.** Record **N** from the command above, before touching the file. Then add B1-B14 from
+      Task 2 to `ordinaryWork()`. The denominator moves **N → N + 14**.
 - [ ] **Step 2.** Run `go test ./internal/daemon/ -run TestC12_OrdinaryWork -count=1 -v` **before**
       Task 3's change is in the tree. It must report
-      `C12TOTAL lane=… corpus=123 interruptions=14` on both lanes and fail. If it reports zero, the
-      cases were added wrong.
+      `C12TOTAL lane=… corpus=<N+14> interruptions=14` on both lanes and fail. If it reports zero
+      interruptions, the cases were added wrong.
 - [ ] **Step 3.** With Task 3 applied, the same command must report `interruptions=0` on both lanes.
 - [ ] **Step 4.** Fix the stale fixture while you are here, in its own commit. `d4Policy()` in that
       file puts `destructive-rm` in the **warn** list. The shipped posture is **block** — the tally
@@ -728,8 +1105,10 @@ with 14 `C12INTERRUPT` lines naming `classes=destructive-rm/high`. Its own defea
 (`TestC12_DangerProbesStillCaught`, plus the precondition at the top of the zero-interruption test)
 is what stops the fix being scored by deleting the detector.
 
-**Exit:** `C12TOTAL corpus=123 interruptions=0` on **both** lanes, and `C12DANGERTOTAL probes=10
-violations=0` with `rm -rf /` recorded as `want=block decision=block`.
+**Exit:** `C12TOTAL corpus=<N+14> interruptions=0` on **both** lanes, where **N** is the denominator
+the test printed before the change and the arithmetic is shown in the run log; and
+`C12DANGERTOTAL probes=10 violations=0` with `rm -rf /` recorded as `want=block decision=block`
+(`dangerProbes()` carries **10** entries, verified, and today marks `rm-root` as `want: "warn"`).
 
 ## Task 5: Prove no Backend deploy is needed, then cut the agent release
 
@@ -788,8 +1167,10 @@ decision is recorded as either a dispatched version number or **BLOCKED — owne
 - [ ] **Step 2.** Publish the coverage delta as a table, not a sentence. Every shape that **stopped**
       producing `destructive-rm`, with what it produces now: 14 corpus rows plus B15 (the wrapped
       form) plus `rm -f ~/.bash_history` — the last of which keeps its interruption through
-      `history-wipe` (`toolrisk.go:126`), verified: that rule matches `rm … .bash_history`
-      independently of `destructive-rm`.
+      `history-wipe` (`Installers/internal/toolrisk/toolrisk.go:369-370`, the POSIX arm; the Windows
+      dialect twin is at `:386`), verified: that rule's
+      `\b(?:rm|>)\s*[^\n]*\.(?:bash|zsh)_history\b` alternative matches independently of
+      `destructive-rm`.
 - [ ] **Step 3.** Record the named residuals, each with its owner and its wave:
       - `rm -rf ~/.ssh` and the five other credential tails remain an **un-relaxable block**. Owner
         decision; Wave 4B moves them to `credential-store-destroy` (MEDIUM, off the floor), which is
@@ -818,7 +1199,8 @@ after) with different `devoid version --json` values and a passing control in ea
    Defeat: revert `toolrisk.go:122` → RED at B1 with
    `` `rm -rf $HOME/.cache/pip`: destructive-rm present, want absent ``.
 2. `go test ./internal/daemon/ -run TestC12_OrdinaryWork -count=1` reports
-   `corpus=123 interruptions=0` on **both** lanes. Defeat: revert `toolrisk.go:122` → RED with 14
+   `corpus=<N+14> interruptions=0` on **both** lanes, where **N** is the denominator the same command
+   printed before Task 4's cases were added. Defeat: revert `toolrisk.go:122` → RED with 14
    `C12INTERRUPT` lines.
 3. `go test ./internal/daemon/ -run TestC12_DangerProbesStillCaught -count=1` reports
    `probes=10 violations=0` with `rm -rf /` at `want=block decision=block`. Defeat: delete the
@@ -888,7 +1270,8 @@ Task 1 Step 2 in the old plan is the confirm-before-you-change step and it exist
 **Whatever prints when you run it is the truth; the numbers in the plan are a hypothesis.**
 
 **Three corrections to apply while transcribing:**
-1. **Delete the dead scratchpad path.** `plan:217` and eleven other lines inside this wave hard-code
+1. **Delete the dead scratchpad path.** `plan:217` and the other lines inside this wave that
+   `ci/lib/plan-citations.mjs` prints — do not carry a hand count — hard-code
    `…/Temp/claude/C--Users-Owner-Documents-Ceragon/a381f855-c847-4974-8e16-0fee10b3bb55/scratchpad/w0`,
    a per-session directory that no longer exists. Resolve a scratch root at run time.
 2. **`worker.ts` line numbers have drifted.** The old plan cites `worker.ts:1780-1804` for the
@@ -1035,7 +1418,11 @@ the plan must say so.
       leak reaching the provider verbatim; **no pre-egress boundary across every provider route
       (P0-15)**; no inspection-completeness contract — `InspectionDegraded`
       (`Installers/internal/proxy/openai_downlink_inspection.go:16-17`) has **zero production
-      consumers**; **F16 key custody absent** (`docs/Devoid_Roadmap_To_Finished_Product.md:788`);
+      consumers**, verified — its only references are in the defining file and its test, and
+      **Wave 3 Task 6 gives it its first production consumer**, so this blocker stays on the R1 row
+      until that lands; **F16 key custody absent**
+      (`docs/Devoid_Roadmap_To_Finished_Product.md:788`, the *"Named trust prerequisite — F16 respec"*
+      paragraph);
       prompt-evidence key distribution and `ai_events` retention are declared exclusions.
 - [ ] **Step 4.** **BLOCKED, external: F16.** Non-exportable endpoint signing-key custody needs a
       SYSTEM/privileged broker or a KMS/HSM/TPM key owner — procurement plus a key ceremony. R1
