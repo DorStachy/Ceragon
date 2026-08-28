@@ -1,3 +1,26 @@
+> ## ⚠ READ FIRST — THIS PROGRAMME RUNS IN PARALLEL WITH ANOTHER ONE
+>
+> A second plan is being implemented **at the same time, by a different agent team, in a different
+> chat session.** The two plans share **28 source files** and several resources that have no file
+> conflict at all and will still destroy each other's work: one agent release channel, one production
+> Backend, one live-proof register, one `pr-checks.yml`.
+>
+> **Before your first task, read
+> [`.plans/PARALLEL_EXECUTION_CONTRACT.md`](../../PARALLEL_EXECUTION_CONTRACT.md).** It names the owner
+> of every shared file, the append-only protocol for the shared scoreboards, the serialised
+> owner-gated release procedure, and the handshake file for anything you need from the other side.
+>
+> Three rules that will not be obvious from inside a task:
+> 1. **If your task seems to need a file this programme does not own, it does not.** Post a seam
+>    request to the handshake and switch tasks. Do not make "a small edit" in the other programme's
+>    directory.
+> 2. **Never cut an agent release or request a Backend deploy on your own authority.** A release now
+>    carries both programmes' merged work. One team releasing alone ships the other team's
+>    half-finished work to every endpoint.
+> 3. **Append, never rewrite,** in `internal/liveproof/register.json`, the Codex ledger, and
+>    `pr-checks.yml`. A reformat by one team turns every later diff into a conflict.
+>
+
 # Wave 3 - Make the provider route unavoidable, and stop lying about it when it is not
 
 **Scorecard rows this moves:** Resistance to bypass: 4.0 -> 9.2 (strategy §12). Secondary, not claimed here: Claude interception coverage and Codex interception coverage each get one of their six required evidence items ("direct-egress denial" / "forced route"), but neither row moves without the managed-controls wave (`w4_vendor_authority.md`).
