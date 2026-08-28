@@ -1,0 +1,392 @@
+{
+ "section": "5.3 Codex — four lanes / 5.4 The browser extension / 5.5 The wire proxies (codex-browser-proxy)",
+ "claims": [
+  {
+   "docLine": "L293 (§5.3 table, Lane A)",
+   "claim": "Lane A writes %ProgramData%\\OpenAI\\Codex\\requirements.toml and enforces allow_managed_hooks_only plus the hook handlers inline.",
+   "verdict": "CONFIRMED",
+   "evidence": "Installers/internal/codexmanaged/machine.go:45 `const MachineRequirementsFile = \"requirements.toml\"`; machine.go:21 and internal/aiwire/machine_codex.go:21 name `%ProgramData%\\OpenAI\\Codex\\requirements.toml`. machine_projection.go:785 writes `allow_managed_hooks_only = %t`; machine_projection.go:918 records that the managed hook groups are declared INLINE in requirements.toml, and provider.go:523 states the correction lives inline 'rather than in a scanned directory'. Unix path is /etc/codex/requirements.toml (ai_status_wsl.go:13).",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L294 (§5.3 table, Lane B)",
+   "claim": "Lane B writes $CODEX_HOME/managed_config.toml and enforces six hard pins (R1–R6).",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/codexmanaged/config.go:16 `ManagedConfigFile = \"managed_config.toml\"`. ManagedConfigBytes (merge.go:99-174) emits exactly R1 approval_policy (106), R2 sandbox_mode (107) + network_access=false (113), R3 tools.web_search=false (116), R4 features.computer_use=false (119), R5 [model_providers.devoid] (121-165), R6 [mcp_servers.devoid] (167-169). Ids R1..R6 at requirements.go:168-173.",
+   "correctedText": "| **B. Per-user managed config** | `$CODEX_HOME/managed_config.toml` | six hard pins (R1–R6) on the CLI profile; **one pin (R5, the wire route) on the desktop profile** |"
+  },
+  {
+   "docLine": "L294 (§5.3 table, Lane B)",
+   "claim": "Implied: lane B always carries six pins.",
+   "verdict": "STALE",
+   "evidence": "merge.go:183-232 `DesktopManagedConfigBytes` renders the DESKTOP-SAFE profile: `model_provider` + the `[model_providers.devoid]` table and nothing else. merge.go:187-189 and 242-243 record that the full profile's R2 sandbox lock HARD-ERRORS the desktop core (a proven live brick, M4.6-B F2), so the admin locks are never written there. aiwire.go:576 selects it when the desktop profile is missing/tampered. The doc's own §3.3 row already says 'five of six admin locks are withheld' for Codex desktop, so §5.3 contradicts §3.3.",
+   "correctedText": "Lane B has two profiles. The **full** profile (CLI) carries all six pins. The **desktop-safe** profile (`DesktopManagedConfigBytes`, merge.go:183) carries **R5 only** — the wire-egress route — because the R2 sandbox lock hard-errors the shared desktop/VS-Code core and was a proven live brick. On a desktop-scope endpoint lane B is one pin, not six."
+  },
+  {
+   "docLine": "L295 (§5.3 table, Lane C)",
+   "claim": "Lane C writes a managed block in $CODEX_HOME/config.toml plus a trust ledger, and enforces 'the PreToolUse family'.",
+   "verdict": "CONFIRMED",
+   "evidence": "The block + `[hooks.state]` trust ledger are described at hookdialect.go:9-15 and 146-156 (key format `\"<config.toml>:pre_tool_use:0:0\"`). But 'the PreToolUse family' understates it: hookset.go:92-96 ships FIVE managed events — PreToolUse (matcher `*`), UserPromptSubmit (no matcher), PostToolUse (`*`), SessionStart (no matcher), PermissionRequest (`*`) — with `Gating: true` on exactly three (PreToolUse, UserPromptSubmit, PermissionRequest). adapters/codex/deny_contract.go:49-52 independently pins the same 5/3 split against runner.go's gating predicate. R7 is the PreToolUse hook; R8 is the four W4 lifecycle additions (requirements.go:158-166).",
+   "correctedText": "| **C. Cooperative hook** | a managed block in `$CODEX_HOME/config.toml` plus a `[hooks.state]` trust ledger | five checkpoints (R7 PreToolUse; R8 UserPromptSubmit, PostToolUse, SessionStart, PermissionRequest) — three of them gating |"
+  },
+  {
+   "docLine": "L296 (§5.3 table, Lane D)",
+   "claim": "Lane D is a small script under ~/.devoid/codex-hooks/ that forwards to our binary.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/codexmanaged/bridge.go:30 `const codexHookScriptSubdir = \"codex-hooks\"`; cmd/devoid/ai_codex_hooks.go:81 names `<HOME>/.devoid/codex-hooks/devoid-codex-hook.cmd`. hookset.go:155-158: the script's 'whole job is to translate `<script> <EVENT> [<marker>]` into `devoid ai hook --adapter codex --event <EVENT> [--provenance <marker>]`'.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L296 (§5.3 table, Lane D)",
+   "claim": "Implied: lane D serves all four lanes.",
+   "verdict": "STALE",
+   "evidence": "hookset.go:160-176: 'The MACHINE lane has no script. A machine baseline governs every account on the box, so it cannot point at a per-user ~/.devoid/codex-hooks/ wrapper; it points at the signed launcher itself' via `machineHookArgvPrefix = []string{\"ai\",\"hook\",\"--adapter\",\"codex\"}` (hookset.go:176). Rendering the script's two-positional form against the launcher produced `devoid.exe SESSION_START <marker>` → 'Unknown command', exit 1 (hookset.go:165) — and Codex fails open on non-zero, so 'the machine install replaced working hooks with none' (hookset.go:169).",
+   "correctedText": "Lane D belongs to lane C only. Lane A has no script: a machine baseline governs every account on the box, so it invokes the signed launcher directly with the argv `ai hook --adapter codex --event <E> [--provenance <m>]`. Rendering the script's two-positional form against the launcher once shipped an undispatchable command — 'Unknown command', exit 1 — which Codex files as a failed hook and proceeds."
+  },
+  {
+   "docLine": "L298-L300",
+   "claim": "Exit-code semantics are inverted versus Claude Code and Codex fails open; exactly one channel enforces — exit 0 plus a deny JSON on stdout with a non-empty reason; a timeout, a crash, a non-zero exit, an empty reason, or empty stdout all fail open and the tool runs.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/airuntime/adapters/codex/response.go:361-407 `DenyEnforces`: `if out.ExitCode != 0 { return false }`, then `isCanonicalDeny(out.Stdout) || isLegacyBlock(out.Stdout)`. Its header states 'ONE channel enforces … Everything else fails OPEN — and on Codex that is not a bug in the client, it is the client's design, inverted versus Claude Code'. Empty reason: deny-matrix-0147/06-hso-deny-noreason (response.go:373). Empty stdout at exit 0 → allow (response.go:374; also response.go:14-15,123-128). Timeout: codexmanaged/merge.go:62-66 — 'exceeding the budget makes Codex proceed, so on this runtime \"ran out of time\" fails OPEN', measured 2026-08-21 (merge.go:47-51). deny_contract.go:57-71 declares `DenyChannelStdoutJSON` 'the ONLY channel'.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L300-L301",
+   "claim": "This is recorded in the code as a constant, not an assumption.",
+   "verdict": "CONFIRMED",
+   "evidence": "response.go:340-359 `const ExitHookFailed = 2`, documented as 'what a non-zero hook exit MEANS to codex-cli: the hook failed, and the original action proceeds. It is named rather than deleted because the adapter briefly shipped a deny lane that rode this code'.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L301-L302",
+   "claim": "An experiment adding a second channel (exit 2 with a stderr reason) was run against a real codex-cli 0.147.0 binary, the client allowed it anyway, and the channel was deleted.",
+   "verdict": "CONFIRMED",
+   "evidence": "response.go:376-399 records register #11 in full: the shape was run against codex-cli 0.147.0, SHA256 935A1911ED2556E4FFCEC995F4886AC2AC425863BA26FED264DF62E30272AD9D; frozen artefact `testdata/shook/deny-matrix-0147/04b-exit2-stderr` — exit 2, empty stdout, stderr reason → `hook: PreToolUse Failed`, `exec … succeeded in 1726ms`, TOOL_RAN.txt written, ALLOWED. deny_contract.go:60-69 records the deletion. The consequence is named at response.go:392-396: the enforcement probe in cmd/devoid/ai_hook_runner.go had been advancing PreToolUse to the OBSERVED rung and recording an enforced deny while the tool ran.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L304-L306",
+   "claim": "The six pins are constants, not administrator policy: approval_policy=\"never\", sandbox_mode=\"workspace-write\", no network access in the workspace sandbox, no web search, no computer use, our own provider route, and our MCP server.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/codexmanaged/requirements.go:404-407 `wantApprovalPolicy = \"never\"`, `wantSandboxMode = \"workspace-write\"`, `devoidProviderID = \"devoid\"`, `devoidMcpID = \"devoid\"` — all Go consts, read by merge.go:106-169 with no policy input. `network_access = false` and `web_search = false` and `computer_use = false` are string literals in the renderer (merge.go:113,116,119).",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L305 (\"no network access in the workspace sandbox\")",
+   "claim": "The network_access=false pin removes egress from the Codex workspace sandbox.",
+   "verdict": "UNVERIFIABLE",
+   "evidence": "requirements.go:408-421 records the measurement: 'Measured 2026-08-20 against codex 0.148.0-alpha.15: a managed config carrying `network_access = true` and one carrying `false` produce an IDENTICAL `doctor --json` posture, both reporting `network sandbox: restricted`. So the justification for flipping it did not survive contact with the binary. Whether real egress differs is NOT DETERMINED.' One of the six pins therefore has no measured effect on the client.",
+   "correctedText": "…no network access in the workspace sandbox (**pinned, effect NOT DETERMINED** — measured 2026-08-20 on 0.148.0-alpha.15, `true` and `false` produce an identical `doctor --json` posture)…"
+  },
+  {
+   "docLine": "L306-L307",
+   "claim": "The file says so itself: making these read admin policy is the open work item.",
+   "verdict": "CONFIRMED",
+   "evidence": "requirements.go:400-403: 'KNOWN LIMITATION, recorded rather than hidden: pinning this at all means an administrator who WANTS Codex to prompt cannot have it … Making R1 read admin policy instead of a constant is the open work item.'",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L307-L309",
+   "claim": "Pinning approval_policy=\"never\" makes the PermissionRequest checkpoint structurally unreachable, so a declared gating checkpoint can never fire.",
+   "verdict": "CONFIRMED",
+   "evidence": "requirements.go:203-205 `r1ApprovalConsequence`: 'Codex does not raise its own approval prompt under this pin, so the PermissionRequest checkpoint is not reached and its managed hook does not fire. Tool decisions are made at the PreToolUse checkpoint instead.' The checkpoint is nonetheless declared gating: hookset.go:96 `Gating: true`, and adapters/codex/deny_contract.go:100-104 carries a live deny channel for it with the note 'Protocol frozen; SC6 unreachable-live'. verify.go:581 `PinnedApprovalPolicyRemovesPermissionRequest` is constant-true today, which requirements.go:252-259 concedes makes the gate unfalsifiable without the injected-parameter test.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L311",
+   "claim": "allow_managed_hooks_only = true is pinned by every machine projection.",
+   "verdict": "WRONG",
+   "evidence": "machine_projection.go:521-523 `func (p MachineProjection) ManagedOnly() bool { return hookArgvEntersHookPath(p.HookArgv) }` — and machine_projection.go:490-503 records the change explicitly: 'CX-5 item 2: it is no longer UNCONDITIONAL. It used to be `func (MachineProjection) ManagedOnly() bool { return true }` … An unverified projection renders `allow_managed_hooks_only = false`, and the user lane survives instead of being suppressed in favour of nothing.' This was ALREADY true at the doc's own base commit 002e2cfd (same lines), so the claim was never true against the tree the doc says it read.",
+   "correctedText": "**`allow_managed_hooks_only = true`** is pinned by a machine projection **only when that projection's hook argv attests as dispatchable** (`ManagedOnly()` → `hookArgvEntersHookPath`, machine_projection.go:521). A projection whose command would not enter `ai hook --adapter codex` renders `allow_managed_hooks_only = false` deliberately, so the cooperative lane survives rather than being suppressed in favour of hooks that cannot run. On a *successfully installed* machine-scope endpoint — the normal case — the pin is `true` and every hook group in the user's own `config.toml` is inert.",
+   "labelChange": "unconditional structural fact -> CONDITIONAL (condition: the machine projection's HookArgv passes hookArgvEntersHookPath)"
+  },
+  {
+   "docLine": "L312",
+   "claim": "Measured twice, on 0.134.0 and 0.147.0.",
+   "verdict": "CONFIRMED",
+   "evidence": "requirements.go:132-138 (`ReasonUserHooksSuppressed`): 'MEASURED, twice, on two different builds. canary_host.go records 0.134.0, 2026-08-05: a scratch CODEX_HOME whose DeVoid block AND [hooks.state] trust entries were written by MergeUserHookWithProvenance produced ZERO additional hook fires … The §10 gate re-measured it on 0.147.0: the client printed `hook: SessionStart Completed` for a hook whose only side effect never happened, and the same block byte-for-byte at MACHINE scope did run.'",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L312-L313",
+   "claim": "On a machine-scope endpoint lane C is dead by our own configuration, independently of the dialect problem.",
+   "verdict": "CONFIRMED",
+   "evidence": "Follows from requirements.go:127-146 + machine_projection.go:521. The reason slug is `user-hooks-suppressed-managed-only` and its RULE-7 twin `user-hooks-suppression-unknown` (requirements.go:146,155) classifies StatusUnknown when the machine requirements file exists but cannot be read. cmd/devoid/ai_codex_lanes.go:114-119 `codexUserHookLaneOffMachineBaseline` reads those two slugs so a surface prints 'not broken, suppressed' rather than 'broken'.",
+   "correctedText": "…lane C is dead by our own configuration, independently of the dialect problem. When the machine baseline exists but cannot be read, DeVoid will not claim either way: the row classifies `user-hooks-suppression-unknown`, which rolls up to a coverage downgrade and a non-zero exit, never a green."
+  },
+  {
+   "docLine": "L315-L317",
+   "claim": "Version is read, never executed — a bounded read of the installed package manifest, and a test proves production never executes codex --version.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/codexmanaged/version_discovery.go:13-36: 'discovery is bounded os.ReadFile and NOTHING ELSE. There is a structural test (TestVersionDiscoveryCannotExecuteAnything) asserting this file imports neither os/exec nor any package that could execute.' The privilege-escalation rationale is at version_discovery.go:29-33. Bounds: `maxPackageJSONBytes = 256 * 1024` (line 71), `maxDiscoveryWalkDepth = 12` (line 74), package family `@openai/codex` (line 80).",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L144 (§3.3, the dialect paragraph §5.3 defers to at L313)",
+   "claim": "We pin exactly one format, matching Codex 0.144.x.",
+   "verdict": "STALE",
+   "evidence": "`knownHookTrustDialects` now has TWO rows: internal/codexmanaged/hookdialect.go:166 `= []hookTrustDialect{hookTrustDialect144, hookTrustDialect147}`. Row 1 `codex-hooktrust-0.144`, prefix `0.144.` (lines 100-104). Row 2 `codex-hooktrust-0.147`, prefix `0.147.` (lines 111-115), added by commit 9d167ed9 (2026-08-27 10:58 +0300, 'fix(codex): the hook lane now fires on 0.147, because the client was asked') — the direct child of the doc's own base commit 002e2cfd. hookdialect_pin_test.go:46-56 fails if the row count or ids change. The two rows share `dialect144Identity` because 0.147 was MEASURED to produce byte-identical digests over a 9-vector corpus (hookdialect.go:69-77), not assumed to; they are deliberately not merged into one `0.14` prefix because 0.145/0.146 sit between them unmeasured (hookdialect.go:107-110).",
+   "correctedText": "Codex honours a user-scope hook only if its config carries a trust entry whose format matches the installed client. We pin **two** vendor-measured dialect families: `codex-hooktrust-0.144` (prefix `0.144.`) and `codex-hooktrust-0.147` (prefix `0.147.`, added 2026-08-27, commit `9d167ed9`). Both are grounded on artefacts taken off a real binary, not a source read: for 0.147, `codex app-server` hooks/list returned `currentHash = sha256:36c60bf4…d69fd` — byte-equal to 0.144 — and `trustStatus:\"trusted\"` once the `[hooks.state]` entry was written, over nine vectors; and a live `codex exec` fired the hook with no `--dangerously-bypass-hook-trust`, with a one-nibble-wrong `trusted_hash` as the negative control (hook never dispatched). The 2026-08-26 survey found three Codex builds on one machine: `0.147.0` (npm global) — **now covered**; `0.149.0-alpha.4.1` (the desktop app's runtime) — **outside both dialects**; and `0.130.0-alpha.5` (its launcher) — below `MinRuntimeVersion = 0.134.0` (machine_projection.go:114). 0.145, 0.146, 0.148 and the 0.149 alpha remain unmeasured and `hookTrustDialectFor` keeps answering no for them (hookdialect.go:163-165). **So the honest position today: the cooperative Codex hook is attestable on a 0.144.x or 0.147.x CLI, and is NOT attestable on the desktop app's own 0.149.0-alpha.4.1 runtime — which is the client the owner actually runs.** CONDITIONAL, on the installed client's version.",
+   "labelChange": "INERT (\"On today's shipped clients the cooperative Codex hook does not fire\") -> CONDITIONAL (fires on 0.144.x and 0.147.x; unverifiable on 0.145/0.146/0.148/0.149-alpha) — and still INERT on any machine-scope endpoint, for the separate allow_managed_hooks_only reason at §5.3"
+  },
+  {
+   "docLine": "L936 (§15.1 register row) and L1013-L1015 (§17 item 3)",
+   "claim": "'One dialect pinned, at 0.144.; the installed client is 0.147.0' / 'obtain the artefacts for a current version and add a dialect row'.",
+   "verdict": "STALE",
+   "evidence": "The named remediation was completed on 2026-08-27 in commit 9d167ed9. hookdialect.go:122-161 records the provenance in full, including the scratch-CODEX_HOME method (no operator auth used) and the vendor binary sha256 935a1911ed2556e4ffcec995f4886ac2ac425863ba26fed264df62e30272ad9d. The doc's own editing rule says a closed gap moves to a 'closed' line with the date rather than being deleted.",
+   "correctedText": "| The Codex hook fires and the client honours a deny | **partly** | CLOSED 2026-08-27 for `0.147.x`: two vendor artefacts taken (hooks/list `trustStatus:\"trusted\"` with a byte-equal `currentHash`, plus a live trust-gated `codex exec` fire with a one-nibble negative control). Still no artefact for `0.149.0-alpha.4.1`, the desktop app's own runtime. |  — and §17 item 3 becomes: 'Codex cooperative governance is attestable on 0.144.x/0.147.x and unverified on the desktop runtime; the machine lane's `allow_managed_hooks_only` pin still suppresses it on every machine-scope endpoint. Do **not** widen the pin without two vendor artefacts.'"
+  },
+  {
+   "docLine": "L321",
+   "claim": "Manifest V3, one codebase, two manifests (Chromium and Firefox), currently version 0.5.17.",
+   "verdict": "CONFIRMED",
+   "evidence": "browser-extension/manifest.json:2 `\"manifest_version\": 3`, :5 `\"version\": \"0.5.17\"`; manifest.firefox.json:4 `\"version\": \"0.5.17\"` (also mv3, with `browser_specific_settings` and `options_ui` in place of `options_page`); package.json:3 `0.5.17`. `git log 002e2cfd..origin/main -- browser-extension/` is EMPTY — nothing in the extension changed after the doc was written, so **0.5.17 is still the current version**.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L321-L322",
+   "claim": "Permissions are storage, nativeMessaging, alarms, declarativeNetRequest — scripting was dropped.",
+   "verdict": "CONFIRMED",
+   "evidence": "Both manifests carry exactly those four and no `optional_permissions`. browser-extension/PERMISSIONS.md: '`scripting` is deliberately **not** requested and is pinned absent by `test/manifest-navblock.test.mjs`.'",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L322-L324",
+   "claim": "Content scripts run at document_start on nine composer-governed origins; host permissions are much wider (33 entries) because a redirect rule needs host access for every blockable host.",
+   "verdict": "CONFIRMED",
+   "evidence": "manifest.json content_scripts: ONE group, `run_at: document_start`, js `dist/content.js`, 9 match patterns (chatgpt.com, chat.openai.com, claude.ai, gemini.google.com, copilot.microsoft.com, github.com/copilot, perplexity.ai, www.perplexity.ai, poe.com); identical in manifest.firefox.json. host_permissions = 33 in both. The 'redirect needs host access' rationale is stated verbatim in blockhosts.js:16-18 and enforced by test/blockhosts-coverage.test.mjs.",
+   "correctedText": "…Content scripts run at `document_start` on nine composer-governed origins — which resolve to **seven site adapters** (`SITES`, content/sites.js:31-90; chatgpt.com and chat.openai.com share one, perplexity.ai and www.perplexity.ai share one) and **six provider keys** (`PROVIDER_HOSTS`, policyeval.js:533-542). Host permissions are much wider — 33 entries — because a DNR redirect rule needs host access for every blockable host: **9 composer origins + 23 nav-block-only hosts + one loopback entry, `http://127.0.0.1:19280/*`, for the daemon fallback fetch**. The nav-block catalog itself is 18 provider keys over 31 host patterns (`PROVIDER_BLOCK_HOSTS`, blockhosts.js:46-70), so the dynamic-rule id space is exactly [9000, 9030] (`RULE_ID_BASE` 9000, `RULE_ID_MAX` derived, blockhosts.js:44,76-80)."
+  },
+  {
+   "docLine": "L326-L328",
+   "claim": "Policy reaches the extension three ways, in preference order: a signed bundle over native messaging (only when the endpoint's trust posture is attested); the unsigned live projection from the daemon; and a loopback fetch.",
+   "verdict": "CONFIRMED",
+   "evidence": "background.js `fetchPolicy` prefers `getPolicyViaNativeHost` (:606) and falls through to `getPolicyViaLoopback` (:661) on a TRANSPORT failure only (`nativeFailureAllowsLoopback`, :711-715, with `NATIVE_TRUST_FAILURE_REASONS` at :703-709 blocking a signature/validity/audience/digest failure from downgrading). Inside the native host, cmd/devoid-prompt-guard-host/main.go:610 `if posture != \"V2_ATTESTED\" { return h.unsignedPolicy(...) }` — that is the named attestation condition.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L326-L327 (\"a signed bundle … only when the endpoint's trust posture is attested\")",
+   "claim": "Implied: the signed-bundle path is a live transport today.",
+   "verdict": "STALE",
+   "evidence": "cmd/devoid-prompt-guard-host/main.go:581-586: 'The production contract currently has signed activation disabled, so a healthy daemon normally has no bundle to serve.' main.go:626-631: 'The source contract returns 503 while signed runtime policy activation is intentionally disabled … if reason == \"bundle-status-503\" || reason == \"bundle-status-404\" { return h.unsignedPolicy(...) }'. The gate is `posture == \"V2_ATTESTED\"` (main.go:610); the doc's own §15 records that no signed bundle has ever activated in the field.",
+   "correctedText": "a signed bundle over native messaging — **INERT in production today**: the path is gated on `posture == \"V2_ATTESTED\"`, and the source contract answers 503 while signed runtime activation is intentionally disabled, so the native host falls through to the unsigned live projection on every real endpoint. A signed bundle that is present but *invalid* still never downgrades (`NATIVE_TRUST_FAILURE_REASONS`).",
+   "labelChange": "unlabelled/CONDITIONAL -> INERT for path 1 (condition never met in production: signed runtime activation disabled, source contract returns 503)"
+  },
+  {
+   "docLine": "L328-L329",
+   "claim": "Each exit records a named reason slug — loopback-token-missing, native-host-unreachable, native-host-refused:<reason> — rather than resolving silently to null.",
+   "verdict": "CONFIRMED",
+   "evidence": "background.js:664, :617, :629 respectively. The list is however only 3 of 14 distinct slug shapes across 15 `recordNavBlockFailure` call sites: native-messaging-unavailable (:610), native-host-unreachable (:617), native-host-empty-response (:621), native-host-refused:<reason> (:629), native-host-no-policy-body (:633), native-messaging-threw (:639), loopback-fetch-unavailable (:662), loopback-token-missing (:664), loopback-unreachable (:673), loopback-status-<code> (:679), loopback-bad-response (:685,:688), signed-delivery-rejected (:808), policy-contract-invalid (:815), loopback-policy-contract-invalid (:846).",
+   "correctedText": "Each exit records a named reason slug — **fourteen of them** across the two transports (`native-messaging-unavailable`, `native-host-unreachable`, `native-host-empty-response`, `native-host-refused:<reason>`, `native-host-no-policy-body`, `native-messaging-threw`, `loopback-fetch-unavailable`, `loopback-token-missing`, `loopback-unreachable`, `loopback-status-<code>`, `loopback-bad-response`, `signed-delivery-rejected`, `policy-contract-invalid`, `loopback-policy-contract-invalid`) — rather than resolving silently to null. Before D100 every one of these was a bare `return null`, and an endpoint enforcing zero DNR rules looked identical to one enforcing the whole blocked-provider list (background.js:125-137)."
+  },
+  {
+   "docLine": "L329-L330",
+   "claim": "The native host reads the daemon capability token off disk itself, so the token never enters the extension.",
+   "verdict": "CONFIRMED",
+   "evidence": "background.js:497-502 states it for `postViaNativeHost`; main.go:598 `token := h.readToken()`. True for the PREFERRED lane — but incomplete: `getToken()` (background.js:488-495) reads `devoidDaemonToken` from `chrome.storage.local`, and the loopback fallback refuses to run without it (`loopback-token-missing`, :664). background.js:570-571 calls that value 'the chrome.storage dev token (kept for dev installs and machines without the native host registered)'.",
+   "correctedText": "The native host reads the daemon capability token off disk itself, so on the preferred lane the token never enters the extension. **The loopback fallback is the exception**: it requires the token to be present in `chrome.storage.local`, and refuses at `loopback-token-missing` rather than issuing an anonymous GET (background.js:651-655 — 'a policy transport that would accept an unauthenticated local response lets anything on loopback choose what this endpoint enforces'). On a production install nothing puts a token there, so the second lane normally never fires; it exists for dev installs and machines where the native host is not registered."
+  },
+  {
+   "docLine": "L332",
+   "claim": "Blocking a provider is a navigation block, not a composer block.",
+   "verdict": "WRONG",
+   "evidence": "It is both. The provider verdict is folded into the ONE composer policy evaluation: browser-extension/src/policyeval.js:490-493 emits `provider:<key>:block` and raises the overall verdict to `block`; content/index.js:744 derives `providerBlocked` from exactly those reasons and :754-782 cancels the send with a provider-specific banner ('not approved — contact your admin'). content/index.js:109-111 states the design: 'Once loaded, surface the PROVIDER GATE immediately … inside evaluateAndApply — policyeval.decide folds the provider verdict'. The DNR redirect is the outer layer, not the only one.",
+   "correctedText": "**Blocking a provider is enforced twice.** The outer layer is a navigation block: one `main_frame` `redirect` rule per blocked host makes the site unreachable before any page loads. The inner layer is the composer gate — `policyeval.decide` folds a `provider:<key>:block` reason into the single send decision, so a page already open when the policy arrives, or one the DNR rules never covered, still cannot send. `tolerated` providers fold in as `provider:<key>:warn` instead."
+  },
+  {
+   "docLine": "L332-L336",
+   "claim": "One main_frame redirect rule per blocked host, rule IDs confined to a private range so we only ever remove our own; the redirect target carries a 128-bit random ticket; a page message is trusted only from frame 0, at the exact origin and path, with exactly the three expected query keys, and matching a currently installed rule.",
+   "verdict": "CONFIRMED",
+   "evidence": "blockhosts.js:107-120 `buildBlockRules` emits one rule per (blocked provider, host) with a per-rule ticket; ids run from `RULE_ID_BASE = 9000` (:44) to `RULE_ID_MAX` (:80), `ownsBlockRuleId` (:85-87) scopes the pre-add removal — ':41-43 'It used to remove every dynamic rule in the extension'. navblock.js:13 `NAV_BLOCK_TICKET_BYTES = 16` (= 128 bits), :19-24 `createNavBlockTicket` requires exactly 16 CSPRNG bytes and hex-encodes them. navblock.js:31-61 `isTrustedNavBlockPageMessage`: `sender.frameId !== 0` → false (:33); `actual.origin !== expected.origin || actual.pathname !== expected.pathname` → false (:45); `keys.length !== 3 || keys[0]!=='host' || keys[1]!=='provider' || keys[2]!=='ticket'` → false (:46-49); `/^[0-9a-f]{32}$/` on the ticket (:53); message fields must equal the URL fields (:54); and `rules.some(rule => action.type==='redirect' && action.redirect.url === actual.href && condition.resourceTypes.includes('main_frame'))` (:56-60).",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L336-L337",
+   "claim": "Reports carry the provider key and registrable host only: never the URL, path, title, or referrer.",
+   "verdict": "CONFIRMED",
+   "evidence": "navblock.js:77-85 `buildNavBlockPayload` returns exactly `{type:'navBlock', provider, host, policyVersion, surface:'browser'}`; the file header (:8-9) states 'NO url/path/title/referrer ever appears here'. Minor imprecision: the payload also carries `policyVersion` and `surface` — both content-free, but the doc's 'only' is literally two fields short.",
+   "correctedText": "Reports carry the provider key, the registrable host, the policy version and the surface tag `browser` — never the URL, path, title, or referrer."
+  },
+  {
+   "docLine": "L339-L340",
+   "claim": "The composer gate runs surface check, then permits, then the detectors, then one policy evaluation, then the failure-oracle floor.",
+   "verdict": "STALE",
+   "evidence": "The five named stages are in that order inside `evaluateAndApply` (content/index.js:587 surfaceAccess; :627-664 daemon replay permit + resumePermit; :670-722 detectors — `scan`, `scanRisk`, `scanPhaseD`, `scanValidatedCredentials`; :729 the one `decidePolicy`; :795-812 the F01 floor). But two stages run BEFORE `evaluateAndApply` is ever called, and the BLOCK verdict is applied BEFORE the floor: onKeydown/onClick first run the drift fail-closed hold (`webGuardDriftFailClosed(currentPolicy()) && adapterBrokenNow()`, :1294 and :1356) and then `holdComposerUntilPolicyReady` (:1331, :1392); inside `evaluateAndApply` the block branch returns at :782, and the floor at :785-812 is reached only for non-block verdicts and is skipped entirely when `resumeAuthorized`.",
+   "correctedText": "**The composer gate** runs, in order: the drift fail-closed hold (a broken per-site adapter plus an admin who elected fail-closed cancels the send up front, with no composer to inspect); the cold-start hold (only reachable if the extension holds no usable rulebook at all — the bundled `DEFAULT_POLICY` floor always validates, so in practice never); the surface check; the permits; the detectors (DLP, prompt-risk, Phase-D, credential validation); **one** policy evaluation; the block branch; and then the F01 failure-oracle floor, which runs only for a non-block verdict and can only raise the outcome."
+  },
+  {
+   "docLine": "L340-L342",
+   "claim": "Block and redact are applied in-page, synchronously, before the daemon is consulted; the daemon is then asked and can only upgrade the verdict. If the draft changed during the check, nothing is sent.",
+   "verdict": "CONFIRMED",
+   "evidence": "Block: content/index.js:754-782 shows the banner, calls `void forwardToDaemon(...)` fire-and-forget, and returns false (the caller then preventDefault/stopPropagation at :1334-1338). Redact: :878 `writeComposer(composer, proof.redactedText)`, :880 the rewrite is verified in the DOM (`readComposer(composer) === proof.redactedText`) and a rewrite that does not land converts the redact into a block (:881-913), and only then is the daemon queued (:924). Upgrade-only: `DAEMON_DECISION_RANK = {allow:0, warn:1, redact:2, block:3}` (:422) and `authoritativeDecision` (:424-429) returns `localDecision` whenever the daemon's rank is lower or the value is unknown. Draft-changed: :448-451 'Draft changed while DeVoid checked it. Nothing was sent; retry the send.'",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L344-L346",
+   "claim": "Uploads are quarantined by snapshotting the file references, clearing the input, and stopping the original event before the first async operation; only an explicitly released batch is replayed, keyed by an isolated-world set that a page cannot reach.",
+   "verdict": "CONFIRMED",
+   "evidence": "content/upload-quarantine.js:143-156 — `filesForEvent` snapshot, then the marked boundary comment 'Everything above this line is local snapshotting. Everything below this line happens before inspectBatch can execute or yield', then `stopOriginalEvent(event)` (:153) and `clearFileInput(target)` (:154); the frozen `batch` is taken at :156 and `inspectBatch` is only entered at :158-164 inside `Promise.resolve().then(...)`. Release requires `result.release === true` (:166) and the replay event identity is added to `const releasedEvents = new WeakSet()` (:135, :68, :94) which the re-entry guard reads at :140. Listeners are registered in the capture phase (:209-210).",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L350-L352",
+   "claim": "Two loopback mounts on the daemon, deliberately not token-gated, because the intercepted client presents its own provider credential and the scan is the gate: one for Anthropic, one for the Codex OpenAI lane.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/daemon/server.go:687 `mux.Handle(\"/proxy/anthropic/\", proxy.NewAIProxyHandler(...))` and server.go:789 `mux.Handle(\"/proxy/openai/\", s.newOpenAIWireHandler())` — neither is wrapped in `s.requireDaemonToken`, unlike every `/v1/ai/*` route around them. The rationale is stated at server.go:680-683 and repeated at :776-778: 'It is NOT daemon-token-gated (the intercepted Codex presents its OWN provider credential, relayed unchanged; the scan is the gate)'. Server binds `127.0.0.1:<port>` only (server.go:792), default 19280 (codexmanaged/merge.go:17).",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L351-L352 (\"WebSocket and server-sent events\")",
+   "claim": "The Codex OpenAI lane carries WebSocket and server-sent events.",
+   "verdict": "WRONG",
+   "evidence": "The WS relay is built but never reached in production. internal/daemon/openai_wire.go:137-139 constructs `ws := proxy.OpenAIWSHandler(cfg)` and stores it on `openAIWireDispatcher{ws: ws, sse: sse}` — and `d.ws` is never read anywhere in the file. `ServeHTTP` (:155-180) answers every `isOpenAIResponsesWSUpgrade` request with `writeWSUpgradeUnsupported(w)` → HTTP 426 (:171, :185-189) and hands everything else to the SSE handler. Outside tests, `OpenAIWSHandler` has exactly one caller and that caller discards it. The managed config matches: merge.go:165 pins `supports_websockets = false`, with :146-164 recording seam I15 — 'Codex advertises a transport the daemon rejects' — and the correction 'stop advertising a transport we reject'.",
+   "correctedText": "…one for Anthropic, one for the Codex OpenAI lane. **The Codex lane is server-sent events only.** A Responses WebSocket-v2 relay is written and tested (`internal/proxy/openai_ws.go`) but is unreachable in production: the dispatcher answers every upgrade with a clean `426 Upgrade Required`, which real Codex treats as 'disable websockets for the rest of this session' and immediately re-POSTs over SSE with zero reconnect churn. The managed config pins `supports_websockets = false` so a compliant client never attempts the upgrade at all. **INERT** — the WS relay has no production caller.",
+   "labelChange": "implicit SHIPS for the WS transport -> INERT (openai_wire.go:139 assigns `ws` and nothing reads it; every upgrade gets 426)"
+  },
+  {
+   "docLine": "L354-L355",
+   "claim": "The Anthropic proxy scans POSTs to /v1/messages and /v1/messages/count_tokens, because Claude Code sends the whole prompt to the sibling endpoint. Body cap 8 MiB.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/proxy/ai_proxy.go:1274-1277 `isAIScanTarget` = `HasSuffix(path,\"/v1/messages\") || HasSuffix(path,\"/v1/messages/count_tokens\")`, guarded by `r.Method != http.MethodPost` at :320. Rationale at :314-319. Cap: ai_proxy.go:46 `const maxAIRequestBytes = 8 << 20 // 8 MiB`, applied at :327-329. The SAME cap governs the Codex SSE lane (openai_sse.go:188-190).",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L355-L357",
+   "claim": "An unreadable, oversized or unparseable body is held unless the policy's proxy fail mode is the literal string \"open\" — an empty value, garbage, or an absent policy all stay closed.",
+   "verdict": "CONFIRMED",
+   "evidence": "ai_proxy.go:263-275 `resolveFailClosed`: `if h.cfg.ProxyFailMode != nil { return h.cfg.ProxyFailMode() != \"open\" }; return h.cfg.FailClosed`, with the static fallback wired `FailClosed: true` at server.go:710. Applied to unreadable/oversized at :329-341 and to unparseable at :344-357. The Codex lane mirrors it byte-for-byte: openai_decision.go:206-214, applied at openai_sse.go:190-199.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L357-L358",
+   "claim": "A panic anywhere in the scan path is recovered into a held response rather than a forward.",
+   "verdict": "STALE",
+   "evidence": "Two carve-outs. (1) `http.ErrAbortHandler` is re-panicked on BOTH lanes (ai_proxy.go:296-308; openai_sse.go:99-118) — it is how net/http abandons a response when the developer presses Stop, and converting it into a hold told developers DeVoid had refused something they cancelled themselves (measured 2026-08-09 in the Codex IDE panel). (2) On the Codex SSE lane a panic AFTER egress is NOT held: openai_sse.go:119-133 — 'panic AFTER egress; the request was NOT held (it was allowed and already sent)' — because WriteHeader is a no-op on a committed response, so it re-panics with the sentinel and emits `panic_after_egress` evidence instead.",
+   "correctedText": "A panic in the scan path **before anything is forwarded** is recovered into a held response rather than a forward, on both lanes. Two exceptions are deliberate and named: `http.ErrAbortHandler` — the sentinel net/http and `httputil.ReverseProxy` raise when the developer presses Stop — is re-panicked, because recording it as a hold told developers DeVoid had refused a request they themselves cancelled; and on the Codex lane a panic **after** the response is committed cannot be held at all (WriteHeader is a no-op by then), so it re-panics into a clean abort and emits a `panic_after_egress` record that says the request was allowed and already sent. The fail-closed guarantee is unaffected in both cases: it comes from the verdict path, which runs before any byte moves."
+  },
+  {
+   "docLine": "L360-L363 (\"Verdicts: … five\")",
+   "claim": "The verdict set is allow, block, redact, warn, and unknown.",
+   "verdict": "STALE",
+   "evidence": "`internal/policyeval/policyeval.go:45-49` names FIVE verdicts: `inconclusive`, `allow`, `warn`, `redact`, `block`. `inconclusive` is missing from the doc. Both proxies switch on all five plus a `default` fallback: ai_proxy.go:598-683 (`VerdictInconclusive` at :667-676) and openai_decision.go:484-709 (`VerdictInconclusive` at :606-697). 'unknown' is the `default:` arm, not a verdict.",
+   "correctedText": "Verdicts — there are five named ones, plus a default. Allow forwards verbatim. Block returns a synthetic provider-shaped reply plus a desktop toast. Redact rewrites the outbound body and re-scans it. Warn becomes an interactive hold. **Inconclusive** routes to the frozen F01 failure oracle. An unrecognised verdict value falls to the default arm and is held (and, on the Codex lane, persisted as a hard deny in the turn's DenyStore)."
+  },
+  {
+   "docLine": "L361-L362",
+   "claim": "On redact the disposition is stamped \"blocked before egress\", never \"redacted then sent\".",
+   "verdict": "WRONG",
+   "evidence": "Inverted. ai_proxy.go:639-656: `BLOCKED_BEFORE_EGRESS` is stamped ONLY when `redactAndVerify` fails (:649) — 'a redact that fails verification NEVER sent, so it must not be recorded as REDACTED_THEN_SENT'. When verification passes, :653-655 stamps `DispositionRedactedThenSent` and forwards: 'Only now is REDACTED_THEN_SENT the honest disposition.' The Codex lane is identical (openai_decision.go:552 vs :570). `DispositionRedactedThenSent` is also the correct stamp on the context-sanitize path (ai_proxy.go:607) and on the count_tokens sibling's opposite case (:589-593).",
+   "correctedText": "…redact rewrites the outbound body **and re-scans it**. If the rewrite still gates — a secret whose span straddles the join between two extracted segments, or a rewritten body that re-scans as gating — nothing is sent and the disposition is stamped \"blocked before egress\", never the optimistic \"redacted then sent\". When the re-scan passes, the redacted body IS forwarded and \"redacted then sent\" is the honest stamp. The same discipline governs the `count_tokens` sibling: a non-allow there is benign-held and stamped \"blocked before egress\" even for a redact verdict, so the audit never claims a send for a call whose data never left the box."
+  },
+  {
+   "docLine": "L362-L363",
+   "claim": "Warn becomes an interactive hold released only by a single-use, digest-bound allow-once.",
+   "verdict": "STALE",
+   "evidence": "True on the Codex lane unconditionally (openai_decision.go:573-604 — hold, `RecordHeld(fp)`, `UplinkWarnHold`, released only via `ConsumeAllowOnce(fp)`). NOT true on the Anthropic lane: ai_proxy.go:524-548 — `if dec.Verdict == policyeval.VerdictWarn && !RequestIsInteractive(r)` the request is FORWARDED as a 'monitored forward' with a `warn_degraded_noninteractive` audit token. `RequestIsInteractive` (warn_interactivity.go:27-32) requires the literal header `X-Devoid-Interactive: true`; absent, empty or malformed is non-interactive. That header is injected by the PATH shim, and ai_proxy.go:529-531 states the consequence plainly: 'This branch is the IDE. An IDE-hosted agent never launches through the PATH shim, so it never carries the interactivity header and always lands here.'",
+   "correctedText": "…warn becomes an interactive hold, released only by a single-use, digest-bound allow-once — **but only for a caller that declares it can interrupt a human.** On the Anthropic lane a WARN from a request without the literal `X-Devoid-Interactive: true` header degrades to a *monitored forward*: the prompt is sent, an audit record stamped `warn_degraded_noninteractive` is written, and no human is asked. The header is injected by the PATH shim, so every IDE-hosted agent and all automation land in that branch. The one thing checked first is a previously recorded 'Redact & send' consent, which is honoured before the degrade. **The Codex wire lane has no such degrade — its WARN always holds.** This asymmetry is the single largest behavioural difference between the two mounts."
+  },
+  {
+   "docLine": "L360-L361 (\"plus a desktop toast\")",
+   "claim": "Block returns a synthetic provider-shaped reply plus a desktop toast.",
+   "verdict": "STALE",
+   "evidence": "Correct on the Anthropic lane (ai_proxy.go:627-631: `h.notify(...)` then `writeSynthMessage`). On the Codex lane the toast is documented as usually undeliverable: openai_decision.go:536-539 — 'the daemon runs as SYSTEM and cannot render one to an interactive desktop session, so the reason riding in-band is what actually reaches a Codex IDE developer'. The Codex deny therefore carries the class-naming reason text in-band (`buildBlockTextOpenAI`, :540); it returned nil before that change. The same file (:243-252) records that every toast body used to end '— see your terminal' on a lane whose entire population is a GUI desktop app and a VS Code extension.",
+   "correctedText": "…block returns a synthetic provider-shaped reply, and best-effort a desktop toast. On the Codex lane the toast usually cannot render — the daemon runs as SYSTEM and has no interactive desktop session — so the class-naming reason rides **in-band** in the refusal the IDE panel shows; the toast is a supplement, never the only detail-bearing channel."
+  },
+  {
+   "docLine": "L365-L367",
+   "claim": "The browser lane sees the human's typing, pasted clipboard text and file bytes before they enter the page, and can rewrite the composer — but it cannot see anything that is not a composer send, and it depends on per-site selectors that drift.",
+   "verdict": "CONFIRMED",
+   "evidence": "Capture set declared at background.js:94 `CAPTURE_FEATURES = ['paste','send','upload']`. Rewrite: content/index.js:878 `writeComposer`. Selector dependence: `SITE.sendButton` / `getComposer()` (content/index.js:1327, 1349, 476) and `adapterBrokenNow()` gating the drift hold at :1294/:1356; background.js:102-106 aggregates per-host `adapterSamples` into the health beacon 'so a broken per-site selector surfaces as DEGRADED coverage instead of a silent online'. A specific drift failure is visible at content/index.js:476-479 — if the send button cannot be resolved after the daemon answers, the send is silently held.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L367-L369",
+   "claim": "The wire lane sees the full serialized request an agent sends and can rewrite or hold it — but only for clients configured onto the managed base URL. Traffic that bypasses the proxy is not enforced.",
+   "verdict": "CONFIRMED",
+   "evidence": "Anthropic: the route is asserted through `ANTHROPIC_BASE_URL` → `daemonBaseURL()+\"/proxy/anthropic\"` (cmd/devoid/agent_shim.go:127; internal/aihooks/transport_route.go:40-42). Codex: the R5 `base_url` in managed_config.toml → `http://127.0.0.1:19280/proxy/openai/v1` (codexmanaged/merge.go:126-138, transport_route.go:57). A client not carrying that base never reaches either mount.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L369-L370",
+   "claim": "Response-side tool calls — a fetch target the model itself emits — are gated in neither lane.",
+   "verdict": "CONFIRMED",
+   "evidence": "Stated in source: ai_proxy.go:440-442 — 'SCOPE (V1 = REQUEST-SIDE ONLY): response-side tool_use (WebFetch target) gating is a documented FAST-FOLLOW — it needs a new incremental SSE-rewrite transform that would stall streaming, so it is intentionally not done here.' The Codex lane has no response-side gate at all: openai_sse.go:37-40 forwards the allow/redact path 'through proxy_stream.go's reverseProxyTo, which streams the SSE reply back verbatim', and the only response-side transform in the package is a gzip/zstd strip (openai_zstd.go:26). The browser lane is composer-send-only. `EgressDecide` is called on outbound user segments only (ai_proxy.go:443; openai_decision.go:398-399).",
+   "correctedText": ""
+  }
+ ],
+ "additions": [
+  {
+   "where": "§5.5, after the fail-mode paragraph (L358)",
+   "text": "**The fail-mode switch is not the only way a request can be forwarded unscanned.** When the scan reaches a degraded inspection state the verdict is `inconclusive` and a frozen F01 failure oracle picks the terminal. Three terminals exist: a deny (the request is refused and, on the Codex lane, persisted so a reconnect or retry cannot re-ask), a hold (this attempt is held without persisting; the Codex wire has no trusted confirmation surface, so a `confirm` terminal executes as a hold and is never faked into a confirmation), and a **row-permitted LOW_IMPACT fail-open, which relays the request observed-only**. That last row is the third documented way out of the proxy — after the literal `\"open\"` fail-mode and the non-interactive WARN degrade — and it is the one that is invisible in the fail-mode configuration, because no admin setting turns it on or off.",
+   "evidence": "internal/proxy/openai_decision.go:672-677 `case failureoracle.VerbFailOpen: … sess.RecordTurn(…); emitWireDecisionInternal(…, wireCoverageObservation, DispositionSentAllowed); return UplinkRelay, rawFrame, nil`. Same on the Anthropic lane: ai_proxy.go:563-567 (count_tokens sibling) and :667-676 `h.serveOracleTerminal(...)`. Terminal selection at ai_proxy.go:561 / openai_decision.go:625 `proxyOracleTerminal(dec)`."
+  },
+  {
+   "where": "§5.5, after the scan-target sentence (L355)",
+   "text": "**Only two paths on the Anthropic mount are scanned; everything else is a transparent forward.** `POST /v1/messages` and `POST /v1/messages/count_tokens` are gated. Any other method or subpath under `/proxy/anthropic/` — including any other POST — is forwarded to the upstream without inspection. The same is true of the Codex mount: only `POST` to the streaming `/responses` endpoint is gated; a GET, or the unary `/responses/compact` sibling, passes through. The design reason is that those are the paths that carry a developer prompt; the consequence is that a provider endpoint that grows a prompt-bearing POST is uncovered until the suffix list is extended.",
+   "evidence": "ai_proxy.go:320 `if r.Method != http.MethodPost || !isAIScanTarget(r.URL.Path) { h.forward(w, r, nil); return }` with `isAIScanTarget` at :1274-1277; comment at :317-319 'Every other subpath/method (GET /v1/models, …) forwards transparently in Wave 1'. openai_sse.go:166-176 `if r.Method != http.MethodPost || !isResponsesStreamTarget(r.URL.Path) { … committed = true; h.forward(...) }`."
+  },
+  {
+   "where": "§5.3, after L302 (the exit-code paragraph)",
+   "text": "**The one enforcing channel has two accepted wire shapes, and the fallback uses the weaker-looking one on purpose.** `DenyEnforces` accepts either the canonical `hookSpecificOutput.permissionDecision:\"deny\"` shape or the legacy `{\"decision\":\"block\",\"reason\":\"…\"}` shape. `UserPromptSubmit` denies only through the legacy shape. When the JSON encoder itself fails, the fallback hand-builds a legacy block rather than degrading to empty stdout — because empty stdout is an allow — and it routes every empty reason through a default, because an empty reason also fails open. No path through the adapter can emit a reason-less deny.",
+   "evidence": "internal/airuntime/adapters/codex/response.go:400-407 (`isCanonicalDeny || isLegacyBlock`), :24 `const defaultDenyReason`, :96-101 `nonEmptyReason`, :409-426 `buildDenyFallback` ('a DECIDED deny must never degrade into an empty stdout, which Codex reads as an allow'), :428-430 `staticLegacyBlock`. deny_contract.go:95-99 pins UserPromptSubmit to the legacy shape."
+  },
+  {
+   "where": "§5.3, after the exit-code paragraph",
+   "text": "**The managed hook budget is 60 seconds, and the arithmetic is load-bearing.** Codex `timeout` is in seconds and `async=true` is not implemented (an async hook never fires), so DeVoid stamps a finite synchronous budget on every managed group. It was 30s, and on 2026-08-21 a `dynamic-eval` warn was measured on the dogfood box: the daemon returned warn, the hook opened the dialog, Codex abandoned the hook at its 30s budget, and the command ran with no answer ever recorded. The budget is now 60s = a 30s dialog countdown + a 10s PowerShell process cap + 20s of margin for the daemon round-trip. It is uniform across every managed group by design, because per-event budgets produce a managed block with two different timeouts that the runtime-integrity projection rejects as ambiguous. The accepted cost is that a wedged hook can hold a Codex turn for 60s.",
+   "evidence": "internal/codexmanaged/merge.go:33-81 `const DefaultHookTimeoutSeconds = 60`, with the measurement at :47-51, the arithmetic table at :56-60, the uniformity rationale at :68-72, and `codex_hook_budget_test.go` named at :78-80 as the pin. `60 <= MaxHookTimeoutSeconds (120)`."
+  },
+  {
+   "where": "§5.4, after the permissions sentence (L324)",
+   "text": "**The path in a host permission narrows where our code runs, not what the browser granted.** Two entries are written with a path — `https://github.com/copilot/*` and `https://huggingface.co/chat/*` — but Chrome MV3 records host permissions at *host* granularity. After install, `chrome://extensions` → Site access shows `github.com` and `huggingface.co`, and the profile stores `granted_permissions.explicit_host: \"https://github.com/*\"`. There is no MV3 mechanism for path-scoped host access. So we must never tell a user, an administrator, or a store reviewer that the extension's browser access is limited to `/copilot` or `/chat`. What *is* path-scoped, and honest to say: where `dist/content.js` is injected, which origins may load `dist/intervention.html`, and which URLs the navigation block redirects.",
+   "evidence": "browser-extension/PERMISSIONS.md, sections 'The one thing people get wrong: the grant is host-wide' and 'What is actually path-scoped (and is honest to say)'. The file is machine-checked against both manifests by test/blockhosts-coverage.test.mjs. manifest.json:26-36 records the related 0.5.12 incident: the path form in `web_accessible_resources` made the extension UNINSTALLABLE for everyone."
+  },
+  {
+   "where": "§5.4, after the composer-gate paragraph (L342)",
+   "text": "**Every allowed send is cancelled and replayed, not merely permitted.** `queueAuthoritativeSend` always returns false, so the developer's own Enter or click is always prevented; the send is re-driven by a synthetic click on the resolved send button after the daemon answers. Three things can go wrong in that window and all three end in a silent hold rather than a send: the draft changed, the send control could no longer be resolved, or the daemon demanded a redaction and returned no safe rewrite. The last of those is upgraded to a block, not passed through.",
+   "evidence": "content/index.js:431-491 `queueAuthoritativeSend` — `return false` at :490, `button.click()` at :485 under a `daemonPermit`; draft-changed at :448-451; unresolvable send button at :476-479; daemon redact with no safe rewrite at :458-470 ('The daemon required redaction but did not return a safe rewrite. Nothing was sent.')."
+  },
+  {
+   "where": "§5.4, after the policy-paths paragraph (L330)",
+   "text": "**A transport failure may fall back; a trust failure may not.** The loopback lane is reached only when the native host failed to *reach* a policy — host absent, host unreachable, empty reply, daemon connect failure, a non-200. Five refusal reasons are excluded by name because they mean the host reached a policy it could not vouch for: `bundle-unverifiable`, `bundle-expired`, `bundle-identity-mismatch`, `policy-digest-mismatch`, `policy-invalid`. Downgrading those to an unsigned loopback body would hand an attacker the exact downgrade the signature exists to prevent. Separately, the block-rule set is ratcheted: provider keys most recently installed from a tier-1 source form a floor the unsigned loopback body cannot weaken, and a policy fetch failure deliberately leaves the installed rule count alone, so a fetch failure can never make an armed block set look disarmed.",
+   "evidence": "background.js:693-715 `NATIVE_TRUST_FAILURE_REASONS` + `nativeFailureAllowsLoopback`; the ratchet at :138-141 (`trustedFloor` — 'the RATCHET the loopback fallback must not weaken') and :132-137 ('a policy failure records lastFailureReason and DELIBERATELY LEAVES ruleCount ALONE')."
+  },
+  {
+   "where": "§5.3, after L313",
+   "text": "**When the hook lane cannot be judged, the surface says so and exits non-zero.** `devoid ai hooks-status codex` reports two independently-governed lanes — the hook lane (R7/R8) and the wire lane (R5) — with their own states, rather than one roll-up sentence. The load-bearing constraint is the exit code: it stays non-zero whenever *any* lane is not attestable, because 'unknown' must never exit 0. An unknown row outranks a merely-drifted one, because 'we cannot tell' is a different claim from 'we looked and it is wrong' and only the first may not be asserted about. This is why an unrecognised dialect produces a `[!]` and a failure, not a silent green.",
+   "evidence": "cmd/devoid/ai_codex_lanes.go:19-35 (the two lanes and the exit-code constraint: 'a wire-lane term allowed to produce a zero exit while a lane is unknown would create exactly the false-green this surface exists to prevent'), :73-107 `codexHookLane` precedence, and requirements.go:55-68 `ReasonHookTrustDialectUnverified` → StatusUnknown → coverage-downgrade."
+  }
+ ],
+ "omissions": [
+  {
+   "what": "The `destructive-rm` tool-risk rule fires on every `rm -rf ~/<anything>` and `rm -rf $HOME/<anything>`, it is a malicious-floor member at minimumDisposition `block`, and since Backend PR #285 the floor holds on the READ path — so no administrator on any tenant can relax it.",
+   "whyItMatters": "This is the most customer-visible fact about the product today and it is absent from the document entirely. It also directly contradicts §5.3's framing that the *Codex* pins are the notable 'constants, not administrator policy' problem: the same defect class now exists on the Backend side, with a larger blast radius, because it silently blocks ordinary developer work (`rm -rf $HOME/.cache/pip`, `rm -rf ~/.npm/_cacache`) on every tenant with no console-side relief.",
+   "evidence": "Reported to me as verified by compiling the shipped regex at Installers/internal/toolrisk/toolrisk.go:122 — measured true for `rm -rf $HOME/.cache/pip`, `rm -rf ~/.npm/_cacache`, `rm -rf $HOME/projects/scratch`; false for `rm -rf ./build` and `rm -rf /tmp/mybuild`. Backend `withMaliciousFloorApplied` is now the first statement of `assembleEffectiveDto` and deployed as ECS task definition 322. I did not re-verify the Backend half within my section scope, so the Backend citation should be confirmed by whoever owns §7.2/§8.",
+   "proposedText": "Add to §7.2 (behavioural risk) with a pointer from §5.3, labelled **SHIPS — and customer-affecting**: '`destructive-rm` matches any `rm -rf` whose target begins `~/` or `$HOME/`, not only a bare home directory. `rm -rf $HOME/.cache/pip` and `rm -rf ~/.npm/_cacache` both match; `rm -rf ./build` and `rm -rf /tmp/mybuild` do not. It is a member of the malicious floor at `minimumDisposition: block`, and since the floor began holding on the read path (Backend #285, ECS task definition 322) **no administrator on any tenant can relax it from the console**. Every developer on every tenant who clears a cache directory under their home is blocked, and the console offers no way to say otherwise.'"
+  },
+  {
+   "what": "§5.3 has no dialect paragraph of its own; the load-bearing dialect fact lives only in §3.3, and §5.3 refers to it obliquely as 'the dialect problem'.",
+   "whyItMatters": "§5.3 is the section a security architect opens to understand the Codex lanes. Lanes C and D are entirely gated on the dialect table, and whether the cooperative hook can be claimed at all is the single most consequential fact about them. A reader of §5.3 alone gets no version numbers, no row count, and no statement of what happens on an unrecognised build. The table also just changed, and a fact this volatile should sit next to the mechanism it gates.",
+   "evidence": "§5.3 L313 says only 'independently of the dialect problem'. The full statement is at §3.3 L143-150, which is now stale (one row -> two). Source: internal/codexmanaged/hookdialect.go:166 (two rows), :186-197 `hookTrustDialectFor`, :179 `writerHookTrustDialect = hookTrustDialect144`.",
+   "proposedText": "Add as a fifth bolded paragraph in §5.3: '**The trust ledger is versioned, not pinned — two rows today.** Codex dispatches a user-scope hook only if `[hooks.state]` carries a digest in the exact format the installed client computes. That format is a *dialect* with a declared applicability range, and a row may only be added on two vendor artefacts: the client'\\''s own `hooks/list` reporting `trustStatus:\"trusted\"` with a byte-equal `currentHash`, and a live `codex exec` firing the hook without `--dangerously-bypass-hook-trust`, with a negative control. `knownHookTrustDialects` holds `0.144.` and `0.147.` (the second added 2026-08-27). The *writer* is unconditional and always emits the 0.144 construction: writing on an unrecognised build costs nothing (the client finds no matching entry and skips the hook, exactly as with no entry) and might work, whereas withholding it guarantees the hook never fires. What must not happen is claiming it worked — so classification is separate from writing, and a version outside every row, or a version that could not be read at all, classifies `hook-trust-dialect-unverified`, rolls up to a coverage downgrade, and exits non-zero. **0.145, 0.146, 0.148 and the desktop app'\\''s 0.149.0-alpha.4.1 runtime are outside both rows. The owner'\\''s own installed client is 0.149.0-alpha.4.1.** The way out is a live canary proving the hook fired on that build, never a wider pin.'"
+  },
+  {
+   "what": "Two additional live daemon endpoints the browser extension depends on — `/v1/browser/nav-blocked` and `/v1/browser/receipt`, plus `/v1/browser/health` and `/v1/ai/prompt-check` — and the fact that all four are token-gated native-host-first / loopback-fallback pairs.",
+   "whyItMatters": "§5.4 describes policy delivery but never says how the extension's evidence gets *out*. A reader cannot tell what a nav-block record or an enforcement receipt costs, or what happens to them when the native host is absent. It also matters for §14: an extension enforcing correctly but unable to relay receipts is invisible to the console, and that is exactly the shape of failure the document exists to expose.",
+   "evidence": "background.js:62 `DAEMON_URL = http://127.0.0.1:19280/v1/ai/prompt-check`, :64 `HEALTH_URL = /v1/browser/health`, :82 `NAVBLOCK_URL = /v1/browser/nav-blocked`, :86 `RECEIPT_URL = /v1/browser/receipt`, :77 `POLICY_URL = /v1/ai/policy`. background.js:596-599 states all of them are 'a native-host-first / loopback-fetch-fallback PAIR'. Health beacon period: `HEALTH_PERIOD_MIN = 4` (:100), reporting `CAPTURE_FEATURES = ['paste','send','upload']` (:94) and the per-host adapter samples (:102-106).",
+   "proposedText": "Add to §5.4: 'The extension talks to five loopback daemon routes, all token-gated and all native-host-first with a loopback-fetch fallback: `/v1/ai/prompt-check` (the daemon'\\''s re-scan of a send), `/v1/ai/policy`, `/v1/browser/health` (a 4-minute beacon carrying the capture feature set and each site'\\''s live composer/send selector resolution, so a broken adapter surfaces as DEGRADED rather than a silent \"online\"), `/v1/browser/nav-blocked`, and `/v1/browser/receipt`. Prompt text reaches only the first of these, and only over loopback; the nav-block and receipt intakes are content-free by construction.'"
+  },
+  {
+   "what": "The 8 MiB cap is not the only body bound in the wire lanes: the (currently unreachable) WebSocket relay uses a 16 MiB read limit.",
+   "whyItMatters": "§5.5 states a single body cap as a product-wide number. Numbers in this document are load-bearing, and a second, larger cap exists on a code path the document does not mention. If the WS relay is ever wired, the stated cap silently becomes wrong.",
+   "evidence": "internal/proxy/ai_proxy.go:46 `maxAIRequestBytes = 8 << 20`, used by the Anthropic mount (:327) and the Codex SSE handler (openai_sse.go:188). internal/proxy/openai_ws.go:47 `wireReadLimit = 16 << 20 // 16 MiB`.",
+   "proposedText": "Append to the body-cap sentence: 'Body cap 8 MiB, on both the Anthropic mount and the Codex SSE handler. The deferred WebSocket relay carries its own 16 MiB frame read limit; it is not reachable today, but the two numbers must be reconciled before that relay is ever wired.'"
+  },
+  {
+   "what": "§5.4 never states that a policy the extension cannot read still enforces — the bundled `DEFAULT_POLICY` floor makes `hasEnforceablePolicy()` true from t=0, and requiring a signed bundle once froze every send forever.",
+   "whyItMatters": "The document'\\''s §5.4 describes three policy transports without saying what happens when none of them delivers. The answer is the most important design decision in the whole lane, it is a direct correction of a shipped brick, and a reader would otherwise assume the cold-start path holds sends.",
+   "evidence": "content/index.js:1242-1253 `policyReadyForEnforcement` — 'Enforcement is LOCAL-AUTHORITATIVE: the extension protects using the best rulebook it holds … A signed bundle is NOT a precondition for enforcing; requiring it froze every send forever on a box that never got one (the Web AI Guard brick) … currentPolicy() is seeded with DEFAULT_POLICY at module load, so hasEnforceablePolicy() is true from t=0.' The F01 states that route a *degraded* read are at policy-read.js:31-52 (`accepted`/`degraded`/`held`/`invalid`/`unavailable` → `POLICY_INVALID`/`POLICY_UNAVAILABLE`).",
+   "proposedText": "Add to §5.4: '**When no policy arrives, the extension still enforces.** It is local-authoritative: it protects with the best rulebook it holds — a signed bundle if present, else the daemon'\\''s live projection, else the bundled `DEFAULT_POLICY` floor, which is seeded at module load so protection is live from t=0. Requiring a signed bundle first is what froze every send forever on boxes that never received one. The read state is still recorded as provenance on every receipt, and a policy that reads `invalid`, `held` or `unavailable` routes the send through the F01 floor (`POLICY_INVALID` denies at every impact at the browser PRE checkpoints; `POLICY_UNAVAILABLE` is resolved per impact row) — so a degraded policy is louder than a healthy one, never quieter.'"
+  }
+ ],
+ "reorganisation": "Three structural changes, in order of value.\n\n(1) **Move the dialect table into §5.3 and leave a pointer in §3.3.** Today the fact that gates lanes C and D lives in a coverage table 150 lines earlier, and §5.3 refers to it as \"the dialect problem\" with no numbers. Both copies just went stale together, which is the predictable cost of stating a volatile fact twice. Put the full dialect paragraph (proposed above) in §5.3 as its fifth bolded block, and reduce §3.3's Codex caveat to the verdict plus a cross-reference. One place to edit when a row is added.\n\n(2) **Split §5.5's single \"Verdicts:\" run-on into two paragraphs: the verdict table, and the ways out of the proxy.** The current sentence carries five clauses of unequal weight and gets two of them wrong (the redact disposition is inverted; the WARN hold is unconditional only on one of the two lanes). More importantly it hides the honest part. There are now **four** distinct ways a request the proxy examined can still be forwarded, and only one of them is in the document: the literal `\"open\"` fail-mode; a WARN from a non-interactive caller on the Anthropic lane; a row-permitted LOW_IMPACT failure-oracle fail-open; and an armed single-use allow-once. Those four belong together under a heading like \"**How a request still gets out**\", which is the paragraph a CEO and a security architect both need and neither currently has.\n\n(3) **Make §5.5's opening sentence lane-asymmetric, because the two mounts are not siblings.** The document presents them as \"one for Anthropic, one for Codex\", and the rest of the section then describes only the Anthropic one. They differ in four ways that matter: transport (Anthropic HTTP; Codex SSE-only, with the WS relay built and unreachable), WARN behaviour (degrades vs always holds), deny persistence (none vs a cross-transport DenyStore that survives reconnect and retry), and notification (a toast that renders vs one that usually cannot, because the daemon is SYSTEM). Restructure as a short shared-mechanics paragraph — mount, no token gate, 8 MiB cap, fail-mode, panic handling, the five verdicts — followed by a four-row \"where the lanes differ\" table. That is both shorter than the present text and the first place a reader could learn that a Codex WARN and a Claude WARN are not the same control.\n\nTwo smaller notes: §5.3's lane table should gain a \"scope\" column (machine / per-user / per-user / per-user), because the whole `allow_managed_hooks_only` argument turns on which scope wrote what and the table gives no hint; and §5.4's numbers should be stated with their denominators in one line — 4 permissions, 9 content-script origins, 7 site adapters, 6 provider keys, 33 host permissions (9 + 23 + 1 loopback), 18 blockable providers over 31 host patterns, rule ids [9000, 9030] — because five different counts are currently in play and only two of them appear."
+}

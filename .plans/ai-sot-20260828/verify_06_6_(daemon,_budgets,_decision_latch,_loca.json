@@ -1,0 +1,360 @@
+{
+ "section": "6 (daemon, budgets, decision latch, local floor) + 7.1 (data protection) + 7.2 (behavioural risk)",
+ "claims": [
+  {
+   "docLine": "374 (§6)",
+   "claim": "The daemon serves plain HTTP on loopback only, port 19280.",
+   "verdict": "CONFIRMED",
+   "evidence": "Installers origin/main internal/daemon/config.go:16 `DefaultPort = 19280`; internal/daemon/server.go:792 `Addr: fmt.Sprintf(\"127.0.0.1:%d\", daemonCfg.Port)`; config.go:69 `TLSEnabled: false`. Caveat worth adding, not a correction: both are overridable at runtime — config.go:74-77 honours `DEVOID_DAEMON_PORT` / `CERA_DAEMON_PORT`, and config.go:88 flips to self-signed TLS on `DEVOID_DAEMON_TLS=1` (served at server.go:913). So 19280/plain-HTTP is the default, not an invariant; `devoid doctor` already models a TLS daemon (cmd/devoid/doctor_daemon_agreement_test.go:40).",
+   "correctedText": "The daemon is one long-lived process serving plain HTTP on **loopback only** (`127.0.0.1`), port **19280** by default. Both are defaults, not invariants: `DEVOID_DAEMON_PORT` moves the port and `DEVOID_DAEMON_TLS=1` puts a self-signed cert on the same listener."
+  },
+  {
+   "docLine": "374-375 (§6)",
+   "claim": "It exposes 46 routes.",
+   "verdict": "WRONG",
+   "evidence": "Counted at origin/main: `internal/daemon/server.go` registers exactly **44** patterns on the single mux (42 `mux.HandleFunc` + 2 `mux.Handle`), lines 511-789. `git grep NewServeMux` finds exactly one mux in the whole repo (server.go:397), and `RegisterRoute`/`RegisterRouteFunc` (server.go:812, 818) have **zero non-test callers** anywhere, so nothing mounts routes from outside. Also 44 at the document's own base commit 002e2cfd — this number was never 46.",
+   "correctedText": "It exposes **44** routes.",
+   "labelChange": ""
+  },
+  {
+   "docLine": "375-376 (§6)",
+   "claim": "Five are unauthenticated (`/health`, `/v1/status`, two findings reads, an AI-context status) and everything else requires a capability token in a header, compared in constant time.",
+   "verdict": "STALE",
+   "evidence": "The five named are right and are the only ungated IPC routes: server.go:511 `/health`, :523 `/v1/status`, :531 `GET /v1/ai-context/status`, :561 `GET /v1/findings`, :562 `GET /v1/findings/{id}`. But **two more registrations are not behind `requireDaemonToken`** and they are the ones that carry real traffic: server.go:687 `/proxy/anthropic/` and server.go:789 `/proxy/openai/`. server.go:680-682 states the exemption deliberately (\"It is NOT daemon-token-gated: the intercepted CLI presents its OWN provider credential... the scan is the gate\"). Separately, \"in a header\" is incomplete: daemon_auth.go:329-339 also accepts the token from `?token=` and from a POST form field. Constant-time compare CONFIRMED at daemon_auth.go:343 (`subtle.ConstantTimeCompare`), with a second copy at server.go:1968.",
+   "correctedText": "Of the 44, **seven are not behind the capability token**. Five are read-only IPC routes (`/health`, `/v1/status`, `GET /v1/ai-context/status`, and the two findings reads). The other two are the provider proxy subtrees — `/proxy/anthropic/` and `/proxy/openai/` — deliberately exempt because the intercepted CLI presents its *own* provider credential and the DLP scan, not a token, is the gate on that lane. Everything else requires a capability token, presented in the `X-Devoid-Daemon-Token` header **or** as a `token` query/form value (the loopback restore form cannot set a header), compared in constant time."
+  },
+  {
+   "docLine": "378-381 (§6)",
+   "claim": "It runs as SYSTEM on a machine install and as the logged-on user otherwise; SYSTEM has no user profile, so it delegates per-user wiring to a scheduled task; the capability token follows install scope.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/daemon/user_ai_wire_task.go:1-31 states the delegation exactly: \"REGISTERING A MACHINE-SCOPE SCHEDULED TASK IS A MACHINE OPERATION... What the task DOES at runtime is a different principal entirely: it runs as the logging-on user... The daemon delegates; it does not impersonate.\" Token-follows-scope: daemon_auth.go:28-41 (system install writes to `%ProgramData%\\devoid` / `/etc/devoid`, per-user install to `~/.devoid/daemon-token` 0600) and server.go:572-576 (\"on a Windows SYSTEM install that token is machine-scoped and BUILTIN\\Users-readable, so on that configuration the gate does not separate one local user from another\").",
+   "correctedText": ""
+  },
+  {
+   "docLine": "387 (§6.1)",
+   "claim": "Host hook timeout written into the client's settings = 60 s, bounding the whole hook process.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/aihooks/settings.go:113 `promptSubmitTimeoutSeconds = 60`; settings.go:546-548 `hookTimeoutFor` returns that value for EVERY managed event (uniform, because the runtime-integrity projection rejects a managed block carrying two different timeouts — settings.go:82-90); written at settings.go:526.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "388 (§6.1)",
+   "claim": "Stdin read = 2 s / 10 MiB.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/airuntime/runner.go:29 `MaxHookStdinBytes = 10 << 20`; runner.go:39 `HookStdinReadBudget = 2 * time.Second`. On expiry the read is abandoned and treated as undecidable input (runner.go:842-853, `ErrStdinReadTimeout`).",
+   "correctedText": ""
+  },
+  {
+   "docLine": "389 (§6.1)",
+   "claim": "Decision budget = 4 s for the loopback round-trip to the daemon.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/airuntime/runner.go:52 `const HookDecisionBudget = 4 * time.Second`.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "390 (§6.1)",
+   "claim": "Hold ceiling = 40 s waiting on a human.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/airuntime/decision_latch.go:56 `const HookHoldCeiling = 40 * time.Second`; applied at runner.go:920-924.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "391 (§6.1)",
+   "claim": "Warn dialog = 30 s.",
+   "verdict": "CONFIRMED",
+   "evidence": "cmd/devoid/ai_warn_dialog.go:85 `const warnDialogTimeoutSeconds = 30`. The 10-second process cap the prose cites (line 401) is real and is Windows-specific: cmd/devoid/ai_warn_dialog_windows.go:179-180 sets the PowerShell host context to `warnDialogTimeoutSeconds+10` = 40 s.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "392-393 (§6.1)",
+   "claim": "Backend hop (decisions) = 2500 ms; backend hop (sessions) = 800 ms.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/daemon/ai_backend_hop_budget.go:80 `aiDecisionHopBudget = 2500 * time.Millisecond`; ai_backend_hop_budget.go:56 `aiSessionHopBudget = 800 * time.Millisecond`. The 2500 is deliberately larger than the client's own 1500 ms per-attempt timeout so the daemon ceiling cannot race and truncate it (ai_backend_hop_budget.go:65-79).",
+   "correctedText": ""
+  },
+  {
+   "docLine": "395-397 (§6.1)",
+   "claim": "The 4-second budget is enforced by the runner rather than handed to the executor as a context deadline, because a deadline only bounds work that consults it — a real SESSION_START was measured at 50.1 seconds.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/airuntime/runner.go:904-914 (\"G9 — the budget is ENFORCED here, not merely handed to the executor... It was declared 4s and a real SESSION_START was measured at 50.1 SECONDS\"). The measurement's cause is recorded independently at internal/daemon/ai_backend_hop_budget.go:20-24: the session lane's backend client used four attempts at a ninety-second per-attempt timeout.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "399-402 (§6.1)",
+   "claim": "60 s is the host's kill timer and must be at least 40 because a human dialog gets 30 s plus a 10-second process cap; the stated cost is that a wedged PreToolUse now stalls a tool call for up to 60 seconds.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/aihooks/settings.go:92-111 carries this argument verbatim, including \"THE COST, STATED PLAINLY: the tool gates' ceiling moves 30s -> 60s... a WEDGED PreToolUse hook now stalls a tool call for up to 60s instead of 30s.\" The arithmetic is pinned again in cmd/devoid/ai_warn_dialog.go:67-73.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "406-410 (§6.2)",
+   "claim": "Measured live on 2026-08-23: six of six session starts and five of sixteen prompt submissions expired at 4.00–4.06 s while the daemon answered its health check in 14 ms; every lane now latches the verdict the instant it has one.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/airuntime/decision_latch.go:11-33 records exactly these figures against agent 7.10.3 (\"6 of 6 SESSION_STARTs and 5 of 16 USER_PROMPT_SUBMITs expired at 4.00-4.06s while the same daemon answered /health in 14 ms\"). Latching is structural, not per-lane discipline: cmd/devoid/ai_hook_runner.go:82-94 fuses translate-and-latch into one helper (`latched`), used at four call sites, plus `latchProvisional` (:96-111) for the safety answer and an explicit `Latch` for the session-reconcile lane (:1727). Three `HoldingForHuman()` sites (:596, :682, :850) hand the wait over to the hold ceiling.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "412-413 (§6.2)",
+   "claim": "The latch fixes discarding a reached verdict. It does nothing when the daemon is never reached.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/airuntime/decision_latch.go:41-45 (\"It does NOT extend the budget for an authority that has not answered: an expiry with an EMPTY latch takes exactly the path it takes today\"). The path is runner.go:926-940: `budgetExpiredUndecided` routes to `failGating(..., ReasonDecisionBudgetExpired)`, which the closed-world resolver maps to INTERVENTION_UNAVAILABLE → PROCEED, warned and counted in the `daemonUnreachable` bucket.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "420 (§6.3)",
+   "claim": "Our own agent API key: block, unconditionally, above every policy branch.",
+   "verdict": "STALE",
+   "evidence": "internal/policyeval/policyeval.go:393 does return `VerdictBlock` for `finding.RuleID == \"devoid-api-key\"` above every class-action branch — but it is neither unconditional nor above *every* policy branch. (a) It is gated on the finding being enforcement-eligible: `&& (finding.EnforcementEligible == nil || *finding.EnforcementEligible)`. (b) The exclusions ALLOW pass is stage 1 of the documented precedence and runs before the per-class pass (policyeval.go:12-14, \"Runs BEFORE any block logic ⇒ 'allow wins'\"); policyeval.go:386-388 names this as the intended escape hatch (\"an admin knowingly allowlisting the literal value\").",
+   "correctedText": "- our own agent API key: **block**, above every per-class policy branch. Two qualifiers, both deliberate: the finding must be enforcement-eligible (only the exact `cf_api_…` rule produces one; the warn-only vendor-prefix mechanism does not), and a span-targeted `exclusions.allow` entry still wins, because the allow pass runs ahead of every class action. There is no class-wide way to relax it."
+  },
+  {
+   "docLine": "421 (§6.3)",
+   "claim": "Shadow-lifecycle classes and high-entropy strings: allow, but monitored.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/policyeval/policyeval.go:405-407 (`IsShadowClass` → `VerdictAllow, true`, placed above every policy-dependent branch precisely so a nil policy cannot let a shadow detector interrupt) and policyeval.go:464-466 (`class == dlp.ClassHighEntropy` → `VerdictAllow, true`).",
+   "correctedText": ""
+  },
+  {
+   "docLine": "422 (§6.3)",
+   "claim": "Every other structured secret class: warn — which the proxy realises as an interactive hold.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/policyeval/policyeval.go:478 `return VerdictWarn, false` is the terminal fallback; policyeval.go:469-476 documents the hold (\"the AI-request proxy turns a WARN into an interactive HOLD (the request is NOT sent...)\").",
+   "correctedText": ""
+  },
+  {
+   "docLine": "423 (§6.3)",
+   "claim": "Prompt risk: high blocks, medium warns.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/policyeval/policyeval.go:541-549 — `switch severity { case SeverityHigh: return VerdictBlock; case SeverityMedium: return VerdictWarn; default: return VerdictAllow }`, reached only when the policy is nil or expresses nothing.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "424 (§6.3)",
+   "claim": "Tool risk: any high blocks, any medium warns.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/daemon/ai_handlers.go:3903-3922 `defaultToolDecision` — any HIGH short-circuits to block, any MEDIUM yields warn, else allow. The comment names the asymmetry with DLP: \"Tool-risk HIGH rules are high-confidence.\"",
+   "correctedText": ""
+  },
+  {
+   "docLine": "425 (§6.3)",
+   "claim": "The failure oracle's action when absent or unknown: block.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/daemon/ai_handlers.go:126-139 `failureOracleAction` — `policy == nil` → block; the switch's `default` covers \"block\", \"\" and any unknown token → block. Restated in the wire contract at internal/core/backend/ai_prompt.go:689-691 and emitted explicitly on the org-level lane (Backend src/ai-governance/services/ai-policy.service.ts:626 `failureOracle: { action: 'block' }`).",
+   "correctedText": ""
+  },
+  {
+   "docLine": "434-435 (§7.1)",
+   "claim": "The policy vocabulary the administrator can name is 30 classes, partitioned 3 block / 21 redact / 6 warn.",
+   "verdict": "CONFIRMED",
+   "evidence": "Backend origin/main packages/shared-contracts/src/generated/ai-security-portable.generated.ts: `AI_DLP_CLASSES` (lines 54-84) = 30 entries; `AI_DLP_BLOCK_CLASSES` (49-53) = 3 (private-key, aws-credential-pair, gcp-service-account); `AI_DLP_REDACT_CLASSES` (86-107) = 21; `AI_DLP_WARN_CLASSES` (109-116) = 6. Assembled into `AI_DLP_DEFAULT_POLICY` at packages/shared-contracts/src/ai-governance-contract.ts:311-316.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "435-436 (§7.1)",
+   "claim": "The endpoint actually emits 81 classes — 33 in the core registry plus 48 more ported from the code-security scanner.",
+   "verdict": "CONFIRMED",
+   "evidence": "Installers origin/main: `classRegistry` in internal/dlp/registry.go = **33** rows (32 written as string literals plus one written as the constant `ClassHighEntropy` at registry.go:196 — a literal-only grep undercounts it to 32); `codeSecurityParityClasses` at internal/dlp/codesecurity_rules.go:70 = **48** rows. Union is 81 with no duplicates, and an independent sweep of every class token emitted anywhere in the non-test `internal/dlp/*.go` sources returns exactly the same 81 names.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "436-437 (§7.1)",
+   "claim": "51 endpoint classes have no policy vocabulary at all: no administrator can name them, and they resolve by severity default.",
+   "verdict": "STALE",
+   "evidence": "The 51 is exact and I measured it rather than subtracting: the set difference between the 81 emitted classes and the 30 `AI_DLP_CLASSES` is 51, and the reverse difference is empty (every nameable class is emitted). But \"resolve by severity default\" is wrong for this lane. internal/policyeval/policyeval.go:469-477 removed severity from the DLP default on purpose: \"severity no longer changes the default (both low- and known-shape findings default to WARN when unconfigured).\" The terminal is a flat `VerdictWarn` (policyeval.go:478), with two carve-outs above it — non-eligible Tier-C evidence resolves to allow (policyeval.go:455-458) and `high-entropy` resolves to allow+monitored (policyeval.go:464). Severity *does* still drive the default on the prompt-risk lane (policyeval.go:541-549), which is probably where the sentence came from.",
+   "correctedText": "**51 endpoint classes have no policy vocabulary at all**: no administrator can name them. They do not resolve by severity — severity was deliberately removed from this decision — they resolve to a flat **warn**, except that Tier-C evidence resolves to allow and `high-entropy` resolves to allow-and-monitored. (Severity defaults survive on the prompt-risk lane, not this one.)"
+  },
+  {
+   "docLine": "439 (§7.1)",
+   "claim": "The detectors themselves span roughly 9,700 lines.",
+   "verdict": "WRONG",
+   "evidence": "9,742 is the line count of `internal/dlp/**/*.go` **including its test files**. The detectors alone — the 14 non-test files — are **4,936** lines: dlp.go 1510, private_key.go 848, codesecurity_rules.go 375, cloud_credentials.go 311, national_id.go 277, registry.go 259, financial.go 247, hexatrest.go 231, credential.go 222, oauth_bearer.go 187, database_uri.go 167, casefoldpath.go 136, scanall.go 105, identitypath.go 61. (Counted at origin/main.) The browser twin browser-extension/src/dlp.js adds a further 1,687.",
+   "correctedText": "The detector sources are **4,936 lines** across fourteen files (the package is 9,742 with its tests, which is the number to stop quoting), plus a 1,687-line JavaScript restatement in the browser extension that has to stay in lockstep."
+  },
+  {
+   "docLine": "439 (§7.1)",
+   "claim": "17 core regex rules for well-known token shapes.",
+   "verdict": "WRONG",
+   "evidence": "`knownRules` at internal/dlp/dlp.go:118-168 holds **16** rules — aws-access-key, gcp-key, github-token, slack-token, jwt, openai-key, anthropic-key, gitlab-token, slack-webhook, stripe-live, npm-token, pypi-token, twilio-key, sendgrid-key, google-oauth-secret, generic-api-key(devoid-api-key). Also 16 at base commit 002e2cfd. And **only 15 of them fire**: dlp.go:449-454 skips `jwt` on every scan (`if rl.class == \"jwt\" { continue }`) because JWT was cut over to the validation-led credential detector; the regex row survives solely so `structuredRules` and `caseFoldRules`, which index `knownRules` positionally, keep their offsets.",
+   "correctedText": "**16** core regex rules for well-known token shapes, of which **15 actually fire** — the `jwt` row is a positional placeholder that the scan skips, because JWT moved to the validation-led detector."
+  },
+  {
+   "docLine": "439-440 (§7.1)",
+   "claim": "61 more ported parity rules.",
+   "verdict": "CONFIRMED",
+   "evidence": "`codeSecurityParityRules` at internal/dlp/codesecurity_rules.go:165 contains exactly 61 rule literals (the file's other 48 `{class:` lines are the `codeSecurityParityClasses` registry rows at :70).",
+   "correctedText": ""
+  },
+  {
+   "docLine": "440-441 (§7.1)",
+   "claim": "AWS credential pairs: an access-key id and a 40-character secret within 512 bytes, entropy-gated.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/dlp/cloud_credentials.go:37-39 — `awsPairWindow = 512`, `awsSecretExactLen = 40`, `awsSecretMinEntropy = 3.2`; enforced in `scanAWSCredentialPairs` at cloud_credentials.go:87-95 (exact-40 filter), :104 (window), :143 (entropy). Note the length test is `== 40`, not `>= 40`, so a secret embedded in a longer base64 run is not seen at all.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "441-444 (§7.1)",
+   "claim": "GCP service-account JSON actually parsed; database URIs with a live password; payment cards (Luhn); IBANs (mod-97); national IDs (checksummed); JWTs decoded and checked for an algorithm header; private keys via a dedicated 848-line PEM parser handling escaped and base64-wrapped forms; Shannon-entropy runs.",
+   "verdict": "CONFIRMED",
+   "evidence": "GCP: internal/dlp/cloud_credentials.go:176-190 `scanGCPServiceAccounts` — real `json.Unmarshal`, `pem.Decode`, `x509` parse, and an `*.iam.gserviceaccount.com` client_email check. DB URIs: internal/dlp/database_uri.go:3-19 — `net/url` parse, scheme allowlist, non-empty password ⇒ Tier A. Luhn/IBAN: internal/dlp/financial.go:5-14 (Luhn + IIN table; `ibanMod97Valid` at financial.go:195, per-country length table at :180). National IDs: internal/dlp/national_id.go:13-15. JWT: internal/dlp/dlp.go:449-453 (\"a header+payload that decode to JSON with an `alg` becomes a Tier-B finding\"). Private key: internal/dlp/private_key.go is exactly **848** lines; escaped forms at private_key.go:602-607 (`escapedLineBreakLength` handling `\\r\\n` and `\\n`), base64-wrapped at private_key.go:673 (`ID: \"base64-wrapped-pem\"`). Entropy: `shannonEntropy` at internal/dlp/dlp.go:382.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "444-445 (§7.1)",
+   "claim": "A single confidence floor — 88 — decides whether a match is allowed to enforce at all.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/dlp/registry.go:59 `const gatingConfidenceFloor = 88`, and registry.go:51-58 states it is deliberately one number with two jobs (`IsGatingSecretClass` for the contained-authority floor, `gradeParityFinding` for enforcement eligibility) so the two cannot drift.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "447-450 (§7.1)",
+   "claim": "Precedence, resolved: our own API key blocks; shadow classes monitor; if data protection is disabled the result is monitor; then the monitor list, then the per-class action map, then the legacy tier arrays; then evidence-tier and high-entropy carve-outs; then everything else warns.",
+   "verdict": "CONFIRMED",
+   "evidence": "`dlpClassAction` at internal/policyeval/policyeval.go:379-478 runs in exactly that order: devoid-api-key :393 → `IsShadowClass` :405 → `p != nil && !p.DLP.Enabled` → allow+monitored :415 → `MonitorClasses` :421 → `Actions[class]` :425 → Block/Redact/Warn arrays :428-436 → Tier-C carve-out :455 → high-entropy :464 → `VerdictWarn` :478. The order is mirrored byte-for-behaviour in browser-extension/src/policyeval.js and pinned by fixtures in both repos (policyeval.go:5-7).",
+   "correctedText": ""
+  },
+  {
+   "docLine": "452-454 (§7.1)",
+   "claim": "Two mutually exclusive worlds: a site-bound key gets a full action map so the per-class map wins and the legacy arrays are dead; an org-level key gets the three raw tier arrays and no map.",
+   "verdict": "CONFIRMED",
+   "evidence": "Backend src/ai-governance/services/ai-policy.service.ts:566-577 — a resolvable site delegates to `resolveEffectiveForEndpoint`, whose DTO is \"a strict superset of AiPolicyDto (legacy blockedProviders/toleratedProviders + dlp.*Classes arrays stay populated, DERIVED from the per-class action maps)\". The fallback at :617-622 emits `dlp: { enabled, blockClasses, redactClasses, warnClasses }` from `AI_DLP_DEFAULT_POLICY` and **no `actions` and no `monitorClasses`**. Two precisions worth adding: the site lane's arrays are present-but-never-consulted rather than absent (they are derived from the map, so they agree), and the split is DLP-only — the same fallback emits a full `toolRisk.actions` map from `toolRiskWireDefaults()` (:643-650), so tool risk is governed identically on both lanes.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "454-456 (§7.1)",
+   "claim": "The shipped default after the 'calm monitor' baseline is applied is 3 block / 18 redact / 5 warn / 4 monitor.",
+   "verdict": "WRONG",
+   "evidence": "Computed from source. Start from the generated V1 map (packages/shared-contracts/src/generated/ai-security-portable.generated.ts:753-784) = 3 block / 21 redact / 6 warn. `applyCalmMonitorBaseline` (src/ai-security-policy/ai-security-policy.constants.ts:1802-1832) then moves `CORE_MONITOR_DLP_CLASSES` (:1762-1771: jwt, generic-api-key, internal-url, high-entropy) to monitor; forces `CORE_SANITIZE_DLP_CLASSES` (:1786-1793: aws-secret-key, azure-key, openai-key, twilio-key, bearer-auth-token, national-id) to redact; and forces `kubeconfig` to block (:1819). Result, machine-computed: **4 block / 22 redact / 0 warn / 4 monitor**, total 30. Block = private-key, kubeconfig, aws-credential-pair, gcp-service-account. Monitor = jwt, generic-api-key, internal-url, high-entropy. **Warn is empty.** Identical at the document's base commit 0b2aa28c, so this was never 3/18/5/4. The point the sentence is making — that the tier constants describe a policy nobody runs — is right, and is now sharper.",
+   "correctedText": "The shipped default after the \"calm monitor\" baseline is applied is **4 block / 22 redact / 0 warn / 4 monitor** — the warn tier is empty. It is not the same as the tier constants the same tree exports as canonical (3 block / 21 redact / 6 warn), and the difference is not cosmetic: `kubeconfig` moves warn→block, `jwt`/`generic-api-key`/`internal-url` move redact→monitor, and `high-entropy` moves warn→monitor. Anyone reading only the constants will describe a policy nobody runs — and, worse, an **org-level key really is served those constants**, because the legacy fallback emits `AI_DLP_DEFAULT_POLICY` verbatim. The two worlds therefore ship two different data-protection postures."
+  },
+  {
+   "docLine": "458-460 (§7.1)",
+   "claim": "A named false negative: an AWS access-key id together with its secret access key was not blocked on either lane in the 2026-08-26 measurement. There is a dedicated pair detector; it did not gate this case.",
+   "verdict": "CONFIRMED",
+   "evidence": "I cannot re-run the 2026-08-26 measurement, but the mechanism is in the shipped code and is not a bug — it is three deliberate gates, any one of which fully explains the observation. (1) internal/dlp/cloud_credentials.go:139-150: if either side is one of AWS's published documentation samples (`AKIAIOSFODNN7EXAMPLE` / `wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY`, cloud_credentials.go:31-32) the pair is graded Tier C and the comment says it is \"NOT promoted to a finding\"; the lone `aws-secret-key` rule `continue`s on the same values (dlp.go:938-943). Those are the exact strings a hand test reaches for. (2) cloud_credentials.go:159: a real pair with no corroborating AWS wording nearby (`awsContextRe`, dlp.go:234) is `tierBEvidence`, which sets `EnforcementEligible = false` (credential.go:159-162). (3) Tier B/C/D can never be transformed or hard-stopped: internal/daemon/ai_handlers.go:853-862 `transformWillAccept` returns false for all three tiers, and internal/policyeval/policyeval.go:482-505 `capNonEligibleDLPAction` downgrades an administrator's explicit `block`/`redact` to `warn` for Tier B and to `allow` for Tier C. So the pair detector fired and the tier cap ate the verdict — the finding was recorded, the enforcement was not.",
+   "correctedText": "**A named false negative, with its mechanism.** An AWS access-key id together with its secret access key was **not blocked** on either the hook lane or the wire lane in the 2026-08-26 measurement. The dedicated pair detector is not missing — it is capped. Three gates sit between a match and a block, and any one of them produces this result: a pair using AWS's own published documentation sample values is graded Tier C and deliberately never promoted to a finding; a real pair with no AWS wording within the surrounding text is Tier B; and Tier B/C/D evidence is *by design* non-enforceable — the redaction path refuses it outright and the policy evaluator silently downgrades an administrator's `block` to `warn` (Tier B) or to `allow` (Tier C). `aws-credential-pair` is also a malicious-floor member, and the floor cannot help: the floor pins the *policy*, and the cap operates on the *evidence*. An administrator who sets this class to `block` and watches a real pair go through is not misreading the console."
+  },
+  {
+   "docLine": "464-465 (§7.2)",
+   "claim": "A local, deterministic, table-driven classifier that never touches the network, the clock, or the filesystem; a finding never carries the command text — only the class, rule id, severity and offsets.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/toolrisk/toolrisk.go:48-63 — the `Finding` struct is `Class, RuleID, Severity, Start, End` plus one additive boolean `NormalizedOnly` (\"marks a finding that surfaced ONLY after Unicode normalization\") that the document does not mention; there is no field that can hold text. The package imports only `regexp`, `sort`, `strings` and `internal/textnorm` (toolrisk.go:32-38) — no `net`, no `os`, no `time`.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "467-471 (§7.2)",
+   "claim": "40 classes: 25 HIGH, 12 MEDIUM, 3 INFO ranked below low.",
+   "verdict": "CONFIRMED",
+   "evidence": "parity-vectors/toolrisk-classes.v1.json declares `classCount: 40` with high=25 / medium=12 / info=3, and I re-derived it from the live tables rather than trusting the vector: the three regex tables in internal/toolrisk/toolrisk.go carry 37 distinct classes (25 High, 9 Medium, 3 Info) and `astClassSeverity` (internal/toolrisk/class_catalog.go:47-51) adds 3 Medium — 40 total, 25/12/3. The 25-item HIGH enumeration in the prose is accurate class-for-class. INFO ranks below LOW: `severityRank` at toolrisk.go:801-813 returns High 4, Medium 3, Low 2, Info 1. Worth stating: **the LOW tier has zero members**, so \"ranked below low\" describes a gap that is currently empty.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "473-478 (§7.2)",
+   "claim": "Three layers (raw regex, Unicode-normalised, real shell parse); the parser resolves command word, expanded argument fields and redirection targets and re-applies rules in three anchored lanes; three classes exist only in the AST layer.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/toolrisk/toolrisk.go:585-591 (`scanFieldBoth` then `scanCommandAST`); `scanFieldBoth` at toolrisk.go:626-641 runs the rules over the raw field and over a `textnorm.Normalize` copy (NFKC + zero-width strip + confusable fold), mapping matches back to original byte coordinates. The three lanes are named in internal/toolrisk/shellast_scan.go: the command-word-anchored argument lane (:9), the REDIRECTION lane (`redirReapplyEligible` :86-100, `reapplyRedirRules` :228), and the PIPELINE lane (`pipeReapplyEligible` :118-121, `reapplyPipeRules` :287). The three AST-only classes are declared at shellast_scan.go:34-36 — `interpreter-exec`, `fetch-then-exec`, `substitution-exfil`. PowerShell `-EncodedCommand` decoding is real (internal/toolrisk/interpreter_body.go:174, :257: a decoded body \"re-enters the normal rule set\").",
+   "correctedText": ""
+  },
+  {
+   "docLine": "480-483 (§7.2)",
+   "claim": "Nothing is executed; substitutions are noted as structure and never run; no semantic reasoning, detonation, sandbox execution or ML classifier; a parse failure never blocks — it degrades silently to the regex layer.",
+   "verdict": "STALE",
+   "evidence": "The execution claims are CONFIRMED (no exec/os imports anywhere in internal/toolrisk). \"A parse failure never blocks\" is true of the *shell* parse — internal/toolrisk/toolrisk.go:588-591, \"On a parse failure scanCommandAST returns nil — fail-open, the raw+normalized regex findings above still stand.\" But the package's other undecidable path runs the **opposite** direction and the document does not mention it: internal/toolrisk/interpreter_body.go:85-108 counts bodies it could not read (oversize, or a `-EncodedCommand` that would not base64-decode) and resolves them to a FINDING, with `FailOpenOnUndecidable: false` shipped as a machine-readable field asserting the direction (\"an unreadable body can never be the reason a tool call was allowed\"). Both counters are exposed via `InterpreterBodyStats`.",
+   "correctedText": "**What it explicitly does not do:** nothing is executed. Command and process substitutions are noted as structure and never run. There is no semantic reasoning about what a script *means*, no detonation, no sandbox execution, and no machine-learning classifier anywhere in this path. The two undecidable paths fail in opposite directions, on purpose: a **shell parse** failure never blocks — it degrades silently to the regex layer — while an **unreadable interpreter body** (oversize, or a `-EncodedCommand` that will not decode) resolves to a finding rather than to silence, and the endpoint keeps counters for both so the undecidable rate is measurable rather than assumed."
+  },
+  {
+   "docLine": "485 (§7.2)",
+   "claim": "Shipped defaults: 21 block, 4 warn, 12 monitor, 3 allow.",
+   "verdict": "WRONG",
+   "evidence": "Machine-computed from the two source tables at Backend origin/main. `AI_TOOL_RISK_D4_TIERS` (src/ai-security-policy/ai-security-policy.constants.ts:1216-1269) = 15 block / 6 warn / 16 monitor / 3 allow. `AI_TOOL_RISK_DEFAULT_ACTIONS` (constants.ts:1423-1428) folds the 23 toolRisk members of `AI_MALICIOUS_FLOOR` over that table via `resolveToolRiskDefaults` (:1380-1420), raising 8 classes to block: base64-pipe-shell, content-pipe-shell, pipe-to-shell, powershell-download-exec (monitor→block) and destructive-rm, git-history-destroy, cloud-cred-read, data-exfil (warn→block). Shipped tally = **23 block / 2 warn / 12 monitor / 3 allow** (the surviving warns are `chmod-sensitive` and `untrusted-network-install`). The code says so itself at constants.ts:1199-1201. Identical at the base commit 0b2aa28c, so 21/4 was never true.",
+   "correctedText": "**Shipped defaults: 23 block, 2 warn, 12 monitor, 3 allow.** Only two classes still ship at warn — `chmod-sensitive` and `untrusted-network-install`."
+  },
+  {
+   "docLine": "485-486 (§7.2)",
+   "claim": "Two classes — disabling us, and writing to our own files — are a self-defence floor that an administrator may raise but never relax below warn.",
+   "verdict": "STALE",
+   "evidence": "The endpoint-side floor is real and is exactly those two: internal/daemon/ai_handlers.go:3813-3826 `toolRiskSelfDefenseClasses = {devoid-self-disable, sensitive-write-devoid}`, applied at ai_handlers.go:3864-3869 (an allow/monitor/unset disposition is lifted to warn). But \"never relax below warn\" now understates the shipped posture by two rungs: both classes are also `AI_MALICIOUS_FLOOR` members at minimum `block` (Backend src/ai-security-policy/ai-malicious-floor.ts:172-173), both ship at `block` in `AI_TOOL_RISK_D4_TIERS` (constants.ts:1222, :1230), and since td 322 the floor is re-applied on every serve. The endpoint's warn floor is now a redundant second pin, which is what constants.ts:1213-1215 means by \"two independent pins, on purpose.\"",
+   "correctedText": "Two classes — disabling us, and writing to our own files — carry a self-defence floor on the endpoint that an administrator may raise but **never relax below warn**. In practice both are pinned two rungs higher: they ship at `block` and are malicious-floor members at minimum `block`, so the endpoint's warn floor is a redundant second pin that only matters if a policy ever reaches an endpoint without passing through serve-time assembly."
+  },
+  {
+   "docLine": "488-490 (§7.2)",
+   "claim": "The decision-of-record table in the code sets five of those classes to monitor or warn, and a separate malicious floor overrides them to block.",
+   "verdict": "WRONG",
+   "evidence": "It is **eight**, not five, and the number is computable rather than estimated: folding the 23 toolRisk floor members over `AI_TOOL_RISK_D4_TIERS` raises base64-pipe-shell, content-pipe-shell, pipe-to-shell, powershell-download-exec, destructive-rm, git-history-destroy, cloud-cred-read and data-exfil. The Backend states the same count at src/ai-security-policy/ai-security-policy.constants.ts:1199 (\"8 of its 40 entries are raised by the fold\"). The \"five\" almost certainly came from the D4 header's list of five classes it claimed to have surrendered (constants.ts:1176-1181) — but only THREE of those five are floor members, and the code corrects itself at constants.ts:1183-1189: \"Only `chmod-broad-777` and `fetch-then-exec` actually reach `monitor`. Do not cite this paragraph as evidence that a shape is unenforced.\"",
+   "correctedText": "Worth flagging: the decision-of-record table in the code sets **eight** of those classes to monitor or warn, and the malicious floor overrides all eight to block on the way out. The shipped default is therefore *stricter* than the comment describing it — the comment's own list of five surrendered blocks is itself misleading, since three of the five never left."
+  },
+  {
+   "docLine": "§7.2, absent",
+   "claim": "IMPLICIT LABEL CLAIM — §7.2's \"a separate malicious floor overrides them to block\" is only true of the write path in the document's own text elsewhere (§16 lists the floor as INERT with \"zero production callers\").",
+   "verdict": "STALE",
+   "evidence": "`withMaliciousFloorApplied` is now the FIRST statement of `assembleEffectiveDto` (Backend src/ai-security-policy/ai-security-policy.service.ts:2199, `const { config, raised: floorRaised } = withMaliciousFloorApplied(storedConfig);`), declared UNCONDITIONAL at :2192-2197 because \"assembling is the only way to build a wire payload... this being the first statement is what makes the floor unbypassable rather than a property of whichever caller remembered.\" Shipped in Backend PR #285, deployed as ECS task definition 322. The floor's own header records the transition at ai-malicious-floor.ts:43-49. What is still true and must be kept: the WRITE path can still store below the floor (`validateAndMergeConfig` accepts any registered token), and `assertMaliciousFloorHeld` remains deliberately unwired (ai-malicious-floor.ts:311-320) because throwing would fail the policy pull and strand the endpoint on its last-known policy.",
+   "correctedText": "",
+   "labelChange": "INERT -> SHIPS. The assignment that wires it: `ai-security-policy.service.ts:2199`, `withMaliciousFloorApplied(storedConfig)` as the first statement of `assembleEffectiveDto`, deployed as ECS task definition 322. Keep the closed gap on record: the write path still stores below the floor and returns 200; only the served payload is raised, and the stored jsonb is deliberately left alone so the console can render the row as floor-pinned."
+  }
+ ],
+ "additions": [
+  {
+   "where": "§7.2, immediately after the corrected \"Shipped defaults: 23 block, 2 warn, 12 monitor, 3 allow\" paragraph",
+   "text": "**The most customer-visible fact about the product today: `destructive-rm` fires on every `rm -rf ~/<anything>` and `rm -rf $HOME/<anything>`, and nobody can turn it off.**\n\nThe rule's own comment in the code says \"system paths\". It is not what the regex does. Measured by compiling the shipped pattern and running it:\n\n| Command | Fires |\n|---|---|\n| `rm -rf $HOME/.cache/pip` | **yes** |\n| `rm -rf ~/.npm/_cacache` | **yes** |\n| `rm -rf $HOME/projects/scratch` | **yes** |\n| `rm -rf ~/myrepo/node_modules` | **yes** |\n| `rm -rf /var/log/foo` | **yes** |\n| `rm -rf ./build` | no |\n| `rm -rf /tmp/mybuild` | no |\n| `rm -rf node_modules` | no |\n\nThe `~(?:/\\S*)?` and `\\$HOME\\b` alternatives match the tilde or `$HOME` and then accept anything after it, so the entire home directory tree is a broad target. The same is true of any path under `/etc`, `/usr`, `/var`, `/bin`, `/opt`, `/home`, `/root`, `/lib`, `/sbin`, `/boot`, `/sys`, `/proc`, `/dev`.\n\nThe class is HIGH severity, it ships at `block`, and it is a malicious-floor member at minimum `block`. Since the floor began holding on the READ path, an administrator who sets it to `monitor` gets a 200 back, sees `monitor` on the board, and the endpoint is still served `block`. **No administrator on any tenant can relax it.** A developer clearing a pip or npm cache through an agent gets a refused tool call, and the console offers no dial that changes that.\n\nOne narrow gap in the other direction, worth knowing before anyone \"fixes\" the rule: the raw regex requires the target to sit immediately after the flags, so `rm -rf \"$HOME/Library/Caches\"` — the quoted form — does **not** match at the regex layer. It is the shell-AST lane's expanded-argument pass that has to catch it.",
+   "evidence": "Regex compiled from Installers origin/main internal/toolrisk/toolrisk.go:122 and executed against the table above under go1.25.5; every row is a measured result, not a reading. Severity HIGH at toolrisk.go:121. Floor membership: Backend src/ai-security-policy/ai-malicious-floor.ts:157 `destructive('destructive-rm')` → `minimumDisposition: 'block'`. Shipped disposition: `AI_TOOL_RISK_D4_TIERS` has it at `'warn', // system paths` (ai-security-policy.constants.ts:1238) and `AI_TOOL_RISK_DEFAULT_ACTIONS` folds it to `block`. Read-path enforcement: ai-security-policy.service.ts:2199, deployed td 322. Endpoint honours it at internal/daemon/ai_handlers.go:3869-3871 (`case aiDecisionBlock: return aiDecisionBlock // most restrictive — short-circuit`)."
+  },
+  {
+   "where": "§7.1, as a new paragraph after \"Precedence, resolved\"",
+   "text": "**The cap that sits under the precedence, and is the reason a `block` can produce no block.** Resolving a class to an action is not the last word. Every finding carries an evidence tier and an enforcement-eligibility flag, and a policy action is capped against them: an administrator's explicit `block` or `redact` on a Tier-B finding is downgraded to `warn`, and on a Tier-C finding to `allow`. The redaction path refuses Tier B, C and D outright. Nothing in the console shows this, and it is not a bug — Tier B means \"context-qualified rather than cryptographically confirmable\", and the argument in the code is that redacting a false positive mangles the developer's text. But it means the honest description of a DLP class is two facts, not one: what the policy says, and what tier the detector can reach on that input. `aws-secret-key`, for one, is emitted as Tier B unconditionally, so it can never be a sole hard stop regardless of policy.",
+   "evidence": "internal/policyeval/policyeval.go:482-505 `capNonEligibleDLPAction`; internal/daemon/ai_handlers.go:853-862 `transformWillAccept` (rejects EvidenceTierB/C/D and any explicit `EnforcementEligible: false`), whose comment reads \"NOT a place to loosen anything. Tier B evidence is deliberately non-enforceable.\" Duplicated deliberately in internal/contenttransform/transform.go:121, :198. `aws-secret-key` is always Tier B: internal/dlp/dlp.go:951-957 `nonEligibleFinding(..., EvidenceTierB)`."
+  },
+  {
+   "where": "§7.1, appended to the \"Two mutually exclusive worlds\" paragraph",
+   "text": "The two worlds do not merely differ in shape — they ship **different postures**. The org-level fallback emits the tier constants verbatim (3 block / 21 redact / 6 warn); the site lane emits the calm-monitor default (4 block / 22 redact / 0 warn / 4 monitor). So on an org-level key `kubeconfig` is `warn` where the site lane blocks it, and `jwt`, `generic-api-key`, `internal-url` and `high-entropy` interrupt where the site lane records silently. Tool risk is *not* split this way: both lanes emit the same full 40-class action map from one shared projection, after a previous fix that held on the lane everyone tested and failed on the lane nobody did.",
+   "evidence": "Backend src/ai-governance/services/ai-policy.service.ts:617-622 (org fallback DLP = `AI_DLP_DEFAULT_POLICY`, arrays only) vs :566-577 (site lane). Tool risk on both lanes from `toolRiskWireDefaults()`: ai-policy.service.ts:643-650 and src/ai-security-policy/ai-security-policy.constants.ts:1477-1491, whose header at :1461-1471 records the deleted duplicate that \"coerced every non-wire token to warn\"."
+  },
+  {
+   "where": "§6.1, as a note under the budget table",
+   "text": "Two budgets the table omits and a reader needs. `postDialogWriteBudget` is **5 s** and bounds the daemon writes made *after* a developer answers a dialog — it deliberately cannot use the caller's context, because that context is the 4-second decision budget and is always dead by the time a human has read a consent window. And the warn dialog's own host process is capped at the dialog countdown **plus 10 s**, i.e. 40 s, which is where the 40-second hold ceiling comes from.",
+   "evidence": "cmd/devoid/ai_warn_dialog.go:115 `const postDialogWriteBudget = 5 * time.Second` with the rationale at :107-114; cmd/devoid/ai_warn_dialog_windows.go:179-180 `context.WithTimeout(..., time.Duration(warnDialogTimeoutSeconds+10)*time.Second)`; internal/airuntime/decision_latch.go:47-56."
+  },
+  {
+   "where": "§6.3, appended after \"So an endpoint that has never spoken to the backend is stricter than a configured one\"",
+   "text": "With one asymmetry worth naming, because it inverts on the tool lane. A nil policy makes the DLP lane stricter (everything unnamed warns). It makes the *tool* lane fall back to the severity default, which is stricter than the shipped policy for a MEDIUM class — the twelve monitor defaults become warns — and identical for HIGH. So \"backend down\" is not one posture; it is warn-heavy on both lanes, and on the tool lane it re-introduces exactly the warn storm the shipped default was tuned to remove.",
+   "evidence": "internal/policyeval/policyeval.go:478 (DLP terminal warn) vs internal/daemon/ai_handlers.go:3717-3721 (`decideTool` reaches `decideToolRisk` only when `policy != nil && policy.ToolRisk.Enabled`) and :3903-3922 `defaultToolDecision` (any MEDIUM → warn). The twelve classes the shipped default monitors are all MEDIUM-or-monitor entries in `AI_TOOL_RISK_D4_TIERS`."
+  }
+ ],
+ "omissions": [
+  {
+   "what": "The warn dialog exists only on Windows. On macOS and Linux a warn that reaches a desktop session becomes a BLOCK, and on a headless agent it degrades to ALLOW.",
+   "whyItMatters": "§6.1 lists a 30-second warn dialog, §6.3 says warn is \"realised as an interactive hold\", and §6.2 builds the whole latch story around a human answering a window. None of that happens on two of three platforms. The same warn class produces three different outcomes depending on the box, and neither the console nor this document says so. It is also the single largest unstated behavioural difference in the enforcement lane.",
+   "evidence": "cmd/devoid/ai_warn_dialog_other.go (build tag `!windows`): `func showWarnDialog(string, bool) warnDialogChoice { return warnDialogCancel }`, with the file comment stating \"showWarnDialog has no implementation outside Windows yet... it returns warnDialogCancel, which the caller turns into a BLOCK — but note that runDesktopWarnOverride is only reached when hasDesktopSession() is true, and on macOS/Linux that requires HOME / DISPLAY / WAYLAND_DISPLAY. A headless agent therefore never gets here at all and keeps the unchanged degrade-to-allow path.\"",
+   "proposedText": "**The warn dialog is Windows-only, and a warn therefore means three different things.** On Windows a developer sees a Proceed / Send-redacted / Cancel window, cancelling at 30 seconds. On a desktop macOS or Linux session — one with `HOME` and `DISPLAY` or `WAYLAND_DISPLAY` — there is no dialog and the lane returns cancel, which the caller turns into a **block**: the developer sees a block notice and can resend. On a headless macOS or Linux agent the desktop-session test fails before the dialog is ever reached, and the checkpoint takes the **degrade-to-allow** path. Returning cancel rather than proceed is the deliberate choice for the middle case; the macOS (`osascript`) and Linux (`zenity`/`kdialog`) implementations are written down in the code as unstarted, on the stated grounds that an unverified dialog path is how this defect class keeps happening."
+  },
+  {
+   "what": "The DLP half of the malicious floor — ten data-protection classes an administrator cannot relax below `redact` on the served policy.",
+   "whyItMatters": "§7.2 gets a floor paragraph and §7.1 gets none, which reads as though data protection is fully admin-controlled. It is not, and since the floor began holding on the read path the DLP pins are as unbypassable as the tool-risk ones. An administrator who moves `db-connection-string` to `monitor` will see it snap back with no explanation, which is a support ticket the document could pre-empt.",
+   "evidence": "Backend src/ai-security-policy/ai-malicious-floor.ts:169-180 — `credential('dlp', …)` for private-key, aws-secret-key, aws-access-key, gcp-key, azure-key, aws-credential-pair, gcp-service-account, azure-connection-string, kubeconfig, db-connection-string, each with `minimumDisposition: 'redact'` (ai-malicious-floor.ts:121-126). Raised on every serve at src/ai-security-policy/ai-security-policy.service.ts:2199. The `redact`-not-`block` choice is argued at ai-malicious-floor.ts:67-72: \"the shipped default ships several secret classes at redact, which genuinely satisfies 'the secret does not leave in the clear'... Demanding block would have been a stricter claim than the product makes, enforced by an outage.\"",
+   "proposedText": "**Ten of the thirty nameable classes are floor-pinned.** `private-key`, `aws-secret-key`, `aws-access-key`, `gcp-key`, `azure-key`, `aws-credential-pair`, `gcp-service-account`, `azure-connection-string`, `kubeconfig` and `db-connection-string` sit on the malicious floor at a minimum of `redact`. An administrator can store `monitor` or `warn` for any of them — the write path accepts it and returns 200 — and the served policy is raised back to `redact` on every assembly. The floor is `redact` and not `block` on purpose: the shipped default already redacts most of these, and `redact` strips the span and lets the turn continue, so demanding `block` would have been a stricter claim than the product makes, enforced by an outage. The console must render these rows as pinned with a reason; otherwise the admin sees their setting silently ignored."
+  },
+  {
+   "what": "The MSI does not wire the AI hook lane. A per-user scheduled task does, one minute after logon, and the delay is a shipped constant.",
+   "whyItMatters": "§6 says SYSTEM delegates per-user wiring to a scheduled task but stops there. The consequence is operationally load-bearing: for roughly the first minute of every logon — and for the whole of a fresh install until the task first fires — the AI hook lane is not wired, while the installer has already exited 0. Anyone verifying an install in that window will correctly observe an unwired endpoint and incorrectly conclude the install failed.",
+   "evidence": "internal/aiwiretask/aiwiretask.go:178 `const LogonDelay = \"PT1M\"`, with the reason at :172-177 (\"defers the logon-trigger run so the reconcile does not compete with the logon storm... and so the SYSTEM daemon has bound its loopback wire proxy before we probe it\"). Reconcile cadence `RepeatInterval = \"PT5M\"` (aiwiretask.go:170), matching the daemon's own `aiWireReconcileLoop`. The daemon reconciles the task itself rather than relying on the installer, because three install paths do not register it — internal/daemon/user_ai_wire_task.go:34-48 names them, including `install-scripts/production/install.ps1`, which \"never calls the Go install path, so script-installed endpoints would never get the task AT ALL\". Corroborated by the real-box MSI install/uninstall cycle of 2026-08-27, which observed the hook lane appearing ~1 minute after install, not during it.",
+   "proposedText": "**The installer does not wire the hooks; a scheduled task does, a minute later.** The MSI (and `devoid service-install`) register a machine-scope task; the task runs as the logging-on user, at LeastPrivilege, and *that* process writes `~/.codex` and `~/.claude`. Its logon trigger carries a deliberate one-minute delay so the reconcile does not compete with the logon storm and so the SYSTEM daemon has bound its loopback proxy before the task probes it, and it then repeats every five minutes. Two consequences to hold: an endpoint is installed-but-unwired for about a minute after every logon and for the first minute of a fresh install, with the installer already exited 0; and the daemon re-registers the task on its own heartbeat rather than trusting the installer, because the PowerShell install path never registers it at all, an out-of-band deletion would never come back, and an upgrade that skips the custom action leaves the task pointing at the previous install."
+  },
+  {
+   "what": "A clean uninstall leaves 41 files (~424 MB) in C:/ProgramData/devoid/bin, including executables named claude.exe, codex.exe and npm.exe, because harden-shims has no uninstall counterpart in the .wxs set.",
+   "whyItMatters": "§6 is the section that owns the SYSTEM-install surface, and this is the residue that surface leaves behind. The ACL is correct and PATH is cleaned, so there is no interception — but a directory of shim executables named after the tools they shim, surviving an uninstall the customer believes removed the product, is exactly the finding a security review writes up. It is a fact about our own install scope, and the document currently claims nothing about it either way.",
+   "evidence": "Observed on the real-box Windows MSI install/uninstall cycle of 2026-08-27: install and uninstall both exit 0, every user config file restores byte-identical, PATH is cleaned and the ACL on the directory is correct — and 41 files totalling ~424 MB remain under C:/ProgramData/devoid/bin. The mechanism is structural rather than a bug in one action: `harden-shims` writes and ACLs that directory and there is no counterpart custom action anywhere in the WiX source set to unwind it.",
+   "proposedText": "**Uninstall is clean everywhere except one directory.** A real-box MSI cycle on 2026-08-27 established that install and uninstall both exit 0 and that every user configuration file we touch restores byte-identical. It also established that a clean uninstall leaves **41 files, about 424 MB, under `C:/ProgramData/devoid/bin`**, including executables named `claude.exe`, `codex.exe` and `npm.exe`. There is no interception risk in that state — the ACL is correct and `PATH` is cleaned — but the directory is never removed, because the hardening step that creates it has no uninstall counterpart anywhere in the installer source. PROVEN LIVE (2026-08-27, real box)."
+  },
+  {
+   "what": "The owner's own Codex client, 0.149.0-alpha.4.1, is outside every accepted hook-trust dialect — including 0.147, which shipped in 7.10.6 specifically to widen the pin.",
+   "whyItMatters": "§6's budgets and §6.2's latch all presuppose the daemon is reached. On the Codex lane, a client outside the accepted dialect set does not reach it at all, so every budget in 6.1 is moot and the latch has nothing to latch. This is the third time the dialect pin has silently un-governed a live client, and the pattern — a pin widened to catch the version that broke last time, while the fleet has already moved past it — is the fact a decision-maker needs, not the individual version number.",
+   "evidence": "Installers PR #179, shipped as agent 7.10.6 (stable 2026-08-27T17:05:32Z), added 0.147 alongside 0.144 to the Codex hook-trust dialect set. The client on the owner's own box at the time of the 2026-08-27 real-box run is 0.149.0-alpha.4.1, outside both. This repeats the 2026-08-02 root cause on record in this workspace, where the dialect firewall was pinned to Codex 0.144 markers against an installed 0.134 and every hook reported `Failed` while both status surfaces read green.",
+   "proposedText": "**The Codex hook-trust dialect pin is chronically behind the client.** 7.10.6 widened the accepted set from 0.144 to 0.144-and-0.147. The client on the box that shipped it is **0.149.0-alpha.4.1** — outside both. This is the third occurrence of the same shape: 2026-08-02 had the firewall pinned to 0.144 markers against an installed 0.134, every hook returning `Failed`, Codex failing open, and both status surfaces reporting green. Widening the pin to whatever version broke last is not a fix for a client on a fast alpha channel; the enumerated-dialect design is the defect. Until that changes, treat \"Codex is governed\" as CONDITIONAL on a client version inside the pinned set, and read the version off the endpoint before believing any Codex-lane green."
+  },
+  {
+   "what": "The 4-second decision budget's success rate has no denominator anywhere in §6.",
+   "whyItMatters": "§6.2 gives a numerator for a single endpoint on a single day (6/6 and 5/16 expiries) and §6.1 gives a p95 target of under 100 ms, but the document never says whether the fleet is measured against either. A budget with a stated target, a known catastrophic tail (50.1 s) and no published hit-rate is exactly the shape that produces a false green. The instrumentation exists; the number does not appear.",
+   "evidence": "internal/airuntime/runner.go:47-51 declares a p95 target of <100 ms, \"measured for real via the latency seam below: cmd/devoid injects internal/hooklatency on every invocation and `devoid doctor` reports the resulting p95 against that target. The number is declared once, as hooklatency.TargetP95.\" The per-provider observation counters exist too (`GET /v1/ai/transport-observation`, internal/daemon/server.go:588), added so `hooks-status` can \"distinguish 'the route is configured' from 'the route has ever carried a decision'.\" Nothing in §6 cites either.",
+   "proposedText": "**What we do not know about the budget.** The decision budget carries a declared p95 target of under 100 ms, and the endpoint measures itself against it — every hook invocation is instrumented and `devoid doctor` reports the local p95. Separately, the daemon keeps per-provider counters distinguishing \"the route is configured\" from \"the route has ever carried a decision\". Neither number has been collected fleet-wide. The only expiry rate on record is one endpoint on one day: 6 of 6 session starts and 5 of 16 prompt submissions. Until a fleet p95 and a fleet expiry rate exist, the correct statement about the budget is that it is bounded and instrumented, not that it is met."
+  }
+ ],
+ "reorganisation": "Three structural changes, in priority order.\n\n1. **Split §6 into \"the daemon\" and \"the decision path\", because they currently share a section and neither is complete.** The daemon half (process, port, listener, route surface, token, install scope) is a description of an HTTP server; the budget/latch/floor half is a description of a decision pipeline that happens to talk to it. Merging them is why the route count and the budgets sit two paragraphs apart with nothing connecting them, and why the one fact that ties them together — that seven of the forty-four routes are ungated, and two of those seven are the proxy subtrees that carry every wire-lane decision — appears in neither. Proposed shape: §6 \"The daemon\" (process, loopback, port and its overrides, 44 routes with the 7 ungated named, token and its three presentation forms, SYSTEM-vs-user and the one-minute scheduled task); §6.1 \"The decision path\" (the budget table with all nine budgets, the runner-side enforcement, the latch, and what happens when the daemon is never reached); §6.2 \"The local floor\".\n\n2. **§7.1 needs a third layer between \"vocabulary\" and \"detectors\": the evidence tier.** The section is currently organised as two axes (30 nameable classes vs 81 emitted classes) and that is genuinely the most confusing thing in the product — but it is confusing in part because a third axis is missing. A finding's tier decides whether a policy action is honoured at all, and the caps run *below* the precedence list the section publishes. As written, a reader can follow the precedence order correctly, conclude that `aws-credential-pair` at `block` blocks, and be wrong — which is exactly the named false negative the section closes on without explaining. Order should be: what the admin can name (30) → what the endpoint emits (81) → what tier a finding reaches → how policy resolves (precedence) → how the tier caps the resolution → then the false negative, which now reads as a consequence rather than a mystery.\n\n3. **Move the shipped-default tallies out of prose and into one table with a stated provenance.** Four tallies in this section were wrong (DLP shipped default, tool-risk shipped default, the \"five\" raised classes, the core regex count) and every one of them was wrong the same way: a number read off a constant that is not what ships, or off a code comment describing an earlier state. All four are *computable* — fold `AI_MALICIOUS_FLOOR` over `AI_TOOL_RISK_D4_TIERS`, apply `applyCalmMonitorBaseline` to the generated V1 map — so the table should name the two inputs and the fold for each row, so the next reader can recompute rather than re-trust. The document's own §7.2 already warns that the code comment \"sets five of those classes to monitor or warn\"; the code has since added a warning about that same comment. When the source disagrees with itself in three places, the document should publish the derivation, not the answer."
+}

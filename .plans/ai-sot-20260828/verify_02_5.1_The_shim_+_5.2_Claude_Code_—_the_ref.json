@@ -1,0 +1,397 @@
+{
+ "section": "5.1 The shim + 5.2 Claude Code — the reference lane (AI_SECURITY_SOURCE_OF_TRUTH.md L192–288), verified against Installers origin/main 5b129523 (= agent 7.10.6 + one commit; the only delta from the PR-179 merge 9503094e is a new file cmd/devoid-g8check/main.go, so every file cited below is byte-identical to what shipped as 7.10.6)",
+ "claims": [
+  {
+   "docLine": "L194 — \"The shims are byte-for-byte copies of our own binary, not symlinks or launchers.\"",
+   "claim": "Shims are byte-for-byte copies, never symlinks or launchers.",
+   "verdict": "WRONG",
+   "evidence": "True on Windows only. Unix/macOS: install-scripts/production/install.sh:1546 `ln -sf devoid \"$BIN_DIR/$tool\"` for all 16 package tools and :1555 for all 3 AI tools — symlinks, not copies. The opt-in git shim uses the same split (cmd/devoid/git_egress_shim.go:112-127 Windows copy, :132-141 `os.Symlink`, with the comment at :130 explicitly saying it matches \"the installer's `ln -sf devoid` package-manager shims\"). And on Windows the `.cmd` half IS a launcher: upgrade_shims_windows.go:60 writes `@echo off\\r\\n\"%~dp0<tool>.exe\" %*`.",
+   "correctedText": "**On Windows the shims are byte-for-byte copies of our own binary plus a two-line launcher.** The installer copies `devoid.exe` to `<install>\\bin\\<tool>.exe` and writes a `<tool>.cmd` beside it (`@echo off` / `\"%~dp0<tool>.exe\" %*`) so an explicit `npm.cmd` is caught as well. **On macOS and Linux the shims are symlinks to the single `devoid` binary** (`ln -sf devoid \"$BIN_DIR/$tool\"`), which is why the integrity manifest tracks a shim's *resolved* identity rather than its bytes there.",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L194-196 — installer copies devoid.exe to <install>\\bin\\<tool>.exe and writes a two-line <tool>.cmd",
+   "claim": "Windows shim shape: byte copy .exe + two-line .cmd.",
+   "verdict": "CONFIRMED",
+   "evidence": "cmd/devoid/upgrade_shims_windows.go:37-68 (io.Copy of devoidExe into <tool>.exe; `want := \"@echo off\\r\\n\\\"%~dp0\" + tool + \".exe\\\" %*\\r\\n\"`). install-scripts/production/install.ps1:1355-1358 (New-CmdShim writes the identical two lines, ASCII+CRLF). windows-installer/msi-build/Product.wxs:250-252 says the same in the MSI: \"CMD Shims (19 .cmd files … Each shim: @echo off \\n \\\"%~dp0<tool>.exe\\\" %*\").",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L196-197 — \"Dispatch is by argv[0]: the binary lowercases its own name, strips .exe/.cmd/.bat, and branches.\"",
+   "claim": "argv[0] is lowercased, then the extension is stripped.",
+   "verdict": "WRONG",
+   "evidence": "The order is reversed and the reversal is load-bearing. cmd/devoid/main.go:242-247 — `normalizeName` runs `strings.TrimSuffix` for `.exe`/`.cmd`/`.bat` FIRST (Go's TrimSuffix is case-SENSITIVE) and only then `strings.ToLower`. Compiled and run: `claude.exe`→\"claude\", but `CLAUDE.EXE`→\"claude.exe\", `Claude.Exe`→\"claude.exe\", `npm.CMD`→\"npm.cmd\". main.go:203 feeds that string straight into the dispatch, so an uppercase-extension invocation matches neither `isCLIEntrypointName` (:238), nor `tool == \"git\"` (:210), nor `isAgentShim` (:222); it falls to `runShim(\"claude.exe\")`, `getToolConfig` returns nil (main.go:4615-4648), and main.go:4778-4781 passes the call straight through to the real binary. On a case-insensitive filesystem `claude.EXE` resolves and runs — with no surface gate, no provider deny-list, no allowlist, no transport injection, no bypass-flag strip and no plugin gate.",
+   "correctedText": "Dispatch is by `argv[0]`: the binary strips a `.exe`/`.cmd`/`.bat` suffix and then lowercases what is left, and branches on the result. **The strip happens before the lowercase and is case-sensitive**, so an invocation typed with an uppercase extension (`CLAUDE.EXE`, `claude.EXE`, `npm.CMD`) normalises to `claude.exe` / `npm.cmd`, matches no dispatch branch, and passes through to the real binary ungoverned. Measured by compiling `normalizeName` (`cmd/devoid/main.go:242`).",
+   "labelChange": "structural fact -> add a GAP line: uppercase-extension argv[0] is an unclosed shim bypass on Windows"
+  },
+  {
+   "docLine": "L201 — \"Package managers (16): npm, npx, yarn, pnpm, corepack, bun, bunx, pip, pip3, python, python3, poetry, pipx, uv, go, cargo\"",
+   "claim": "Exactly 16 package-manager shims, that list.",
+   "verdict": "CONFIRMED",
+   "evidence": "Counted in four independent places, same 16-member set: cmd/devoid/main.go:4581-4587 `packageShimTools()`; install-scripts/production/install.ps1:143 `$PackageTools`; install-scripts/production/install.sh:90 `PACKAGE_TOOLS`; windows-installer/msi-build/Variables.wxi:39 `<?define Tools = \"npm;npx;pnpm;yarn;corepack;bun;bunx;pip;pip3;python;python3;poetry;pipx;uv;go;cargo\" ?>` (comment on :38 reads \"Tool shim list (16 tools)\"). Also internal/uninstall/uninstall.go:1687 and cmd/devoid-msi-root-guard/guard_windows.go:1718.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L202 — \"AI agents (3): claude, codex, gemini\"",
+   "claim": "Exactly 3 AI-agent shims.",
+   "verdict": "CONFIRMED",
+   "evidence": "cmd/devoid/agent_shim.go:53-55 `agentShimNames() []string { return []string{\"claude\", \"codex\", \"gemini\"} }`; install.ps1:144 `$AiTools`; install.sh:91 `AI_TOOLS`; Product.wxs:233-234 and :319-329.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L203-204 — \"`git` — opt-in only. Nothing installs it by default, which makes the entire 'Managed Git Gate' path dark on a normal install.\"",
+   "claim": "The git shim is opt-in; nothing installs it by default.",
+   "verdict": "CONFIRMED",
+   "evidence": "cmd/devoid/git_egress_shim.go:13-16 states the hard contract (\"EXPLICIT / OPT-IN ONLY. Nothing in the install flow, the daemon, or any default code path calls this. It runs ONLY when an operator types `devoid git-egress install-wrapper`\"), and main.go:210-221 confirms the name-dispatch is \"the ONLY thing that makes the opt-in `git` shim live\". `git` is absent from packageShimTools(), agentShimNames(), $PackageTools/$AiTools, PACKAGE_TOOLS/AI_TOOLS and Variables.wxi:39. Independently corroborated by the real-box count: the MSI ships exactly 19 shim pairs and no git pair.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L203-204 — \"…makes the entire 'Managed Git Gate' path dark\"",
+   "claim": "Git is entirely ungated on a normal install.",
+   "verdict": "STALE",
+   "evidence": "What is dark is the `git` PATH WRAPPER, not git enforcement as a whole. The MSI installs the pre-push hook lane by default: windows-installer/msi-build/CustomActions.wxs:363-369 `CA_InstallGitHooks` (\"Install git hooks via global template\") and :386-392 `CA_DiscoverInstallHooks` (\"Discover existing repos and install hooks into them\"), both deferred install actions with no opt-in condition. The wrapper is what closes the residue the hook cannot: `git push --no-verify` and IDE-invoked git (git_egress_shim.go:8-11).",
+   "correctedText": "- **`git`** — the PATH wrapper is opt-in only (`devoid git-egress install-wrapper`); nothing installs it by default. The pre-push HOOK lane does ship by default (MSI `CA_InstallGitHooks` + `CA_DiscoverInstallHooks`), so `git push` is gated on a normal install — what stays dark is the wrapper that closes `git push --no-verify` and IDE-invoked git. See §11.",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L206-207 — \"`<ProgramData>\\devoid\\bin` is prepended to the machine PATH, re-prepended if another installer displaces it, and the install hard-fails if it is not first afterwards.\"",
+   "claim": "Machine-PATH prepend, re-prepend on displacement, hard-fail if not first.",
+   "verdict": "STALE",
+   "evidence": "All three are true of the SCRIPT installer only. install-scripts/production/install.ps1:2309-2313 prepends; :2314-2328 re-prepends when another installer got in front; :2329-2334 re-reads the machine PATH and calls `Write-Err` if BinDir is not first, and Write-Err is defined at :210 as `Invoke-DevoidFailureRollback; exit 1` — a genuine hard fail. The MSI — the installer the 2026-08-27 real-box cycle actually ran — does none of the last two: windows-installer/msi-build/Product.wxs:373-379 is a plain `<Environment Name=\"Path\" Value=\"[BINDIR]\" Part=\"first\" Action=\"set\" System=\"yes\"/>` with no ordering re-assertion, and the only post-install health action is CustomActions.wxs:529-539 `CA_RunDoctor` = `devoid.exe doctor --quiet` with `Return=\"ignore\"`, which cannot fail the install. Bundle.wxs never invokes install.ps1 — these are two independent Windows installers.",
+   "correctedText": "Scope is machine-wide: `<ProgramData>\\devoid\\bin` is **prepended** to the machine PATH by both Windows installers. The **script installer** (`install.ps1`) additionally re-prepends when another installer has displaced the entry, then re-reads the machine PATH and **hard-fails the install with a rollback** if the bin dir is not first (`install.ps1:2314-2334`, `Write-Err` at `:210`). The **MSI** uses WiX `<Environment Part=\"first\">` and asserts nothing afterwards: its only health action is `doctor --quiet` with `Return=\"ignore\"`, so an MSI install whose PATH entry is later displaced fails silently.",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L207-208 — \"A PowerShell profile block is injected too so IDE terminals inherit it.\"",
+   "claim": "A PowerShell profile block re-prepends the shim dir at session start.",
+   "verdict": "CONFIRMED",
+   "evidence": "install.ps1:2340-2351 defines the delimited block (`# devoid PATH shim` … `# End devoid PATH shim`) whose body re-prepends `$BinDir` whenever it is not already first in `$env:Path`; :2404-2452 writes it into BOTH `Documents\\PowerShell\\profile.ps1` (PS7+) and `Documents\\WindowsPowerShell\\profile.ps1` (5.1), replacing an existing block rather than appending a second. The MSI does the same through CustomActions.wxs:201-209 / :401-407 (`devoid.exe setup patch-profile --bin-dir [BINDIR]`, `Impersonate=\"yes\"`).",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L208-209 — \"In proxy-only mode the package shims are skipped, but the AI shims are mandatory in every mode.\"",
+   "claim": "Proxy mode drops package shims; AI shims are unconditional.",
+   "verdict": "CONFIRMED",
+   "evidence": "install.ps1:2241-2286 installs package aliases + .cmd shims only in the non-proxy branch, and :2199-2220 actively REMOVES stale package shims left by a prior shim-mode install; :2288-2300 installs the three AI shims outside that branch with the comment \"AI runtime shims remain mandatory in every package mode, including proxy\", and any non-\"installed\" result calls Write-Err (hard fail). Same shape in install.sh:1541-1557. The runtime agrees: cmd/devoid/main.go:4589-4603 `monitoredShimTools()` returns ONLY `agentShimNames()` when `proxyPackageMode` is true.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L211-212 — \"The bin directory and every file in it are hardened before any download happens: SYSTEM and Administrators full control, Users read-and-execute only.\"",
+   "claim": "The ACL values.",
+   "verdict": "CONFIRMED",
+   "evidence": "Three independent implementations agree, and the 2026-08-27 real-box cycle observed it. (1) MSI: windows-installer/msi-build/Variables.wxi:28-29 — `MachineDirectorySddl = O:SYG:SYD:P(A;OICI;FA;;;SY)(A;OICI;FA;;;BA)(A;OICI;0x1200a9;;;BU)` and `MachineFileSddl = O:SYG:SYD:P(A;;FA;;;SY)(A;;FA;;;BA)(A;;0x1200a9;;;BU)` — SY/BA FullAccess, BU 0x1200a9 = FILE_GENERIC_READ|FILE_GENERIC_EXECUTE; applied per-file at Product.wxs:170+ and to the folder at :364. (2) Script installer: install.ps1:1416-1452 `Set-DevoidBinDirAcl` (S-1-5-32-544 + S-1-5-18 FullControl, S-1-5-32-545 ReadAndExecute, inheritance stripped, owner Administrators) and :1454-1490 `Set-DevoidExecutableFileAcl`. (3) Runtime `harden-shims`: internal/security/shim_hardening.go:104-132 `icacls /inheritance:r /grant:r *S-1-5-18:(OI)(CI)F *S-1-5-32-544:(OI)(CI)F *S-1-5-32-545:(OI)(CI)RX` on the dir and the non-inheriting form per file.",
+   "correctedText": "",
+   "labelChange": "structural fact -> PROVEN LIVE (real-box Windows MSI install/uninstall cycle, 2026-08-27 evening, confirmed the ACL on C:\\ProgramData\\devoid\\bin)"
+  },
+  {
+   "docLine": "L211 — \"…and every file in it are hardened **before any download happens**\"",
+   "claim": "Per-file hardening precedes all downloads.",
+   "verdict": "WRONG",
+   "evidence": "Only the DIRECTORY ACL precedes downloads. install.ps1:1714-1735 applies `Set-DevoidBinDirAcl` immediately after creating $BinDir, with the comment at :1716-1721 stating exactly that ordering requirement, and it is fail-closed under a production backend (:1731-1733 Write-Err). The FILE hardening pass runs far later, at install.ps1:2697-2708, AFTER the binary download (:1780), the daemon download (:2043), the prompt-guard-host download (:2134), shim creation (:2246-2300) and enrolment (:2641) — and it is explicitly non-fatal on failure (`Write-Warn \"Failed to harden shim permissions (non-fatal)\"`, :2704 and :2707). Files land with the directory's inherited (OI)(CI) ACEs plus, for moved binaries, an explicit `Set-DevoidExecutableFileAcl`.",
+   "correctedText": "The bin **directory** is ACL-hardened before any download happens — `SYSTEM` and `Administrators` full control, `Users` read-and-execute only — and under a production backend an ACL failure there aborts the install. Files inherit that ACL as they land; the explicit **per-file** hardening pass (`devoid harden-shims`) runs at the END of the install, after every download and after enrolment, and is best-effort: a failure is logged and the install still reports success.",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L214-215 — \"reconcile hooks if they have drifted (throttled to 15 minutes)\"",
+   "claim": "15-minute reconcile throttle.",
+   "verdict": "CONFIRMED",
+   "evidence": "cmd/devoid/ai_wire_retry.go:60 `const aiWireRetryInterval = 15 * time.Minute`, checked at :128 via `aiWireRetryDue` (:79-85) against the durable stamp `~/.devoid/aiwire-last-reconcile` (:65,:71-73). Called from the agent shim at cmd/devoid/agent_shim.go:495-497 and from the package-manager shim at cmd/devoid/main.go:4859-4861. An absent/unreadable stamp is DUE (:81-83), and the stamp is written BEFORE the work (:87-91) so a persistently failing box retries on the interval rather than on every invocation.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L215 — \"fetch policy from the daemon on a 2-second budget\"",
+   "claim": "2-second policy budget.",
+   "verdict": "CONFIRMED",
+   "evidence": "cmd/devoid/agent_shim.go:71 `const agentPolicyFetchTimeout = 2 * time.Second`, applied at :85-87 around `GET <daemon>/v1/ai/policy` (:94). The fetch returns three states, not two: `policyOK` (a 200 that parsed → governance applies) and `daemonReachable` (ANY HTTP status, including 401/502 → the proxy route is up so transport injection still applies) — :74-83, :104-110.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L215-216 — \"apply the surface gate, the provider deny-list and the agent allowlist\"",
+   "claim": "That order of three gates.",
+   "verdict": "CONFIRMED",
+   "evidence": "cmd/devoid/agent_shim.go — surface gate at :544-552 (`agentShimSurfaceMode`, block → exit 1, monitor → stderr note), explicit provider deny-list at :557-562 (`aiagent.ProviderBlocked`, \"A BLOCKED tool must never reach real-binary resolution\"), execution governance/allowlist at :566-580 (`aiagent.Governance` + `aiagent.ApplyEnforcementTier` for the cached offline tier). Order in the file is exactly as documented.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L216-217 — \"resolve the real binary while skipping its own directory so it cannot exec itself\"",
+   "claim": "Self-exec avoidance by skipping the shim dir.",
+   "verdict": "CONFIRMED",
+   "evidence": "cmd/devoid/agent_shim.go:448-473 `resolveRealAgentBinary` passes the shim dir into `security.ResolveRealToolPath`. The guarantee is stronger than the sentence implies: internal/security/manifest.go:317+ runs `validateOutsideShim` on BOTH the manifest-pinned path and the freshly resolved path, and the comment at that call site says an aliasing path is refused \"in ANY way (lexical, symlink, hardlink, 8.3 alias)\" — so a symlink or hardlink pointing back into the shim dir is rejected, not just a lexically-inside path.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L217 — \"strip bypass flags\"",
+   "claim": "The shim strips vendor bypass flags.",
+   "verdict": "STALE",
+   "evidence": "Three qualifications, all load-bearing. (1) The list is ONE flag: cmd/devoid/agent_shim.go:350 `var claudeGovernanceBypassFlags = []string{\"--bare\"}`. (2) It is Claude-only: `stripGovernanceBypassFlags` returns args untouched for any other agent (:378-381). (3) It only STRIPS on a managed endpoint — on a cooperative endpoint the flag is HONOURED and merely recorded as `LOCAL_OPTOUT_ATTEMPT` / `vendor-bypass-flag-observed` (:415-431); the strip + stderr notice + denied record happen only under `managedEndpoint()` (:432-441, called from :609). It also deliberately does not honour a `--` end-of-flags separator (:372-377), so `claude -- --bare` over-strips on a managed box.",
+   "correctedText": "strip the one Claude flag that would run the agent outside the cooperative hook layer (`--bare`) — **stripped only on a managed endpoint; on a cooperative endpoint the flag is honoured and the attempt is merely recorded**, so an unenrolled developer is never broken by a control they did not opt into;",
+   "labelChange": "unqualified SHIPS -> CONDITIONAL (strips only when `managedEndpoint()` is true)"
+  },
+  {
+   "docLine": "L217-218 — \"gate any plugin operation on the command line\"",
+   "claim": "The shim gates plugin subcommands typed at the terminal.",
+   "verdict": "CONFIRMED",
+   "evidence": "cmd/devoid/ai_plugingate.go:232-262 `gateAgentShimPlugin`, called at agent_shim.go:616-618. It is a strict no-op unless `plugingate.ParseArgv` recognises a plugin subcommand (:239-242), asks the daemon's `/v1/ai/artifact-decision` (:275-276) under a 4-second budget (:203 `shimPluginGateBudget`), and refuses the launch on block/hold/warn (:254-260). It fails OPEN on transport (:233-235, :251-253) — the managed case is already closed upstream by the RA-5 branch.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L218 — \"finally exec the real binary as a child\"",
+   "claim": "The real binary runs as a child process.",
+   "verdict": "CONFIRMED",
+   "evidence": "cmd/devoid/agent_shim.go:633-647 `execAgentBinary` — `exec.Command(realPath, args...)` with inherited stdin/stdout/stderr and the built env, `cmd.Run()`, returning the child's exit code. Not an exec-replace; the shim process stays alive for the agent's lifetime.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L220-223 — \"Environment injection is Claude-only. ANTHROPIC_BASE_URL is set to our loopback proxy. For Codex the function deliberately returns 'do not inject' … For Gemini it returns nothing at all. Codex and Gemini traffic is never routed through the Anthropic proxy path.\"",
+   "claim": "Transport injection is Claude-only.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/aiagent/aiagent.go:133+ `TransportEnvFor` returns exactly `(\"ANTHROPIC_BASE_URL\", true)` for Claude, `(\"OPENAI_BASE_URL\", false)` for Codex, `(\"\", false)` for Gemini and for the default. cmd/devoid/agent_shim.go:225-226 injects only when `proxied && daemonReachable && envKey != \"\"`, so Codex and Gemini can never reach the injection branch. The injected value is `agentProxyBaseURL()` = daemon base URL + `/proxy/anthropic` (:126-128), pinned to match internal/aihooks/transport_route.go:42 so terminal and IDE launches route identically.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L227-228 — \"Claude Code reads ~/.claude/settings.json (or <cwd>/.claude/settings.json for project scope)\"",
+   "claim": "The two settings paths DeVoid manages.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/aihooks/settings.go:801-808 `SettingsPath(home, cwd, project)` → `<cwd>/.claude/settings.json` when project, else `<home>/.claude/settings.json`. Project scope is not auto-wired (cmd/devoid/ai.go:325 comment).",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L228 — \"We manage exactly five events\" + the table rows",
+   "claim": "Five managed events: UserPromptSubmit, PreToolUse, PostToolUse, SessionStart, SessionEnd.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/aihooks/settings.go:134 `var managedEvents = []string{evUserPromptSubmit, evPreToolUse, evPostToolUse, evSessionStart, evSessionEnd}` (keys at :122-126), with the flag vocabulary at :145-160. Independently restated by internal/airuntime/adapters/claudecode/normalize.go:20-23 (\"internal/aihooks/settings.go installs exactly UserPromptSubmit, PreToolUse, PostToolUse, SessionStart and SessionEnd\").",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L232 — table: \"UserPromptSubmit | deny the prompt | Cannot rewrite it, so a redact verdict becomes a block\"",
+   "claim": "redact maps to block at the prompt gate.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/aihooks/promptsubmit.go:37-52 `MapPromptVerdict` — `block`/`redact` → PromptBlock; the file header at :17-21 states \"a `redact` verdict maps to BLOCK (deny-prompt), NEVER to a rewrite\" and \"A hook-denied prompt is NEVER stamped rewrite-input\".",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L233-234 — table: PreToolUse deny; PostToolUse replace the tool result",
+   "claim": "PreToolUse denies; PostToolUse replaces output and cannot un-execute.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/aihooks/pretooluse.go:124-137 `BuildToolGateOutput` (deny/ask/empty). internal/aihooks/posttooluse.go:16 `PostToolReplaceField = \"updatedToolOutput\"` and :28-43 `BuildPostToolUseReplaceOutput`. The \"cannot un-execute\" framing is echoed in claudecode/normalize.go:41-45, which excludes POST_TOOL_USE from gating checkpoints for exactly that reason.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L235-236 — table: SessionStart / SessionEnd are telemetry only",
+   "claim": "The two session events cannot decide anything.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/airuntime/adapters/claudecode/normalize.go:481-482 — `case airuntime.EventSessionStart, airuntime.EventSessionEnd: return claudeNotApplicable(), nil`, and `claudeNotApplicable` (:389-391) returns `ExitCode: 0` with no stdout at all. There is no effect branch that could emit a decision for either.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L238-240 — \"A sixth checkpoint, CONFIG_CHANGE, is ours … carries a different dialect tag. Deny effects are structurally refused there.\"",
+   "claim": "CONFIG_CHANGE is DeVoid-originated, differently tagged, and cannot deny.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/airuntime/adapters/claudecode/normalize.go:18-27 `const configObservationDialect = \"devoid-config-observation-v1\"` with the rationale (\"Claude Code has no ConfigChange hook … Stamping the vendor dialect on it would be a false provenance claim\"); :76-79 swaps dialect+integration to `daemon-config-watch`; :462-480 refuses every effect except AuditOnly/None with `ErrUnsupportedEffect` and no stdout, commented \"this checkpoint cannot become a gate by accident\". Its payload vocabulary is closed: sources at :242-248 (5 members) and reasons at :255-259 (3 members), asserted at :220-223.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L242-244 — \"A denial is a small JSON object on standard output; the process always exits 0 … a non-zero exit means 'the hook broke', and the client proceeds.\"",
+   "claim": "The Claude hook always exits 0.",
+   "verdict": "CONFIRMED",
+   "evidence": "Every constructor in the Claude adapter's TranslateDecision returns ExitCode 0: claudecode/normalize.go:381-391 (`claudeUnsupported`, `claudeTranslationFailed`, `claudeNotApplicable`) and the expressed path via `claudeExpressed`, covering all of PRE_TOOL_USE/USER_PROMPT_SUBMIT/POST_TOOL_USE/CONFIG_CHANGE/session (:403-486). The composition root propagates it verbatim (cmd/devoid/ai.go:898 `os.Exit(res.ExitCode)`), and ai.go:920-923 states the invariant: \"Both lanes shipped today return 0 for every delivered decision — the Claude contract blocks through stdout\". One non-decision exception worth naming: cmd/devoid/ai.go:835-839 exits 1 when the hook is invoked with no target at all (a malformed settings entry, not a verdict).",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L247-250 — the four verdict mappings (block→deny, warn→ask with warning prefix, hold→ask with lock prefix, allow→nothing)",
+   "claim": "Four mappings, exactly those.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/aihooks/pretooluse.go:124-137 — block → `permissionDecision:\"deny\"`; warn → `\"ask\"` with a `\"⚠ \"` prefix; hold → `\"ask\"` with a `\"🔒 \"` prefix (the \"lock prefix\", :130-133); default (allow/unknown) → `nil`, i.e. no output. Envelope shape at :152-168 (`hookSpecificOutput.{hookEventName,permissionDecision,permissionDecisionReason}`).",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L252-254 — why `allow` writes nothing (an explicit \"allow\" auto-approves and bypasses Claude's own prompt)",
+   "claim": "Mapping warn onto \"allow\" would let a flagged command run with zero confirmation.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/aihooks/pretooluse.go:107-113, verbatim: \"In Claude Code's PreToolUse contract, permissionDecision \\\"allow\\\" AUTO-APPROVES the call and bypasses the built-in permission prompt — so 'warn' must map to \\\"ask\\\" (confirm), NOT \\\"allow\\\" (which would let a flagged `curl … | sh` run with zero human confirmation). Emitting EMPTY output for a clean 'allow' correctly defers to the baseline flow.\"",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L256-258 — \"the message is duplicated into both reason and systemMessage. Measured on a live endpoint on 2026-07-31…\"",
+   "claim": "Prompt-block output carries the same message twice; the single-field form blocked silently in the VS Code extension.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/aihooks/promptsubmit.go:62-85 emits `{\"decision\":\"block\",\"reason\":msg,\"systemMessage\":msg}`, with the measurement recorded in the code at :70-80: \"Measured on a live endpoint (2026-07-31): a UserPromptSubmit block carrying only `decision`+`reason` DID block the prompt in the VS Code Claude extension — verified in the daemon log, nothing reached the provider — but the developer saw NOTHING.\"",
+   "correctedText": "",
+   "labelChange": "already PROVEN LIVE in substance — the date and the observation are both carried in the shipped source"
+  },
+  {
+   "docLine": "L260-262 — \"The hook timeout written into the settings file is a uniform 60 seconds for every event, because a per-event split made our own integrity attestation reject our own config as ambiguous.\"",
+   "claim": "Uniform 60s, and the reason.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/aihooks/settings.go:546-548 `func hookTimeoutFor(command string) int { return promptSubmitTimeoutSeconds }` — one value for every event regardless of the command. :111 `promptSubmitTimeoutSeconds = 60`. The rationale is written out at :82-97: the per-event split (90s prompt / 30s tool) was rejected by airuntimeintegrity/providers/claude, which \"rejects a managed block containing two different timeouts\"; 60 was chosen because it is that projection's own `maxHookTimeoutSeconds`. The former 30s tool-gate ceiling survives as a documented-but-unwritten constant at :64.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L262-264 — commands written with forward slashes because Claude runs them through a shell, often Git Bash, where \\P \\d \\b are eaten",
+   "claim": "Forward-slash launcher paths, and why.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/aihooks/settings.go:303-322 — the comment states the observed failure (`/usr/bin/bash -c \"<command>\"`, backslashes eaten, \"the launcher can't be found, the hook fails to start, and Claude Code proceeds WITHOUT the gate — silently bypassing enforcement\"), and :319 does `strings.ReplaceAll(filepath.ToSlash(launcher), \\`\\\\\\`, \"/\")` explicitly rather than relying on `ToSlash` alone, because `ToSlash` is a no-op on the Linux release builder. Paths containing whitespace are quoted at :320-322.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L264-266 — \"a managed hook is recognised by classifying the command rather than string-matching it, so both the modern flag form and the legacy positional form are accepted\"",
+   "claim": "Accept-both classification.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/aihooks/settings.go:169-180+ `classifyManagedCommand` tokenises, requires the first token to be a Devoid-family launcher basename (`launcherBasenames` at :140-142 — devoid/ceragon/cera), then matches either the flag form (`eventFlagToKey`, :145-151) or the legacy positional token (`legacyPositionalToKey`, :163-167). :245-248 normalises both slash dialects before comparing, so an existing backslash install stays recognised and a re-sync migrates it.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L268-269 — \"Foreign hooks are preserved byte-for-byte. We repair only entries that classify as ours. Writes are atomic with a compare-and-swap re-read, at most two attempts, and never a forced clobber.\"",
+   "claim": "CAS write discipline, two attempts, no clobber, foreign hooks preserved.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/aihooks/settings.go:917-957 `SyncSettingsFile` — `const maxAttempts = 2` (:918), read-before (:920), merge preserving foreign hooks (:928, documented at :911-913), CAS re-read (:944-947 `if now, e := os.ReadFile(path); e == nil && !bytesEqual(now, before) { continue }`), and on exhausted retries it reports on-disk status and writes nothing (:953-956, \"fail-safe: never overwrite a racing writer\"). The uninstall path mirrors it exactly at :966-1000. The write itself is unique-temp + rename at mode 0600 (:874-907 `atomicWriteFile`).",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L271-272 — \"The same write asserts the transport route, pinning ANTHROPIC_BASE_URL inside the settings file. It asserts rather than defers…\"",
+   "claim": "Transport route asserted in the same managed write.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/aihooks/settings.go:939 `merged = mergeTransportRoute(merged)`, placed BEFORE the equality check with the comment at :936-938 that hooks-only equality \"would report 'already canonical' on a file whose route is missing, and skip the write\". internal/aihooks/transport_route.go:70-79 overwrites unconditionally (`env[transportEnvKey] = ProxyBaseURL()`), justified at :61-69; the value is `http://127.0.0.1:19280/proxy/anthropic` (:32,:37,:42,:48-56, honouring DEVOID_DAEMON_PORT / CERA_DAEMON_PORT). Uninstall removes it only when the value is one DeVoid could have written (:88-103, :117-128), so a developer's own base URL survives.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L274-276 — \"On a Windows machine-scope install the daemon runs as SYSTEM, whose profile has no .claude directory, so it deliberately writes no per-user AI configuration.\"",
+   "claim": "The daemon declines because SYSTEM's profile has no .claude directory.",
+   "verdict": "WRONG",
+   "evidence": "The conclusion holds but the stated mechanism is not the code. internal/daemon/server.go:2226-2248 `runAIWireReconcile` returns on `userCtx.MachineService` alone — no filesystem probe of any kind runs first. internal/daemon/attest_user_home.go:60-78 `daemonUserContext` decides that by PROFILE SHAPE: an unresolvable home is treated as a machine service (:69-73), otherwise `IsServiceProfileName(base)` OR `isServiceProfilePath(clean)` (:75-76), with the comment at :62-66 \"Detection is by PROFILE SHAPE rather than by a privilege check\". A SYSTEM profile that *did* acquire a `.claude` directory would still be declined; conversely :86-91 records the defect this shape caused on Linux, where install.sh runs the root unit with HOME=/var/lib/devoid — a home with neither a service-profile name nor a Windows service-profile shape — so \"the root daemon resolved as an ordinary interactive user and the §9.2 write boundary did not exist there at all\".",
+   "correctedText": "**What a fresh install does NOT do.** On a Windows machine-scope install the daemon runs under a service account, and it refuses to write per-user AI configuration for that reason alone — the RA-3 boundary: writes into a profile the process was never delegated by would manufacture \"managed\" assurance out of a user-owned, user-writable file. The refusal is decided by profile SHAPE (`daemonUserContext`, `internal/daemon/attest_user_home.go:60-78`), not by probing for a `.claude` directory, so it holds whatever that profile happens to contain.",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L276-278 — \"Instead it registers a per-user scheduled task that runs the reconcile in the user's own context. 'Installed the MSI' therefore does not mean 'Claude Code hooks are wired' — it means a task was registered that will wire them.\"",
+   "claim": "A per-user scheduled task, not the MSI, wires the hook lane.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/aiwiretask/aiwiretask.go:144 `TaskName = \"Devoid AI Governance Reconcile\"`, :150 `TaskArguments = \"ai reconcile\"`, :154 pinned to `devoid-daemon.exe` in the ACL-hardened machine bin dir, :211 principal `S-1-5-32-545` (BUILTIN\\Users) at least privilege. Three registrars, per cmd/devoid/ai_wire_user_task.go:14-20: the MSI deferred CA `CA_InstallDaemonTask`, `devoid service-install`, and the SYSTEM daemon's own reconciler (internal/daemon/server.go:2179,:2187 `ensureUserAIWireTask`). The verb it invokes is cmd/devoid/ai_wire_user_task.go:145-186 `runAIReconcile`, which delegates to the same 15-minute-throttled `maybeReconcileAIWireUserContext`. The real-box measurement supplies the missing number: the logon trigger carries `LogonDelay = \"PT1M\"` (aiwiretask.go:178) and then repeats on `RepeatInterval = \"PT5M\"` (:170) — i.e. ~1 minute after first logon, exactly what the 2026-08-27 cycle observed.",
+   "correctedText": "**What a fresh install does NOT do.** … Instead it registers a per-user scheduled task (`Devoid AI Governance Reconcile`, running as BUILTIN\\Users at least privilege) that runs the reconcile in the user's own context. Its logon trigger is deliberately deferred one minute (`LogonDelay = PT1M`) so the SYSTEM daemon has bound its loopback wire proxy first, then it repeats every five minutes (`RepeatInterval = PT5M`) purely to NOTICE that the 15-minute reconcile stamp has expired. \"Installed the MSI\" therefore does not mean \"Claude Code hooks are wired\" — it means a task was registered that will wire them, about a minute later. **Measured on a real Windows box, 2026-08-27:** a clean MSI install left the AI hook lane unwired at completion; the per-user task wired it roughly one minute afterwards.",
+   "labelChange": "structural fact -> PROVEN LIVE (real-box MSI install/uninstall cycle, 2026-08-27; the ~1-minute gap matches LogonDelay=PT1M exactly)"
+  },
+  {
+   "docLine": "L278 — \"The daemon otherwise ticks every five minutes\"",
+   "claim": "Five-minute daemon reconcile cadence.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/daemon/server.go:2140 `const aiWireReconcileInterval = 5 * time.Minute`, driving `aiWireReconcileLoop` (:2151-2190), which runs three reconcilers on that cadence — the per-user AI wire (declined under a service account), daemon boot-persistence, and the per-user AI-governance task — with the first pass immediately after bind (:2177-2179). Started at :1156.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L278-279 — \"refuses to write the route at all when it is not itself healthy, because writing a route to a dead port is a brick\"",
+   "claim": "The route write is health-gated.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/aiwire/aiwire.go:463, :571 and :653 all gate on `if opts.DaemonHealthy == nil || !opts.DaemonHealthy()`, with :75-79 declaring a nil probe UNHEALTHY (fail-safe) and :488 naming the failure (\"the daemon is DOWN 404-bricks the desktop (F9)\"). The user-context retry supplies a real loopback probe (cmd/devoid/ai_wire_retry.go:169 `DaemonHealthy: daemonWireProxyHealthy`), and because that retry repeats, a deferral is transient rather than terminal (:165-168, :188-191).",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L281-283 — \"There is no Claude Code version pin on the hook path, and we do not fabricate one: a hook payload does not carry the client version, so the field is honestly null.\"",
+   "claim": "No version pin; RuntimeVersion is null.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/airuntime/adapters/claudecode/normalize.go:88-89 — \"RuntimeVersion intentionally omitted — a hook payload does not carry the Claude Code version and we do NOT fabricate one (honest null).\" No version comparison exists anywhere on the Claude hook path (contrast internal/codexmanaged, which pins dialects).",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L283-287 — the three dialect outcomes (empty payload → proceed+counted; unrecognised non-object → confident negative, fail closed at a gating checkpoint; object-without-marker → proceed+counted) and \"the marker set is deliberately the weakest that catches the defect\"",
+   "claim": "Three outcomes, three sentinels, weakest-marker design.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/airuntime/adapters/claudecode/normalize.go:143-156 is the three-outcome table verbatim (ErrEmptyPayload → proceeds warned+counted; ErrUnknownDialect → \"confident negative; the oracle fails a gating checkpoint CLOSED\"; ErrIndeterminateDialect → proceeds warned+counted), implemented at :157-169. The weakest-marker rationale is at :125-134 (\"`hook_event_name` ALONE satisfies every event … so a future release that renames `tool_input`, splits `tool_response`, or adds fields we have never seen still normalizes cleanly\"), and :110-123 is the explicit contrast with the deleted Codex payload-shape firewall that \"keyed TRUST on the vendor's field layout\". The counted/warned side is wired in production at cmd/devoid/ai.go:869-871.",
+   "correctedText": "",
+   "labelChange": ""
+  }
+ ],
+ "additions": [
+  {
+   "where": "§5.1, after the per-launch order paragraph (L214-218)",
+   "text": "**What the shim does when it cannot reach a decision.** The policy fetch is the only thing between the developer and an ungoverned agent, so its failure mode is split by endpoint class. On a **cooperative** endpoint an unreachable daemon fails OPEN: one stderr line (`[devoid] warning: devoid daemon unreachable — running agent without governance/DLP`) and the agent runs with no governance and no transport injection. On a **managed** endpoint it fails CLOSED: the launch is refused with exit 1, the developer is told to start the daemon, and a `PROVIDER_ROUTE_BYPASS` / `daemon-unavailable-managed` attempt is recorded. A daemon that answers with a non-2xx (401, or the 502 an unconfigured endpoint returns) is a THIRD state: governance is permissive, but the proxy route is up, so transport injection still applies and the proxy's own DLP defaults still enforce. Conflating that 502 with \"daemon down\" would silently disable transport DLP on every endpoint that has no admin policy.",
+   "evidence": "cmd/devoid/agent_shim.go:512-534 (the RA-5 managed branch, exit 1 + recordLocalDisablementAttempt), :533-534 (cooperative fail-open), :535-539 (daemon up, no policy), and the three-state contract documented at :74-83 with the split implemented at :104-110."
+  },
+  {
+   "where": "§5.1, at the end of the PATH paragraph (after L209)",
+   "text": "**PATH-first is asserted at install time, not maintained.** The only continuous repairer is the pathwatcher goroutine inside the daemon, and it runs in USER-ONLY mode: it repairs HKCU PATH, shell profiles and the cmd.exe AutoRun snippet, and explicitly skips the HKLM machine PATH. So a package-manager MSI that prepends itself the week after our install pushes our bin dir out of first place in the machine PATH and nothing puts it back until the next install/upgrade or an elevated `devoid doctor --fix`. In an interactive PowerShell session the injected profile block still re-prepends at session start, so PowerShell terminals stay covered; a plain cmd.exe on an MSI-installed box is covered only if the AutoRun snippet was applied.",
+   "evidence": "cmd/devoid/pathwatcher_wiring.go:141-153 (watcher options) and :202-225 — both Inspect and Fix are called with `UserOnly: true`; internal/pathfix/pathfix_windows.go:125 gates the HKLM branch on `!opts.UserOnly && runAs == profilepatch.RunAsAdmin`, and the file header at :5-8 records the split (\"HKLM PATH (admin only) … HKCU PATH: prepend; covers user-only mode\"). The MSI's `CA_RegisterPathWatcher` is a literal no-op (`cmd /C exit 0`, CustomActions.wxs:461-478) because the watcher lives in the daemon."
+  },
+  {
+   "where": "§5.1, with the shim inventory (after L204)",
+   "text": "**The count, reconciled against a real box.** 16 package managers + 3 AI agents = 19 shim pairs on Windows, each pair being `<tool>.exe` (a byte copy of `devoid.exe`) and `<tool>.cmd`. That is 38 files, plus the three real binaries in the same directory — `devoid.exe`, `devoid-daemon.exe`, `devoid-prompt-guard-host.exe` — for **41 executables in `C:\\ProgramData\\devoid\\bin`**, which is exactly what the 2026-08-27 real-box install measured. `git` is not among them, which is the arithmetic proof that nothing installs the git wrapper by default.",
+   "evidence": "windows-installer/msi-build/Product.wxs:164-167 (\"Tool Shim EXEs (19 copies of devoid.exe: 16 package managers + 3 AI-agent shims\"), :250-251 (19 .cmd files), :146-162 (CoreBinaries in BINDIR = devoid.exe + devoid-daemon.exe), :390-396 (devoid-prompt-guard-host.exe in BINDIR). internal/security/shim_hardening.go:36-42 hardens exactly those two extra privileged binaries beyond the shim set."
+  },
+  {
+   "where": "§5.1, with the shim-creation paragraph (after L197)",
+   "text": "**A shim that cannot be written is an install failure, and the two families are not treated the same.** Each alias is attempted five times, killing any devoid process holding the file between tries; then it falls back to a MoveFileEx replace-on-reboot; then to keeping whatever alias is already there; then it fails. For **package** tools a `failed` or `deferred` outcome aborts the install (\"Package-manager aliases are not fully active; refusing to report a complete install\"), but a `kept` outcome — an existing, possibly stale alias left in place because the file was locked — passes. For the **AI** shims anything other than `installed` aborts, `kept` included. So a locked `claude.exe` fails the install where a locked `npm.exe` may not.",
+   "evidence": "install-scripts/production/install.ps1:1567-1600 (Install-ToolAlias: 5 attempts → Register-ReplaceOnReboot → \"kept\" → \"failed\"), :2263-2265 (package tools abort on failed OR deferred, not on kept), :2290-2299 (AI tools abort on anything `-ne 'installed'`), with Write-Err = rollback + exit 1 at :210."
+  },
+  {
+   "where": "§5.2, on the UserPromptSubmit table row (L232)",
+   "text": "The prompt gate is two-valued, and the two verdicts it does NOT gate on matter. A `warn` verdict is **advisory at this checkpoint and the prompt is sent** — the proxy turns it into an interactive hold downstream, so the enforcement moves to the wire rather than disappearing. Any verdict the daemon should never return on this route (protocol drift, a corrupted response) fails **CLOSED** to a prompt block; there is deliberately no generic unknown-verdict fallback, because this is a gating checkpoint.",
+   "evidence": "internal/aihooks/promptsubmit.go:37-52 — `MapPromptVerdict`: block/redact → PromptBlock; allow/warn → PromptAllow with the comment \"warn is non-gating at the prompt checkpoint (the proxy turns it into an interactive hold downstream)\"; `default:` → PromptBlock, annotated \"K02G-b: NO generic unknown-verdict fallback … fail CLOSED to the prompt block, never a silent proceed.\""
+  },
+  {
+   "where": "§5.2, with the 60-second timeout paragraph (L260-262)",
+   "text": "State the cost the uniform budget bought. Moving every event to 60s doubled the tool gates' ceiling from 30s: a **wedged** PreToolUse hook now stalls a tool call for up to 60 seconds instead of 30. It changes no verdict and the healthy path never reaches it (the gate only talks to the local daemon and answers in milliseconds), but it is a real regression in one narrow sense, and it is the reason the old 30s constant is still carried in the source as the value the tool gates *should* have. Restoring a faster tool gate requires teaching the runtime-integrity projection to attest a per-event timeout MAP — a deliberate change to what the canary attests to, not a config edit.",
+   "evidence": "internal/aihooks/settings.go:99-107 (\"THE COST, stated plainly: the tool gates' ceiling moves 30s -> 60s … a WEDGED PreToolUse hook now stalls a tool call for up to 60s instead of 30s\"), :54-64 (hookTimeoutSeconds = 30 kept as the documented target), :109-111 (\"Do not raise this without raising maxHookTimeoutSeconds in lockstep\")."
+  },
+  {
+   "where": "§5.1, in the environment-injection paragraph (L220-223)",
+   "text": "Injection never clobbers a developer's own `ANTHROPIC_BASE_URL` on a **cooperative** endpoint — that is what makes it safe to ship on. On a **managed** endpoint it does: a user-supplied value is replaced with the DeVoid route and the attempt is recorded as `PROVIDER_ROUTE_BYPASS` / `transport-override-replaced`, because otherwise a single environment variable would route every governed request straight past the proxy. Whenever the traffic is DeVoid-routed, the shim also mints one conversation identity and writes it to both ends of the correlation bridge — an `X-Devoid-Warn-Session` control header on the wire and `DEVOID_AI_WARN_SESSION_ID` in the child env — so the developer's prompt can be matched to the request that replays it. It deliberately does NOT mint one for a user-supplied third-party upstream on a cooperative box: that traffic is not ours to govern and the header would tell a stranger about the conversation.",
+   "evidence": "cmd/devoid/agent_shim.go:221-253 (`buildAgentEnv`, appendEnvIfMissing so a user value survives), :288-338 (`enforceManagedTransportRoute`, called at :599-601 only under `managedEndpoint()`), :268-286 (`bindAgentConversation` writing both ends), :234-241 (the explicit carve-out for a foreign upstream on a cooperative endpoint)."
+  }
+ ],
+ "omissions": [
+  {
+   "what": "An uppercase-extension invocation of any shim (`CLAUDE.EXE`, `claude.EXE`, `NPM.CMD`) bypasses the whole shim dispatch and passes through to the real binary.",
+   "whyItMatters": "This is the cheapest known way to run an AI agent on a managed endpoint with zero governance: no surface gate, no provider deny-list, no agent allowlist, no transport injection into the proxy, no bypass-flag strip, no plugin gate. It needs no privilege, no config edit and no tampering — just a differently-cased command. Windows resolves the file case-insensitively, so it runs. Nothing in §13's fail-open inventory covers it, and nothing on any status surface would report it, because the shim process the reporting counts never runs.",
+   "evidence": "cmd/devoid/main.go:242-247 strips `.exe`/`.cmd`/`.bat` with case-sensitive `strings.TrimSuffix` BEFORE `strings.ToLower`. Compiled and executed: claude.exe→\"claude\" but CLAUDE.EXE→\"claude.exe\", Claude.Exe→\"claude.exe\", npm.CMD→\"npm.cmd\". main.go:203 dispatches on that string; :207/:210/:222 all miss; :232-234 falls to runShim, where getToolConfig (main.go:4615-4648) returns nil for \"claude.exe\" and main.go:4778-4781 exec's the real tool with no interception.",
+   "proposedText": "**GAP — an uppercase extension walks past every shim gate.** Dispatch normalises `argv[0]` by stripping `.exe`/`.cmd`/`.bat` and then lowercasing, and the strip is case-sensitive. `CLAUDE.EXE` therefore normalises to `claude.exe`, matches no dispatch branch, and is handed to the real binary as an unrecognised tool — no surface gate, no provider deny-list, no allowlist, no proxy route, no plugin gate. Windows resolves the name case-insensitively, so the bypass costs a shift key. The fix is one line (lowercase first, then strip), and until it lands the shim lane's guarantee is \"governed unless the developer types the extension in caps\"."
+  },
+  {
+   "what": "§5.2 describes only `.claude/settings.json`, but the product's own surface catalogue names `.claude/settings.local.json` as a project-scope node that carries hook commands — and nothing in the reconcile writes, repairs or asserts it.",
+   "whyItMatters": "The whole CAS/foreign-hook/transport-assertion discipline in §5.2 covers exactly two files. A hook-carrying file the product itself classifies as an \"local hooks override\" is outside all of it: not merged, not repaired on drift, not covered by the transport-route assertion, and not part of what `hooks-status` reports on. A reader finishes §5.2 believing the settings surface is fully managed.",
+   "evidence": "internal/aihooks/settings.go:801-808 — `SettingsPath` resolves to `<home>/.claude/settings.json` or `<cwd>/.claude/settings.json` and nothing else. internal/aicontext/catalog.go:238-240 declares `{Agent: AgentClaudeCode, Tier: TierExecConfig, Scope: ScopeProject, Rel: \".claude/settings.local.json\", HookCommands: true, Note: \"local hooks override\"}`; catalog.go:241-243 similarly declares `~/.claude.json` (\"global agent config\"). Neither is a write target anywhere in internal/aihooks.",
+   "proposedText": "**What we manage, and what we only watch.** DeVoid writes and repairs exactly two Claude files: `~/.claude/settings.json` (user scope, the one the reconcile wires) and `<cwd>/.claude/settings.json` (project scope, never auto-wired — an operator runs it). `.claude/settings.local.json` is catalogued by our own surface inventory as a project-scope node that carries hook commands, and `~/.claude.json` as the global agent config; **neither is written, repaired, or covered by the transport-route assertion.** They are inventoried and read, not managed."
+  },
+  {
+   "what": "§5.1 never says that the shim lane covers only launches that go through PATH — an IDE-hosted Claude reaches none of it.",
+   "whyItMatters": "Everything §5.1 promises per launch (policy fetch, surface gate, provider deny-list, allowlist, transport injection, bypass-flag strip, plugin gate) is scoped to `runAgentShim`, which only runs when something exec's `claude`/`codex`/`gemini` off PATH. The VS Code Claude extension and Claude Desktop host their own runtime and never touch it. §5.2 closes half of that (the durable settings.json route) but only for Claude, and only for the transport — the plugin gate and the bypass-flag strip have no IDE-side equivalent at all. Without this stated, §5.1 reads as a complete interception story.",
+   "evidence": "cmd/devoid/agent_shim.go:346-349 states it inside the bypass-flag code: \"SCOPE, STATED PLAINLY: this closes launches that go through the PATH shim. An IDE-hosted Claude (the VS Code extension, Claude Desktop) never reaches runAgentShim, so it is not covered here — the same blind spot this file already documents for policy fetch. That surface is closed elsewhere, not by this.\" internal/aihooks/transport_route.go:12-23 records the same blind spot from the other side (\"on a stock install the VS Code Claude extension talked straight to api.anthropic.com and DeVoid never saw the request\") and explains that persisting the route in settings.json is what converts interception from a property of the launch path into a property of the endpoint's configuration.",
+   "proposedText": "**The scope of the whole per-launch list, stated once.** Every check above runs in the PATH shim, which means it runs only when something exec's `claude`/`codex`/`gemini` from PATH. An IDE-hosted agent — the VS Code Claude extension, Claude Desktop — hosts its own runtime and never reaches the shim, so on that surface there is no policy fetch, no surface gate, no provider deny-list, no allowlist, no bypass-flag strip and no plugin gate. What DOES cover it is the durable transport route written into `settings.json` (§5.2), which makes interception a property of the endpoint's configuration rather than of how the agent happened to be started — and that covers Claude's transport only."
+  },
+  {
+   "what": "§5.1 asserts one installer's behaviour where two ship, and they differ on the two most consequential points (PATH-first enforcement and profile patching).",
+   "whyItMatters": "The document is used to answer \"what does a customer's endpoint actually do\", and the shipped Windows product is the MSI. Attributing install.ps1's hard-fail-if-not-first to \"the install\" makes the MSI look stronger than it is, and it was an MSI cycle that produced the 2026-08-27 evidence now being cited elsewhere in this document.",
+   "evidence": "windows-installer/msi-build/Bundle.wxs contains no reference to install.ps1 — the MSI/bundle never runs it. MSI PATH: Product.wxs:373-379 (`<Environment … Part=\"first\" Action=\"set\" System=\"yes\"/>`), post-install health = CustomActions.wxs:529-539 `doctor --quiet` with `Return=\"ignore\"`. Script PATH: install.ps1:2309-2334 with `Write-Err` (rollback + exit 1) at :210. Both do install the shims, both apply the same ACL (Variables.wxi:28-29 vs install.ps1:1416-1452), and both patch the PowerShell profile (CustomActions.wxs:204/:401-407 vs install.ps1:2404-2452).",
+   "proposedText": "**There are two Windows installers and they are not interchangeable.** The **MSI** (`windows-installer/msi-build`) is the shipped product; the **script installer** (`install-scripts/production/install.ps1`, the `get.devoid.one` one-liner) is a separate implementation and the MSI never invokes it. They agree on the shim set (19 pairs), the bin-dir ACL, and the PowerShell profile patch. They differ on PATH: the script installer re-prepends a displaced entry and hard-fails the install if the bin dir is not first afterwards; the MSI sets a WiX `Part=\"first\"` environment entry and asserts nothing, its only post-install health check being `doctor --quiet` with the return value ignored. Any claim in this document about \"the install\" hard-failing is a claim about the script installer."
+  }
+ ],
+ "reorganisation": "§5.1 currently mixes three different things in one voice — what the shim IS (files, names, counts), how it gets in FRONT (PATH, profile, ACL), and what it DOES per launch — and it states each as if one implementation existed. Restructure into four labelled blocks:\n\n1. **The shim set** — the 19 pairs, the platform split (Windows: byte copy + .cmd launcher; Unix: symlink), the dispatch rule with the correct strip-then-lowercase order and the uppercase-extension gap, and the 41-file arithmetic that reconciles to the real box. Fixes the \"not symlinks\" error and gives the counts a denominator a reader can check on their own machine.\n\n2. **Getting in front** — PATH, profile, AutoRun, ACL, split explicitly by INSTALLER (MSI vs script) because they diverge on the two enforcement points, and ending with the honest maintenance statement: PATH-first is asserted at install and by an elevated `doctor --fix`; the continuous watcher is user-scope only.\n\n3. **The per-launch order** — keep the existing ordered list, but qualify the two steps that are conditional rather than absolute (bypass-flag strip = managed-only, one flag; env injection = Claude-only, never clobbers a cooperative user's value) and follow it immediately with the failure-mode paragraph the section is missing: cooperative fails open, managed fails closed, daemon-up-no-policy is a third state.\n\n4. **What the shim does not see** — the IDE-hosted blind spot, stated once, with a forward pointer to §5.2's durable route as the partial answer. Today this is buried in a source comment and absent from the document.\n\n§5.2 needs less surgery — it is the strongest-written section in this part of the document. Three edits: (a) the \"fresh install does NOT wire hooks\" paragraph should now carry the real-box PROVEN LIVE label and the PT1M/PT5M numbers that explain the observed one-minute gap, and its stated mechanism must change from \"SYSTEM's profile has no .claude directory\" to the profile-shape service test that the code actually applies; (b) the event table should gain the two non-obvious prompt-gate mappings (warn is advisory and the prompt is sent; an unknown verdict fails closed), because a reader reasoning about coverage will otherwise assume the row is complete; (c) add a short \"what we manage vs what we only watch\" line naming `settings.local.json` and `~/.claude.json`, so the CAS/foreign-hook/transport discipline is not read as covering the whole settings surface.\n\nFinally, the 60-second timeout paragraph should keep its cost sentence (the tool gates moved 30s→60s) rather than only its rationale — it is the one place in these two sections where a control was deliberately weakened to fix another, and that is exactly the kind of accumulation this document exists to hold."
+}
