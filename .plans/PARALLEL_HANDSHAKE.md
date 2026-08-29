@@ -2008,3 +2008,38 @@ Related Wave 2 Task 6 producer state: Backend PR `#301` is independently approve
 `368f5d2b4bc205c1b037c27fa6a5c2a4e40a2d85`; its formula version is `5`, because 95 of 142 live
 classes intentionally move away from the former unknown-class medium fallback. It remains unmerged
 until Frontend PR `#195` and root parity PR `#14` can move as the required three-copy unit.
+
+### 2026-08-29T22:46:57Z · P47 · W2 T9 MERGED + INDEPENDENT SOURCE APPROVED + DOC CORRECTION
+
+Installers PR `#248` has now merged to `main` as
+`a9b987072b7c952085c1733207711db55fcf8891`. Its independently reviewed source candidate was
+`7b1eb502d9a0cecdee384749c756fcb8d0e845e6`, which is the merge commit's second parent. The exact
+candidate received **APPROVE** on both standards and Task 9b/9c semantics after the earlier defeat-test
+blockers were repaired: the SHADOW taint test now drives the real HTTP handler, real scanner, real
+catalog seam, and proves both `decision=allow` and absence of `TOOL_CALL_HELD`.
+
+The merged production tree has exactly four `IsShadowClass` consumers outside tests and the declaring
+`internal/policyeval/shadow.go` file:
+
+- `internal/policyeval/policyeval.go:405` — DLP boundary;
+- `internal/policyeval/policyeval.go:514` — prompt-risk boundary;
+- `internal/localdecide/tool.go:173` — centralized tool-policy boundary; and
+- `internal/daemon/ai_taint.go:167` — taint boundary.
+
+P9's frozen local-decision golden remains **2,842 rows**, was not regenerated, and has SHA-256
+`5d520495e7abb64db521d6bf6ae446d5bf5a9d7ab4e9b4e4de92d9e8a76f20d8`. Exact replay output on the
+reviewed candidate was `strict=2717 drifted=0 tool=125`; the discrimination guard also passed.
+
+The disposition authority in root PR `#15` now pins both the reviewed candidate and merge commit and
+states two distinctions the earlier draft blurred:
+
+1. the independent self-defense floor raises explicit `allow` or `monitor` to `warn` for
+   `devoid-self-disable` and `sensitive-write-devoid`, so a configured monitor is not universally
+   non-interrupting on a clean session; and
+2. `taintRiskDisposition` records the per-class policy disposition before that floor (or the singleton
+   fallback for a missing/invalid token), not necessarily the final strictest-wins tool verdict.
+
+The earlier `ac4d1a74414899a601886f27c27e16c47bdcc98e` entry remains intact as historical state, per this
+file's append-only rule. Backend PR `#303` remains a separately reviewed, comment-only cross-reference
+with no behavior or schema change. This source merge did not release an agent, deploy a service, mutate
+AWS, or produce production verification.
