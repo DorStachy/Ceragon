@@ -28,14 +28,14 @@
   },
   "workspaceChecks": [
     {
-      "id": "toolrisk-vocab-parity",
+      "id": "detector-vocab-parity",
       "script": "ci/lib/vocab-parity.mjs",
-      "why": "The tool-risk detector vocabulary is one contract living as three hand-copied files in three repos. Each repo's own guard compares that repo against THAT REPO'S copy, so a class added in the agent and never copied leaves all three green while the class becomes ungovernable: the console cannot set a policy for a name the Backend tuple does not contain. Nothing inside a single repo's CI can see this; that is why it is here and not under 'mirrored'."
+      "why": "The tool-risk and DLP detector vocabularies are two contracts, each living as three hand-copied files in Installers, Backend and Frontend. Per-repo guards compare only against their local copy, so the workspace runner is the only gate that can prove both complete three-copy comparisons (2 vocabularies x 3 copies = 6 files)."
     },
     {
-      "id": "toolrisk-vocab-parity-selftest",
+      "id": "detector-vocab-parity-selftest",
       "script": "ci/lib/vocab-parity.test.mjs",
-      "why": "Mutation proof for the check above: fabricates divergent trios, including the historical interpreter-exec/fetch-then-exec/substitution-exfil incident, and asserts it goes red naming the class and the repos missing it -- plus that a missing checkout reports NOT CHECKED rather than passing. A drift check nobody has made go red has not been run."
+      "why": "Mutation proof for both schemas: fabricates tool-risk and DLP producer-only classes and asserts the checker goes red naming the class and missing repos, while absent checkouts, unreadable refs and invalid JSON report NOT CHECKED rather than passing."
     },
     {
       "id": "workflow-header-truth",
@@ -125,7 +125,7 @@
         "security:audit": {}
       },
       "cannotMirror": {
-        "vendored-upstream-drift:drift": "Compares the vendored engine against Installers@main over the network with a token. Cross-repo and scheduled, not a PR gate.",
+        "vendored-upstream-drift:drift": "Uses INSTALLERS_READ_TOKEN for two daily-and-dispatch checks: the vendored engine and both detector vocabularies, each against Installers@main. The vocabulary leg compares producer to Frontend only; Backend is invisible here. Frontend pr-checks is workflow_dispatch-only, so neither workflow gates a merge.",
         "deploy-frontend-ecs:required_checks": "Reads GitHub check runs for the SHA, same as Backend's.",
         "deploy-frontend-ecs:deploy": "OIDC role + ECR + ECS. Deploys stay on GitHub."
       }
