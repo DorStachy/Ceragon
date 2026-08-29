@@ -24,7 +24,7 @@
  * Either way the choice is reported, never silent.
  */
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 function git(repoPath, args) {
@@ -89,6 +89,18 @@ export function listWorkflowsOnMain(repoPath) {
     .split(/\r?\n/)
     .map((s) => s.trim())
     .filter((s) => /\.ya?ml$/.test(s));
+}
+
+/** Workflow paths a pull-request mirror must inspect, including new branch files. */
+export function listWorkflowPaths(repoPath) {
+  const paths = new Set(listWorkflowsOnMain(repoPath));
+  const dir = join(repoPath, '.github', 'workflows');
+  if (existsSync(dir)) {
+    for (const name of readdirSync(dir)) {
+      if (/\.ya?ml$/.test(name)) paths.add(`.github/workflows/${name}`);
+    }
+  }
+  return [...paths].sort();
 }
 
 /**

@@ -36,31 +36,16 @@ finding against current `origin/main` and found **17 substantive errors in the r
 
 ## Rebase manifest
 
-Every line-level instruction in this plan was verified against these revisions. **If your `git fetch`
-disagrees with this table, the instructions below are invalid until revalidated** — that is a standing
-rule, not a courtesy. The 2026-08-27 disposition pass was handed a SHA list built from local
-checkouts and four of seven were stale; it caught the error by fetching first. Do the same.
+The generated authority is
+[`v2-waves/REBASE_MANIFEST.md`](v2-waves/REBASE_MANIFEST.md). Every `path:line` in this plan is a
+claim about `origin/main` at the SHA recorded there. Resolve citations with
+`git show origin/main:<path>`, never from the working tree. A SHA list handed to you by a task brief
+is not evidence; fetch all seven repositories first, regenerate the manifest, and re-resolve every
+citation in a repository whose `origin/main` moved.
 
-| Repository | `origin/main` @ 2026-08-27 | Moved since the review? |
-|---|---|---|
-| Backend | `0cf9021e` — **deployed as ECS task definition 322** | yes, from `787b71dc` |
-| Frontend | `cac574ae` — deployed as task definition 378 | yes, from `471658a7` |
-| Installers | `5b129523` — **agent 7.10.6 stable**, built from `9503094e` | yes, from `f29d6644` |
-| Static-Worker | `44d7aabb` | yes, from `e4c6069f` |
-| Sandbox-Worker | `2831997d` | yes, from `d68ee58d` |
-| GithubApp-Bot-Scanner-Worker | `3d4116a5` | **no — review findings are current** |
-| Ceragon-Intelligence | `deb70e64` | yes, from `08a58981` |
-
-`lastRebasedAt: 2026-08-28`
-
-⚠️ **This table drifted inside a single working session, and that is the point of the rule.** It was
-written on 2026-08-27 pinning Ceragon-Intelligence at `486d937b`. By 2026-08-28 `origin/main` was
-`deb70e64` — **5 commits, 36 files, +12,372 insertions, 31 of them under `fp-agent/`**, all marked
-`[skip ci]`. That is a coworker actively building an autonomous false-positive-review agent: the exact
-subject of Wave 6 Task 13, moving faster than the plan that inventories it.
-
-Their commits are theirs and are not held for this packet. But **anyone starting a wave re-runs the
-fetch and re-reads their own wave's citations first.** A wave file is a set of claims about a tree.
+`node ci/lib/rebase-manifest.mjs` is the standing guard. It fails if any manifest row differs from
+the live remote-tracking ref, branch, HEAD, or behind count. The manifest is generated and must never
+be hand-edited.
 
 ---
 
@@ -91,7 +76,8 @@ unavailable to us at any sample size.
 
 ### Which risk lanes this packet can certify
 
-**None of the five.** That belongs here in the goal statement, not in a footnote.
+**None of the five risk lanes can reach PASS from this packet.** That belongs here in the goal
+statement, not in a footnote.
 
 | Risk | State after this packet | The blocker that keeps it there |
 |---|---|---|
@@ -104,6 +90,31 @@ unavailable to us at any sample size.
 **What CAN reach PASS**, as bounded engineering-assurance *dimensions* rather than risk certificates:
 scanner **execution** truth; tool-risk **policy authority and catalog totality**; **measurement-substrate
 integrity**; **console truth**. Each is a real deliverable. None is a risk lane. Say so to customers.
+
+<!-- CLAIM-CONTRACT:FORBIDDEN:BEGIN -->
+### Claims this packet forbids
+
+The sole authority for a numeric product claim is a signed evidence certificate produced from a
+named build and corpus, reviewed under the release rubric, and no older than **90 days**.
+
+| ID | Forbidden claim | Named authority for removing the prohibition |
+|---|---|---|
+| FC-01 | Universal zero false positives | Signed precision certificate + release rubric |
+| FC-02 | All detections are high quality | Per-class recall/precision certificate |
+| FC-03 | Evasive attacks are comprehensively detected | Adaptive-evasion corpus certificate |
+| FC-04 | Prompt injection is high-assurance | Prompt-injection evaluation certificate |
+| FC-05 | All DLP classes are governed | Governed-vocabulary totality certificate |
+| FC-06 | A green scan proves no vulnerability exists | Scanner coverage/limitations statement |
+| FC-07 | Dangerous actions are prevented | Authoritative-checkpoint effectiveness certificate |
+| FC-08 | M4.7A is complete or Risks 1, 2, 4, and 5 are 9+/10 | Release rubric signed by the accountable reviewer |
+| FC-09 | A static corpus proves prompt-injection resistance | Adaptive-evaluation protocol |
+| FC-10 | One prompt-injection number represents every surface | Per-surface prompt certificate |
+| FC-11 | Safeguards exist merely because installation completed | Runtime safeguard-attestation certificate |
+| FC-12 | A canary result proves the evaluation was uncontaminated | Corpus custody and contamination audit |
+| FC-13 | Production false-positive performance is certified without independent review | Independent production-window adjudication |
+| FC-14 | A lexical or ML score alone is an enforcing decision | Enforcing-tier eligibility review |
+| FC-15 | Third-party validation exists without a named external assessor and report | Named external assessment report |
+<!-- CLAIM-CONTRACT:FORBIDDEN:END -->
 
 ---
 

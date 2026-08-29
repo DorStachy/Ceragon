@@ -36,6 +36,46 @@
       "id": "toolrisk-vocab-parity-selftest",
       "script": "ci/lib/vocab-parity.test.mjs",
       "why": "Mutation proof for the check above: fabricates divergent trios, including the historical interpreter-exec/fetch-then-exec/substitution-exfil incident, and asserts it goes red naming the class and the repos missing it -- plus that a missing checkout reports NOT CHECKED rather than passing. A drift check nobody has made go red has not been run."
+    },
+    {
+      "id": "workflow-header-truth",
+      "script": "ci/lib/workflow-header-truth.mjs",
+      "why": "Workflow headers are operational claims. This check compares present-tense trigger claims in the first 20 header comments with the real on: keys across all seven repositories, while preserving conditional future instructions as instructions rather than misclassifying them as current claims."
+    },
+    {
+      "id": "workflow-header-truth-selftest",
+      "script": "ci/lib/workflow-header-truth.test.mjs",
+      "why": "Defeat proof for workflow-header-truth: a stale PUSH TO MAIN claim over a manual-plus-nightly workflow must fail with the file and line, while the conditional WHEN T-M2 LANDS instruction must remain valid."
+    },
+    {
+      "id": "w-1-rebase-manifest",
+      "script": "ci/lib/rebase-manifest.mjs",
+      "why": "The plan's line-level claims are meaningful only against the seven fetched origin/main revisions recorded in its generated manifest. This check refuses a stale SHA, local HEAD, branch, or behind count rather than trusting a handed-down list."
+    },
+    {
+      "id": "w-1-rebase-manifest-selftest",
+      "script": "ci/lib/rebase-manifest.test.mjs",
+      "why": "Mutation proof for the rebase manifest: seven real temporary Git repositories are generated, one Installers SHA is hand-edited, and validation must fail with the recorded and actual origin/main values."
+    },
+    {
+      "id": "claim-contract-guard",
+      "script": "ci/lib/claim-contract.mjs",
+      "why": "Pins the exact no-PASS statement and all 15 sourced forbidden claims."
+    },
+    {
+      "id": "claim-contract-guard-selftest",
+      "script": "ci/lib/claim-contract.test.mjs",
+      "why": "Defeat proof that removing one forbidden claim makes the contract guard red."
+    },
+    {
+      "id": "standards-schema-declaration",
+      "script": "ci/lib/standards-schema-declaration.mjs",
+      "why": "Pins the required per-class standards columns, accepted editions, and ATLAS release."
+    },
+    {
+      "id": "standards-schema-declaration-selftest",
+      "script": "ci/lib/standards-schema-declaration.test.mjs",
+      "why": "Defeat proof for a missing standards column and blank ATLAS release."
     }
   ],
   "repos": {
@@ -43,6 +83,7 @@
       "path": "Backend",
       "defaultImage": "node24",
       "volume": "devoidci-backend",
+      "localGateWorkflows": ["pr-checks"],
       "mirrored": {
         "pr-checks:typecheck": {},
         "pr-checks:lint": {},
@@ -51,6 +92,7 @@
         "pr-checks:alerts_integration": {},
         "pr-checks:migration_chain_from_empty": {},
         "pr-checks:full_test": {},
+        "pr-checks:shared-contracts-pin": {},
         "security:audit": {},
         "security:rate_limit_taskdef": {},
         "security:rds_boundary": {},
@@ -172,6 +214,7 @@
       "path": "Installers",
       "defaultImage": "go124",
       "volume": "devoidci-installers",
+      "localGateWorkflows": ["pr-checks"],
       "mirrored": {
         "pr-checks:hot-path-audit-imports": {},
         "pr-checks:scanner-parity": {},
@@ -182,6 +225,8 @@
         "pr-checks:release-workflow-contract": {},
         "pr-checks:self-update-lane": {},
         "pr-checks:macos-legacy-identity": {},
+        "pr-checks:uninstall-honesty": {},
+        "pr-checks:toolrisk-lane": {},
         "holdout-score:score": {},
         "finding-b-e2e:shim-enforcement": {}
       },

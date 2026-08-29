@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "documentation": {
+    "atlas": "MITRE ATLAS v2026.07",
+    "owaspLlm2026": "OWASP Top 10 for LLM Applications 2026",
+    "owaspAsi2026": "OWASP Top 10 for Agentic Applications 2026 (ASI01-ASI10)",
+    "aiuc1": "AIUC-1 Q3-2026 controls A008, B010.3, B006.3, B006.1"
+  },
+  "system": { "standardsMapping": { "atlasRelease": "v2026.07" } },
+  "classColumns": {
+    "atlasTechniques": { "required": true, "allowNotApplicableWithReason": true },
+    "owaspLlm2026": { "required": true, "allowNotApplicableWithReason": true },
+    "owaspAsi2026": { "required": true, "allowNotApplicableWithReason": true },
+    "aiuc1Controls": { "required": true, "allowNotApplicableWithReason": true }
+  }
+}
