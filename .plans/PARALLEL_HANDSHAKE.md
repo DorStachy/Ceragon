@@ -1853,3 +1853,75 @@ The **main `Frontend/` checkout is on `feat/font-geist` @ `1fe6e7a6`, 531 commit
 (`f0415be7`)**, not off the checkout's HEAD. P9 lost a task-start to this.
 
 **Installers `main` is `3a3cf09e`; Backend `main` is `c7cc6b42`; Frontend `main` is `f0415be7`.**
+
+Wave 1 Task 1's producer catalog is locally green with `classCount: 81` and exact digest
+`sha256:6dd17f98d86eac0260e03abba61a06532d1a9c69c2ff81b059e4500ac2aebac6`. The Wave 1 Task 1 exit in
+the master plan now records that value. This is a documentation handoff only; P47 did not modify the
+catalog producer or its detection semantics.
+
+### 2026-08-29T17:34Z · P47 · ACTIVE STATE — W0A STATICALLY GREEN; FINAL REBASE/EVIDENCE PENDING
+
+P47 accepts the catalog seam exactly as recorded above: P47 owns class membership and firing
+semantics; P9 may widen only the generated projection fields while the pinned 55-class / 4-hard-stop
+identity remains unchanged, and posts the regenerated `DetectorCatalogDigest`. P47 has not changed
+that P9-owned projection.
+
+W0A is PR `Ceragon-Prod/Installers#221`. Independent review has now found no remaining source blocker
+after remediation of all reported cases: GNU/BSD `rm` dialect-union semantics, bounded hard-stop
+extraction that fails closed when incomplete, daemon latch ordering, and adapter-native budget /
+inspection-failure reasons. **It is not ready to merge yet.** The candidate still needs a rebase onto
+the then-current `origin/main`, focused/full Go gates, vet, C12 and the 2,842-row local-decision golden,
+plus a clean isolated paired performance run. P47 will append the exact rebased SHA, golden row delta,
+and paired performance numbers after those gates complete; no provisional number is being presented
+as final evidence.
+
+Wave 1 is active in parallel: the 81-class Installers producer is draft PR `#229`; Backend policy
+authority is draft PR `#298`; the Frontend consumer branch is `codex/p47-w1-frontend`; and the root
+six-file parity gate is `codex/p47-w1-vocab-parity`. The local parity gate is green across two
+vocabularies × three copies (six files), including producer-only mutation defeats. The scheduled
+Frontend remote check remains externally blocked because `INSTALLERS_READ_TOKEN` is absent; P47 has
+not created or copied a repository secret.
+
+### 2026-08-29T18:21:08Z · P47 · W1 T6 PARITY PROOF GREEN
+
+The root parity mutation harness passed **31/31** cases against the real Wave 1 producer, including
+producer-only drift, one-consumer drift, stale class counts/digests, schema drift, CRLF-only changes,
+missing files/repos/refs, explicit source overrides, and JSON output. The live split-worktree check
+then passed **2 vocabularies × 3 copies = 6 files**: tool-risk has 40 identical classes with canonical
+digest `cf4b55add546382737a5eb24d9b2b8f24a0ac87d8713c32705ae696b95603541`; DLP has 81 identical
+classes with raw file SHA-256
+`d656f717120e6fbd9d5442021a019a87f3962d1aab34989ccf5d584585ae2a07`. Sources were the working
+trees for Installers PR `#229`, Backend PR `#298`, and Frontend PR `#192`; no ref fallback occurred.
+
+### 2026-08-29T19:15Z · P47 · W0A FINAL REVIEW; WAVE 1 SOURCE MERGES AND EXPLICIT BLOCKERS
+
+W0A Installers PR `#221` is independently **APPROVED** at exact SHA
+`14e19b23faed4a74a5385fa35d4f1872daf0c592`, based on `8f547078`. Its affected source gates, C12,
+the 2,842-decision golden (`delta: 0`), vet, and the clean confirmatory performance pass are green.
+It remains deliberately **unmerged**: Docker Desktop/WSL could not provide the final mirror run, and
+accepting that evidence exception is an owner decision. No agent was released.
+
+Wave 1 moved beyond draft implementation:
+
+- Installers DLP producer PR `#229` merged as `1975585e64f76dccb31ef85ddaddc249af1e60d8`.
+  The producer has 81 classes, catalog digest
+  `sha256:6dd17f98d86eac0260e03abba61a06532d1a9c69c2ff81b059e4500ac2aebac6`, and raw vector
+  SHA-256 `d656f717120e6fbd9d5442021a019a87f3962d1aab34989ccf5d584585ae2a07`.
+- Backend policy-authority PR `#298` merged as `2551ec4fb9e967f7d793c44fd3d92f4b1f4f3b75` after exact-SHA
+  independent approval. The full policy tree passed 73/73 suites (1,650 pass, 27 gated skips), the
+  explicit real-Postgres boundary passed 11/11, and the production build passed. New writes cannot
+  disable `dlp` or `promptRisk`; legacy disabled rows remain editable and are raised only on the
+  served clone.
+- Frontend PR `#192` is source-approved at `2535221dfa6f796f5338e586fbf5bbea4045e118` after closing
+  the Block-by-default typed-confirmation bypass, including `chmod-broad-777` and `chmod-sensitive`.
+  It remains unmerged because the sole Vercel context fails on private-organisation Hobby billing;
+  this is an external owner/account gate, not a source failure. Backend-before-Frontend deployment
+  remains owner-gated and no deployment occurred.
+- Root parity PR `#11` remains the authoritative three-repository gate. The Frontend scheduled
+  two-repository mirror still lacks owner-managed `INSTALLERS_READ_TOKEN` and is not a merge gate.
+
+One scope boundary is now explicit in both Wave 1 and Wave 4C: the class id
+`ingress-secret-exfil-combo` exists in both lanes, while the present 37-member floor protects the
+lane-qualified `promptRisk` entry only. `ingress.enabled=false` therefore remains a whole-lane bypass;
+Wave 4C now owns the ingress enable guard plus real HTTP/Postgres defeat proof. Until it lands,
+ingress enforcement is `NOT_READY` and must not be credited to Wave 1.

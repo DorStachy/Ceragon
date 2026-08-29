@@ -181,8 +181,8 @@ validates it.
 
 | check | what one repo cannot see |
 |---|---|
-| `toolrisk-vocab-parity` | The tool-risk detector vocabulary is one contract living as three hand-copied files: `Installers/parity-vectors/`, `Backend/packages/shared-contracts/`, `Frontend/types/vendored/`. Each repo's guard compares that repo against **that repo's own copy**, so a class added in the agent and never copied leaves all three green. |
-| `toolrisk-vocab-parity-selftest` | The mutation proof for the check above. |
+| `detector-vocab-parity` | Tool-risk and DLP are two producer-owned vocabularies, each copied into Installers, Backend, and Frontend. This is the only six-file, three-repository comparison; Frontend's scheduled check sees only producer + Frontend. |
+| `detector-vocab-parity-selftest` | Mutation proof for both schemas, including fabricated producer-only classes and fail-closed missing-source cases. |
 
 ### Why the per-repo guards cannot cover it
 
