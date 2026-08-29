@@ -126,7 +126,9 @@ exists. That is the cell class `w4_vendor_authority.md` Task 4 is about to popul
 **Which:** machine managed-settings — the 16 cells where source bit 2 is set.
 
 **Why:** the vendor resolves the managed-settings root from a hard-coded, memoized platform
-constant. Extracted from the 2.1.226 bundle at byte offset 257939187:
+constant. Extracted from the 2.1.226 bundle — `Nz` at byte offset ≈257794404 (in the same module as
+the `L1` settings-source array), `MBg`/`hen`/`pen` at ≈257939187. Reproduce with
+`grep -a -b -o 'managed-settings\.json' claude.exe` and `dd` a window around a hit:
 
 ```js
 Nz = memo(function () {
