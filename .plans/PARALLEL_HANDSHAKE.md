@@ -2043,3 +2043,59 @@ The earlier `ac4d1a74414899a601886f27c27e16c47bdcc98e` entry remains intact as h
 file's append-only rule. Backend PR `#303` remains a separately reviewed, comment-only cross-reference
 with no behavior or schema change. This source merge did not release an agent, deploy a service, mutate
 AWS, or produce production verification.
+
+### 2026-08-29T23:27:08Z · P47 · W2 T5 BACKEND MERGED + T10 SOURCE/CONSUMER EXACT-HEAD APPROVED
+
+Wave 2 Task 5's Backend half is merged. Backend PR `#302` was independently approved at exact source
+SHA `3d731ab70a46ddb0f0e4f63a5ef5c7436da4aa63` and merged to `main` as
+`c7630dda471b31e68ee1e21e33fa39a270f32a69`. The final bypass proof covers inferred exported generic
+constraints and defaults, reachable local aliases and conditional branches, alias cycles, and public
+versus private/protected constructors. Seven suites passed **441 tests + 1 snapshot**; TypeScript,
+ESLint, Prettier and diff hygiene passed. The action map remained **17,713 bytes**, SHA-256
+`02430673f3569a434bb35db9dbbb17573b25d62d117717bb0aa58bb0407b50cc`.
+
+Wave 2 Task 10 is implemented and independently **APPROVED** at the coordinated exact heads:
+
+- Installers PR `#249` source commit A is
+  `1947fdac2b259abc70c82fd2543dbbfe151f1b4b`; final head after consumer-lock commit B is
+  `8d28775231bcf8cc1542bd50541d67ed00416c3a`.
+- Frontend PR `#197` consumer commit is
+  `3520da478d698a636dcaf43d66224344eb478aed`; its manifest pins Installers source `1947fdac`.
+- LF-normalized source and consumer digests are: `policyeval.js`
+  `d173339d337c7bdc7e7b62ae5aa7159861c2a576c333d50b1a7e5bb9162eabaf` (**826** lines),
+  `dlp.js` `2967a3430fd6eda82c4dcf1b0e79030e079a368559bcd9165394832aa994748c`
+  (**1,687** lines, unchanged), and `promptrisk.js`
+  `ace175f4b05b65a92a4810756063e5e6f879d722ab58c3b6043ee79e01100659` (**903** lines).
+  Raw source/consumer comparison is equal for all **3 of 3** files.
+
+The fallback is now an explicit reviewed per-class posture capped by the 25-cell evidence-strength ×
+capability-impact ceiling; grades do not author policy by themselves. All **40 of 40** tool classes
+remain exactly equal to their pre-migration fallback (**3 allow, 12 warn, 25 block**), including the
+sole explicit `chmod-broad-777` compatibility floor. Go and JavaScript agree for all **14** prompt
+classes plus **3** shared quote/decode-budget special cases. Taint uses a separate projection: only
+the three ordinary action tags are ineligible and unknown classes remain eligible. Replay filters
+SHADOW before the grade floor, including mixed SHADOW/current input. Both self-defense classes pass
+all five disposition states.
+
+P9's `decision-golden.json` was **not regenerated**. It remains **2,842 rows**, SHA-256
+`5d520495e7abb64db521d6bf6ae446d5bf5a9d7ab4e9b4e4de92d9e8a76f20d8`; replay reports
+`strict=2717 drifted=0 tool=125`, `matched=2717/2717`. Exactly **20 named** pristine-warn →
+reviewed-block self-defense rows are asserted through the test overlay.
+
+All changed Go packages and vet pass. The Frontend vendored area passes **10 suites / 113 tests**,
+TypeScript, import closure, and exact-ref upstream/local drift checks. The Installers consumer digest
+and closure set passes **11/11** and reports current, pinned and activated. Browser extension version
+sources are all `0.5.18`; shipped-source digest is
+`8c559695401dce23e4b5db2b277f0c835729412608182740e67f19d864956200`. The full browser suite is
+**1,277/1,281**: the only four failures are the pre-existing Chrome/Firefox `github.com/*`
+blockhosts-manifest baseline. Task 10 changes only manifest versions, not those match patterns.
+
+The authoritative split plan `v2-waves/w2_evidence_severity.md` and assembled
+`M47A_IMPLEMENTATION_PLAN.md` now carry identical Task 10 text: explicit posture, safeguards, matrix,
+unknown behavior, exact-equality proof, taint separation, SHADOW ordering, immutable-golden protocol,
+and source/consumer choreography.
+
+Frontend PR `#197` remains open behind the known Vercel private-organization Hobby billing failure;
+that external account gate was not bypassed. Installers PR `#249` remains open so the source does not
+land ahead of its downstream consumer. No agent was released, no service was deployed, no AWS state
+was mutated, and no production verification is claimed.
