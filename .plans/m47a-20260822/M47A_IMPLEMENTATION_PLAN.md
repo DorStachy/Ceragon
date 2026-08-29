@@ -21,6 +21,11 @@
 >    `pr-checks.yml`. A reformat by one team turns every later diff into a conflict.
 >
 
+> **Owner execution directive:** before taking a task, read
+> [`P47_EXECUTION_GUARDRAIL.md`](P47_EXECUTION_GUARDRAIL.md). Its scope-control,
+> progress-accounting, task-boundary, and coordination rules are mandatory.
+
+
 # M4.7A — Runtime AI Security Protection and Detection Engine: Implementation Plan (v2)
 
 **Supersedes:** `M47A_IMPLEMENTATION_PLAN.md` (v1, 2026-08-22, 17,538 lines), which its own
