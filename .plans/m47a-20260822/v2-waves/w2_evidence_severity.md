@@ -23,10 +23,11 @@
 
 # Wave 2 — Evidence strength, consequence, and UI vocabulary
 
-**Depends on:** Wave −1 (rebase, citation repair, path discipline). Wave 1 for one exit criterion
-only — the totality claim in Task 6 has no denominator until Wave 1 widens `AI_DLP_CLASSES` from
-**30 to 81**; until then that criterion reads `UNKNOWN (blocked on Wave 1)`, not `PASS`. Wave 0A runs
-in parallel and is not blocked by anything here.
+**Depends on:** Wave −1 (rebase, citation repair, path discipline). Task 6's denominator is now
+producer-owned and measurable: 81 DLP + 40 tool-risk + 14 prompt-risk + 7 ingress-risk = 142 live
+classes; its generated table retains 3 detector-only catalog rows for 145 total. It must not use the
+legacy 30-member `AI_DLP_CLASSES` subset as its denominator. Wave 0A runs in parallel and is not
+blocked by anything here.
 **Blocks:** every enforcement change in Wave 4 (**O-14** — the severity spine decides what may block
 at all, and Wave 4B's proposals are typed against `evidenceStrength` / `baseCapabilityImpact` /
 `resolvedConsequence`, which do not exist until this wave lands).
@@ -740,6 +741,10 @@ prints on a missing checkout.
 - `Installers/internal/toolrisk/class_catalog_test.go` (vector generation)
 - `Installers/parity-vectors/toolrisk-classes.v1.json` (regenerated — **never hand-edited**)
 - `Backend/packages/shared-contracts/toolrisk-classes.v1.json`, `Frontend/types/vendored/toolrisk-classes.v1.json` (copied)
+- `Installers/parity-vectors/content-risk-classes.v1.json` (producer-owned prompt/ingress roster;
+  generated, **never hand-edited**)
+- `Backend/packages/shared-contracts/content-risk-classes.v1.json` (byte-identical producer copy)
+- workspace `ci/lib/vocab-parity.mjs`, `ci/lib/vocab-parity.test.mjs` (three-vocabulary parity gate)
 - `Backend/src/ai-security-policy/ai-security-policy.tool-risk-class-parity.spec.ts:171, 226-230`
 - `Frontend/components/admin/__tests__/ai-security-policy-toolrisk-class-parity.test.ts`
 - `Backend/packages/shared-contracts/dlp-classes-grades.v1.json` (create)
@@ -762,6 +767,19 @@ The three fields, and what each one is **allowed** to say:
       catalogued classes from `internal/aipolicycontract/detector_catalog_generated.go`
       (`HardStopEligible`, `Exploitability`, `CredentialRole` already encode it). **Only the 40
       tool-risk classes need a new declaration**, because the detector catalog contains zero of them.
+- [ ] Generate `Installers/parity-vectors/content-risk-classes.v1.json` from the live
+      `internal/promptrisk` and `internal/ingressrisk` producer constants. Its format is
+      `ceragon.ai-security.content-risk-class-catalog`, formatVersion 1; it carries the total union
+      plus separately digested `promptRisk` and `ingressRisk` members. The exact counts are **14 + 7
+      = 21**. Regenerate it only with
+      `CONTENT_RISK_CLASSES_UPDATE=1 go test ./internal/contentriskcatalog/`. Vendor the exact bytes to
+      `Backend/packages/shared-contracts/content-risk-classes.v1.json`; the workspace parity gate
+      compares those two files byte-for-byte and returns `NOT CHECKED`, never PASS, if either copy is
+      unavailable. Pin both paths as `text eol=lf`; raw-byte parity deliberately treats a CRLF-only
+      copy as drift. **This vector is the only prompt/ingress membership source consumed by the
+      Backend generator.** Do not create a second roster from Backend constants or a hand-authored
+      array. The detector catalog enriches matching rows with metadata; it does not redefine the
+      producer membership set.
 - [ ] Write `class_grades_test.go` first, with three assertions that must all fail on an empty file:
       totality over `ClassCatalog()` (40/40); **no class's `baseCapabilityImpact` may be a function
       of its `ClassCatalog()` severity** — assert the two are not order-isomorphic, naming at least
@@ -787,10 +805,14 @@ The three fields, and what each one is **allowed** to say:
 - [ ] Update both consumer parity specs: `formatVersion` 2 → 3 (the literal is at
       `ai-security-policy.tool-risk-class-parity.spec.ts:171`), plus a new assertion that the grades
       block is total over `vector.classes`.
-- [ ] Create `dlp-classes-grades.v1.json` from the detector catalog plus the DLP registry, and
+- [ ] Create `dlp-classes-grades.v1.json` from the detector catalog, the DLP registry and the
+      producer-owned content-risk vector, and
       `generate-ai-event-impact-catalog.cjs` that emits
-      `ai-event-impact-catalog.generated.ts` from both files. Its spec asserts byte-equality with a
-      fresh generation, and totality over both producer vocabularies.
+      `ai-event-impact-catalog.generated.ts` from the declared DLP, content-risk, tool-risk and
+      detector-catalog inputs. Its spec asserts byte-equality with a fresh generation, and totality
+      over all three producer vocabularies. The detector catalog's
+      three non-producer rows (`custom-blocklist`, `high-risk-file-type`, `image-upload`) remain in
+      the generated table as catalog metadata; they do not inflate the live-producer denominator.
 - [ ] Delete `BASE_BY_CLASS` (`ai-event-severity.util.ts:301-335`) and point `baseForFinding`
       (`:432-438`, the lookup at `:437`) and the `unknown-class-default` marker at `:549` at the
       generated table. Keep the `?? 'medium'`
@@ -806,32 +828,33 @@ omit it from `class_grades.go`; expected `class "x" has no grade row`. (b)
 byte-diff against `build()`.
 
 **Exit:** `parity-vectors/toolrisk-classes.v1.json` is formatVersion 3, `gradesSha256` recomputes,
-**byte-identical across all 3 repos**, and `node ci/lib/vocab-parity.mjs` prints PASS rather than
-`NOT CHECKED`. The tiers digest `sha256` is **unchanged** at
+**byte-identical across all 3 repos**; the 21-class content-risk producer vector is byte-identical to
+its Backend copy; and `node ci/lib/vocab-parity.mjs` prints PASS across all **8** governed copies
+rather than `NOT CHECKED`. The tiers digest `sha256` is **unchanged** at
 `sha256:2cc7caeff31a09169d5d947fddf805f5d1f4f7eddcfcc984be5f83e69d1af922` — a moved tiers digest means
 a class changed tier, which this task does not do. **`proposalKind` is absent from the file at this
 wave's exit**; it arrives at formatVersion 4, owned by Wave 4B Task 1.
-`AI_EVENT_IMPACT_BY_CLASS` covers **40 of 40** tool-risk classes and **every member of
-`AI_DLP_CLASSES`**. `resolvedConsequence` is `unresolved` for **40 of 40** tool classes.
-**Totality over the producer set is `UNKNOWN (blocked on Wave 1)`.** The generated table can only be
-total over `AI_DLP_CLASSES` = **30**, which is 30 of the DLP producer's **81**. Counted at
-`origin/main`, the classes that can reach `deriveAiEventSeverity` are:
+`AI_EVENT_IMPACT_BY_CLASS` covers every class in the live producer union and
+`resolvedConsequence` is `unresolved` for **40 of 40** tool classes. **Totality over the producer set
+is proved.** Counted from the producer-owned vectors, the classes that can reach
+`deriveAiEventSeverity` are:
 
 | Producer | Count | Discovery |
 |---|---:|---|
 | DLP | **81** | `RegisteredClasses()`, `internal/dlp/registry.go:221` (33 + 48) |
 | tool-risk | **40** | `ClassCatalog()`, `internal/toolrisk/class_catalog.go:57` |
-| prompt-risk | **14** | class constants, `internal/promptrisk/promptrisk.go:53-86` — folded into the same findings array by `foldPromptRiskFindings` (`ai_handlers.go:1448`), so they hit `BASE_BY_CLASS` too |
-| ingress-risk | **7** | `git grep -oE '= "ingress-[a-z-]+"' origin/main -- internal/ingressrisk` — **reachability of `deriveAiEventSeverity` NOT VERIFIED this pass; confirm before counting it** |
+| prompt-risk | **14** | producer vector `content-risk-classes.v1.json`, generated from `internal/promptrisk` |
+| ingress-risk | **7** | the same producer vector, generated from `internal/ingressrisk`; `emitAIIngressEventWithTitle` sends its `classes` as `AppendAIEventRequest.DataClasses` (`internal/daemon/ai_ingress.go:698-730`) and Backend synthesizes each non-empty `dataClasses` member into a finding before the impact lookup (`ai-event-severity.util.ts:404-420`) |
 
-So the true denominator is **135 verified + 7 unverified = 142**, against a table that covers 30 today
-and a pinned detector catalog that covers 55. **The pinned catalog is already one class behind its own
-ingress producer** — it has 6 ingress classes and the producer emits 7 (`ingress-remote-code-exec` is
-absent). Record that; do not fix it here (it is Wave 1's generator work).
-
-The criterion becomes `|AI_EVENT_IMPACT_BY_CLASS| == 135` **the day Wave 1 lands**, and this wave
-records it as not-yet-measurable rather than claiming totality over a truncated denominator.
-**The static "all 30 DLP classes" wording at `plan:4566` is deleted.**
+The four producer sets are disjoint, so the reachable denominator is **142 proved classes**. The
+pinned detector catalog contains 55 rows: 32 live DLP, all 14 prompt-risk, 6 of 7 ingress-risk, and
+3 detector-only rows. `ingress-remote-code-exec` is the live ingress class absent from that catalog;
+its membership comes from the producer vector and its missing catalog grade stays explicit rather
+than silently dropping the class. The generated table therefore contains **145 rows**: all 142 live
+producer classes plus the three detector-only catalog rows retained for metadata continuity.
+The measurable criteria are `live producer union == 142` and
+`|AI_EVENT_IMPACT_BY_CLASS| == 145`; neither may be weakened to the old 30-member
+`AI_DLP_CLASSES` subset. **The static "all 30 DLP classes" wording at `plan:4566` is deleted.**
 
 ---
 
@@ -1148,20 +1171,22 @@ Each is a number or a named artifact, and each names the test that goes red on r
    Defeat: `ai-policy-presets.evidence-mechanism.spec.ts` + the copy guard.
 7. **Three fields, generated, and impact is not the detector tier.** Parity vector is formatVersion 3
    with a recomputing `gradesSha256` and an **unchanged** tiers `sha256`, **byte-identical across 3
-   repos**, `vocab-parity.mjs` PASS; `proposalKind` is **absent** (it lands at formatVersion 4, Wave
-   4B Task 1 — D-6, decided in Task 6);
-   `AI_EVENT_IMPACT_BY_CLASS` covers **40 of 40** tool-risk classes and every `AI_DLP_CLASSES` member;
+   repos**; the content-risk producer/copy pair is byte-identical; `vocab-parity.mjs` PASS across all
+   8 files; `proposalKind` is **absent** (it lands at formatVersion 4, Wave 4B Task 1 — D-6, decided
+   in Task 6); `AI_EVENT_IMPACT_BY_CLASS` covers **145 rows**: every member of the 142-class live
+   producer union plus the detector catalog's 3 retained non-producer rows;
    `resolvedConsequence` is `unresolved` on **40 of 40** tool classes;
    `git grep -n BASE_BY_CLASS -- Backend/src/` prints nothing.
    Defeat: `TestClassGrades_ImpactIsNotTheDetectorTier`, `TestClassGrades_IsTotalOverTheCatalog`,
    `ai-event-impact-catalog.spec.ts`.
-8. **Totality over the producer set — `UNKNOWN (blocked on Wave 1)`.** The generated table can be
-   total only over `AI_DLP_CLASSES` = **30**, while the classes that can reach the derivation number
-   **135 verified** (81 DLP + 40 tool-risk + 14 prompt-risk) **+ 7 ingress unverified**. The criterion
-   `|AI_EVENT_IMPACT_BY_CLASS| == 135` becomes measurable the day Wave 1 lands and **not before**.
-   This wave records it as not-yet-measurable; it does not claim totality over a truncated
-   denominator, and the static "all 30 DLP classes" wording at `plan:4566` is deleted.
-   **Certificate contribution: UNKNOWN.**
+8. **Totality over the producer set — PASS requires exact counts.** The reachable, disjoint producer
+   union is **142** (81 DLP + 40 tool-risk + 14 prompt-risk + 7 ingress-risk). Ingress reachability is
+   proved by the `classes` → `DataClasses` producer write and Backend's class-only finding synthesis.
+   The generated table is **145** because it deliberately retains `custom-blocklist`,
+   `high-risk-file-type` and `image-upload` from the detector catalog. The content-risk vector is the
+   sole prompt/ingress roster; no Backend-authored second vocabulary participates. Any missing
+   producer/copy file is `NOT CHECKED`, never PASS. **Certificate contribution: PASS only when all
+   these assertions and cross-repo parity are green.**
 9. **The grade crosses the wire on both lanes, Backend first (O-7).** `git grep -n "count: f.count" -- Backend/src/ai-governance/controllers`
    returns **2** sites, both carrying the grade; a tool-check finding lands `evidenceStrength` in
    `severity_basis`; the aggregate carries the **weakest** occurrence's grade. **The Backend half is

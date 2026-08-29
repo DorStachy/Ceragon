@@ -181,8 +181,12 @@ validates it.
 
 | check | what one repo cannot see |
 |---|---|
-| `detector-vocab-parity` | Tool-risk and DLP are two producer-owned vocabularies, each copied into Installers, Backend, and Frontend. This is the only six-file, three-repository comparison; Frontend's scheduled check sees only producer + Frontend. |
-| `detector-vocab-parity-selftest` | Mutation proof for both schemas, including fabricated producer-only classes and fail-closed missing-source cases. |
+| `detector-vocab-parity` | Tool-risk and DLP are copied across Installers, Backend and Frontend; the producer-owned content-risk roster is copied from Installers to Backend. This is the only eight-file cross-repository comparison. The content-risk pair uses exact raw-byte parity; the two structured catalogs normalize only CRLF. |
+| `detector-vocab-parity-selftest` | Mutation proof for all three contracts, including fabricated producer-only classes, exact-byte content drift, and fail-closed missing-source cases. |
+
+Because content-risk parity is raw-byte exact, both registered content-risk paths must be pinned
+`text eol=lf` in their owning repository. A CRLF-only difference is drift for that opaque contract;
+the self-test proves it.
 
 ### Why the per-repo guards cannot cover it
 
@@ -208,9 +212,10 @@ fail. Because the checkouts here are hundreds of commits behind and several do n
 disk at all, the checker falls back to a committed copy, and says so by name when it does.
 
 ```bash
-node ci/lib/vocab-parity.mjs --ref origin/main   # pin all three to one ref
+node ci/lib/vocab-parity.mjs --ref origin/main   # pin every repository to one ref
 node ci/lib/vocab-parity.mjs --json
 TOOLRISK_VOCAB_BACKEND=/path/to/wt@HEAD node ci/lib/vocab-parity.mjs   # per-repo source
+CONTENT_RISK_VOCAB_INSTALLERS=/path/to/wt node ci/lib/vocab-parity.mjs # content producer
 ```
 
 Exit status: `0` compared and agreed, `1` compared and disagreed, `2` could not be compared.
@@ -371,7 +376,7 @@ ci/
   lib/workflow.mjs         workflow -> ordered steps (matrix, if:, expressions, uses: policy)
   lib/wfsource.mjs         which version of a workflow to execute
   lib/drift.mjs            the completeness fence, and the cost report
-  lib/vocab-parity.mjs     tool-risk vocabulary, three repos compared to EACH OTHER
+  lib/vocab-parity.mjs     tool-risk, DLP and content-risk copies compared across repos
   lib/vocab-parity.test.mjs  its mutation proof
   .logs/                   per-gate logs, git-ignored
 ```

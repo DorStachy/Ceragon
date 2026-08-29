@@ -79,6 +79,7 @@ function producerBytes(vocabulary) {
 }
 const BASE = JSON.parse(producerBytes('toolrisk').toString('utf8'));
 const DLP_BASE = JSON.parse(producerBytes('dlp').toString('utf8'));
+const CONTENT_RISK_BASE = JSON.parse(producerBytes('contentrisk').toString('utf8'));
 
 // ── fixture helpers ──────────────────────────────────────────────────────────
 
@@ -152,11 +153,15 @@ function layout(docs, opts = {}, dlpDocs = null) {
       const value =
         copy.vocabulary === 'toolrisk'
           ? docs[key]
-          : dlpDocs
-            ? dlpDocs[key]
+          : copy.vocabulary === 'dlp'
+            ? dlpDocs
+              ? dlpDocs[key]
+              : docs[key] === null
+                ? null
+                : DLP_BASE
             : docs[key] === null
               ? null
-              : DLP_BASE;
+              : CONTENT_RISK_BASE;
       if (value === null) continue;
       const dest = join(repoDir, copy.filePath);
       mkdirSync(dirname(dest), { recursive: true });
@@ -212,6 +217,18 @@ function dlpTrio(docs, opts) {
   return root;
 }
 
+function withContentRiskPair(root, producer, consumer) {
+  for (const [repo, filePath, value] of [
+    ['Installers', 'parity-vectors/content-risk-classes.v1.json', producer],
+    ['Backend', 'packages/shared-contracts/content-risk-classes.v1.json', consumer],
+  ]) {
+    const dest = join(root, repo, filePath);
+    mkdirSync(dirname(dest), { recursive: true });
+    writeFileSync(dest, typeof value === 'string' ? value : serialize(value));
+  }
+  return root;
+}
+
 // ── the cases ────────────────────────────────────────────────────────────────
 
 process.stdout.write('\nvocab-parity mutation proof\n\n');
@@ -254,6 +271,34 @@ testCase('DLP class added in the AGENT only -> DRIFT naming the class and both c
   assert(r.code === 1, `expected exit 1 (DRIFT), got ${r.code}\n${r.out}`);
   assert(r.out.includes(ghost), `output must name '${ghost}':\n${r.out}`);
   assert(/MISSING from Backend \+ Frontend/.test(r.out), `output must name the repos missing it:\n${r.out}`);
+});
+
+testCase('content-risk producer bytes drift from Backend -> DRIFT naming both copies', () => {
+  const producer = clone(CONTENT_RISK_BASE);
+  producer.note = 'producer changed this field';
+  const root = withContentRiskPair(
+    trio({ Installers: BASE, Backend: BASE, Frontend: BASE }),
+    producer,
+    CONTENT_RISK_BASE,
+  );
+  const r = runAllowingFailure(root);
+  assert(r.code === 1, `expected exit 1 (DRIFT), got ${r.code}\n${r.out}`);
+  assert(/\[contentrisk\]/.test(r.out), `expected content-risk drift attribution:\n${r.out}`);
+  assert(/not byte-identical/.test(r.out), `expected exact-byte drift callout:\n${r.out}`);
+  assert(/Installers/.test(r.out) && /Backend/.test(r.out), `must name both copies:\n${r.out}`);
+});
+
+testCase('content-risk is exact bytes: CRLF in one copy -> DRIFT', () => {
+  const lf = serialize(CONTENT_RISK_BASE);
+  const crlf = lf.replace(/\n/g, '\r\n');
+  const root = withContentRiskPair(
+    trio({ Installers: BASE, Backend: BASE, Frontend: BASE }),
+    lf,
+    crlf,
+  );
+  const r = runAllowingFailure(root);
+  assert(r.code === 1, `expected exit 1 (DRIFT), got ${r.code}\n${r.out}`);
+  assert(/\[contentrisk\]/.test(r.out), `expected content-risk drift attribution:\n${r.out}`);
 });
 
 testCase('THE HISTORICAL CASE: interpreter-exec + fetch-then-exec + substitution-exfil absent from both consumers -> DRIFT naming all three', () => {
@@ -391,6 +436,28 @@ testCase('repo present, file missing, no git -> NOT CHECKED (exit 2)', () => {
   assert(!/\bPASS\b/.test(r.out), `must not print PASS:\n${r.out}`);
 });
 
+testCase('content-risk consumer file missing -> NOT CHECKED (exit 2), never PASS', () => {
+  const root = trio({ Installers: BASE, Backend: BASE, Frontend: BASE });
+  rmSync(join(root, 'Backend', 'packages/shared-contracts/content-risk-classes.v1.json'));
+  const r = runAllowingFailure(root);
+  assert(r.code === 2, `expected exit 2 (NOT CHECKED), got ${r.code}\n${r.out}`);
+  assert(/\[contentrisk\] Backend:/.test(r.out), `must name the missing content-risk copy:\n${r.out}`);
+  assert(!/\bPASS\b/.test(r.out), `must not print PASS:\n${r.out}`);
+});
+
+testCase('identically malformed content-risk JSON -> NOT CHECKED, never false PASS', () => {
+  const root = withContentRiskPair(
+    trio({ Installers: BASE, Backend: BASE, Frontend: BASE }),
+    '{ malformed',
+    '{ malformed',
+  );
+  const r = runAllowingFailure(root);
+  assert(r.code === 2, `expected exit 2 (NOT CHECKED), got ${r.code}\n${r.out}`);
+  assert(/\[contentrisk\]/.test(r.out), `must attribute the unreadable vocabulary:\n${r.out}`);
+  assert(/not valid JSON/.test(r.out), `must explain the parse failure:\n${r.out}`);
+  assert(!/\bPASS\b/.test(r.out), `must not print PASS:\n${r.out}`);
+});
+
 testCase('unparseable JSON in one copy -> NOT CHECKED (exit 2), never PASS', () => {
   const r = runAllowingFailure(trio({ Installers: BASE, Backend: '{ this is not json', Frontend: BASE }));
   assert(r.code === 2, `expected exit 2, got ${r.code}\n${r.out}`);
@@ -488,7 +555,10 @@ testCase('--json reports the same verdict and names every source', () => {
   assert(r.code === 1, `expected exit 1, got ${r.code}\n${r.out}`);
   const parsed = JSON.parse(r.out);
   assert(parsed.status === 'DRIFT', `expected DRIFT, got ${parsed.status}`);
-  assert(parsed.sources.length === 6, `expected 6 sources, got ${parsed.sources.length}`);
+  assert(
+    parsed.sources.length === COPIES.length,
+    `expected ${COPIES.length} sources, got ${parsed.sources.length}`,
+  );
   assert(
     parsed.drift.some((d) => d.includes('zz-json-shape')),
     `the machine-readable form must name the class too:\n${r.out}`,
@@ -529,7 +599,7 @@ testCase('the digest is sensitive to a tier move that leaves the class list iden
 
 process.stdout.write(dim('\n  -- the live workspace --\n'));
 
-testCase('the checker reaches a verdict on the real three repos (not NOT_CHECKED)', () => {
+testCase('the checker reaches a verdict on every real authoritative copy (not NOT_CHECKED)', () => {
   const r = live;
   assert(
     r.status === 'PASS' || r.status === 'DRIFT',
@@ -537,16 +607,20 @@ testCase('the checker reaches a verdict on the real three repos (not NOT_CHECKED
   );
 });
 
-testCase('each vocabulary\'s three real copies are byte-identical after CRLF normalisation', () => {
+testCase('each vocabulary\'s real copies are byte-identical under its contract', () => {
   const r = live;
   assert(r.status !== 'NOT_CHECKED', `cannot verify: ${r.reasons.join('; ')}`);
-  for (const vocabulary of ['toolrisk', 'dlp']) {
+  for (const vocabulary of [...new Set(COPIES.map((copy) => copy.vocabulary))]) {
     const digests = r.resolved
       .filter((x) => x.vocabulary === vocabulary)
       .map((x) => ({
         key: x.key,
         sha: createHash('sha256')
-          .update(x.bytes.toString('utf8').replace(/\r\n/g, '\n'), 'utf8')
+          .update(
+            vocabulary === 'contentrisk'
+              ? x.bytes
+              : x.bytes.toString('utf8').replace(/\r\n/g, '\n'),
+          )
           .digest('hex'),
       }));
     const distinct = new Set(digests.map((d) => d.sha));

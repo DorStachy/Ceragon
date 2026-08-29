@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * CROSS-REPO DRIFT CHECK for the tool-risk and DLP detector vocabularies.
+ * CROSS-REPO DRIFT CHECK for the tool-risk, DLP and content-risk detector vocabularies.
  *
  * ── What this exists to catch ────────────────────────────────────────────────
  *
@@ -14,6 +14,9 @@
  *   producer  Installers/parity-vectors/dlp-classes.v1.json
  *   consumer  Backend/packages/shared-contracts/dlp-classes.v1.json
  *   consumer  Frontend/types/vendored/dlp-classes.v1.json
+ *
+ *   producer  Installers/parity-vectors/content-risk-classes.v1.json
+ *   consumer  Backend/packages/shared-contracts/content-risk-classes.v1.json
  *
  * A new high-severity class added in the agent and never copied across starts
  * interrupting developers fleet-wide with NO CONSOLE CONTROL TO TURN IT OFF: an
@@ -44,8 +47,9 @@
  * copy), Frontend is green (same). Three green repos, one divergent vocabulary,
  * and nobody is looking at all three at once.
  *
- * This script is the thing that looks at all three at once. It reads the three
- * files OUT OF THE THREE REPOSITORIES and compares them TO EACH OTHER.
+ * This script is the thing that looks across repositories. It reads every
+ * registered producer and consumer file out of its owning repository and
+ * compares the copies to each other.
  *
  * ── It refuses to pass when it cannot compare ────────────────────────────────
  *
@@ -59,8 +63,8 @@
  *
  * Deliberately NOT a digest-only fallback like that script's second mode. A
  * self-digest answers "was this file hand-edited", which is the question the
- * three existing per-repo guards already answer. The only question this script
- * exists for needs all three files present.
+ * existing per-repo guards already answer. The only question this script
+ * exists for needs every registered copy present.
  *
  * ── It is not a hand-written list of class names ─────────────────────────────
  *
@@ -74,7 +78,7 @@
  * ── Usage ───────────────────────────────────────────────────────────────────
  *
  *   node ci/lib/vocab-parity.mjs                 # each repo's best available copy
- *   node ci/lib/vocab-parity.mjs --ref origin/main   # pin all three to one ref
+ *   node ci/lib/vocab-parity.mjs --ref origin/main   # pin every repository to one ref
  *   node ci/lib/vocab-parity.mjs --json
  *   node ci/lib/vocab-parity.mjs --root <workspace>
  *
@@ -85,12 +89,14 @@
  *   DLP_VOCAB_INSTALLERS=<spec>
  *   DLP_VOCAB_BACKEND=<spec>
  *   DLP_VOCAB_FRONTEND=<spec>
+ *   CONTENT_RISK_VOCAB_INSTALLERS=<spec>
+ *   CONTENT_RISK_VOCAB_BACKEND=<spec>
  * A bare ref must be written `@<ref>` (e.g. `@HEAD`) so it cannot be confused
  * with a relative path.
  *
  * Exit status:
- *   0  PASS         all six files compared, and each three-copy vocabulary agrees
- *   1  DRIFT        all six files compared, and at least one vocabulary disagrees
+ *   0  PASS         all eight files compared, and every copied vocabulary agrees
+ *   1  DRIFT        all eight files compared, and at least one vocabulary disagrees
  *   2  NOT CHECKED  the comparison could not be made
  *   3  usage error
  */
@@ -104,7 +110,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const CI_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 /**
- * THE TWO VOCABULARIES AND THEIR THREE COPIES EACH.
+ * THE THREE VOCABULARIES AND THEIR AUTHORITATIVE COPIES.
  *
  * These paths are the one thing that cannot be derived: there is no registry
  * anywhere in the workspace that records where the vocabulary was copied to.
@@ -125,6 +131,10 @@ export const VOCABULARIES = Object.freeze({
     expectedFormat: 'ceragon.ai-security.dlp-class-catalog',
     minFormatVersion: 1,
     shape: 'catalog',
+  }),
+  contentrisk: Object.freeze({
+    label: 'content-risk',
+    shape: 'opaque',
   }),
 });
 
@@ -183,6 +193,24 @@ export const COPIES = [
     env: 'DLP_VOCAB_FRONTEND',
     regenerate: 'copy the producer file here, then update AI_DLP_CLASSES + AI_DLP_CLASS_META',
   },
+  {
+    vocabulary: 'contentrisk',
+    key: 'Installers',
+    role: 'producer',
+    repoDir: 'Installers',
+    filePath: 'parity-vectors/content-risk-classes.v1.json',
+    env: 'CONTENT_RISK_VOCAB_INSTALLERS',
+    regenerate: 'CONTENT_RISK_CLASSES_UPDATE=1 go test ./internal/contentriskcatalog/',
+  },
+  {
+    vocabulary: 'contentrisk',
+    key: 'Backend',
+    role: 'consumer',
+    repoDir: 'Backend',
+    filePath: 'packages/shared-contracts/content-risk-classes.v1.json',
+    env: 'CONTENT_RISK_VOCAB_BACKEND',
+    regenerate: 'copy the producer file here byte-for-byte',
+  },
 ];
 
 const E = String.fromCharCode(27);
@@ -197,12 +225,14 @@ const bold = (s) => c('1', s);
 /**
  * LINE ENDINGS ARE NOT VOCABULARY.
  *
- * `.gitattributes` pins these files `text eol=lf` in all three repos, but a
- * checkout that predates the pin has CRLF in the working tree with LF in the
- * index. The Go guard learned this the hard way on 2026-08-06: it went red on
- * every Windows worktree while the committed bytes were sha256-identical. Only
- * git's own autocrlf transformation is undone here -- an added class, a changed
- * tier or a different digest all still fail.
+ * `.gitattributes` pins the structured tool-risk and DLP files `text eol=lf`,
+ * but a checkout that predates the pin has CRLF in the working tree with LF in
+ * the index. The Go guard learned this the hard way on 2026-08-06: it went red
+ * on every Windows worktree while the committed bytes were sha256-identical.
+ * Only git's own autocrlf transformation is undone for those two schemas -- an
+ * added class, changed tier or different digest still fails. The opaque
+ * content-risk producer/copy contract is raw byte parity, including line
+ * endings.
  */
 const normalizeEOL = (s) => s.replace(/\r\n/g, '\n');
 
@@ -515,6 +545,43 @@ function compareVocabulary(resolved) {
     };
   }
 
+  const definition = VOCABULARIES[resolved[0].vocabulary];
+  if (definition.shape === 'opaque') {
+    const unreadable = [];
+    for (const r of resolved) {
+      try {
+        JSON.parse(r.bytes.toString('utf8'));
+      } catch (err) {
+        unreadable.push(`${r.sourceLabel}: not valid JSON (${err.message})`);
+      }
+    }
+    if (unreadable.length) {
+      return { status: 'NOT_CHECKED', reasons: unreadable, drift: [] };
+    }
+
+    const drift = [];
+    const ref = resolved[0];
+    const referenceText = ref.bytes.toString('utf8');
+    for (const r of resolved.slice(1)) {
+      const text = r.bytes.toString('utf8');
+      if (!r.bytes.equals(ref.bytes)) {
+        drift.push(
+          `the ${r.key} copy is not byte-identical to the ${ref.key} copy\n` +
+            '      ' +
+            firstDifference(referenceText, text, ref.key, r.key).replace(/\n/g, '\n      '),
+        );
+      }
+    }
+    return {
+      status: drift.length ? 'DRIFT' : 'PASS',
+      reasons: [],
+      drift,
+      views: new Map(
+        resolved.map((r) => [r.key, { text: r.bytes.toString('utf8') }]),
+      ),
+    };
+  }
+
   const views = new Map();
   const unreadable = [];
   for (const r of resolved) {
@@ -676,12 +743,12 @@ function report(result, log) {
   log('\n');
 
   if (result.status === 'NOT_CHECKED') {
-    log(`${red('NOT CHECKED')} -- all six files could not be compared.\n`);
+    log(`${red('NOT CHECKED')} -- all ${COPIES.length} files could not be compared.\n`);
     for (const reason of result.reasons) log(`  ${red('!')} ${reason}\n`);
     log(
       dim(
-        '\n  This is NOT a pass. Each vocabulary must be compared across all three\n' +
-          '  repositories; with a copy missing there is nothing to compare.\n' +
+        '\n  This is NOT a pass. Each vocabulary must be compared across every\n' +
+          '  authoritative copy; with a copy missing there is nothing to compare.\n' +
           '  Point it at the checkouts with --root, --ref, or <VOCAB>_VOCAB_<REPO>.\n',
       ),
     );
@@ -689,9 +756,9 @@ function report(result, log) {
   }
 
   if (result.status === 'DRIFT') {
-    log(`${red('DRIFT')} -- at least one detector vocabulary differs across its three repos.\n\n`);
+    log(`${red('DRIFT')} -- at least one detector vocabulary differs across its copies.\n\n`);
     for (const d of result.drift) log(`  ${red('x')} ${d}\n`);
-    log('\n' + dim('  Fix: regenerate each drifting producer vector, then copy it to both consumers.\n'));
+    log('\n' + dim('  Fix: regenerate each drifting producer vector, then copy it to every consumer.\n'));
     for (const vocabulary of Object.keys(VOCABULARIES)) {
       const copies = result.resolved.filter((copy) => copy.vocabulary === vocabulary);
       const producer = copies.find((copy) => copy.role === 'producer');
@@ -705,9 +772,19 @@ function report(result, log) {
 
   for (const [vocabulary, vocabularyResult] of result.byVocabulary) {
     const view = vocabularyResult.views.values().next().value;
-    log(`  ${VOCABULARIES[vocabulary].label}: ${view.classes.size} classes across 3 identical copies\n`);
+    if (VOCABULARIES[vocabulary].shape === 'opaque') {
+      const copyCount = result.resolved.filter((copy) => copy.vocabulary === vocabulary).length;
+      log(`  ${VOCABULARIES[vocabulary].label}: ${copyCount} byte-identical copies\n`);
+    } else {
+      const copyCount = result.resolved.filter((copy) => copy.vocabulary === vocabulary).length;
+      log(
+        `  ${VOCABULARIES[vocabulary].label}: ${view.classes.size} classes across ${copyCount} identical copies\n`,
+      );
+    }
   }
-  log(`${green('PASS')} -- 2 vocabularies x 3 copies = 6 files agree exactly.\n`);
+  log(
+    `${green('PASS')} -- ${Object.keys(VOCABULARIES).length} vocabularies across ${COPIES.length} files agree exactly.\n`,
+  );
 }
 
 const EXIT = { PASS: 0, DRIFT: 1, NOT_CHECKED: 2 };
