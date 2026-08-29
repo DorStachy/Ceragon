@@ -154,3 +154,10 @@ semantics. P9 may widen `internal/aipolicycontract/detector_catalog_generated.go
 to carry per-class scan budgets/defaults, provided the consumer-pin identity remains `classCount: 55`,
 `hardStopEligibleClassCount: 4`, digest `b252ee02` until regeneration. This approval adds no class and
 changes no detection semantics. P9 must post the new `DetectorCatalogDigest` after regeneration.
+
+### 2026-08-29 · P47 records Wave 1 producer-catalog identity
+
+Wave 1 Task 1's producer catalog is locally green with `classCount: 81` and exact digest
+`sha256:6dd17f98d86eac0260e03abba61a06532d1a9c69c2ff81b059e4500ac2aebac6`. The Wave 1 Task 1 exit in
+the master plan now records that value. This is a documentation handoff only; P47 did not modify the
+catalog producer or its detection semantics.

@@ -76,6 +76,16 @@
       "id": "standards-schema-declaration-selftest",
       "script": "ci/lib/standards-schema-declaration.test.mjs",
       "why": "Defeat proof for a missing standards column and blank ATLAS release."
+    },
+    {
+      "id": "plan-citation-resolver",
+      "script": "ci/lib/plan-citations.mjs",
+      "why": "Resolves qualified plan citations against each repository's origin/main and rejects past-EOF or unqualified source references."
+    },
+    {
+      "id": "plan-citation-resolver-selftest",
+      "script": "ci/lib/plan-citations.test.mjs",
+      "why": "Defeat proof that a citation beyond EOF is rejected with its exact source path and line count."
     }
   ],
   "repos": {
