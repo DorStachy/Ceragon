@@ -1892,3 +1892,36 @@ digest `cf4b55add546382737a5eb24d9b2b8f24a0ac87d8713c32705ae696b95603541`; DLP h
 classes with raw file SHA-256
 `d656f717120e6fbd9d5442021a019a87f3962d1aab34989ccf5d584585ae2a07`. Sources were the working
 trees for Installers PR `#229`, Backend PR `#298`, and Frontend PR `#192`; no ref fallback occurred.
+
+### 2026-08-29T19:15Z · P47 · W0A FINAL REVIEW; WAVE 1 SOURCE MERGES AND EXPLICIT BLOCKERS
+
+W0A Installers PR `#221` is independently **APPROVED** at exact SHA
+`14e19b23faed4a74a5385fa35d4f1872daf0c592`, based on `8f547078`. Its affected source gates, C12,
+the 2,842-decision golden (`delta: 0`), vet, and the clean confirmatory performance pass are green.
+It remains deliberately **unmerged**: Docker Desktop/WSL could not provide the final mirror run, and
+accepting that evidence exception is an owner decision. No agent was released.
+
+Wave 1 moved beyond draft implementation:
+
+- Installers DLP producer PR `#229` merged as `1975585e64f76dccb31ef85ddaddc249af1e60d8`.
+  The producer has 81 classes, catalog digest
+  `sha256:6dd17f98d86eac0260e03abba61a06532d1a9c69c2ff81b059e4500ac2aebac6`, and raw vector
+  SHA-256 `d656f717120e6fbd9d5442021a019a87f3962d1aab34989ccf5d584585ae2a07`.
+- Backend policy-authority PR `#298` merged as `2551ec4fb9e967f7d793c44fd3d92f4b1f4f3b75` after exact-SHA
+  independent approval. The full policy tree passed 73/73 suites (1,650 pass, 27 gated skips), the
+  explicit real-Postgres boundary passed 11/11, and the production build passed. New writes cannot
+  disable `dlp` or `promptRisk`; legacy disabled rows remain editable and are raised only on the
+  served clone.
+- Frontend PR `#192` is source-approved at `2535221dfa6f796f5338e586fbf5bbea4045e118` after closing
+  the Block-by-default typed-confirmation bypass, including `chmod-broad-777` and `chmod-sensitive`.
+  It remains unmerged because the sole Vercel context fails on private-organisation Hobby billing;
+  this is an external owner/account gate, not a source failure. Backend-before-Frontend deployment
+  remains owner-gated and no deployment occurred.
+- Root parity PR `#11` remains the authoritative three-repository gate. The Frontend scheduled
+  two-repository mirror still lacks owner-managed `INSTALLERS_READ_TOKEN` and is not a merge gate.
+
+One scope boundary is now explicit in both Wave 1 and Wave 4C: the class id
+`ingress-secret-exfil-combo` exists in both lanes, while the present 37-member floor protects the
+lane-qualified `promptRisk` entry only. `ingress.enabled=false` therefore remains a whole-lane bypass;
+Wave 4C now owns the ingress enable guard plus real HTTP/Postgres defeat proof. Until it lands,
+ingress enforcement is `NOT_READY` and must not be credited to Wave 1.

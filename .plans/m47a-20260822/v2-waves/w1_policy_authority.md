@@ -751,6 +751,9 @@ no way out through the console. That is the same shape as the outage the read pa
 - [ ] **Step 1 (RED): write `ai-malicious-floor-write-path.spec.ts` around the delta, not the state.**
   The predicate is `findMaliciousFloorViolations(next) \ findMaliciousFloorViolations(base)`. Cases:
   a PUT that moves `dlp.private-key` from `redact` to `monitor` → `422` naming `dlp.private-key`;
+  a PUT that newly sets `dlp.enabled=false` or `promptRisk.enabled=false` → `422` naming the disabled
+  section and one of its protected classes; an unrelated PUT against a legacy row where either switch
+  is already false → **`200`**, stored switch unchanged, with the serve-time raise reported;
   a PUT that touches `providers` on a tenant already below the floor → **`200`**, unchanged, with the
   pre-existing violation reported on the response rather than refused; the recommended policy → `200`;
   a stricter-than-floor config → `200`. Expected first run: `assertWriteAboveFloor is not a function`.
@@ -806,9 +809,15 @@ longer matches and the dialog does not open.
 **Fourth defeat test:** the consequence case — assert the dialog for `dlp:private-key` renders the
 `DOWNGRADE_CONSEQUENCE` copy, then revert the keying. Expected: the assertion fails against
 `genericConsequence`'s wording.
+**Fifth defeat test:** the write-path and live-Postgres suites set `dlp.enabled=false` and
+`promptRisk.enabled=false` on a clean row. Delete the section-disabled arm from
+`findMaliciousFloorViolations`; both writes change from `422` to `200` and persist the bypass. The
+legacy-disabled-row case must remain `200`, proving the guard is still a delta and not a fleet-wide
+write lock.
 **Exit:** four numbers and one artifact. (1) `6` write endpoints call the guard, enumerated in the
 spec. (2) A PUT that newly violates the floor returns `422` naming the class **and** the section, and
-a PUT that does not returns `200` — both asserted against a real Backend, not a mock. (3)
+a PUT that newly disables `dlp` or `promptRisk` does the same; pre-existing violations and disabled
+sections do not brick unrelated writes — all asserted against a real Backend, not a mock. (3)
 `categoryFloors()` emits `0` dispositions the board cannot rank. (4) The response carries the
 serve-time raised set, so `floorRaised` stops being log-only. **Artifact — blocked on Wave 5 Task 1
 Step 2:** a render-harness screenshot of a floored category showing the lock chip and its reason.
@@ -858,9 +867,10 @@ Each is a number or a named artifact, and each names the test that goes red on r
    and it compares **two of the three copies**. Until both are true, the *tool-risk policy authority
    and catalog totality* certificate dimension is **`UNKNOWN`, not `PASS`**.
 9. **`6` write endpoints share the guarded transaction; a policy that newly drops a class below the
-   floor is refused with `422` naming class and section; a PUT that does not newly violate returns
-   `200`.** Verified against a real Backend, not a mock. Defeat: delete the guard call from
-   `putForSite`.
+   floor or newly disables `dlp` / `promptRisk` is refused with `422` naming the affected section and
+   protected class; a PUT that does not newly violate returns `200`, including an unrelated edit on a
+   legacy disabled row.** Verified against a real Backend, not a mock. Defeat: delete the guard call
+   from `putForSite`, or delete the section-disabled arm from `findMaliciousFloorViolations`.
 10. **`categoryFloors()` emits `0` dispositions the board cannot rank, and the serve-time raised set
     reaches the DTO** — today `floorRaised` has 4 references, all inside one `logger.warn`.
 11. **Deploy order held and evidenced (O-4):** Backend task definition deployed and its revision
@@ -876,6 +886,11 @@ Each is a number or a named artifact, and each names the test that goes red on r
 
 ### What this wave does **not** move, and must not be reported as moving
 
+- **The separate ingress master switch remains open.** `ingress.enabled=false` is not guarded by the
+  37-member floor. The identifier `ingress-secret-exfil-combo` exists in both policy lanes, but the
+  current floor member is lane-qualified to `promptRisk`; it does not protect the ingress action map.
+  Wave 4C owns the ingress guard and its live defeat proof. Until then, ingress enforcement is
+  `NOT_READY`, not covered by this wave's DLP/prompt-risk switch result.
 - **R1 stays `NOT_READY`.** Its five other named blockers are untouched: two published FN residuals
   (`attack-private-key-block`, `attack-prod-db-connection-string`), the ingress private-key leak, the
   absent pre-egress boundary across every provider route (P0-15), the absent inspection-completeness
