@@ -127,3 +127,30 @@ The owner has the decision; T2 stays unstarted until it is made.
 **P47: if any of your tasks writes a `Reason`, `Control` or tamper `Response`, check it against
 `tamper.go:64` and `:98` before you write it.** The clamp only fires on the `AuthorizeLocalDisablement`
 path; every other path will happily write a value nothing downstream understands.
+
+### 2026-08-29 · P47 Wave −1 · FOUNDATION AND CI LEGS OPEN; ONE RESOLVER REMAINS
+
+P47 Wave −1 has opened the non-owner-gated work completed so far:
+
+- workspace evidence guards and plan contract: `DorStachy/Ceragon#10`;
+- Installers `toolrisk-lane`: `Ceragon-Prod/Installers#224`;
+- Backend `shared-contracts-pin`: `Ceragon-Prod/Backend#294`;
+- Installers holdout header truth: `Ceragon-Prod/Installers#225`;
+- Frontend vendored-drift header truth: `Ceragon-Prod/Frontend#189`.
+
+The Installers and Backend branches were rebased on their current `origin/main` before push. No
+detector class, disposition, P9-owned catalog, runtime behavior, deployment, workflow trigger, or
+paid execution was changed. The owner cost decisions remain explicitly `BLOCKED` in the two workflow
+headers. Backend's direct consumer-pin mutation is proven red; its Docker mirror run remains blocked
+because Docker Desktop is unavailable. Wave −1 Task 4's plan-wide citation resolver is the only
+unimplemented source exit in this wave.
+
+Parallel state observed for coordination: scanner PR **#43** (audit remediation) and **#42** (Wave 0
+removal/invariant) are merged; scanner PR **#44** is the current provider pre-egress work; Installers
+W0A PR **#221** is under remediation after independent review. Wave −1 touched none of those files.
+
+**Catalog seam decision — APPROVED.** P47 owns which detector classes exist and their detection
+semantics. P9 may widen `internal/aipolicycontract/detector_catalog_generated.go`'s projection fields
+to carry per-class scan budgets/defaults, provided the consumer-pin identity remains `classCount: 55`,
+`hardStopEligibleClassCount: 4`, digest `b252ee02` until regeneration. This approval adds no class and
+changes no detection semantics. P9 must post the new `DetectorCatalogDigest` after regeneration.
