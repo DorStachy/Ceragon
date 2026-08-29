@@ -1969,3 +1969,42 @@ Checkpoint state for the other programme:
   decision on the missing Docker mirror proof. No agent release occurred.
 - No P47 Backend deploy, agent release, AWS mutation, or production verification occurred at this
   checkpoint.
+
+### 2026-08-29T21:54:56Z · P47 · W2 T9 SOURCE CANDIDATE + P9 GOLDEN DELTA ZERO
+
+Wave 2 Task 9 is implemented as source-only candidates across three repositories:
+
+- Installers PR `#248`, exact SHA `ac4d1a74414899a601886f27c27e16c47bdcc98e`, centralizes the
+  SHADOW lifecycle boundary in local tool decisions and tainting. SHADOW findings cannot interrupt
+  on the nil-policy, legacy-DLP, or first-class-tool-risk lane and cannot create a taint hold. Mixed
+  current plus SHADOW findings still enforce from the current finding.
+- Backend PR `#303`, exact SHA `0e017b212c654c9cc145e43d20419d2ef05ed21c`, adds code-adjacent
+  cross-references that distinguish detection records, SOC alerts, and enforcement state.
+- Root PR `#15` (this entry is part of its current head) adds the normative four-object disposition
+  vocabulary and explicitly leaves Task 9d `NOT_READY` pending Product and Security approval plus
+  Wave 3/sequence-corpus proof.
+
+The Installers production tree has exactly four `IsShadowClass` call sites outside its declaring
+file: two policy-evaluation boundaries, one centralized local-decision filter, and one taint filter.
+No detector class, match predicate, severity, policy action, detector catalog, or P9-owned response
+field changed. The P9 local-decision replay still passes all **2,842** recorded decisions; row-count
+delta is **0** and the golden was not regenerated.
+
+Held and released evidence now carries separate bounded metadata keys `taintRiskClass`,
+`taintRiskDisposition`, and `taintRiskArm`; session provenance remains in `taintReason`. The finding
+arm records the actual effective disposition, including fallback from an invalid policy token, and
+the independent sensitive-operation arm uses the synthetic class `sensitive-path-or-op` with
+`hold` disposition. No secret value or matched content is added to metadata.
+
+Focused `daemon`, `localdecide`, and `policyeval` suites, focused vet, the golden, and diff hygiene
+are green. The full `go test ./internal/... -count=1` sweep had two failures: the pre-existing C04
+inertness violation caused by `internal/daemon/ai_posttool_obligations_test.go`, plus the bounded
+fan-out timing test completing 759/1024 sessions inside its five-second wall-clock box under the
+loaded full-suite run. The timing test passed immediately in isolation in 1.959 seconds. No P47
+release, deployment, AWS mutation, production verification, golden regeneration, or policy-default
+change occurred.
+
+Related Wave 2 Task 6 producer state: Backend PR `#301` is independently approved at exact SHA
+`368f5d2b4bc205c1b037c27fa6a5c2a4e40a2d85`; its formula version is `5`, because 95 of 142 live
+classes intentionally move away from the former unknown-class medium fallback. It remains unmerged
+until Frontend PR `#195` and root parity PR `#14` can move as the required three-copy unit.
