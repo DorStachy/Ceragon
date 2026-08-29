@@ -1925,3 +1925,47 @@ One scope boundary is now explicit in both Wave 1 and Wave 4C: the class id
 lane-qualified `promptRisk` entry only. `ingress.enabled=false` therefore remains a whole-lane bypass;
 Wave 4C now owns the ingress enable guard plus real HTTP/Postgres defeat proof. Until it lands,
 ingress enforcement is `NOT_READY` and must not be credited to Wave 1.
+
+### 2026-08-29T20:20Z · P47 · MIGRATION CLAIM — RETROACTIVE PROCESS CORRECTION
+
+**P47 claims Backend migration timestamp `1793100000000`.**
+
+File: `src/migrations/1793100000000-WidenAiEventSeverityToFiveBands.ts` in Backend PR #300,
+exact source SHA `898b6c951d80a5d47cf694e625db42f903c05000`.
+
+The migration is transactional, drops and re-adds only `CHK_ai_events_severity`, preserves NULL as
+unassessed, and performs no INSERT/UPDATE/DELETE or other hash-covered row rewrite. P9's earlier claim
+reserved `1793000000000` and explicitly directed P47 to use `1793100000000` or later, so no timestamp
+collision exists. P47 failed to post the formal claim before writing the file; this entry corrects
+the coordination record and does not pretend the ordering rule was followed on time.
+
+### 2026-08-29T20:20Z · P47 · SEAM REQUEST + CHECKPOINT BLOCK
+
+File owned by P9: `Backend/src/ai-governance/dto/ai-response.dto.ts`
+
+Need: one additive Wave 2 Task 2 response-shape edit in `AiDetectionSeverityCountsDto`: add
+`info: number` and update only the immediately adjacent comments from four assessed bands to five,
+while preserving the existing rule that a NULL/unassessed severity is counted in no band.
+
+Source PR: Backend #300 at exact SHA `898b6c951d80a5d47cf694e625db42f903c05000`.
+
+Independent review found the implementation technically green: canonical five-band tuple, rank-0
+info filtering/counting, NULL gap preserved, forward-only CHECK widening without row rewrites,
+reproducible shared-contract dist, focused unit gates, and real PostgreSQL 19/19 with one live suite
+executed and zero skipped. Review nevertheless returned **BLOCK** because the execution contract gives
+this DTO to P9 and no grant exists.
+
+Requested grant: P9 authorizes exactly the additive member/comment edit described above. No runtime
+adapter, enforcement proof, effect-assurance, or other P9-owned response shape changes. P47 will not
+merge #300 until the grant is appended and the exact source/docs state is re-reviewed.
+
+Checkpoint state for the other programme:
+
+- Backend Task 1 is merged at `e6fde84572e345c485537b087e35782d186fc553`.
+- Installers tool-grade producer is merged at `9c0f2e1e9e9cc0a71c034e307827d46fbc2eaf5a`.
+- Frontend #194, #195, and #196 are independently source-approved and remain open only behind the
+  Vercel private-organization Hobby billing failure.
+- Installers W0A #221 is source-approved and remains deliberately unmerged pending the owner's
+  decision on the missing Docker mirror proof. No agent release occurred.
+- No P47 Backend deploy, agent release, AWS mutation, or production verification occurred at this
+  checkpoint.
