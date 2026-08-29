@@ -754,10 +754,12 @@ no way out through the console. That is the same shape as the outage the read pa
   a PUT that touches `providers` on a tenant already below the floor → **`200`**, unchanged, with the
   pre-existing violation reported on the response rather than refused; the recommended policy → `200`;
   a stricter-than-floor config → `200`. Expected first run: `assertWriteAboveFloor is not a function`.
-- [ ] **Step 2: add the guard and call it from every path that persists a full config.** The old
-  plan's list is correct and worth preserving: `putForSite`, `@Post('library/apply')`,
-  `@Post('apply-preset')`, `@Put('team/:groupId')`. A floor enforced on one of four write paths is not
-  enforced. Confirm the list against `origin/main` before wiring — do not trust the 2026-08-22 list.
+- [ ] **Step 2: add the guard and call it from every path that persists a full config.** Revalidation
+  against current `origin/main` found **six**, not the four named in the 2026-08-22 draft:
+  `putForSite`, `applyLibraryEntry`, `updateRiskGroupsForSite`, `applyPresetForSite`, `putForTeam`,
+  and `applyPresetForTeam`. All six route through `runPutTransaction`; a floor enforced on only one
+  write path is not enforced. The real HTTP/live-Postgres proof must enumerate all six routes and
+  prove each reaches its named writer and persists through that shared transaction.
 - [ ] **Step 3: export `categoryFloors()` from `ai-malicious-floor.ts`,** derived from
   `AI_MALICIOUS_FLOOR` itself, and put it on the policy response DTO alongside the classes that were
   raised at serve time. Preserve the old plan's Task 2 test content verbatim (`plan:1449-1483`) — it
@@ -804,7 +806,7 @@ longer matches and the dialog does not open.
 **Fourth defeat test:** the consequence case — assert the dialog for `dlp:private-key` renders the
 `DOWNGRADE_CONSEQUENCE` copy, then revert the keying. Expected: the assertion fails against
 `genericConsequence`'s wording.
-**Exit:** four numbers and one artifact. (1) `4` write endpoints call the guard, enumerated in the
+**Exit:** four numbers and one artifact. (1) `6` write endpoints call the guard, enumerated in the
 spec. (2) A PUT that newly violates the floor returns `422` naming the class **and** the section, and
 a PUT that does not returns `200` — both asserted against a real Backend, not a mock. (3)
 `categoryFloors()` emits `0` dispositions the board cannot rank. (4) The response carries the
@@ -855,9 +857,10 @@ Each is a number or a named artifact, and each names the test that goes red on r
    dispatch, not on a pull request** (Frontend's `pr-checks.yml` `on:` is `workflow_dispatch` only),
    and it compares **two of the three copies**. Until both are true, the *tool-risk policy authority
    and catalog totality* certificate dimension is **`UNKNOWN`, not `PASS`**.
-9. **`4` write endpoints refuse a policy that newly drops a class below the floor, with `422` naming
-   class and section; a PUT that does not newly violate returns `200`.** Verified against a real
-   Backend, not a mock. Defeat: delete the guard call from `putForSite`.
+9. **`6` write endpoints share the guarded transaction; a policy that newly drops a class below the
+   floor is refused with `422` naming class and section; a PUT that does not newly violate returns
+   `200`.** Verified against a real Backend, not a mock. Defeat: delete the guard call from
+   `putForSite`.
 10. **`categoryFloors()` emits `0` dispositions the board cannot rank, and the serve-time raised set
     reaches the DTO** — today `floorRaised` has 4 references, all inside one `logger.warn`.
 11. **Deploy order held and evidenced (O-4):** Backend task definition deployed and its revision
