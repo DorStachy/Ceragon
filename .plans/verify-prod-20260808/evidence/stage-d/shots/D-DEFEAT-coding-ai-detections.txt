@@ -1,0 +1,89 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+ACCOUNT
+Render QA Org
+Render QA Site
+CODING AI
+DETECTIONS
+Search…
+ctrl
+K
+RQ
+Render QA
+Admin
+CODING AI
+Detections
+
+Findings and non-allow outcomes only: every row is something that fired. The full ledger lives in Events.
+
+FILTERS
+0
+
+Filters only. Per-value counts are not computed for this list.
+
+SEVERITY
+Critical
+High
+Medium
+Low
+RULE
+
+Values seen on the detections loaded below.
+
+No rule keys are present on the detections loaded below.
+
+ENDPOINT
+
+Values seen on the detections loaded below.
+
+No endpoint is identified on the detections loaded below.
+
+HIDDEN ROWS
+Show hidden rows
+0
+
+0 detections grouped into 0 signals on this page, this server didn't return event counts for the filtered set
+
+24h
+7d
+30d
+All
+Export page
+SEVERITY DISTRIBUTION
+0 detections · last 7 days
+
+This server doesn't return a severity split for the filtered set, so the distribution can't be drawn. The rows below are unaffected.
+
+0
+detections grouped
+
+This server doesn't reconcile outcomes for the filtered set, so we can't say how many got through.
+
+got through
+NaN
+unresolved
+No facets applied. Showing Triage: new · last 7 days.
+All
+New
+Investigating
+Resolved
+Sort
+Recent
+Severity
+Nothing selected
+Select a signal to act on it
+Mark investigating
+Resolve
+Assign
+Clear
+
+No detections match the current filters.
+
+CLEAR FILTERS

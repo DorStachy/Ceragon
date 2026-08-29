@@ -1,0 +1,131 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+ACCOUNT
+Render QA Org
+Render QA Site
+ADMIN
+ENDPOINTS
+Search…
+ctrl
+K
+RQ
+Render QA
+Admin
+ADMINISTRATION
+Admin
+ENDPOINTS
+Endpoint Management
+Install & Enrollment
+Fleet
+Coverage
+Fleet Coverage
+
+Per-machine AI protection coverage and rollout readiness: which controls are live, by team and by endpoint. Only attested controls count; configured is not enforced.
+
+One honest coverage truth per machine: exactly which protections are live, derived from what each endpoint actually uses. A machine is flagged only when a tool it uses is unprotected.
+
+Governance profile truth unavailable
+
+This deployment cannot prove which protections satisfy the selected profile, so it is not ready for external reliance.
+
+NO COVERAGE YET
+Once agents enroll and attest their controls, each machine's honest coverage appears here. Start by installing the agent on your fleet.
+OPEN THE INSTALL GUIDE
+Web AI Guard coverage
+
+Control coverage, not usage. Per endpoint.
+
+INSTALLED
+8
+ONLINE (FRESH BEACON)
+7
+STALE
+0
+BLOCKS NOT ARMED
+1
+GUARD FAILING OPEN
+1
+GUARD NOT REPORTED
+5
+ENDPOINT	STATUS	NAV BLOCKS	GUARD HEALTH	VERSION	LAST SEEN
+TRAP-COUNT-0-NO-SOURCE	NOT REPORTED
+
+The extension has not reported coverage. This is measured absence, not a pass: nothing here has been shown to block.
+
+	NOT REPORTED	NOT REPORTED
+
+No guard-health reading. This is measured absence, not a pass: nothing here has been shown to inspect a send.
+
+	0.5.13	Aug 18, 10:16 PM
+MEASURED-DISARM	BLOCKS NOT ARMED
+
+The extension read its own block engine and found no installed rules.
+
+	0 ARMED	NOT REPORTED
+
+No guard-health reading. This is measured absence, not a pass: nothing here has been shown to inspect a send.
+
+	0.5.13	Aug 18, 10:16 PM
+MEASURED-ARMED-COUNT-0	ACTIVE	0 ARMED	HEALTHY
+
+The endpoint read its own guard and reported no fail-open episodes.
+
+Reading from Aug 18, 10:17 PM.
+
+	0.5.13	Aug 18, 10:16 PM
+GUARD-FAIL-OPEN	FAILING OPEN
+
+Sends went out unverified while the in-page guard was broken.
+
+	0 ARMED	FAILING OPEN
+
+3 sends went out unverified while the in-page guard was broken.
+
+Degraded since Aug 18, 10:02 PM. Reading from Aug 18, 10:17 PM.
+
+selector-miss / chat.openai.com 3 unverified
+
+	0.5.13	Aug 18, 10:16 PM
+GUARD-KEY-ABSENT	ACTIVE	0 ARMED	NOT REPORTED
+
+No guard-health reading. This is measured absence, not a pass: nothing here has been shown to inspect a send.
+
+	0.5.13	Aug 18, 10:16 PM
+GUARD-UNKNOWN-TOKEN	ACTIVE	0 ARMED	UNREADABLE STATE
+
+The endpoint reported a guard state this console does not recognise, so it is not being called healthy.
+
+Reported state: OK_PROBABLY
+
+Reading from Aug 18, 10:17 PM.
+
+	0.5.13	Aug 18, 10:16 PM
+GUARD-NOT-REPORTED	ACTIVE	0 ARMED	NOT REPORTED
+
+No guard-health reading. This is measured absence, not a pass: nothing here has been shown to inspect a send.
+
+	0.5.13	Aug 18, 10:16 PM
+EXTENSION-MISSING	EXTENSION MISSING
+
+No fresh health beacon. Nothing about this browser is being measured.
+
+	NOT REPORTED	NOT REPORTED
+
+No guard-health reading. This is measured absence, not a pass: nothing here has been shown to inspect a send.
+
+	0.5.13	Aug 18, 10:16 PM
+
+A browser earns coverage only from a fresh health beacon. An installed-but-silent extension counts as stale, never as protected. "Nav blocks" reads the extension's own block engine: only an endpoint that says it read that engine can be called armed or not armed, so an endpoint that stayed silent reads "Not reported" rather than either verdict. "Guard health" is a different reading on a different rail: whether the in-page guard was inspecting sends at all. It is reported by the endpoint, never inferred here, so an endpoint that has never reported it reads "Not reported" and never "Healthy". The fleet tile counts those endpoints, so an unmeasured fleet cannot be read as a clean one.
+
+AI GOVERNANCE OPT-OUTS
+
+An endpoint can be authorized to stop DeVoid governing a runtime. While an opt-out is in force that runtime is not governed on that endpoint, and it is not repaired automatically. Where no readable opt-out transition has been reported, the row reads “Not reported”: that coverage has not been measured.
+
+No endpoints are in scope, so there is no opt-out coverage to report. This is not a statement that any runtime is governed.

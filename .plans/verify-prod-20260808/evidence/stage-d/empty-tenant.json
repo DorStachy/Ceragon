@@ -1,0 +1,11 @@
+[
+  { "pattern": "^/api/v1/ai/sessions$", "body": { "items": [], "total": 0, "limit": 50, "offset": 0, "hasMore": false, "totalIsEstimate": false } },
+  { "pattern": "^/api/v1/ai/detections", "body": { "items": [], "total": 0, "hasMore": false, "counts": { "critical": 0, "high": 0, "medium": 0, "low": 0, "hidden": 0 } } },
+  { "pattern": "^/api/v1/ai/activity", "body": { "items": [], "total": 0, "hasMore": false } },
+  { "pattern": "^/api/v1/ai/overview", "body": { "windowDays": 7, "sessions": { "total": 0, "active": 0 }, "events": { "total": 0, "blocked": 0, "held": 0, "redactedSent": 0, "allowed": 0, "unrecorded": 0 }, "composition": { "block": 0, "warn": 0, "monitor": 0 }, "volume": [], "endpoints": { "covered": 0, "total": 0 } } },
+  { "pattern": "^/api/v1/ai/mcp/servers", "body": { "rows": [], "total": 0, "coverage": [], "coverageSummary": { "reported": false, "sourcesTotal": 0, "sourcesAnswered": 0, "sourcesUnanswered": 0, "endpointsReporting": 0 } } },
+  { "pattern": "^/api/v1/ai/web-coverage", "body": { "endpoints": [], "summary": { "installed": 0, "online": 0, "stale": 0, "degraded": 0 } } },
+  { "pattern": "^/api/v1/ai/protection-depth", "body": { "runtimes": [], "endpoints": [], "summary": { "endpoints": 0, "adapters": 0, "adaptersReported": 0, "states": {}, "active": 0, "stale": 0, "drifted": 0, "unknown": 0 } } },
+  { "pattern": "^/api/v1/endpoint/readiness$", "body": { "summary": { "scope": "site", "overall": "unknown", "counts": { "ready": 0, "at-risk": 0, "not-ready": 0, "unknown": 0 }, "totalEndpoints": 0, "teams": [], "generatedAt": "2026-08-19T00:00:00.000Z" }, "endpoints": [] } },
+  { "pattern": "^/api/v1/ai/optout-coverage", "body": { "rows": [], "summary": { "endpoints": 0, "skippedAuthorized": 0, "expired": 0, "notReported": 0 }, "total": 0 } }
+]

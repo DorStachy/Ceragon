@@ -1,0 +1,45 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+ACCOUNT
+Render QA Org
+Render QA Site
+ADMIN
+ENDPOINTS
+Search…
+ctrl
+K
+RQ
+Render QA
+Admin
+ADMINISTRATION
+Admin
+ENDPOINTS
+Endpoint Management
+Install & Enrollment
+Fleet
+Coverage
+Fleet Coverage
+
+Per-machine AI protection coverage and rollout readiness: which controls are live, by team and by endpoint. Only attested controls count; configured is not enforced.
+
+One honest coverage truth per machine: exactly which protections are live, derived from what each endpoint actually uses. A machine is flagged only when a tool it uses is unprotected.
+
+Governance profile truth unavailable
+
+This deployment cannot prove which protections satisfy the selected profile, so it is not ready for external reliance.
+
+NO COVERAGE YET
+Once agents enroll and attest their controls, each machine's honest coverage appears here. Start by installing the agent on your fleet.
+OPEN THE INSTALL GUIDE
+AI GOVERNANCE OPT-OUTS
+
+An endpoint can be authorized to stop DeVoid governing a runtime. While an opt-out is in force that runtime is not governed on that endpoint, and it is not repaired automatically. Where no readable opt-out transition has been reported, the row reads “Not reported”: that coverage has not been measured.
+
+AI opt-out coverage could not be read, so nothing here is known about which runtimes are opted out. No count is shown: a zero would be indistinguishable from a fleet with no opt-outs. opt-out coverage read failed: upstream unavailable

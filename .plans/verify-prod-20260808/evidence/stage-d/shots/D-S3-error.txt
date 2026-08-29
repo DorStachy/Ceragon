@@ -1,0 +1,30 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+ACCOUNT
+Render QA Org
+Render QA Site
+MCP CONTROL TOWER
+Search…
+ctrl
+K
+RQ
+Render QA
+Admin
+Servers
+Activity
+MCP CONTROL TOWER
+MCP Control Tower
+
+Every MCP server detected across your agents' configurations: declared capabilities, static-analysis verdict, approval state, and enforcement. Coding agents and autonomous agents both consume MCP, so the registry is governed here, once. This view is read-only. Approve or block servers from Admin.
+
+REVIEW IN ADMIN →
+COULD NOT LOAD MCP SERVERS
+mcp read failed
+RETRY

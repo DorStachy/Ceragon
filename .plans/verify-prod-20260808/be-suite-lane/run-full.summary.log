@@ -1,0 +1,1061 @@
+=== suite: SHARDS=4 WORKERS=3 HEAP_MB=1536 MEM=5g FIRST_SHARD=1 ===
+=== waiting for postgres ===
+=== prepare live-pg schema (migration chain on an empty database) ===
+prepare exit=0
+=== verify migration ledger is clean ===
+migration:run exit=0
+=== shard 1/4  (maxWorkers=3, workerIdleMemoryLimit=1400MB) ===
+PASS src/github-app/services/push-protection.service.spec.ts (61.498 s)
+PASS src/jobs/dto/finding-quality-gauntlet.contract.spec.ts (5.741 s)
+PASS src/endpoint/inventory-aggregation.artifacts.spec.ts (8.403 s)
+PASS src/jobs/sandbox-cross-tenant-binding.spec.ts (91.864 s)
+PASS src/jobs/jobs.controller.failclosed-hold.spec.ts (89.485 s)
+PASS src/github-app/controllers/repo-dependencies.controller.spec.ts (17.677 s)
+PASS src/github-app/services/manifest-verifier.service.spec.ts (5.592 s)
+PASS src/github-app/services/baseline-drift.service.spec.ts (8.393 s)
+PASS src/ai-governance/services/ai-query.wave8.service.spec.ts (12.852 s)
+PASS src/notifications/outbox/alert-outbox.live-pg.spec.ts (23.642 s)
+PASS src/packages/services/prescan-bulk.spec.ts (22.829 s)
+PASS src/ai-governance/controllers/ai-agent.controller.spec.ts (12.98 s)
+PASS src/ai-governance/services/endpoint-evidence-ingest.service.spec.ts (6.385 s)
+PASS src/migrations/ra8b-egress-authority.live-pg.spec.ts (8.871 s)
+PASS src/ai-security-policy/ai-security-policy.three-state.spec.ts
+PASS src/ai-governance/prompt-evidence-upload-lane.live-pg.spec.ts (9.926 s)
+PASS src/policy-groups/policy-engine-phase2.spec.ts
+PASS src/ai-security-policy/ai-security-policy.phase-b-content.spec.ts (5.934 s)
+PASS src/ai-security-policy/ai-security-portable-reader.spec.ts
+PASS src/github-app/services/installation-linking.service.spec.ts (68.062 s)
+PASS src/migrations/pe1-prompt-evidence-spine.live-pg.spec.ts (72.894 s)
+PASS src/policy-groups/policy-engine.service.spec.ts
+PASS src/jobs/jobs.controller.wire.spec.ts (13.103 s)
+PASS src/github-app/controllers/results.controller.spec.ts (19.037 s)
+PASS src/audit/audit.service.spec.ts
+PASS src/jobs/dto/worker-result.dto.spec.ts (5.407 s)
+PASS src/ai-governance/services/ai-query.detections-w6.live-pg.spec.ts (14.429 s)
+PASS src/auth/mfa/mfa.service.spec.ts (7.641 s)
+PASS src/notifications/services/__tests__/ssrf-guard.service.spec.ts
+PASS src/notifications/adapters/__tests__/siem-syslog.adapter.spec.ts
+PASS src/ai-governance/services/ai-event.service.spec.ts (61.822 s)
+PASS src/packages/tests/freshness-evaluator.spec.ts
+PASS src/ai-security-policy/w1-policy-read-shape.live-pg.spec.ts (6.829 s)
+PASS src/packages/services/global-artifact-cache.service.spec.ts
+PASS src/security-settings/security-settings.service.spec.ts
+PASS src/endpoint/inventory-aggregation.imputed.spec.ts
+PASS src/ai-governance/services/ai-query.optout-details-allowlist.live-pg.spec.ts (5.61 s)
+PASS src/health/services/release-manifest.service.spec.ts
+PASS src/threat-intel/threat-feed.service.spec.ts
+PASS src/ai-governance/services/endpoint-evidence-ingest.ack-floor.live-pg.spec.ts
+PASS src/ai-governance/services/ai-optout-coverage.live-pg.spec.ts (5.756 s)
+PASS src/ai-governance/event-batch-commit.fixtures.spec.ts
+PASS src/ai-policy-delivery/endpoint-control-authority.service.spec.ts
+PASS src/ai-governance/services/ai-query.protection-depth-summary.spec.ts
+PASS src/packages/helpers/vulnerability-applicability-gate.spec.ts
+PASS src/packages/services/registry-resolver.service.spec.ts
+PASS src/audit/audit.service.verify-chain.spec.ts
+PASS src/github-app/services/finding-correlation.service.spec.ts
+PASS src/ai-governance/prompt-evidence-ack-key-distribution.live-pg.spec.ts
+PASS src/packages/controllers/analyses.controller.severity.spec.ts (5.29 s)
+PASS src/github-app/services/github-read.scan-graph-deltas.spec.ts
+PASS src/jobs/confirmed-malware-fresh-path.spec.ts
+PASS src/ai-governance/services/prompt-evidence-reveal-vault.live-pg.spec.ts
+PASS src/agents/ai-trust-anchor-ack.service.spec.ts
+PASS src/ai-governance/ai-enforcement-receipt-v2.spec.ts
+PASS src/jobs/__tests__/authoritative-evidence-decision.applicability.spec.ts
+PASS src/packages/services/sse-phase3.spec.ts
+PASS src/github-app/services/baseline-comparator.service.spec.ts
+PASS src/licenses/__tests__/LicenseExceptionsService.branches.spec.ts
+PASS src/ai-governance/services/ai-query.activity-w5.live-pg.spec.ts (6.976 s)
+PASS src/github-app/services/scan-events.push-protection.spec.ts (13.939 s)
+PASS src/audit/audit.service.login.spec.ts (9.566 s)
+PASS src/ai-governance/controllers/ai-delegated-approval.wire.spec.ts (85.589 s)
+PASS src/github-app/guards/runner-auth.guard.spec.ts
+PASS src/github-app/services/github-read.finding-codeview.spec.ts
+PASS src/ai-governance/services/ai-query.protection-depth.spec.ts
+PASS src/packages/services/finding-evidence-normalizer.parity.spec.ts
+PASS src/package-intelligence/services/ai-artifact-verdict-writer.service.spec.ts
+PASS src/ai-governance/services/ai-query.protection-depth-green.live-pg.spec.ts (6.481 s)
+PASS src/mcp-governance/services/fingerprint.service.spec.ts (110.436 s)
+PASS src/users/users.service.tenant-isolation.spec.ts (8.186 s)
+PASS src/endpoint/endpoint.service.spec.ts (66.064 s)
+PASS src/github-app/services/retention.service.spec.ts (5.443 s)
+PASS src/auth/guards/jwt-auth.guard.act-as.spec.ts (6.992 s)
+PASS src/github-app/controllers/push-protection.controller.spec.ts (10.404 s)
+PASS src/migrations/w3-evidence-mode-normalization.live-pg.spec.ts (18.059 s)
+PASS src/health/services/health.service.spec.ts (8.747 s)
+PASS src/ai-security-policy/ai-security-policy.block-style-translation.spec.ts (15.594 s)
+PASS src/jobs/transitive-fold-cache-wiring.spec.ts (21.67 s)
+PASS src/ai-security-policy/ai-security-card.db-connection-string.spec.ts (14.145 s)
+PASS src/ai-policy-delivery/endpoint-control-authority.canary-rollup.live-pg.spec.ts (43.505 s)
+PASS src/ai-governance/endpoint-authored-assurance.live-pg.spec.ts
+PASS src/ai-governance/services/prompt-evidence-worker-schedule.spec.ts (9.211 s)
+PASS src/migrations/pe3-ai-event-evidence-ref-fk.live-pg.spec.ts
+PASS src/ai-governance/controllers/ai-security-context.controller.spec.ts (9.409 s)
+FAIL src/ai-governance/aicp-m1-invariants.e2e.spec.ts (78.726 s)
+PASS src/ai-governance/runtime-adapter-shape.undecidable.spec.ts
+PASS src/packages/dto/decision-contract.parity.spec.ts
+PASS src/crypto/scoped-secret-cipher.spec.ts
+PASS src/threat-intel/providers/socket-purl.provider.spec.ts
+PASS src/crypto/ai-policy-signing.spec.ts
+PASS src/health/services/health.service.pe0-content-scrub.spec.ts (7.691 s)
+PASS src/jobs/__tests__/authoritative-evidence-cve-score-decouple.spec.ts (9.789 s)
+PASS src/licenses/__tests__/LicenseEvaluationService.evaluateLicenseIssues.branches.spec.ts
+PASS src/ai-artifact-load-policy/artifact-load-policy-decision.spec.ts
+PASS src/migrations/a6-event-hash-version.live-pg.spec.ts
+PASS src/sites/sites.service.spec.ts (5.457 s)
+PASS src/notifications/formatters/__tests__/siem-leef.formatter.spec.ts
+PASS src/migrations/w6-session-identity-migrations.live-pg.spec.ts
+PASS src/ai-governance/services/ai-event.service.wave81-alert-bridge.spec.ts
+PASS src/packages/tests/confirmed-malware-cache-replay.spec.ts (113.39 s)
+PASS src/notifications/formatters/__tests__/siem-cef.formatter.spec.ts (111.233 s)
+PASS src/ai-governance/services/ai-query.sessions-substantive.live-pg.spec.ts (12.109 s)
+PASS src/ai-governance/ai-policy-etag.spec.ts
+PASS src/packages/services/fastgate.service.helpers.spec.ts
+PASS src/installer/services/installer-onboarding.service.spec.ts (28.041 s)
+PASS src/packages/services/vulnerability-refresh.service.spec.ts
+PASS src/ai-governance/ai-governance-contract.parity.spec.ts
+PASS src/__test-utils__/__tests__/assert-non-production-db.spec.ts
+PASS src/common/build-identity.spec.ts (11.82 s)
+PASS src/notifications/services/delivery-log.service.spec.ts (10.072 s)
+PASS src/migrations/1781100000000-BackfillZeroDayRulesForUncustomizedPresets.spec.ts (11.405 s)
+PASS src/audit/audit.service.policy-groups.spec.ts (54.24 s)
+PASS src/ai-governance/services/ai-security-exception.fp-triage.spec.ts (31.554 s)
+FAIL src/github-app/__tests__/scrub-finding-secret-blobs.guards.spec.ts
+PASS src/notifications/formatters/__tests__/alert-email-html.formatter.spec.ts (8.406 s)
+PASS src/ai-governance/services/ai-query.session-display-name.spec.ts (36.138 s)
+PASS src/agents/ai-correlation-key-custody.service.spec.ts (8.002 s)
+PASS src/ai-governance/services/ai-session-correlator.identity.spec.ts
+PASS src/common/endpoint-detail-scrub.spec.ts
+PASS src/ai-governance/services/ai-query.protection-depth-identity.spec.ts (26.534 s)
+PASS src/ai-governance/services/prompt-evidence-settings.authority.spec.ts (5.686 s)
+PASS src/notifications/services/integration-secret-crypto.service.spec.ts
+PASS src/migrations/1787400000000-AddEndpointPolicyIntegrityState.spec.ts
+PASS src/jobs/jobs.controller.helpers.securityfindings.spec.ts
+PASS src/ai-governance/services/ai-event.effect-rederivation.spec.ts
+PASS src/alerts/alerts.service.webnav-tier.spec.ts (6.947 s)
+PASS src/ai-security-policy/ai-prompt-evidence-capabilities.spec.ts
+PASS src/packages/dto/primary-decision.spec.ts
+PASS src/migrations/1791500000000-AddMaskedPreviewAccessGrantSource.spec.ts
+PASS src/endpoint/inventory-aggregation.ai-artifact-coverage.spec.ts (19.132 s)
+PASS src/github-app/services/team-scan-strictness.spec.ts
+FAIL src/common/build-stamp-deploy-gate.spec.ts
+PASS src/licenses/__tests__/LicenseEvaluationService.recompute.spec.ts (5.195 s)
+PASS src/ai-security-policy/__tests__/ai-security-policy.derived-prompt-classes.spec.ts (5.135 s)
+PASS src/crypto/evidence-ack-key-ring.live-pg.spec.ts (10.136 s)
+PASS src/ai-governance/services/ai-event.w2-evidence.live-pg.spec.ts (10.003 s)
+PASS src/sso/sso-auth-flow.integration.spec.ts (12.955 s)
+PASS src/packages/services/policy-facts-cache-read-gate.spec.ts
+PASS src/ai-context/dto/ai-context-ingest.dto.spec.ts
+PASS src/ai-governance/services/ai-event.service.webguard-alerttier.spec.ts
+PASS src/licenses/__tests__/LicenseExceptionsService.raceBranches.spec.ts
+PASS src/ai-governance/runtime-integrity-contract.parity.spec.ts
+PASS src/github-app/controllers/github-proxy-local-cli-classifier.spec.ts (10.708 s)
+PASS src/ai-governance/services/ai-session-correlator.evidence-default.spec.ts
+PASS src/ai-security-policy/ai-prompt-evidence-ceiling.di.spec.ts (61.717 s)
+PASS src/common/utils/alert-derivation.util.spec.ts
+PASS src/licenses/__tests__/LicenseEvaluationService.classifyLicenseFallback.spec.ts
+PASS src/github-app/utils/scanner-boilerplate-strip.spec.ts
+PASS src/ai-governance/dto/ai-event-types.qa-remediation.spec.ts (6.252 s)
+PASS src/config/runtime-guard.spec.ts (5.315 s)
+PASS src/ai-governance/controllers/ai-ingest.controller.evidence-per-item.spec.ts (9.639 s)
+PASS src/github-app/services/permit-reuse.service.spec.ts
+PASS src/users/users-service-token-hashing.spec.ts
+PASS src/ai-security-policy/ai-security-policy.service.simulate.spec.ts
+FAIL src/ai-governance/controllers/ai.controller.export.spec.ts
+PASS src/ai-security-policy/ai-security-policy.provider-floor.spec.ts
+PASS src/github-app/__tests__/customer-payload-no-leak.spec.ts
+PASS src/licenses/__tests__/exceptions.transactionRollback.spec.ts (5.811 s)
+PASS src/ai-egress-authority/ai-egress-authority.module.spec.ts
+PASS src/ai-governance/dto/ai-prompt-check.dto.monitor-fields.spec.ts
+PASS src/health/services/health.service.build-identity.spec.ts (5.015 s)
+PASS src/packages/controllers/analyses.controller.list-view.spec.ts
+PASS src/github-app/services/scanner-dlq-reaper.service.spec.ts (7.03 s)
+PASS src/jobs/dto/worker-result.aistatus.contract.spec.ts (162.943 s)
+PASS src/crypto/ai-trust-anchor-ack.spec.ts
+PASS src/common/build-identity-coverage.spec.ts
+PASS src/packages/safe-alternative.util.spec.ts
+PASS src/policy-groups/threat-intel-policy-keys.spec.ts
+PASS src/ai-governance/m47-backend-truth.target.spec.ts
+PASS src/migrations/1781500000000-ThreatIntelEnrichment.spec.ts
+PASS src/endpoint/dto/endpoint-inventory-ecosystem-vocabulary.spec.ts
+PASS src/ai-governance/ai-csv.util.spec.ts
+PASS src/licenses/__tests__/upsertMany.batching.spec.ts
+PASS src/github-app/services/scan-events.service.spec.ts (8.787 s)
+PASS src/health/services/bypass-alert-routing.service.spec.ts
+PASS src/policy-groups/dto/create-policy-group.dto.spec.ts
+PASS src/github-app/services/repo-manifest-extractor.service.spec.ts
+PASS src/ai-security-policy/ai-malicious-floor.spec.ts
+PASS src/licenses/__tests__/policy-engine.licenseException.spec.ts
+PASS src/policy-groups/types/policy.types.spec.ts
+PASS src/auth/hmac-pepper.util.spec.ts
+PASS src/github-app/services/merged-detection.service.spec.ts
+PASS src/ai-governance/dto/ai-tool-check.decision.dto.spec.ts
+FAIL src/ai-governance/controllers/ai.controller.exceptions.spec.ts
+PASS src/alerts/alerts-bulk.pg-tuple.spec.ts
+PASS src/ai-security-policy/ai-security-policy.preset-noop.spec.ts
+PASS src/audit/audit-retention.row-count.spec.ts
+PASS src/ai-security-policy/__tests__/retired-key-round-trip.spec.ts
+PASS src/notifications/outbox/alert-outbox-worker.schedule.spec.ts
+PASS src/migrations/1789000001000-ScopeAiSecurityExceptionEnforcementEligibleFreezeToLegacyGrants.spec.ts
+PASS src/ai-security-policy/dto/ai-security-policy.tool-risk.dto.pipe.spec.ts
+PASS src/ai-security-policy/ai-security-policy.controller.spec.ts
+PASS src/auth/cli-request-signature.service.spec.ts (72.212 s)
+PASS src/audit/audit.controller.spec.ts
+PASS src/jobs/dto/worker-result.narrative.contract.spec.ts
+PASS src/migrations/1787550000000-RepairAiEventTriageConstraints.spec.ts
+PASS src/packages/shared/constants/tools.ai-artifact.spec.ts
+PASS src/ai-governance/services/ai-query.safe-metadata.backend-reconciliation.spec.ts (6.827 s)
+PASS src/ai-governance/controllers/ai-delegated-approval.controller.spec.ts (5.134 s)
+FAIL src/licenses/__tests__/recompute.atomicity.spec.ts (15.225 s)
+PASS src/ai-governance/controllers/ai-security-context.exception-target.spec.ts (16.018 s)
+PASS src/common/hot-path/coalesce-window.spec.ts
+PASS src/ai-policy-delivery/uint64-columns.spec.ts (80.775 s)
+PASS src/migrations/1782100000000-AddInventoryArtifactListIndexes.spec.ts
+PASS src/ai-governance/services/ai-query.tool-hold-approval.spec.ts
+PASS src/ai-governance/services/ai-query.safe-metadata.client-kind.spec.ts
+PASS src/ai-governance/dto/ai-agent-session.dto.m46.spec.ts
+PASS src/migrations/1781400000000-AddEgressComplianceTelemetry.spec.ts
+PASS src/common/utils/select-worst-findings.spec.ts
+PASS src/demo-requests/__tests__/create-demo-request.dto.spec.ts
+PASS src/config/env.validation.audit-retention-days.spec.ts
+PASS src/auth/guards/site.guard.spec.ts
+PASS src/github-app/controllers/egress-compliance.controller.spec.ts (13.808 s)
+PASS src/migrations/1782350000000-AddRetentionResolvedFindingsIndex.spec.ts
+PASS src/migrations/1782370000000-AddGithubListFilterIndexes.spec.ts
+PASS src/ai-governance/dto/ai-session-wire-fields.spec.ts
+PASS src/licenses/__tests__/LicenseEvaluationService.ambiguousBand.spec.ts
+PASS src/licenses/__tests__/suppress.bannedAndStrongCopyleft.spec.ts (12.832 s)
+PASS src/auth/agent-signing-credential.service.spec.ts (7.434 s)
+FAIL src/licenses/__tests__/exceptions.delete.notFound.spec.ts (10.349 s)
+PASS src/common/pg-rows-affected.spec.ts
+PASS src/packages/dto/check-packages-request-attribution.dto.spec.ts
+PASS src/ai-governance/dto/ai-prompt-check.dto.qa-remediation.spec.ts
+PASS src/migrations/1785400000000-AddAiSigningKeyRotation.spec.ts
+PASS src/migrations/1781700000000-AddScanRunCoverageRequeueCount.spec.ts
+PASS src/ai-security-policy/dto/ai-security-policy.mcp-uploads-paths.dto.spec.ts
+PASS src/common/csv.util.spec.ts
+PASS src/ai-governance/services/session-end-disposition.util.spec.ts
+PASS src/migrations/1787600000000-DefaultAiSessionEvidenceModeRedacted.spec.ts
+PASS src/migrations/1789000000000-WidenAiEventTriageTransitionActorType.spec.ts
+PASS src/migrations/1787000000000-AddAiEventWarningAndDisposition.spec.ts
+PASS src/github-app/services/scan-graph.service.spec.ts (6.647 s)
+PASS src/migrations/1786200000000-EnforceAiSigningKeyTransitionChain.spec.ts
+PASS src/crypto/crypto.controller.rotation.spec.ts (74.813 s)
+PASS src/migrations/1785700000000-FreezeLegacyAiSecurityExceptions.spec.ts
+PASS src/auth/cli-nonce-replay.service.spec.ts
+PASS src/config/internal-self-scan-telemetry.service.spec.ts (187.788 s)
+PASS src/ai-governance/dto/__tests__/append-ai-event.dto.validation.spec.ts
+PASS src/ai-security-policy/__tests__/named-web-app-keys.spec.ts
+PASS src/endpoint/endpoint-group.autosort-vectors.spec.ts
+PASS src/github-app/services/graph-feature-flags.spec.ts
+PASS src/sso/sso.module.spec.ts (109.376 s)
+FAIL ai-governance/aicp-m1-invariants.e2e.spec.ts (78.726 s)
+FAIL github-app/__tests__/scrub-finding-secret-blobs.guards.spec.ts
+FAIL common/build-stamp-deploy-gate.spec.ts
+FAIL ai-governance/controllers/ai.controller.export.spec.ts
+FAIL ai-governance/controllers/ai.controller.exceptions.spec.ts
+FAIL licenses/__tests__/recompute.atomicity.spec.ts (15.225 s)
+FAIL licenses/__tests__/exceptions.delete.notFound.spec.ts (10.349 s)
+Test Suites: 7 failed, 1 skipped, 236 passed, 243 of 244 total
+Tests:       3 failed, 7 skipped, 4320 passed, 4330 total
+Snapshots:   0 total
+Time:        1108.808 s
+shard 1 exit=1 elapsed=1119s
+=== shard 2/4  (maxWorkers=3, workerIdleMemoryLimit=1400MB) ===
+PASS src/endpoint/inventory-aggregation.service.spec.ts (162.414 s)
+PASS src/github-app/services/scan-dispatch.service.spec.ts (166.896 s)
+PASS src/packages/services/stale-analysis-reaper.service.spec.ts (7.213 s)
+PASS src/packages/controllers/analyses.controller.spec.ts (8.347 s)
+PASS src/ai-security-policy/ai-security-policy.service.spec.ts (183.148 s)
+PASS src/jobs/__tests__/analyzing-until-complete-v1.spec.ts (22.775 s)
+PASS src/packages/services/transitive-fold-cache.service.spec.ts
+PASS src/agents/agents.service.spec.ts (7.234 s)
+PASS src/jobs/job-queue.service.signing.spec.ts (6.568 s)
+PASS src/jobs/sqs-signer-verifier.spec.ts (7.606 s)
+PASS src/alerts/alerts.service.spec.ts
+PASS src/ai-governance/services/mcp-governance.service.spec.ts (6.43 s)
+PASS src/ai-governance/services/ai-policy-bundle.service.spec.ts
+PASS src/policy-groups/policy-engine-phase7-zeroday.spec.ts
+PASS src/alerts/alerts.service.live-pg.spec.ts (24.618 s)
+PASS src/github-app/services/cross-tenant-isolation.spec.ts
+PASS src/ai-governance/services/runtime-adapter-render.util.spec.ts
+PASS src/packages/services/wave5-cache-digest-coalescing.spec.ts
+PASS src/packages/services/s3-artifact.service.spec.ts
+PASS src/migrations/m47-ai-security-migrations.live-pg.spec.ts (8.42 s)
+PASS src/installer/installer.service.spec.ts
+PASS src/notifications/__tests__/email.service.phase3.spec.ts
+PASS src/ai-governance/services/ai-policy.service.spec.ts
+PASS src/jobs/dto/worker-result.contract.spec.ts
+PASS src/packages/utils/decision-fusion.spec.ts
+PASS src/ai-governance/services/ra6-qa-byconstruction.live-pg.spec.ts (7.806 s)
+PASS src/audit/audit.bypass-durability.live-pg.spec.ts (9.7 s)
+PASS src/jobs/services/static-result-hmac.service.spec.ts
+PASS src/packages/tests/cve-overlay-refresh.spec.ts
+PASS src/packages/helpers/vulnerability-evidence.mapper.applicability.spec.ts
+PASS src/packages/services/finding-evidence-normalizer.service.spec.ts
+PASS src/ai-governance/services/ai-delegated-approval-authority.service.spec.ts
+PASS src/threat-intel/known-malware.service.spec.ts
+PASS src/ai-governance/services/ai-query.thread-collapse.live-pg.spec.ts (8.248 s)
+PASS src/ai-egress-authority/egress-authority.types.spec.ts
+PASS src/migrations/pe1b-prompt-evidence-authority-ledger.live-pg.spec.ts
+PASS src/ai-governance/services/prompt-evidence-retention.live-pg.spec.ts
+PASS src/ai-policy-delivery/endpoint-control-authority.canary-relation.live-pg.spec.ts (6.219 s)
+PASS src/ai-governance/controllers/ai-prompt-evidence.controller.wire.spec.ts (6.404 s)
+PASS src/policy-groups/policy-enforcement-matrix.spec.ts
+PASS src/packages/helpers/decision-reason-sanitizer.spec.ts
+PASS src/ai-governance/services/server-decided-provenance.live-pg.spec.ts (18.06 s)
+PASS src/github-app/services/github-auth.service.spec.ts
+PASS src/ai-security-policy/ai-security-policy.ingress-obfuscation.spec.ts
+PASS src/jobs/jobs.controller.ai-artifact-sandbox-enqueue.spec.ts (8.51 s)
+PASS src/alerts/alerts.sql.spec.ts
+PASS src/ai-policy-delivery/endpoint-policy-integrity-read.service.spec.ts (69.016 s)
+FAIL src/common/contracts/console-response-only-fields.spec.ts
+FAIL src/github-app/services/backfill-suppress-synthetic-secrets.db.spec.ts
+PASS src/packages/tests/policy-facts-normalizer.spec.ts (42.658 s)
+PASS src/ai-governance/dto/ai-agent-wire-contract.spec.ts (46.487 s)
+PASS src/ai-governance/services/prompt-evidence-reveal.masked-lane.spec.ts
+PASS src/organizations/organizations.service.spec.ts (5.685 s)
+PASS src/ai-security-policy/ai-security-policy.tool-risk.spec.ts
+PASS src/ai-security-policy/ai-security-policy.prompt-evidence.spec.ts
+PASS src/package-intelligence/artifact-discovery-demand.reachability.live-pg.spec.ts (7.407 s)
+PASS src/ai-governance/services/ai-security-exception.service.spec.ts
+PASS src/ai-governance/services/ai-event-severity.util.spec.ts
+PASS src/migrations/ra1-delivery-authority.live-pg.spec.ts
+PASS src/packages/shared/decision-story.spec.ts
+PASS src/licenses/__tests__/license-issues.pagination.db.spec.ts (5.7 s)
+PASS src/policy-groups/controllers/policy-exception.controller.spec.ts
+PASS src/alerts/alerts.service.ai-alerts.spec.ts
+PASS src/config/internal-self-scan-repos.spec.ts
+PASS src/organizations/org-cross-store-purge.service.spec.ts
+PASS src/mcp-governance/services/telemetry-checkpoint.service.spec.ts
+PASS src/github-app/__tests__/scan-graph.e2e.spec.ts
+PASS src/ai-governance/services/ai-prompt-browser-single-row.live-pg.spec.ts
+PASS src/endpoint/endpoint.controller.artifact-verdict.policy.wire.spec.ts
+PASS src/ai-governance/services/ai-event.service.privacy.spec.ts (43.183 s)
+PASS src/packages/services/transitive-cve-phase4.spec.ts
+PASS src/ai-governance/controllers/prompt-evidence-refusal.wire.spec.ts
+PASS src/ai-governance/services/runtime-identity.util.spec.ts
+PASS src/ai-security-policy/__tests__/policy-history-list.spec.ts
+PASS src/package-intelligence/services/ai-artifact-verdict-publication.spec.ts
+PASS src/ai-governance/prompt-evidence-crypto.fixtures.spec.ts
+PASS src/ai-governance/services/ai-event-severity.live-pg.spec.ts
+PASS src/ai-governance/services/ai-event-outcome.util.spec.ts
+PASS src/github-app/services/scan-permit.service.spec.ts
+PASS src/notifications/adapters/__tests__/teams.adapter.spec.ts
+PASS src/ai-governance/services/ai-inventory.service.spec.ts
+PASS src/threat-intel/threat-intel-alert.service.spec.ts
+PASS src/ai-security-policy/ai-security-card.private-key.spec.ts
+PASS src/packages/types/scanner-decision.types.spec.ts
+PASS src/auth/sessions/sessions.service.spec.ts
+PASS src/endpoint/endpoint-group.controller.wire.spec.ts
+PASS src/migrations/1789100000000-AddArtifactDiscoveryDemand.live-pg.spec.ts
+PASS src/github-app/services/github-read.sca-aggregation.spec.ts
+PASS src/policy-groups/policy-groups.service.resolved-actions.spec.ts
+PASS src/github-app/services/sink-guard.service.spec.ts
+PASS src/github-app/services/scanner-routing.service.spec.ts
+PASS src/data-retention/data-retention.service.spec.ts
+PASS src/github-app/services/concurrency-cap.spec.ts
+PASS src/auth/services/auth-service-mfa-setup-pending.spec.ts (34.709 s)
+PASS src/common/utils/risk-scoring.util.spec.ts
+PASS src/ai-policy-delivery/uint64-trust-boundary.spec.ts (43.052 s)
+PASS src/packages/repositories/analysis-headline-selection.spec.ts
+PASS src/ai-governance/controllers/ai-agent.controller.w2-evidence.spec.ts
+PASS src/sso/sso-logout.controller.spec.ts
+PASS src/ai-governance/services/ai-optout-contract-drives-code.live-pg.spec.ts
+PASS src/ai-governance/services/ai-session-correlator.service.spec.ts
+PASS src/sso/sso-config.controller.spec.ts (5.047 s)
+PASS src/endpoint/endpoint-group.controller.spec.ts
+PASS src/auth/guards/cli-signature.guard.spec.ts
+PASS src/jobs/helpers/dependency-graph-synth.spec.ts
+PASS src/ai-governance/services/ai-query.protection-depth.ra6-wiring.spec.ts
+PASS src/notifications/dto/create-integration.dto.spec.ts
+PASS src/ai-governance/controllers/ai-agent.controller.prompt-receipt-fold.spec.ts
+PASS src/licenses/__tests__/LicensesService.scope.spec.ts
+PASS src/packages/services/sse-preliminary-decision.spec.ts
+PASS src/auth/guards/roles.guard.unknown-role.spec.ts
+PASS src/ai-security-policy/resolve-strictest-policy.runtime-integrity.spec.ts
+PASS src/ai-governance/services/ai-neutral-policy-runner.service.spec.ts
+PASS src/notifications/formatters/__tests__/teams-adaptive-card.formatter.spec.ts
+FAIL src/ai-governance/prompt-evidence-truncated-contract.spec.ts
+PASS src/common/utils/test-package.util.spec.ts
+PASS src/ai-governance/services/ai-query.codex-protection-depth.spec.ts
+PASS src/package-intelligence/services/endpoint-synthetic-sha.spec.ts
+PASS src/packages/helpers/malicious-behavior-evidence-context.spec.ts
+PASS src/github-app/services/is-secret-finding.spec.ts
+PASS src/notifications/__tests__/sns-publisher.service.spec.ts
+PASS src/github-app/controllers/repo-dependencies.controller.tree-slice.spec.ts
+PASS src/common/pipes/agent-ingest-validation.pipe.spec.ts
+PASS src/github-app/utils/repo-dependency-taxonomy-parity.spec.ts
+PASS src/github-app/gateways/scan-events.gateway.dual-token.spec.ts
+PASS src/packages/controllers/analyses.controller.coverage-heal.spec.ts
+PASS src/ai-security-policy/ai-security-policy.webguard-alerttiers.spec.ts
+PASS src/data-retention/data-retention.loop-termination.db.spec.ts
+PASS src/github-app/services/stale-reaper.fullrepo-stranding.db.spec.ts
+PASS src/threat-intel/threat-intel-exposure.spec.ts
+PASS src/auth/services/auth-service-pepper-fail-closed.spec.ts
+PASS src/ai-governance/runtime-adapter-shape.foreign-governance.spec.ts
+PASS src/evidence-export/webhook.service.ssrf.spec.ts
+PASS src/policy-groups/policy-engine.missingLicense.spec.ts
+PASS src/ai-governance/services/ai-session.thread-chain.live-pg.spec.ts (5.558 s)
+PASS src/ai-governance/services/ai-evidence-chain.marker.live-pg.spec.ts
+PASS src/policy-groups/policy-engine.threat-intel-wiring.spec.ts
+PASS src/jobs/jobs.controller.completion-downgrade-guard.spec.ts
+PASS src/policy-groups/policy-groups.controller.audit.spec.ts
+PASS src/ai-governance/services/ai-query.non-substantive.spec.ts
+PASS src/threat-intel/known-malware.scale.spec.ts
+PASS src/ai-governance/controllers/ai-agent.controller.monitored.spec.ts
+PASS src/jobs/dto/preliminary-vuln-decision.dto.spec.ts
+FAIL src/common/build-stamp-taskdef.spec.ts
+PASS src/ai-governance/services/session-display-name.util.spec.ts
+PASS src/package-intelligence/services/artifact-discovery-demand.service.spec.ts
+FAIL src/common/build-stamp-nest-build.spec.ts
+PASS src/ai-context/dto/ai-context-ingest.contract.spec.ts
+PASS src/auth/services/auth-service-token-purpose.spec.ts
+PASS src/rate-limit/ddb-rate-limit.storage.spec.ts
+PASS src/users/user-management-permissions.helper.global-account.spec.ts
+PASS src/mcp-governance/services/runtime-decision-audit.service.spec.ts
+PASS src/github-app/services/retention.candidates.db.spec.ts
+PASS src/crypto/ai-trust-anchor-ack.storage-assurance.spec.ts
+PASS src/ai-policy-delivery/integrity-canary-receipt-contract.spec.ts
+PASS src/common/throttler/standard-retry-after.spec.ts
+PASS src/ai-governance/services/ai-enforcement-receipt.service.spec.ts
+PASS src/cve-alert/cve-alert.controller.integration.spec.ts
+PASS src/github-app/controllers/baselines.controller.spec.ts (6.87 s)
+PASS src/ai-governance/dto/ai-wire-surface-identity.spec.ts (57.626 s)
+PASS src/github-app/services/scanner-set-resolver.service.spec.ts
+FAIL src/ai-governance/controllers/ai-runtime-filter.wire.spec.ts
+PASS src/auth/services/auth-service-token-hashing.spec.ts (10.767 s)
+PASS src/ai-policy-delivery/ai-policy-delivery.module-cycle.spec.ts
+PASS src/ai-security-policy/ai-security-policy.baseline-derivation.spec.ts
+PASS src/migrations/1787410000000-CreateAiPolicyDeliveryAuthority.spec.ts
+PASS src/health/services/health.control-state.spec.ts (6.352 s)
+PASS src/demo-requests/__tests__/turnstile.guard.spec.ts
+PASS src/auth/guards/jwt-auth.guard.mfa.spec.ts
+PASS src/ai-governance/services/ai-event-hash.severity.spec.ts
+PASS src/ai-governance/dto/ai-prompt-check.dto.capture-state.spec.ts
+PASS src/ai-policy-delivery/canary-fleet-rollup.spec.ts
+PASS src/ai-governance/services/ai-event.evidence-ref.spec.ts
+PASS src/packages/services/prescan-cache-key.spec.ts (8.142 s)
+PASS src/shared-contracts-guard/m3-contracts.parity.spec.ts
+PASS src/migrations/1788900000000-AddPromptEvidenceAccessGrantSource.spec.ts
+PASS src/github-app/services/push-protection.pg-tuple.spec.ts
+PASS src/ai-governance/services/governed-action-lock.util.spec.ts
+PASS src/agents/ai-trust-anchor-enrollment-advisory.spec.ts
+PASS src/auth/guards/jwt-auth.guard.sessions.spec.ts
+PASS src/github-app/controllers/installation.controller.spec.ts (7.054 s)
+PASS src/agents/agents.controller.enroll.spec.ts
+PASS src/ai-context/ai-context.controller.identity.spec.ts (76.758 s)
+PASS src/jobs/contracts/worker-result-contract.snapshot.spec.ts
+PASS src/package-intelligence/services/ai-artifact-evidence.spec.ts
+PASS src/migrations/1780800000000-AddEndpointGroups.spec.ts
+PASS src/common/types/pagination.dto.spec.ts
+PASS src/rate-limit/ddb-rate-limit.degraded-loudness.spec.ts
+PASS src/ai-governance/dto/mcp-scan-coverage-wire.spec.ts
+PASS src/github-app/services/branch-graph.visible-count.spec.ts
+PASS src/common/utils/action-verdict.util.spec.ts
+PASS src/licenses/__tests__/exceptions.delete.spec.ts (6.004 s)
+PASS src/ai-governance/services/evidence-mode-order.util.spec.ts
+PASS src/licenses/__tests__/exceptions.idor.spec.ts
+PASS src/github-app/services/local-artifact-manifest-extractor.service.spec.ts
+PASS src/licenses/__tests__/upsertMany.account-level-race.spec.ts (10.137 s)
+PASS src/users/users.me-prompt-evidence-capabilities.wire.spec.ts (10.874 s)
+PASS src/ai-egress-authority/egress-authority.brand.compile.spec.ts
+PASS src/github-app/controllers/github-app.controller.delta-sync.spec.ts
+PASS src/github-app/utils/scanner-execution.util.spec.ts
+PASS src/ai-governance/services/enforcement-truth.util.spec.ts
+PASS src/ai-governance/services/evidence-stream-ack-signature.spec.ts
+PASS src/migrations/1782000000000-AddScanGraphDeltas.spec.ts
+PASS src/migrations/1746000000000-AddOrgsAuditLockKey.spec.ts
+PASS src/github-app/services/github-read.has-security-graph.spec.ts
+PASS src/licenses/__tests__/facets.cache.spec.ts (5.169 s)
+PASS src/licenses/__tests__/exceptions.create.duplicate.spec.ts
+PASS src/notifications/services/rate-limit.service.spec.ts
+PASS src/ai-policy-delivery/uint64-canonical.guard.spec.ts
+PASS src/github-app/utils/scanner-internal-denylist.spec.ts
+PASS src/ai-security-policy/dto/ai-security-policy.ingress-obfuscation.dto.spec.ts
+PASS src/config/env.validation.signing-master-key.spec.ts
+PASS src/github-app/services/request-verifier.service.spec.ts
+PASS src/migrations/1782300000000-AddScanRunsListIndexes.spec.ts
+PASS src/packages/services/fastgate.service.helpers.ai-artifact.spec.ts (76.773 s)
+PASS src/packages/helpers/cache-analysis.mapper.wave4.spec.ts
+PASS src/ai-governance/services/ai-query.provider-activity.service.spec.ts (5.628 s)
+PASS src/ai-governance/ai-client-kind.spec.ts
+PASS src/ai-governance/dto/__tests__/ai-nav-blocked.dto.validation.spec.ts
+PASS src/packages/helpers/vuln-source-classification.spec.ts
+PASS src/ai-governance/services/endpoint-evidence-health.spec.ts
+PASS src/agents/agents.controller.spec.ts
+PASS src/threat-intel/bloom-filter.spec.ts (16.735 s)
+PASS src/github-app/secret-classifier/secret-classifier-golden.spec.ts
+PASS src/common/utils/test-fixture-env-lockdown.spec.ts
+PASS src/jobs/guards/worker-api-keys.spec.ts
+PASS src/migrations/1782410000000-AddRepoDependencyReconcileAttempts.spec.ts
+PASS src/github-app/controllers/local-scan-allowlist.controller.spec.ts
+PASS src/packages/services/risk-score.service.spec.ts
+PASS src/migrations/1746700000000-AddMaxConcurrentScansToOrgs.spec.ts
+PASS src/jobs/repo-scan-agent.util.spec.ts
+PASS src/migrations/1785800000000-CreateAiDelegatedApprovalAuthority.spec.ts
+PASS src/mcp-governance/README.spec.ts
+PASS src/endpoint/dto/endpoint-inventory-list.dto.spec.ts
+PASS src/migrations/1787600001000-AddAiSessionClientKind.spec.ts
+PASS src/github-app/controllers/scan-runs.controller.graph-di.spec.ts (83.813 s)
+PASS src/packages/tests/normalize-wire-action.spec.ts
+PASS src/entities/__tests__/ai-policy-exception.entity.spec.ts
+PASS src/migrations/1782500000000-AddScannerExecutionOutcome.spec.ts
+PASS src/ai-governance/services/activity-kind.exception.spec.ts
+PASS src/auth/auth.module.spec.ts
+PASS src/ai-security-policy/ai-security-detector-catalog.service.spec.ts (49.839 s)
+FAIL common/contracts/console-response-only-fields.spec.ts
+FAIL github-app/services/backfill-suppress-synthetic-secrets.db.spec.ts
+FAIL ai-governance/prompt-evidence-truncated-contract.spec.ts
+FAIL common/build-stamp-taskdef.spec.ts
+FAIL common/build-stamp-nest-build.spec.ts
+FAIL ai-governance/controllers/ai-runtime-filter.wire.spec.ts
+Test Suites: 6 failed, 1 skipped, 236 passed, 242 of 243 total
+Tests:       6 skipped, 4123 passed, 4129 total
+Snapshots:   0 total
+Time:        677.395 s
+shard 2 exit=1 elapsed=690s
+=== shard 3/4  (maxWorkers=3, workerIdleMemoryLimit=1400MB) ===
+PASS src/jobs/jobs.controller.spec.ts (120.854 s)
+PASS src/packages/controllers/packages.controller.spec.ts (163.359 s)
+PASS src/github-app/shared/lockfile-parser.spec.ts
+PASS src/notifications/services/integrations.service.spec.ts (8.477 s)
+PASS src/migrations/ra0-contract-spine.live-pg.spec.ts (177.664 s)
+PASS src/licenses/__tests__/PolicyEngineService.evaluatePackage.spec.ts (11.663 s)
+PASS src/sso/sso-config.service.spec.ts (69.776 s)
+FAIL src/ai-governance/services/endpoint-evidence-commit.live-pg.spec.ts (40.042 s)
+FAIL src/endpoint/endpoint.controller.wire.spec.ts (49.09 s)
+PASS src/github-app/controllers/scan-events-notification.push-verdict.spec.ts (61.277 s)
+PASS src/endpoint/endpoint-group.service.spec.ts (8.928 s)
+PASS src/ai-governance/services/qa-refute-d2-probes.live-pg.spec.ts (11.482 s)
+PASS src/endpoint/rollout-readiness.service.spec.ts (7.103 s)
+PASS src/endpoint/endpoint-inventory.service.spec.ts
+PASS src/github-app/controllers/scan-events-notification.controller.spec.ts (6.678 s)
+FAIL src/ai-governance/prompt-evidence-contract.fixtures.spec.ts
+PASS src/packages/services/dynamodb-cache.service.spec.ts (97.432 s)
+PASS src/github-app/services/dependency-finding.service.spec.ts (5.535 s)
+PASS src/github-app/services/branch-graph.service.spec.ts (169.088 s)
+PASS src/ai-policy-delivery/endpoint-control-authority.canary-receipt.live-pg.spec.ts (8.519 s)
+PASS src/jobs/guards/sandbox-result-signature.guard.spec.ts
+PASS src/jobs/helpers/cache-scan-status.spec.ts (128.866 s)
+PASS src/notifications/services/__tests__/syslog-connection-pool.service.spec.ts
+PASS src/migrations/ra6-evidence-batch-ack.live-pg.spec.ts (10.755 s)
+PASS src/ai-governance/services/prompt-evidence-reveal.service.spec.ts (26.5 s)
+PASS src/packages/tests/policy-facts-endpoint-exposure.spec.ts (30.812 s)
+FAIL src/ai-governance/services/ai-query.thread-sort-order.spec.ts
+PASS src/ai-security-policy/ai-security-policy.surfaces-instance-rules.spec.ts (57.928 s)
+PASS src/packages/helpers/malicious-behavior-evidence.spec.ts
+PASS src/packages/controllers/analyses.controller.inconclusive.spec.ts (8.104 s)
+PASS src/packages/shared/never-downgrade.spec.ts
+PASS src/github-app/services/github-read.scan-scoped-dedup.spec.ts (6.89 s)
+FAIL src/ai-governance/services/ai-query.disposition-rollup.live-pg.spec.ts
+PASS src/ai-governance/services/prompt-evidence-projection.live-pg.spec.ts (9.164 s)
+FAIL src/ai-governance/aicp-m2-demos.e2e.spec.ts
+PASS src/ai-governance/services/ai-event-hash.qa-remediation.spec.ts
+PASS src/github-app/guards/runner-auth-security.guard.spec.ts
+PASS src/ai-governance/services/ai-event.evidence-ref.live-pg.spec.ts
+PASS src/policy-groups/policy-presets.spec.ts
+PASS src/ai-policy-delivery/ai-policy-rollout.progression.spec.ts
+PASS src/common/filters/http-exception.filter.spec.ts
+PASS src/github-app/services/local-scan-artifact.service.spec.ts
+PASS src/ai-security-policy/ai-security-policy.agents-egress-proxy.spec.ts
+PASS src/ai-security-policy/ai-security-policy.evidence-capture-on.spec.ts
+PASS src/github-app/services/stale-processing-reaper.service.spec.ts (89.268 s)
+PASS src/health/health.undecidable-daemon.live-pg.spec.ts (89.22 s)
+PASS src/ai-governance/services/prompt-evidence-settings.live-pg.spec.ts (7.978 s)
+PASS src/packages/services/typosquat-engine.spec.ts
+PASS src/migrations/1788600000000-AiTenancyConstraints.live-pg.spec.ts
+PASS src/ai-governance/services/qa-refute-upgrade-compat.live-pg.spec.ts (7.529 s)
+FAIL src/licenses/__tests__/LicenseExceptionsService.validation.spec.ts (11.927 s)
+FAIL src/ai-governance/runtime-integrity-contract.fixtures.spec.ts
+PASS src/ai-governance/services/ai-event-triage.live-pg.spec.ts (9.062 s)
+PASS src/ai-context/__tests__/ai-context.live-pg.spec.ts
+PASS src/packages/helpers/verdict-reason.spec.ts
+PASS src/audit/audit.service.erasure.spec.ts
+PASS src/common/utils/test-fixture-token.service.spec.ts
+PASS src/packages/tests/cache-parity-phase2.spec.ts
+PASS src/notifications/adapters/__tests__/slack.adapter.spec.ts
+PASS src/health/services/cross-repo-phase4.spec.ts
+PASS src/jobs/job-queue.service.fail-job.spec.ts
+PASS src/github-app/guards/scan-status-api-key.guard.spec.ts
+PASS src/jobs/helpers/worker-evidence-alias-detector.spec.ts
+PASS src/ai-governance/controllers/ai-agent.controller.detections-truth.spec.ts (9.026 s)
+PASS src/github-app/services/github-read.verdict-sql.spec.ts (14.426 s)
+PASS src/ai-governance/controllers/ai-agent.controller.browser-single-row.spec.ts
+FAIL src/ai-governance/services/ai-optout-coverage-unreadable.live-pg.spec.ts
+PASS src/packages/tests/forensics-cache-hydration.spec.ts (12.625 s)
+PASS src/packages/controllers/analyses.controller.light-view.spec.ts
+PASS src/mcp-governance/services/metrics-writer.service.spec.ts
+PASS src/audit/audit.service.user-management.spec.ts
+PASS src/ai-governance/services/prompt-evidence-artifact-producer.service.spec.ts
+PASS src/ai-governance/services/runtime-adapter-render.identity.spec.ts
+PASS src/ai-governance/services/ai-query.dropped-key-reporter-prototype.live-pg.spec.ts (11.789 s)
+PASS src/endpoint/dto/endpoint-inventory-contract.parity.spec.ts
+PASS src/ai-governance/services/ai-event-severity.detections-truth.spec.ts (110.965 s)
+PASS src/ai-governance/prompt-evidence-policy-wire-capture.live-pg.spec.ts (18.537 s)
+PASS src/notifications/adapters/__tests__/email.adapter.spec.ts (108.899 s)
+PASS src/github-app/services/egress-compliance.service.spec.ts (28.008 s)
+PASS src/ai-security-policy/ai-security-policy.tool-risk-class-parity.spec.ts
+PASS src/ai-policy-delivery/ai-policy-rollback.service.spec.ts
+PASS src/sso/sso-enforcement.service.spec.ts
+PASS src/common/utils/post-hardening-redaction.spec.ts (12.065 s)
+FAIL src/licenses/__tests__/LicenseIssuesRepository.summary+charts.spec.ts (8.53 s)
+PASS src/ai-governance/services/ai-query.session-title.spec.ts (8.502 s)
+PASS src/endpoint/ai-artifact-endpoint-resolution.spec.ts
+PASS src/health/services/scanner-ai-health.service.spec.ts
+PASS src/app.module.logging.spec.ts (5.783 s)
+PASS src/ai-security-policy/ai-risk-groups.spec.ts (11.567 s)
+PASS src/health/health.runtime-adapters.live-pg.spec.ts (40.249 s)
+PASS src/agents/agents.service.request-signing.spec.ts (11.07 s)
+PASS src/api-keys/api-keys.service.spec.ts
+PASS src/common/helpers/tenant-scope.helper.spec.ts (7.382 s)
+PASS src/common/throttler/agent-throttler.produces-key.spec.ts (19.61 s)
+PASS src/github-app/services/evidence-retention.minimal-strip.spec.ts (6.575 s)
+FAIL src/common/pipes/agent-wire-leniency.spec.ts
+PASS src/packages/services/fastgate.preflight-inventory.spec.ts (7.983 s)
+PASS src/github-app/controllers/settings.controller.spec.ts (14.655 s)
+PASS src/users/users.service.global-account-role-projection.spec.ts
+PASS src/audit/audit.service.pe0-content-scrub.spec.ts (26.496 s)
+PASS src/github-app/services/phase6-operations.service.spec.ts
+PASS src/health/health.ra6-wiring.spec.ts
+PASS src/package-intelligence/__tests__/artifact-class-vocabulary.parity.spec.ts
+PASS src/ai-governance/services/prompt-evidence-masked-preview-lane.spec.ts
+PASS src/jobs/dto/worker-result-ai-artifact-ecosystem.spec.ts
+PASS src/packages/services/transitive-cve-evaluator.service.spec.ts
+PASS src/ai-governance/endpoint-authored-assurance.spec.ts (92.898 s)
+PASS src/crypto/prompt-evidence-key-ring.spec.ts (99.814 s)
+PASS src/health/services/release-manifest.generator.spec.ts (8.606 s)
+PASS src/config/verify-production-runtime-env.h1.spec.ts (7.178 s)
+PASS src/endpoint/inventory-verdict.util.spec.ts
+PASS src/org-export/org-export.service.spec.ts (9.118 s)
+PASS src/ai-governance/services/approved-catalog.service.spec.ts (6.918 s)
+PASS src/ai-governance/services/ai-event.service.w2-preview-cap.spec.ts (7.694 s)
+PASS src/jobs/jobs.controller.narrative.spec.ts
+PASS src/jobs/sqs-replay-cache.spec.ts
+PASS src/github-app/github-app.controller.push-scan.spec.ts (22.998 s)
+PASS src/policy-groups/policy-engine.get-direct-vulnerabilities.spec.ts
+PASS src/ai-governance/services/prompt-evidence-absence-derivation.spec.ts (5.082 s)
+PASS src/github-app/services/workflow-run-verifier.service.spec.ts (5.25 s)
+PASS src/ai-security-policy/ai-security-policy.apply-preset.spec.ts
+PASS src/ai-egress-authority/egress-authority-ingest.service.spec.ts
+PASS src/github-app/services/github-read.service.bulk-status.spec.ts (11.258 s)
+PASS src/ai-governance/services/ai-query.activity-outcome.spec.ts (5.372 s)
+PASS src/jobs/phase4-orchestration-invariants.spec.ts
+PASS src/jobs/sqs-canonicalize.spec.ts
+PASS src/audit/audit-retention.live-pg.spec.ts (11.659 s)
+PASS src/users/users.controller.spec.ts (5.379 s)
+PASS src/ai-security-policy/ai-security-policy.risk-groups.spec.ts
+PASS src/ai-governance/services/endpoint-evidence-ingest.bundle-application.spec.ts (5.879 s)
+PASS src/agents/agents.update-command.spec.ts
+PASS src/auth/cli-request-signature.verify-coalesce.spec.ts
+PASS src/packages/shared/confidence-gated-downgrade.spec.ts
+PASS src/common/throttler/agent-throttle-metadata.spec.ts (14.058 s)
+PASS src/auth/guards/jwt-auth.guard.read-only.spec.ts (12.667 s)
+PASS src/packages/dto/prescan-status.dto.spec.ts (27.068 s)
+PASS src/packages/services/finding-evidence-normalizer.floor-parity.spec.ts (37.927 s)
+PASS src/ai-governance/controllers/ai-agent.controller.alert-on-match.spec.ts (30.878 s)
+PASS src/ai-security-policy/ai-security-policy.measured-fp-rates.spec.ts (6.084 s)
+PASS src/auth/guards/lab-tenant.guard.spec.ts
+PASS src/auth/internal-hmac.service.fail-closed.spec.ts
+PASS src/ai-policy-delivery/ai-policy-prompt-evidence-all-inspected-gate.spec.ts
+PASS src/alerts/alerts.service.alert-type-fanout.spec.ts (264.749 s)
+PASS src/ai-egress-authority/egress-authority-issuer.service.spec.ts
+PASS src/rate-limit/ddb-rate-limit.configured.spec.ts
+PASS src/github-app/services/github-read.posture-coverage.spec.ts (6.087 s)
+PASS src/installer/manifest-canonical.spec.ts
+PASS src/notifications/services/severity-mapping.service.spec.ts
+PASS src/github-app/services/local-scan-allowlist.service.spec.ts (6.758 s)
+PASS src/ai-security-policy/__tests__/section-block-style-round-trip.spec.ts (61.187 s)
+PASS src/health/types/release-manifest.types.spec.ts
+PASS src/packages/utils/analysis-reason.util.spec.ts (27.607 s)
+PASS src/ai-governance/controllers/ai-agent.controller.nav-blocked.spec.ts (11.184 s)
+PASS src/health/types/runtime-adapter-report-dto.inert.spec.ts
+PASS src/ai-governance/services/ai-session-lifecycle.service.spec.ts (191.83 s)
+PASS src/github-app/services/resolve-redact-hostname.spec.ts (7.027 s)
+PASS src/ai-governance/controllers/ai-agent.controller.w2-preview.spec.ts
+PASS src/ai-governance/services/prompt-evidence.service.spec.ts
+PASS src/crypto/ai-trust-anchor.spec.ts
+PASS src/ai-security-policy/ai-security-policy-diff.spec.ts
+FAIL src/agents/ai-correlation-key-custody.readiness.spec.ts
+PASS src/ai-egress-authority/egress-authority.controller.tier.spec.ts
+PASS src/github-app/services/baseline-detector.service.spec.ts
+PASS src/packages/controllers/analyses.controller.analyzing-hold.spec.ts
+PASS src/github-app/controllers/local-scans.allowed-repos.spec.ts (16.991 s)
+PASS src/packages/services/non-registry-source-action.spec.ts
+PASS src/licenses/__tests__/LicenseEvaluationService.normalizeLicensePolicy.spec.ts
+PASS src/jobs/escalation-digest-continuity.spec.ts
+PASS src/health/controllers/health.release-manifest.wire.spec.ts
+PASS src/packages/shared/operational-failure-block.spec.ts
+PASS src/ai-security-policy/ai-security-detector-catalog.consumer-pin.spec.ts
+PASS src/common/interceptors/build-identity.interceptor.spec.ts
+PASS src/github-app/utils/scan-phase-mapper.spec.ts
+PASS src/ai-governance/runtime-adapter-shape.codex.spec.ts
+PASS src/auth/guards/jwt-auth.guard.lab.spec.ts (7.766 s)
+PASS src/ai-context/ai-context.controller.per-item.spec.ts
+PASS src/github-app/controllers/findings-read.controller.spec.ts
+PASS src/packages/tests/advisory-alias-dedup.spec.ts
+PASS src/ai-context/ai-context.coverage-floor.spec.ts
+PASS src/threat-intel/threat-intel-check.service.spec.ts
+PASS src/ai-security-policy/ai-preset-saveability.spec.ts
+PASS src/packages/shared/confirmed-malware-finding.spec.ts
+PASS src/endpoint/endpoint-inventory.pg-tuple.spec.ts
+PASS src/github-app/services/endpoint-egress-policy.service.spec.ts
+PASS src/config/env.validation.prompt-evidence-key-ring.spec.ts
+PASS src/packages/shared/fp-block-shape.spec.ts (260.43 s)
+PASS src/ai-governance/controllers/ai-event-triage.controller.spec.ts (5.232 s)
+PASS src/migrations/1787420000000-CreateAiAlertOutbox.spec.ts
+PASS src/github-app/utils/finding-text-sanitizer.spec.ts
+PASS src/alerts/alerts-bulk.service.spec.ts (9.538 s)
+PASS src/ai-governance/services/provider-catalog.service.spec.ts
+PASS src/health/controllers/health.controller.spec.ts
+PASS src/packages/services/source-aware-decision.spec.ts (12.134 s)
+PASS src/github-app/services/scanner-dlq-reaper.pg-tuple.spec.ts
+PASS src/migrations/1781900000000-AddScanRepoGraph.spec.ts
+PASS src/policy-groups/policy-groups.service.tenant-isolation.spec.ts
+FAIL src/licenses/__tests__/exceptions.create.spec.ts (6.755 s)
+PASS src/packages/services/scanner-cache-schema.wave4.spec.ts
+PASS src/ai-governance/services/ai-event-outcome.pending-inconclusive.spec.ts
+PASS src/packages/services/cache-integrity-match.spec.ts
+PASS src/users/users.service.erasure.spec.ts
+PASS src/ai-governance/services/ai-policy-exception.service.spec.ts
+PASS src/github-app/guards/runner-api-key.guard.spec.ts
+PASS src/packages/services/upload-artifact-format.spec.ts
+PASS src/github-app/utils/scanner-display-rule-id.spec.ts
+PASS src/threat-intel/threat-intel-credential-crypto.service.spec.ts
+PASS src/github-app/services/secret-patterns.spec.ts
+PASS src/jobs/jobs.controller.new-malicious-intel-bump.spec.ts
+FAIL src/licenses/__tests__/deleteByTenant.scope.spec.ts (7.349 s)
+PASS src/evidence-export/webhook.service.tenant-isolation.spec.ts
+PASS src/mcp-governance/mcp-governance.module.spec.ts
+PASS src/ai-governance/ai-provider-derivation.spec.ts
+PASS src/threat-intel/providers/threat-intel-provider.registry.spec.ts
+PASS src/endpoint/dto/inventory-catalog.dto.spec.ts
+PASS src/ai-security-policy/ai-security-policy.controller.presets-fp.spec.ts
+PASS src/jobs/jobs.controller.root-node-verdict.spec.ts (66.218 s)
+PASS src/ai-governance/services/prompt-text-access.contract.spec.ts (5.479 s)
+PASS src/ai-security-policy/ai-prompt-evidence-deployment.spec.ts (12.904 s)
+PASS src/auth/controllers/auth.controller.logout.spec.ts (111.116 s)
+PASS src/ai-governance/nav-blocked-url-shape.spec.ts
+PASS src/sso/sso-transaction-cookie.service.spec.ts
+PASS src/common/middleware/request-id.middleware.spec.ts
+PASS src/ai-governance/services/ai-policy.service.grant-fold.spec.ts
+PASS src/migrations/1739900000000-AddCorrelationIdToAuditEvents.spec.ts
+PASS src/github-app/dto/endpoint-egress.dto.spec.ts
+PASS src/ai-governance/controllers/ai-session-lifecycle.controller.spec.ts
+PASS src/ai-security-policy/ai-runtime-integrity-source-governance.spec.ts (109.061 s)
+PASS src/ai-governance/prompt-evidence-upload.di.spec.ts (14.488 s)
+PASS src/ai-governance/controllers/ai-agent.controller.policy-bundle.spec.ts (7.391 s)
+PASS src/ai-security-policy/ai-security-card.controller.spec.ts
+PASS src/ai-governance/services/ai-query.safe-metadata.causal-artifact.spec.ts
+PASS src/migrations/1781300000000-AddBaselineScanRunUniqueIdempotency.spec.ts
+PASS src/github-app/services/results-rate-limit.service.spec.ts
+PASS src/ai-governance/services/ai-evidence-verifier.service.spec.ts
+PASS src/agents/ai-correlation-prompt-evidence-domain.spec.ts (70.942 s)
+PASS src/migrations/1739300003000-BackfillDefaultSites.spec.ts
+PASS src/ai-security-policy/ai-security-policy.constants.mcp-uploads-paths.spec.ts
+PASS src/migrations/1786900000000-AddAiSessionTitle.spec.ts
+PASS src/migrations/1786000000000-AddHighImpactTotpReplayCounter.spec.ts
+PASS src/ai-security-policy/ai-security-policy.service.coaching.spec.ts
+PASS src/migrations/1782510000000-AddEndpointEvidenceAndSigning.spec.ts
+PASS src/ai-governance/services/__tests__/activity-kind-navblock.util.spec.ts
+PASS src/github-app/services/heavy-lane-router.spec.ts
+FAIL ai-governance/services/endpoint-evidence-commit.live-pg.spec.ts (40.042 s)
+FAIL endpoint/endpoint.controller.wire.spec.ts (49.09 s)
+FAIL ai-governance/prompt-evidence-contract.fixtures.spec.ts
+FAIL ai-governance/services/ai-query.thread-sort-order.spec.ts
+FAIL ai-governance/services/ai-query.disposition-rollup.live-pg.spec.ts
+FAIL ai-governance/aicp-m2-demos.e2e.spec.ts
+FAIL licenses/__tests__/LicenseExceptionsService.validation.spec.ts (11.927 s)
+FAIL ai-governance/runtime-integrity-contract.fixtures.spec.ts
+FAIL ai-governance/services/ai-optout-coverage-unreadable.live-pg.spec.ts
+FAIL licenses/__tests__/LicenseIssuesRepository.summary+charts.spec.ts (8.53 s)
+FAIL common/pipes/agent-wire-leniency.spec.ts
+FAIL agents/ai-correlation-key-custody.readiness.spec.ts
+FAIL licenses/__tests__/exceptions.create.spec.ts (6.755 s)
+FAIL licenses/__tests__/deleteByTenant.scope.spec.ts (7.349 s)
+Test Suites: 14 failed, 229 passed, 243 total
+Tests:       27 failed, 3 skipped, 3508 passed, 3538 total
+Snapshots:   0 total
+Time:        1644.493 s
+shard 3 exit=1 elapsed=1651s
+=== shard 4/4  (maxWorkers=3, workerIdleMemoryLimit=1400MB) ===
+PASS src/ai-governance/services/ai-query.service.spec.ts (37.045 s)
+PASS src/packages/services/fastgate.service.spec.ts (49.6 s)
+FAIL src/github-app/controllers/local-scans.controller.spec.ts
+PASS src/github-app/services/github-read.service.spec.ts (6.941 s)
+PASS src/github-app/services/repo-dependency-sync.service.spec.ts (29.63 s)
+PASS src/github-app/services/finding-quality-gate.service.spec.ts
+PASS src/github-app/services/github-read.toCustomerFinding-redaction.spec.ts
+PASS src/ai-governance/services/prompt-evidence-authority-gap.live-pg.spec.ts (16.548 s)
+PASS src/migrations/ra6-convergence.live-pg.spec.ts (28.92 s)
+PASS src/migrations/pe3-vault-retention.live-pg.spec.ts (11.52 s)
+PASS src/packages/services/prescan-status.spec.ts (11.29 s)
+PASS src/notifications/services/notification-dispatcher.service.spec.ts
+PASS src/github-app/services/github-read.dedup-sql.spec.ts
+PASS src/packages/helpers/install-time-policy-decision.spec.ts
+PASS src/github-app/utils/repo-dependency-reporting.util.spec.ts
+PASS src/ai-security-policy/ai-policy-presets.spec.ts (5.53 s)
+PASS src/jobs/jobs.controller.escalation-authoritative.spec.ts (16.138 s)
+PASS src/ai-governance/services/endpoint-evidence-ingest.prompt-upload-lane.live-pg.spec.ts (9.034 s)
+PASS src/github-app/github-app.controller.spec.ts (8.159 s)
+PASS src/ai-security-policy/ai-preset-distribution.spec.ts (5.791 s)
+PASS src/packages/services/transitive-malware-coordinator.service.spec.ts (127.106 s)
+PASS src/ai-governance/services/prompt-evidence-privacy-reduction.live-pg.spec.ts (11.314 s)
+PASS src/notifications/services/__tests__/test-send.service.spec.ts
+PASS src/crypto/ai-signing-key-rotation.service.spec.ts
+PASS src/endpoint/ai-artifact-digest-resolution.spec.ts
+PASS src/jobs/guards/static-result-signature.guard.spec.ts
+PASS src/endpoint/endpoint-inventory.controller.spec.ts (72.686 s)
+PASS src/notifications/adapters/__tests__/siem-webhook.adapter.spec.ts
+PASS src/ai-security-policy/resolve-strictest-policy.spec.ts
+PASS src/github-app/services/results-ingestion.service.spec.ts
+PASS src/health/health.runtime-adapters.spec.ts
+PASS src/ai-governance/policy-bundle-parity.fixtures.spec.ts (58.296 s)
+PASS src/health/policy-integrity-shape.spec.ts
+PASS src/packages/tests/phase1-correctness.spec.ts
+PASS src/ai-policy-delivery/ai-policy-prompt-evidence-ceiling.service.spec.ts
+PASS src/packages/utils/findings-collapse.spec.ts
+PASS src/agents/ai-trust-anchor-bootstrap.service.spec.ts
+PASS src/notifications/providers/__tests__/brevo-email.provider.spec.ts
+PASS src/packages/tests/policy-facts-aggregator.spec.ts
+PASS src/licenses/__tests__/LicenseIssuesRepository.findFiltered.spec.ts (9.257 s)
+PASS src/sso/sso-login.service.spec.ts
+PASS src/packages/tests/policy-facts-ingestion-e2e.spec.ts
+PASS src/github-app/services/policy-crud.spec.ts
+PASS src/ai-security-policy/ai-security-baseline.spec.ts
+PASS src/ai-governance/services/ai-event.append-idempotency.live-pg.spec.ts (10.414 s)
+PASS src/endpoint/inventory-aggregation.analyzing-hold.spec.ts
+PASS src/migrations/pe3-truncated-contract.live-pg.spec.ts
+PASS src/ai-security-policy/ai-security-policy.dto.pipe.spec.ts
+PASS src/packages/tests/policy-facts-exposure.spec.ts
+PASS src/ai-governance/services/ai-agent-liveness.service.spec.ts
+PASS src/ai-governance/services/ai-query.protection-depth.canary-proof.spec.ts
+PASS src/jobs/job-queue.service.rebind.spec.ts
+PASS src/migrations/w1-hot-path-indexes.live-pg.spec.ts (12.367 s)
+PASS src/sso/sso-callback.service.spec.ts
+PASS src/endpoint/endpoint.controller.artifact-verdict.wire.spec.ts
+PASS src/github-app/__tests__/scan-graph-delta.e2e.spec.ts (9.443 s)
+PASS src/ai-security-policy/ai-security-policy.team-resolution.spec.ts
+PASS src/github-app/controllers/results-chunk.controller.spec.ts (6.544 s)
+PASS src/github-app/services/opus-queue.service.spec.ts
+PASS src/entities/relation-id-query.spec.ts (5.399 s)
+FAIL src/packages/services/scanner-cache-schema.spec.ts (5.499 s)
+PASS src/auth/guards/internal-hmac.guard.spec.ts
+PASS src/packages/tests/cache-policy-context.spec.ts
+PASS src/github-app/controllers/push-override.controller.spec.ts
+PASS src/packages/services/install-time-parity.spec.ts
+PASS src/jobs/job-queue.service.coverage-held-reuse.spec.ts
+PASS src/migrations/1787300000000-NormalizeAiSecurityPolicyDispositions.live-pg.spec.ts (5.288 s)
+PASS src/ai-governance/services/prompt-evidence-one-decision.spec.ts
+PASS src/github-app/controllers/scan-permit.controller.spec.ts
+PASS src/licenses/__tests__/Migration.constraintCleanup.spec.ts
+PASS src/github-app/services/github-read.scan-graph.spec.ts
+PASS src/ai-artifact-load-policy/ai-artifact-load-policy.service.spec.ts
+PASS src/auth/mfa/mfa.service.force-enrollment.spec.ts
+PASS src/ai-governance/services/ai-enforcement-decision-producer.live-pg.spec.ts
+PASS src/github-app/utils/customer-scan-run-sanitizer.spec.ts
+PASS src/ai-governance/services/prompt-evidence-site-delete.live-pg.spec.ts (5.9 s)
+PASS src/github-app/dto/local-scan.dto.spec.ts
+PASS src/ai-policy-delivery/ai-policy-authority-fingerprint.service.spec.ts
+PASS src/github-app/services/scanner-queue-age-probe.service.spec.ts
+PASS src/notifications/retention/__tests__/delivery-log-retention.service.spec.ts
+PASS src/notifications/controllers/integrations.controller.spec.ts
+PASS src/ai-policy-delivery/endpoint-control-authority.controller.spec.ts
+PASS src/ai-context/ai-context.previews-truncated.live-pg.spec.ts
+PASS src/auth/services/auth-service-ws-token.spec.ts
+PASS src/migrations/ra6-alert-outbox.live-pg.spec.ts
+PASS src/jobs/sqs-job-contract.spec.ts (44.502 s)
+PASS src/health/policy-integrity-uint64-boundary.spec.ts
+PASS src/ai-governance/runtime-adapter-shape.spec.ts
+PASS src/threat-intel/threat-intel-retention.service.spec.ts
+PASS src/jobs/guards/worker-auth.guard.spec.ts
+PASS src/github-app/controllers/webhook-quarantine.controller.spec.ts
+FAIL src/ai-governance/services/ai-query.sessions-sort.live-pg.spec.ts
+FAIL src/ai-governance/services/ai-prompt-single-row.live-pg.spec.ts
+PASS src/health/policy-integrity-uint64.wire.spec.ts (69.94 s)
+FAIL src/ai-context/ai-context.ingest.live-pg.spec.ts (58.085 s)
+FAIL src/organizations/org-prompt-evidence-purge.live-pg.spec.ts (92.295 s)
+PASS src/packages/utils/decision-chain.spec.ts (27.921 s)
+PASS src/policy-groups/services/policy-exception.service.spec.ts (306.602 s)
+PASS src/endpoint/inventory-aggregation.ai-artifact-catalog-coverage.spec.ts (16.878 s)
+PASS src/overview/overview.service.spec.ts
+PASS src/installer/installer.service.artifact-resolution.spec.ts
+PASS src/ai-governance/services/ai-session.wire-identity.live-pg.spec.ts (77.022 s)
+PASS src/ai-security-policy/ai-security-policy.risk-groups-preview.spec.ts
+PASS src/ai-security-policy/ai-preset-cards.served.spec.ts
+PASS src/ai-governance/services/ai-security-exception.class-flow.spec.ts
+PASS src/threat-intel/threat-intel-retention.live-pg.spec.ts
+PASS src/audit/audit.service.concurrent.spec.ts (11.282 s)
+PASS src/ai-governance/services/ai-query.timeline-pagination.live-pg.spec.ts (6.337 s)
+PASS src/installer/installer.controller.spec.ts (18.957 s)
+FAIL src/common/build-stamp-dist.spec.ts
+PASS src/crypto/prompt-evidence-cipher.spec.ts
+FAIL src/audit/audit.service.live-pg.spec.ts (16.663 s)
+PASS src/packages/services/artifact-class-cache-key.spec.ts (5.888 s)
+PASS src/crypto/evidence-ack-key-ring.di.spec.ts (24.921 s)
+PASS src/github-app/services/signing-key.service.spec.ts (9.606 s)
+PASS src/ai-governance/services/endpoint-evidence-ingest.w2-receipt.spec.ts (21.593 s)
+PASS src/ai-governance/controllers/ai-agent.controller.web-drift.spec.ts (14.045 s)
+PASS src/ai-governance/services/ai-enforcement-decision-producer.service.spec.ts
+PASS src/packages/controllers/correlation-status-action-chain.spec.ts (59.543 s)
+PASS src/jobs/jobs.controller.ai-artifact-escalation.spec.ts (433.408 s)
+PASS src/ai-governance/services/ai-delegated-approval-presence.service.spec.ts (18.749 s)
+PASS src/ai-governance/runtime-adapter-shape.identity.spec.ts
+PASS src/audit/audit-chain-lock.spec.ts
+PASS src/package-intelligence/services/verdict-alias-lookup.service.spec.ts
+PASS src/users/user-management-permissions.helper.spec.ts
+PASS src/ai-security-policy/resolve-strictest-policy.fold-algebra.spec.ts
+PASS src/jobs/jobs.controller.laundered-block.spec.ts (5.602 s)
+PASS src/ai-governance/services/activity-kind.util.spec.ts
+PASS src/ai-governance/services/prompt-evidence-retention.masked-preview.spec.ts (31.926 s)
+PASS src/auth/sessions/sessions.controller.spec.ts (24.133 s)
+PASS src/jobs/phase2-phase3-invariants.spec.ts (5.218 s)
+PASS src/ai-security-policy/preset-copy-matches-derivation.spec.ts (124.272 s)
+PASS src/demo-requests/__tests__/demo-requests.service.spec.ts (22.501 s)
+PASS src/auth/services/auth-service-validate-api-key-any.spec.ts
+PASS src/mcp-governance/services/canonical-row.spec.ts
+PASS src/endpoint/ai-artifact-coverage.spec.ts
+PASS src/ai-security-policy/ai-security-policy.monitor-translation.spec.ts
+PASS src/auth/services/auth-service-last-used-coalesce.spec.ts (17.58 s)
+PASS src/github-app/services/github-read.posture-display-fallback.spec.ts
+PASS src/packages/services/entropy-secret-backstop.spec.ts
+PASS src/policy-groups/dto/policy-group-contract-split.spec.ts
+PASS src/ai-governance/dto/ai-prompt-check.dto.browser-fields.spec.ts
+PASS src/ai-governance/services/ai-event-outcome.subject.spec.ts
+PASS src/ai-security-policy/__tests__/clone-recommended-policy-additive.spec.ts
+PASS src/ai-policy-delivery/endpoint-control-authority.rollout-refusal.wire.spec.ts (161.606 s)
+PASS src/ai-governance/services/ai-evidence-chain.service.spec.ts
+PASS src/packages/helpers/finding-source-join.spec.ts
+PASS src/notifications/formatters/__tests__/slack-block-kit.formatter.spec.ts
+PASS src/audit/policy-rule-audit.spec.ts (5.049 s)
+PASS src/github-app/services/push-verdict.service.spec.ts
+PASS src/audit/audit-retention.service.spec.ts
+PASS src/cve-alert/cve-alert-dispatch.intel-bump.spec.ts
+PASS src/ai-governance/services/governed-action-promote.util.spec.ts
+PASS src/packages/services/dynamodb-cache.artifact-class-key.spec.ts
+PASS src/ai-governance/controllers/ai-detections.prompt-evidence.wire.spec.ts (8.086 s)
+PASS src/packages/services/finding-evidence-normalizer.entropy-backstop.spec.ts (9.276 s)
+PASS src/ai-governance/prompt-evidence-raw-body.spec.ts (15.686 s)
+PASS src/ai-governance/dto/__tests__/agent-evidence-w2.dto.validation.spec.ts (8.513 s)
+PASS src/auth/mfa/mfa-rollout.service.spec.ts
+PASS src/ai-governance/services/runtime-adapter-render.util.codex.spec.ts
+PASS src/ai-egress-authority/dto/egress-authority.dto.pipe.spec.ts (6.365 s)
+PASS src/migrations/1790200000000-AddCanaryReceiptProof.spec.ts
+PASS src/github-app/services/retention.loop-termination.db.spec.ts (18.735 s)
+PASS src/packages/services/package-forensics.service.spec.ts (10.364 s)
+PASS src/ai-policy-delivery/ai-policy-rollout.service.spec.ts (14.083 s)
+PASS src/package-intelligence/artifact-discovery-demand.controller.spec.ts
+PASS src/audit/audit.controller.correlation.spec.ts (9.923 s)
+FAIL src/ai-governance/services/zz-adv-reporter-probe.live-pg.spec.ts
+PASS src/github-app/services/permit-record.service.spec.ts (5.604 s)
+PASS src/ai-governance/ai-source-surface.spec.ts
+PASS src/packages/helpers/cache-analysis.mapper.spec.ts
+PASS src/github-app/services/github-read.posture-baseline-binding.spec.ts (8.939 s)
+PASS src/ai-governance/services/preview-shape-gate.spec.ts (186.047 s)
+PASS src/migrations/1787430000000-CreateEndpointControlAuthority.spec.ts
+PASS src/package-intelligence/__tests__/verdict-alias-lookup.spec.ts
+PASS src/ai-governance/dto/endpoint-evidence-batch.dto.spec.ts
+PASS src/config/verify-production-runtime-env.a10.spec.ts (5.476 s)
+PASS src/github-app/services/scanner-set-hash.service.spec.ts
+PASS src/evidence-export/evidence-export.service.pe0-content-scrub.spec.ts (5.016 s)
+PASS src/security-settings/dto/security-settings.dto.spec.ts
+PASS src/packages/dto/source-contract.spec.ts
+PASS src/installer/installer.service.manifest-signature.spec.ts
+PASS src/auth/cli-request-signature.v2.spec.ts (15.61 s)
+PASS src/packages/services/ensure-triggered-rules-v2.spec.ts (104.531 s)
+PASS src/github-app/controllers/scan-runs.controller.spec.ts (14.975 s)
+PASS src/auth/guards/mfa-enforcement.guard.spec.ts
+PASS src/packages/repositories/analysis.repository.light-graph.spec.ts
+FAIL src/ai-governance/controllers/ai.controller.qa-remediation.spec.ts
+PASS src/notifications/formatters/__tests__/siem-json.formatter.spec.ts
+PASS src/packages/services/package-fetcher.service.spec.ts (5.226 s)
+PASS src/ai-security-policy/ai-policy-preset-ids.spec.ts (6.809 s)
+PASS src/agents/ai-correlation-tag-reader.service.spec.ts
+PASS src/cve-alert/affected-customer-lookup.service.spec.ts
+PASS src/licenses/__tests__/exceptions.audit.spec.ts (7.411 s)
+PASS src/audit/audit.service.threat-intel.spec.ts
+PASS src/ai-governance/controllers/ai-security-exception.controller.spec.ts
+PASS src/threat-intel/providers/purl.service.spec.ts
+PASS src/jobs/transitive-cve-wiring.spec.ts
+PASS src/ai-governance/controllers/ai-security-context.fp-endpoint-attribution.spec.ts (6.46 s)
+PASS src/migrations/1782360000000-AddLicensesAlertsAuditDeliveryListIndexes.spec.ts
+PASS src/github-app/services/scan-dispatch.service.llm-route.push.spec.ts (5.128 s)
+PASS src/packages/tests/prescan-foreground-parity.spec.ts
+PASS src/github-app/services/ref-classifier.service.spec.ts
+PASS src/auth/guards/jwt-auth.guard.global-account.spec.ts (7.827 s)
+PASS src/demo-requests/__tests__/demo-requests.controller.spec.ts (5.833 s)
+PASS src/ai-governance/dto/ai-prompt-check.dto.alert-fields.spec.ts
+PASS src/github-app/controllers/code-security-ops.queue-age.wire.spec.ts (10.861 s)
+PASS src/crypto/ai-trust-root.controller.spec.ts (5.797 s)
+PASS src/github-app/controllers/repositories-read.posture-siteid-authz.spec.ts (55.458 s)
+PASS src/migrations/1782320000000-AddFindingsListIndexes.spec.ts (6.221 s)
+PASS src/notifications/services/dedup.service.spec.ts
+PASS src/jobs/job-queue.service.spec.ts (6.404 s)
+PASS src/ai-governance/controllers/ai-evidence-chain.controller.spec.ts
+PASS src/auth/services/act-as-grant.service.spec.ts
+PASS src/migrations/1782330000000-AddInventoryListIndexes.spec.ts
+PASS src/migrations/1782340000000-AddDependenciesAnalysesListIndexes.spec.ts
+PASS src/migrations/1780900000000-AddEditorHostToEndpointInventoryIdentity.spec.ts
+PASS src/licenses/__tests__/upsert.returning.spec.ts
+PASS src/common/build-identity-stamp-pre-nest.spec.ts (224.929 s)
+PASS src/mcp-governance/services/checkpoint-digest.spec.ts
+PASS src/github-app/services/push-verdict.derive-outcome.spec.ts
+PASS src/auth/guards/api-key.guard.error-propagation.spec.ts (9.464 s)
+PASS src/licenses/__tests__/LicenseIssuesRepository.findInventory.statusFilter.spec.ts
+PASS src/migrations/1782400000000-AddPushOutcomeAndAnalyzerScopeColumns.spec.ts
+PASS src/ai-governance/services/ai-query.severity-status.spec.ts
+PASS src/migrations/1782310000000-AddRepositoriesListIndexes.spec.ts
+PASS src/users/auditor-role.spec.ts
+PASS src/crypto/policy-signer.service.concurrency.spec.ts
+PASS src/ai-governance/services/ai-query.safe-metadata.w2.spec.ts
+PASS src/migrations/1781800000000-AddPushOverrideAudit.spec.ts
+PASS src/migrations/1781600000000-AddScanRunReapBounceCount.spec.ts
+PASS src/auth/user-token-hash.util.spec.ts
+PASS src/auth/mfa/recovery-code.service.spec.ts (88.071 s)
+PASS src/migrations/1746460000000-AddVulnDataSourceToGlobalArtifactCache.spec.ts
+PASS src/github-app/utils/customer-category-map.spec.ts
+PASS src/common/validation/per-item-batch.spec.ts
+PASS src/endpoint/endpoint-attribution-feature-flags.spec.ts
+PASS src/endpoint/dto/endpoint-group.strictness.spec.ts
+PASS src/github-app/services/llm-allowlist.spec.ts
+PASS src/policy-groups/policy-groups.controller.spec.ts
+PASS src/auth/services/auth-service-sentinel-org.spec.ts
+PASS src/monitoring/monitoring.controller.spec.ts (9.109 s)
+PASS src/github-app/services/repo-dependency-scheduler.service.spec.ts (87.83 s)
+FAIL github-app/controllers/local-scans.controller.spec.ts
+FAIL packages/services/scanner-cache-schema.spec.ts (5.499 s)
+FAIL ai-governance/services/ai-query.sessions-sort.live-pg.spec.ts
+FAIL ai-governance/services/ai-prompt-single-row.live-pg.spec.ts
+FAIL ai-context/ai-context.ingest.live-pg.spec.ts (58.085 s)
+FAIL organizations/org-prompt-evidence-purge.live-pg.spec.ts (92.295 s)
+FAIL common/build-stamp-dist.spec.ts
+FAIL audit/audit.service.live-pg.spec.ts (16.663 s)
+FAIL ai-governance/services/zz-adv-reporter-probe.live-pg.spec.ts
+FAIL ai-governance/controllers/ai.controller.qa-remediation.spec.ts
+Test Suites: 10 failed, 233 passed, 243 total
+Tests:       10 failed, 3 skipped, 3884 passed, 3897 total
+Snapshots:   0 total
+Time:        1353.141 s
+shard 4 exit=1 elapsed=1358s
+=== e2e lane (test/jest-e2e.json) ===
+PASS src/github-app/__tests__/customer-output-contract.e2e-spec.ts (56.265 s)
+Test Suites: 1 passed, 1 total
+Tests:       26 passed, 26 total
+Snapshots:   0 total
+Time:        57.555 s
+e2e exit=0
+=== assert-suites-executed (the repo's gate) per shard ===
+suite-gate [be-suite-lane shard 1/4]: discovered=244 executed=243 (passed=236 failed=7) not-executed=1
+suite-gate [be-suite-lane shard 1/4]: 1 allowlisted skip(s):
+suite-gate [be-suite-lane shard 1/4]: OK — every discovered suite executed.
+gate shard 1 exit=0
+suite-gate [be-suite-lane shard 2/4]: discovered=243 executed=242 (passed=236 failed=6) not-executed=1
+suite-gate [be-suite-lane shard 2/4]: 1 allowlisted skip(s):
+suite-gate [be-suite-lane shard 2/4]: OK — every discovered suite executed.
+gate shard 2 exit=0
+suite-gate [be-suite-lane shard 3/4]: discovered=243 executed=243 (passed=229 failed=14) not-executed=0
+suite-gate [be-suite-lane shard 3/4]: OK — every discovered suite executed.
+gate shard 3 exit=0
+suite-gate [be-suite-lane shard 4/4]: discovered=243 executed=243 (passed=233 failed=10) not-executed=0
+suite-gate [be-suite-lane shard 4/4]: OK — every discovered suite executed.
+gate shard 4 exit=0
+=== done ===

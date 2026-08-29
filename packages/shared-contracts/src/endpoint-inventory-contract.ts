@@ -15,6 +15,10 @@
 //
 // Agent-side wire types live in Installers/internal/core/backend/client.go
 // and conform to this contract by convention.
+//
+// MIRROR FILE — keep byte-identical with
+// packages/shared-contracts/src/endpoint-inventory-contract.ts until the
+// monorepo consolidation lands. See CLAUDE.md "Shared contracts" section.
 // ════════════════════════════════════════════════════════════════════════
 
 import type { SecuritySeverity } from './security-taxonomy';
@@ -520,6 +524,15 @@ export interface InventoryEndpointSummary {
   hostname: string;
   os: string | null;
   itemCount: number;
+  /**
+   * Per-ecosystem OBSERVED item counts (raw ecosystem key → distinct-item
+   * count, e.g. { npm: 12, mcp: 3, 'editor-extension': 5 }). Entries sum to
+   * `itemCount` by construction — the roll-up groups the SAME identity key by
+   * (hostname, ecosystem). Optional + additive: absent on older Backends and
+   * when no typed rows contributed; consumers render a dash, never a
+   * fabricated 0. (2026-07-10 Inventory by-endpoint merge.)
+   */
+  byType?: Record<string, number>;
   worstVerdict: InventoryItemVerdict;
   lastSeen: string;
 }

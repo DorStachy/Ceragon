@@ -1,0 +1,61 @@
+########## PHASE 1 — BASELINE (unmodified production source) ##########
+    ✓ neutralizes a leading formula trigger on STRING cells only (1 ms)
+    ✓ applies the guard then still quotes when needed (1 ms)
+  toCsv — CRLF rows + optional BOM
+    ✓ joins header + rows with CRLF and a trailing CRLF (1 ms)
+    ✓ prepends a UTF-8 BOM when requested (1 ms)
+    ✓ emits just the header row (plus CRLF) for no data rows (1 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       11 passed, 11 total
+Snapshots:   0 total
+Time:        28.718 s
+Ran all test suites matching /src\/common\/csv.util.spec.ts/i.
+PHASE1_EXIT=0
+
+########## PHASE 2 — MUTATE: delete the CSV-injection formula guard ##########
+28:  if (FORMULA_LEAD.test(s)) s = `'${s}`;
+--- line is gone: ---
+0
+
+      at Object.<anonymous> (common/csv.util.spec.ts:29:34)
+
+  ● csvCell — RFC-4180 quoting + spreadsheet-injection guard › applies the guard then still quotes when needed
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "\"'=1,2\""
+    Received: "\"=1,2\""
+
+    [0m [90m 33 |[39m   })[33m;[39m
+     [90m 34 |[39m   it([32m'applies the guard then still quotes when needed'[39m[33m,[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 35 |[39m     expect(csvCell([32m'=1,2'[39m))[33m.[39mtoBe([32m'"\'=1,2"'[39m)[33m;[39m
+     [90m    |[39m                             [31m[1m^[22m[39m
+     [90m 36 |[39m   })[33m;[39m
+     [90m 37 |[39m })[33m;[39m
+     [90m 38 |[39m[0m
+
+      at Object.<anonymous> (common/csv.util.spec.ts:35:29)
+
+Test Suites: 1 failed, 1 total
+Tests:       2 failed, 9 passed, 11 total
+Snapshots:   0 total
+Time:        28.801 s
+Ran all test suites matching /src\/common\/csv.util.spec.ts/i.
+PHASE2_EXIT=1
+
+########## PHASE 3 — RESTORE ##########
+source restored byte-for-byte
+    ✓ neutralizes a leading formula trigger on STRING cells only
+    ✓ applies the guard then still quotes when needed
+  toCsv — CRLF rows + optional BOM
+    ✓ joins header + rows with CRLF and a trailing CRLF (1 ms)
+    ✓ prepends a UTF-8 BOM when requested (1 ms)
+    ✓ emits just the header row (plus CRLF) for no data rows (1 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       11 passed, 11 total
+Snapshots:   0 total
+Time:        24.586 s, estimated 28 s
+Ran all test suites matching /src\/common\/csv.util.spec.ts/i.
+PHASE3_EXIT=0

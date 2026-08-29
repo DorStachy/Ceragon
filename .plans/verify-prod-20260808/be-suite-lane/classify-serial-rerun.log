@@ -1,0 +1,2109 @@
+red suites to re-check: 37
+===== SUITES BEING RE-RUN SERIALLY =====
+src/agents/ai-correlation-key-custody.readiness.spec.ts
+src/ai-context/ai-context.ingest.live-pg.spec.ts
+src/ai-governance/aicp-m1-invariants.e2e.spec.ts
+src/ai-governance/aicp-m2-demos.e2e.spec.ts
+src/ai-governance/controllers/ai-runtime-filter.wire.spec.ts
+src/ai-governance/controllers/ai.controller.exceptions.spec.ts
+src/ai-governance/controllers/ai.controller.export.spec.ts
+src/ai-governance/controllers/ai.controller.qa-remediation.spec.ts
+src/ai-governance/prompt-evidence-contract.fixtures.spec.ts
+src/ai-governance/prompt-evidence-truncated-contract.spec.ts
+src/ai-governance/runtime-integrity-contract.fixtures.spec.ts
+src/ai-governance/services/ai-optout-coverage-unreadable.live-pg.spec.ts
+src/ai-governance/services/ai-prompt-single-row.live-pg.spec.ts
+src/ai-governance/services/ai-query.disposition-rollup.live-pg.spec.ts
+src/ai-governance/services/ai-query.sessions-sort.live-pg.spec.ts
+src/ai-governance/services/ai-query.thread-sort-order.spec.ts
+src/ai-governance/services/endpoint-evidence-commit.live-pg.spec.ts
+src/ai-governance/services/zz-adv-reporter-probe.live-pg.spec.ts
+src/audit/audit.service.live-pg.spec.ts
+src/common/build-stamp-deploy-gate.spec.ts
+src/common/build-stamp-dist.spec.ts
+src/common/build-stamp-nest-build.spec.ts
+src/common/build-stamp-taskdef.spec.ts
+src/common/contracts/console-response-only-fields.spec.ts
+src/common/pipes/agent-wire-leniency.spec.ts
+src/endpoint/endpoint.controller.wire.spec.ts
+src/github-app/__tests__/scrub-finding-secret-blobs.guards.spec.ts
+src/github-app/controllers/local-scans.controller.spec.ts
+src/github-app/services/backfill-suppress-synthetic-secrets.db.spec.ts
+src/licenses/__tests__/LicenseExceptionsService.validation.spec.ts
+src/licenses/__tests__/LicenseIssuesRepository.summary+charts.spec.ts
+src/licenses/__tests__/deleteByTenant.scope.spec.ts
+src/licenses/__tests__/exceptions.create.spec.ts
+src/licenses/__tests__/exceptions.delete.notFound.spec.ts
+src/licenses/__tests__/recompute.atomicity.spec.ts
+src/organizations/org-prompt-evidence-purge.live-pg.spec.ts
+src/packages/services/scanner-cache-schema.spec.ts
+========================================
+PASS src/github-app/controllers/local-scans.controller.spec.ts (97.603 s)
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM   DEBUG [LocalScansController] Local-scan allowlist mode engaged via legacy installationId=0 for acme/repo (orgId=org-1). Prefer the explicit allowlistOnly:true flag.
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 0,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM   DEBUG [LocalScansController] Local-scan allowlist mode engaged via legacy installationId=0 for acme/repo (orgId=org-1). Prefer the explicit allowlistOnly:true flag.
+[Nest] 18  - 08/18/2026, 9:20:48 PM   DEBUG [LocalScansController] Local-scan allowlist mode engaged via legacy installationId=0 for acme/repo (orgId=org-1). Prefer the explicit allowlistOnly:true flag.
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "Server-side fallback recompute rejected diff dispatch",
+  "repositoryFullName": "acme/repo",
+  "scanProfile": "full",
+  "maxDiffFiles": 200,
+  "maxDiffBytes": 5242880,
+  "changedFiles": 1,
+  "diffBytes": 10,
+  "reasons": [
+    "scanProfile=full requires full-repo dispatch"
+  ]
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Manifest verifier accepted artifact",
+  "repositoryFullName": "acme/repo",
+  "verifiedEntries": 1,
+  "digest": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM   DEBUG [LocalScansController] Object:
+{
+  "message": "Skipping local artifact dependency sync for diff-scope dispatch (would falsely deactivate unchanged deps)",
+  "repositoryFullName": "acme/repo",
+  "artifactScope": "diff-fast",
+  "scanScope": "diff"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "Server-side fallback recompute rejected diff dispatch",
+  "repositoryFullName": "acme/repo",
+  "scanProfile": "fast-diff",
+  "maxDiffFiles": 200,
+  "maxDiffBytes": 5242880,
+  "changedFiles": 255,
+  "diffBytes": 50,
+  "reasons": [
+    "changedFiles=255 exceeds maxDiffFiles=200"
+  ]
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "Server-side fallback recompute rejected diff dispatch",
+  "repositoryFullName": "acme/repo",
+  "scanProfile": "fast",
+  "maxDiffFiles": 200,
+  "maxDiffBytes": 5242880,
+  "changedFiles": 250,
+  "diffBytes": 2500,
+  "reasons": [
+    "changedFiles=250 exceeds maxDiffFiles=200"
+  ]
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "Manifest verifier rejected artifact",
+  "repositoryFullName": "acme/repo",
+  "code": "MANIFEST_FALLBACK_DISPATCHED",
+  "details": {
+    "ancestryVerifiedMissing": true,
+    "ancestryVerifiedKind": "string"
+  },
+  "redactPaths": true
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "Manifest verifier rejected artifact",
+  "repositoryFullName": "acme/repo",
+  "code": "MANIFEST_INVALID",
+  "details": {
+    "unsupportedSchemaVersion": true,
+    "schemaVersionKind": "string",
+    "supportedSchemaVersions": [
+      2
+    ]
+  },
+  "redactPaths": true
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "Manifest verifier rejected artifact",
+  "repositoryFullName": "acme/repo",
+  "code": "MANIFEST_INVALID",
+  "details": {
+    "unsupportedClientContractVersion": true,
+    "clientContractVersionKind": "string",
+    "supportedClientContractVersions": [
+      "2026-05-22"
+    ]
+  },
+  "redactPaths": true
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "Manifest verifier rejected artifact",
+  "repositoryFullName": "acme/repo",
+  "code": "MANIFEST_INVALID",
+  "details": {
+    "path": "path-hash:9e4020dd78cb8018",
+    "unsupportedStatus": true,
+    "statusKind": "string"
+  },
+  "redactPaths": true
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Manifest verifier accepted artifact",
+  "repositoryFullName": "acme/repo",
+  "verifiedEntries": 1,
+  "digest": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM   DEBUG [LocalScansController] Object:
+{
+  "message": "Skipping local artifact dependency sync for diff-scope dispatch (would falsely deactivate unchanged deps)",
+  "repositoryFullName": "acme/repo",
+  "artifactScope": "diff-fast",
+  "scanScope": "diff"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "Server-side fallback recompute rejected diff dispatch",
+  "repositoryFullName": "acme/repo",
+  "scanProfile": "strict-diff",
+  "maxDiffFiles": 200,
+  "maxDiffBytes": 5242880,
+  "changedFiles": 1,
+  "diffBytes": 10,
+  "reasons": [
+    "scanProfile=strict-diff but artifactScope=diff-fast — CLI cannot downgrade the configured profile"
+  ]
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Manifest verifier accepted artifact",
+  "repositoryFullName": "acme/repo",
+  "verifiedEntries": 1,
+  "digest": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM   DEBUG [LocalScansController] Object:
+{
+  "message": "Skipping local artifact dependency sync for diff-scope dispatch (would falsely deactivate unchanged deps)",
+  "repositoryFullName": "acme/repo",
+  "artifactScope": "diff-strict",
+  "scanScope": "diff"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Manifest verifier accepted artifact",
+  "repositoryFullName": "acme/repo",
+  "verifiedEntries": 1,
+  "digest": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM   DEBUG [LocalScansController] Object:
+{
+  "message": "Skipping local artifact dependency sync for diff-scope dispatch (would falsely deactivate unchanged deps)",
+  "repositoryFullName": "acme/repo",
+  "artifactScope": "diff-fast",
+  "scanScope": "diff"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "Server-side fallback recompute rejected diff dispatch",
+  "repositoryFullName": "acme/repo",
+  "scanProfile": "fast",
+  "maxDiffFiles": 200,
+  "maxDiffBytes": 5242880,
+  "changedFiles": 250,
+  "diffBytes": 2500,
+  "reasons": [
+    "changedFiles=250 exceeds maxDiffFiles=200"
+  ]
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "Manifest verifier rejected artifact",
+  "repositoryFullName": "acme/repo",
+  "code": "MANIFEST_INVALID",
+  "details": {
+    "path": "path-hash:7ae45ad102eab3b6",
+    "sizeBytes": -1
+  },
+  "redactPaths": true
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "Manifest verifier rejected artifact",
+  "repositoryFullName": "acme/repo",
+  "code": "MANIFEST_INVALID",
+  "details": {
+    "path": "path-hash:e9cbb0224c4a3d23",
+    "sizeBytes": -1
+  },
+  "redactPaths": true
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "Manifest verifier rejected artifact",
+  "repositoryFullName": "acme/repo",
+  "code": "MANIFEST_INVALID",
+  "details": {
+    "path": "src/a.ts",
+    "sizeBytes": -1
+  },
+  "redactPaths": false
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "Manifest verifier rejected artifact",
+  "repositoryFullName": "acme/repo",
+  "code": "MANIFEST_INVALID",
+  "details": {
+    "path": "gone.ts",
+    "sizeBytes": -1
+  },
+  "redactPaths": false
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "Manifest verifier rejected artifact",
+  "repositoryFullName": "acme/repo",
+  "code": "MANIFEST_INVALID",
+  "details": {
+    "path": "path-hash:44fdc689c9d62346"
+  },
+  "redactPaths": true
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "baseline-candidate-missing-clean-snapshot-metadata-legacy-client",
+  "repositoryFullName": "acme/repo",
+  "clientContractVersion": null,
+  "hasCleanSnapshot": false
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "baseline-candidate-missing-clean-snapshot-metadata-legacy-client",
+  "repositoryFullName": "acme/repo",
+  "clientContractVersion": null,
+  "hasCleanSnapshot": false
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "baseline-candidate-missing-clean-snapshot-metadata-legacy-client",
+  "repositoryFullName": "acme/repo",
+  "clientContractVersion": "2026-05-22",
+  "hasCleanSnapshot": false
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "baseline-candidate-missing-clean-snapshot-metadata-legacy-client",
+  "repositoryFullName": "acme/repo",
+  "clientContractVersion": null,
+  "hasCleanSnapshot": false
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "Manifest verifier rejected artifact",
+  "repositoryFullName": "acme/repo",
+  "code": "MANIFEST_INVALID",
+  "details": {
+    "path": "path-hash:7ae45ad102eab3b6"
+  },
+  "redactPaths": true
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "Manifest verifier rejected artifact",
+  "repositoryFullName": "acme/repo",
+  "code": "MANIFEST_PATH_UNSAFE",
+  "details": {
+    "path": "path-hash:dd2c0eb6ea5cfc6c"
+  },
+  "redactPaths": true
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "Manifest verifier rejected artifact",
+  "repositoryFullName": "acme/repo",
+  "code": "MANIFEST_INVALID",
+  "details": {
+    "path": "path-hash:e9cbb0224c4a3d23"
+  },
+  "redactPaths": true
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "Manifest verifier rejected artifact",
+  "repositoryFullName": "acme/repo",
+  "code": "MANIFEST_HASH_MISMATCH",
+  "details": {
+    "path": "path-hash:7ae45ad102eab3b6",
+    "manifestHash": "aaaa",
+    "actualHash": "bbbb"
+  },
+  "redactPaths": true
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Manifest verifier accepted artifact",
+  "repositoryFullName": "acme/repo",
+  "verifiedEntries": 1,
+  "digest": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM   DEBUG [LocalScansController] Object:
+{
+  "message": "Skipping local artifact dependency sync for diff-scope dispatch (would falsely deactivate unchanged deps)",
+  "repositoryFullName": "acme/repo",
+  "artifactScope": "diff-fast",
+  "scanScope": "diff"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Manifest verifier accepted artifact",
+  "repositoryFullName": "acme/repo",
+  "verifiedEntries": 1,
+  "digest": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM   DEBUG [LocalScansController] Object:
+{
+  "message": "Skipping local artifact dependency sync for diff-scope dispatch (would falsely deactivate unchanged deps)",
+  "repositoryFullName": "acme/repo",
+  "artifactScope": "diff-fast",
+  "scanScope": "diff"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Manifest verifier accepted artifact",
+  "repositoryFullName": "acme/repo",
+  "verifiedEntries": 1,
+  "digest": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM   DEBUG [LocalScansController] Object:
+{
+  "message": "Skipping local artifact dependency sync for diff-scope dispatch (would falsely deactivate unchanged deps)",
+  "repositoryFullName": "acme/repo",
+  "artifactScope": "diff-fast",
+  "scanScope": "diff"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Manifest verifier accepted artifact",
+  "repositoryFullName": "acme/repo",
+  "verifiedEntries": 1,
+  "digest": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM   DEBUG [LocalScansController] Object:
+{
+  "message": "Skipping local artifact dependency sync for diff-scope dispatch (would falsely deactivate unchanged deps)",
+  "repositoryFullName": "acme/repo",
+  "artifactScope": "diff-fast",
+  "scanScope": "diff"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Manifest verifier accepted artifact",
+  "repositoryFullName": "acme/repo",
+  "verifiedEntries": 1,
+  "digest": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM   DEBUG [LocalScansController] Object:
+{
+  "message": "Skipping local artifact dependency sync for diff-scope dispatch (would falsely deactivate unchanged deps)",
+  "repositoryFullName": "acme/repo",
+  "artifactScope": "diff-fast",
+  "scanScope": "diff"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Manifest verifier accepted artifact",
+  "repositoryFullName": "acme/repo",
+  "verifiedEntries": 1,
+  "digest": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM   DEBUG [LocalScansController] Object:
+{
+  "message": "Skipping local artifact dependency sync for diff-scope dispatch (would falsely deactivate unchanged deps)",
+  "repositoryFullName": "acme/repo",
+  "artifactScope": "diff-fast",
+  "scanScope": "diff"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Manifest verifier accepted artifact",
+  "repositoryFullName": "acme/repo",
+  "verifiedEntries": 1,
+  "digest": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM   DEBUG [LocalScansController] Object:
+{
+  "message": "Skipping local artifact dependency sync for diff-scope dispatch (would falsely deactivate unchanged deps)",
+  "repositoryFullName": "acme/repo",
+  "artifactScope": "push-full",
+  "scanScope": "diff"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM    WARN [LocalScansController] Object:
+{
+  "message": "Server-side fallback recompute rejected diff dispatch",
+  "repositoryFullName": "acme/repo",
+  "scanProfile": "full",
+  "maxDiffFiles": 200,
+  "maxDiffBytes": 5242880,
+  "changedFiles": 1,
+  "diffBytes": 10,
+  "reasons": [
+    "scanProfile=full requires full-repo dispatch"
+  ]
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Manifest verifier accepted artifact",
+  "repositoryFullName": "acme/repo",
+  "verifiedEntries": 1,
+  "digest": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM   DEBUG [LocalScansController] Object:
+{
+  "message": "Skipping local artifact dependency sync for diff-scope dispatch (would falsely deactivate unchanged deps)",
+  "repositoryFullName": "acme/repo",
+  "artifactScope": "diff-strict",
+  "scanScope": "diff"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Manifest verifier accepted artifact",
+  "repositoryFullName": "acme/repo",
+  "verifiedEntries": 1,
+  "digest": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM   DEBUG [LocalScansController] Object:
+{
+  "message": "Skipping local artifact dependency sync for diff-scope dispatch (would falsely deactivate unchanged deps)",
+  "repositoryFullName": "acme/repo",
+  "artifactScope": "diff-fast",
+  "scanScope": "diff"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Manifest verifier accepted artifact",
+  "repositoryFullName": "acme/repo",
+  "verifiedEntries": 1,
+  "digest": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM   DEBUG [LocalScansController] Object:
+{
+  "message": "Skipping local artifact dependency sync for diff-scope dispatch (would falsely deactivate unchanged deps)",
+  "repositoryFullName": "acme/repo",
+  "artifactScope": "diff-fast",
+  "scanScope": "diff"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Manifest verifier accepted artifact",
+  "repositoryFullName": "acme/repo",
+  "verifiedEntries": 1,
+  "digest": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM   DEBUG [LocalScansController] Object:
+{
+  "message": "Skipping local artifact dependency sync for diff-scope dispatch (would falsely deactivate unchanged deps)",
+  "repositoryFullName": "acme/repo",
+  "artifactScope": "diff-fast",
+  "scanScope": "diff"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Manifest verifier accepted artifact",
+  "repositoryFullName": "acme/repo",
+  "verifiedEntries": 1,
+  "digest": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM   DEBUG [LocalScansController] Object:
+{
+  "message": "Skipping local artifact dependency sync for diff-scope dispatch (would falsely deactivate unchanged deps)",
+  "repositoryFullName": "acme/repo",
+  "artifactScope": "diff-fast",
+  "scanScope": "diff"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Manifest verifier accepted artifact",
+  "repositoryFullName": "acme/repo",
+  "verifiedEntries": 1,
+  "digest": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM   DEBUG [LocalScansController] Object:
+{
+  "message": "Skipping local artifact dependency sync for diff-scope dispatch (would falsely deactivate unchanged deps)",
+  "repositoryFullName": "acme/repo",
+  "artifactScope": "diff-strict",
+  "scanScope": "diff"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Manifest verifier accepted artifact",
+  "repositoryFullName": "acme/repo",
+  "verifiedEntries": 1,
+  "digest": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM   DEBUG [LocalScansController] Object:
+{
+  "message": "Skipping local artifact dependency sync for diff-scope dispatch (would falsely deactivate unchanged deps)",
+  "repositoryFullName": "acme/repo",
+  "artifactScope": "diff-fast",
+  "scanScope": "diff"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:48 PM     LOG [LocalScansController] Object:
+{
+  "message": "Local scan dispatch attempted",
+  "repositoryFullName": "acme/repo",
+  "installationId": 12345,
+  "dispatched": true,
+  "scanRunId": "scan-run-1"
+}
+
+[Nest] 18  - 08/18/2026, 9:20:52 PM   ERROR [ExceptionsHandler] audit chain down
+Error: audit chain down
+    at Object.<anonymous> (/app/src/endpoint/endpoint.controller.wire.spec.ts:783:32)
+    at Promise.then.completed (/app/node_modules/jest-circus/build/utils.js:298:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/app/node_modules/jest-circus/build/utils.js:231:10)
+    at _callCircusTest (/app/node_modules/jest-circus/build/run.js:316:40)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at _runTest (/app/node_modules/jest-circus/build/run.js:252:3)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/run.js:126:9)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/run.js:121:9)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/run.js:121:9)
+    at run (/app/node_modules/jest-circus/build/run.js:71:3)
+    at runAndTransformResultsToJestFormat (/app/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+    at jestAdapter (/app/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+    at runTestInternal (/app/node_modules/jest-runner/build/runTest.js:367:16)
+    at runTest (/app/node_modules/jest-runner/build/runTest.js:444:34)
+[Nest] 18  - 08/18/2026, 9:20:52 PM   ERROR [ExceptionsHandler] db unstable
+Error: db unstable
+    at Object.<anonymous> (/app/src/endpoint/endpoint.controller.wire.spec.ts:847:58)
+    at Promise.then.completed (/app/node_modules/jest-circus/build/utils.js:298:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/app/node_modules/jest-circus/build/utils.js:231:10)
+    at _callCircusTest (/app/node_modules/jest-circus/build/run.js:316:40)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at _runTest (/app/node_modules/jest-circus/build/run.js:252:3)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/run.js:126:9)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/run.js:121:9)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/run.js:121:9)
+    at run (/app/node_modules/jest-circus/build/run.js:71:3)
+    at runAndTransformResultsToJestFormat (/app/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+    at jestAdapter (/app/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+    at runTestInternal (/app/node_modules/jest-runner/build/runTest.js:367:16)
+    at runTest (/app/node_modules/jest-runner/build/runTest.js:444:34)
+PASS src/endpoint/endpoint.controller.wire.spec.ts
+[Nest] 18  - 08/18/2026, 9:21:00 PM     LOG [EvidenceAckKeyRingService] Minted EVIDENCE_ACK signer evack:1d138319b941eff403a94c78 for org 00000000-0000-0000-0000-000000000d00
+[Nest] 18  - 08/18/2026, 9:21:03 PM   DEBUG [AiSessionCorrelatorService] Created AI session 2e360f70-3c16-47e4-aa3e-d8ab5b242e2f (org 00000000-0000-0000-0000-000000000d00, agent claude)
+[Nest] 18  - 08/18/2026, 9:21:03 PM   DEBUG [AiSessionCorrelatorService] Created AI session b0ed2790-ff25-4371-85d7-26d79dc9b8e8 (org 00000000-0000-0000-0000-000000000d00, agent codex)
+[Nest] 18  - 08/18/2026, 9:21:03 PM   DEBUG [AiSessionCorrelatorService] Created AI session 1ea8773e-8f5e-4e1e-8bd9-5015e01a34ef (org 00000000-0000-0000-0000-000000000d00, agent unknown)
+[Nest] 18  - 08/18/2026, 9:21:03 PM   DEBUG [AiSessionCorrelatorService] Created AI session ff89f0eb-a362-49a5-86bd-b762f90613a4 (org 00000000-0000-0000-0000-000000000d00, agent unknown)
+[Nest] 18  - 08/18/2026, 9:21:03 PM   DEBUG [AiSessionCorrelatorService] Created AI session e33a0469-1770-4152-9eb8-acec49f6e629 (org 00000000-0000-0000-0000-000000000d00, agent codex)
+PASS src/ai-governance/services/endpoint-evidence-commit.live-pg.spec.ts (11.555 s)
+[Nest] 18  - 08/18/2026, 9:21:04 PM   DEBUG [AiSessionCorrelatorService] Created AI session d90c792c-49c2-4652-8af1-5be24bd756db (org 00000000-0000-0000-0000-000000000d00, agent unknown)
+PASS src/ai-governance/prompt-evidence-contract.fixtures.spec.ts
+PASS src/ai-governance/services/ai-query.disposition-rollup.live-pg.spec.ts (23.28 s)
+[Nest] 18  - 08/18/2026, 9:21:35 PM    WARN [AiQueryService] AI event metadata dropped by the read projection (first sighting this process): disposition. The key is stored on the event row but no console surface receives it; declare it in safeMetadata + AiTimelineEventMetadataDto if it should be read.
+[Nest] 18  - 08/18/2026, 9:21:35 PM    WARN [AiQueryService] AI event metadata dropped by the read projection (first sighting this process): isTyposquat, intendedPackage. The key is stored on the event row but no console surface receives it; declare it in safeMetadata + AiTimelineEventMetadataDto if it should be read.
+[Nest] 18  - 08/18/2026, 9:21:35 PM    WARN [AiQueryService] AI event metadata dropped by the read projection (first sighting this process): toolDecision, toolProvider, serverEnforced. The key is stored on the event row but no console surface receives it; declare it in safeMetadata + AiTimelineEventMetadataDto if it should be read.
+[Nest] 18  - 08/18/2026, 9:21:35 PM    WARN [AiQueryService] AI event metadata dropped by the read projection (first sighting this process): gitSha, evidenceRef. The key is stored on the event row but no console surface receives it; declare it in safeMetadata + AiTimelineEventMetadataDto if it should be read.
+PASS src/ai-governance/aicp-m2-demos.e2e.spec.ts (7.187 s)
+FAIL src/ai-governance/services/ai-query.thread-sort-order.spec.ts
+  ● Test suite failed to run
+
+    src/ai-governance/services/ai-query.thread-sort-order.spec.ts:469:16 - error TS2554: Expected 7 arguments, but got 6.
+
+    469   controller = new AiController(
+                       ~~~~~~~~~~~~~~~~~
+    470     service as never,
+        ~~~~~~~~~~~~~~~~~~~~~
+    ... 
+    475     {} as never
+        ~~~~~~~~~~~~~~~
+    476   );
+        ~~~
+
+      src/ai-governance/controllers/ai.controller.ts:115:5
+        115     private readonly optOutCoverage: AiOptOutCoverageService
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        An argument for 'optOutCoverage' was not provided.
+
+PASS src/common/contracts/console-response-only-fields.spec.ts (26.201 s)
+PASS src/github-app/services/backfill-suppress-synthetic-secrets.db.spec.ts
+  ● Console
+
+    console.warn
+      [backfill.db] no Postgres reachable — DB cases skipped (set REQUIRE_BACKFILL_DB=1 to enforce)
+
+      282 |         );
+      283 |       }
+    > 284 |       console.warn('[backfill.db] no Postgres reachable — DB cases skipped (set REQUIRE_BACKFILL_DB=1 to enforce)');
+          |               ^
+      285 |     }
+      286 |   });
+      287 |
+
+      at Object.<anonymous> (github-app/services/backfill-suppress-synthetic-secrets.db.spec.ts:284:15)
+
+PASS src/ai-governance/runtime-integrity-contract.fixtures.spec.ts
+PASS src/licenses/__tests__/LicenseExceptionsService.validation.spec.ts
+PASS src/ai-governance/services/ai-optout-coverage-unreadable.live-pg.spec.ts
+PASS src/ai-governance/services/ai-query.sessions-sort.live-pg.spec.ts
+FAIL src/packages/services/scanner-cache-schema.spec.ts
+  ● Cache-version literal lockdown (Codex Phase 0 MEDIUM regression) › no Backend file outside the canonical allowlist declares a numeric cache-version literal
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "/app/src/packages/services/scanner-cache-schema.spec.ts",
+    + ]
+
+      282 |       LITERAL_RE.lastIndex = 0;
+      283 |     }
+    > 284 |     expect(violations).toEqual([]);
+          |                        ^
+      285 |   }, 30000);
+      286 |
+      287 |   describeOrSkipIntelLockdown('the Ceragon-Intelligence tree', () => {
+
+      at Object.<anonymous> (packages/services/scanner-cache-schema.spec.ts:284:24)
+
+FAIL src/ai-governance/aicp-m1-invariants.e2e.spec.ts (8.966 s)
+  ● AICP M1 invariants (real Postgres, real services) › INVARIANT 3 — dead-man switch records a went-dark agent, idempotently
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "agent_went_dark"
+    Received: "AGENT_WENT_DARK"
+
+      245 |     );
+      246 |     expect(tamperRow.endpoint_id).toBe(darkId);
+    > 247 |     expect(tamperRow.metadata.reason).toBe('agent_went_dark');
+          |                                       ^
+      248 |
+      249 |     // The alert's `darkEpisodeId` IS the episode the sweep opened on the
+      250 |     // endpoint's own row — the correlation that makes a duplicate alert
+
+      at Object.<anonymous> (ai-governance/aicp-m1-invariants.e2e.spec.ts:247:39)
+
+[Nest] 18  - 08/18/2026, 9:22:27 PM    WARN [AiQueryService] AI event metadata dropped by the read projection (first sighting this process): surface, actionId, receiptId, checkpoint, decisionId, disposition, findingCount, intendedEffect, requestedEffect, securityOutcome, receiptAssurance, actualEffectObserver, observedActualEffect, governanceDisposition, adapterExpressedEffect, translationDisposition. The key is stored on the event row but no console surface receives it; declare it in safeMetadata + AiTimelineEventMetadataDto if it should be read.
+PASS src/ai-governance/services/ai-prompt-single-row.live-pg.spec.ts
+PASS src/ai-governance/prompt-evidence-truncated-contract.spec.ts
+PASS src/common/pipes/agent-wire-leniency.spec.ts (34.947 s)
+[Nest] 18  - 08/18/2026, 9:23:03 PM   DEBUG [AgentIngestValidationPipe] agent wire drift: AiContextIngestDto dropped undeclared key(s) aNewUnknownFieldFromANewerAgent
+[Nest] 18  - 08/18/2026, 9:23:04 PM    WARN [AiContextController] AI-context ingest rejected 1 malformed item(s) (org=00000000-0000-0000-0000-0000000e1301 endpoint=unattributed:00000000-0000-4000-8000-0000000e1302): findings[#41] redactedContext must be shorter than or equal to 4096 characters
+PASS src/ai-context/ai-context.ingest.live-pg.spec.ts
+[Nest] 18  - 08/18/2026, 9:23:07 PM    WARN [OrgCrossStorePurgeService] [org-purge] prompt-evidence phase org=00000000-0000-0000-0000-0000000000d1 {"ai_events":1,"ai_prompt_evidence_access_grants":1,"ai_prompt_evidence_committed_acks":0,"ai_prompt_evidence_artifact_transitions":0,"ai_prompt_evidence_upload_attempts":0,"ai_prompt_evidence_artifact_scope_bindings":0,"ai_prompt_evidence_artifacts":1,"ai_prompt_evidence_privacy_reduction_epoch":0,"ai_prompt_evidence_settings_history":0,"ai_prompt_evidence_settings":1}
+[Nest] 18  - 08/18/2026, 9:23:07 PM    WARN [OrgCrossStorePurgeService] [org-purge] prompt-evidence phase org=00000000-0000-0000-0000-0000000000d1 {"ai_events":1,"ai_prompt_evidence_access_grants":1,"ai_prompt_evidence_committed_acks":0,"ai_prompt_evidence_artifact_transitions":0,"ai_prompt_evidence_upload_attempts":0,"ai_prompt_evidence_artifact_scope_bindings":0,"ai_prompt_evidence_artifacts":1,"ai_prompt_evidence_privacy_reduction_epoch":0,"ai_prompt_evidence_settings_history":0,"ai_prompt_evidence_settings":1}
+[Nest] 18  - 08/18/2026, 9:23:07 PM    WARN [OrgCrossStorePurgeService] [org-purge] prompt-evidence phase org=00000000-0000-0000-0000-0000000000d1 {"ai_events":1,"ai_prompt_evidence_access_grants":1,"ai_prompt_evidence_committed_acks":0,"ai_prompt_evidence_artifact_transitions":0,"ai_prompt_evidence_upload_attempts":0,"ai_prompt_evidence_artifact_scope_bindings":0,"ai_prompt_evidence_artifacts":1,"ai_prompt_evidence_privacy_reduction_epoch":0,"ai_prompt_evidence_settings_history":0,"ai_prompt_evidence_settings":1}
+[Nest] 18  - 08/18/2026, 9:23:07 PM    WARN [OrgCrossStorePurgeService] [org-purge] prompt-evidence phase org=00000000-0000-0000-0000-0000000000d1 {"ai_events":0,"ai_prompt_evidence_access_grants":0,"ai_prompt_evidence_committed_acks":0,"ai_prompt_evidence_artifact_transitions":0,"ai_prompt_evidence_upload_attempts":0,"ai_prompt_evidence_artifact_scope_bindings":0,"ai_prompt_evidence_artifacts":0,"ai_prompt_evidence_privacy_reduction_epoch":0,"ai_prompt_evidence_settings_history":0,"ai_prompt_evidence_settings":0}
+PASS src/organizations/org-prompt-evidence-purge.live-pg.spec.ts
+PASS src/github-app/__tests__/scrub-finding-secret-blobs.guards.spec.ts
+FAIL src/common/build-stamp-dist.spec.ts
+  ● §10 #20 — a locally built backend reports the build its DIST was compiled from › reports the sha the dist was built from
+
+    spawnSync git ENOENT
+
+      34 |
+      35 | function git(dir: string, ...args: string[]): string {
+    > 36 |   return execFileSync('git', args, {
+         |                      ^
+      37 |     cwd: dir,
+      38 |     encoding: 'utf8',
+      39 |     stdio: ['ignore', 'pipe', 'pipe'],
+
+      at git (common/build-stamp-dist.spec.ts:36:22)
+      at makeRepoWithCommit (common/build-stamp-dist.spec.ts:47:3)
+      at Object.<anonymous> (common/build-stamp-dist.spec.ts:112:18)
+
+  ● §10 #20 — a locally built backend reports the build its DIST was compiled from › keeps reporting the OLD sha when the checkout moves on but the dist is NOT rebuilt
+
+    spawnSync git ENOENT
+
+      34 |
+      35 | function git(dir: string, ...args: string[]): string {
+    > 36 |   return execFileSync('git', args, {
+         |                      ^
+      37 |     cwd: dir,
+      38 |     encoding: 'utf8',
+      39 |     stdio: ['ignore', 'pipe', 'pipe'],
+
+      at git (common/build-stamp-dist.spec.ts:36:22)
+      at makeRepoWithCommit (common/build-stamp-dist.spec.ts:47:3)
+      at Object.<anonymous> (common/build-stamp-dist.spec.ts:129:18)
+
+  ● §10 #20 — a locally built backend reports the build its DIST was compiled from › outranks a stale stamp inherited from the launch environment
+
+    spawnSync git ENOENT
+
+      34 |
+      35 | function git(dir: string, ...args: string[]): string {
+    > 36 |   return execFileSync('git', args, {
+         |                      ^
+      37 |     cwd: dir,
+      38 |     encoding: 'utf8',
+      39 |     stdio: ['ignore', 'pipe', 'pipe'],
+
+      at git (common/build-stamp-dist.spec.ts:36:22)
+      at makeRepoWithCommit (common/build-stamp-dist.spec.ts:47:3)
+      at Object.<anonymous> (common/build-stamp-dist.spec.ts:150:18)
+
+  ● §10 #20 — a locally built backend reports the build its DIST was compiled from › never writes a placeholder into the stamp it does write
+
+    spawnSync git ENOENT
+
+      34 |
+      35 | function git(dir: string, ...args: string[]): string {
+    > 36 |   return execFileSync('git', args, {
+         |                      ^
+      37 |     cwd: dir,
+      38 |     encoding: 'utf8',
+      39 |     stdio: ['ignore', 'pipe', 'pipe'],
+
+      at git (common/build-stamp-dist.spec.ts:36:22)
+      at makeRepoWithCommit (common/build-stamp-dist.spec.ts:47:3)
+      at Object.<anonymous> (common/build-stamp-dist.spec.ts:245:18)
+
+PASS src/audit/audit.service.live-pg.spec.ts (5.632 s)
+FAIL src/common/build-stamp-deploy-gate.spec.ts
+  ● deploy gate: an image must be able to say what build it is › ACCEPTS an image stamped the way a correct deploy stamps it
+
+    spawnSync docker ENOENT
+
+      78 |     }
+      79 |     args.push('-t', tag, contextDir);
+    > 80 |     execFileSync('docker', args, { stdio: 'pipe' });
+         |                 ^
+      81 |     builtTags.push(tag);
+      82 |     return tag;
+      83 |   }
+
+      at buildFixtureImage (common/build-stamp-deploy-gate.spec.ts:80:17)
+      at Object.<anonymous> (common/build-stamp-deploy-gate.spec.ts:99:19)
+
+  ● deploy gate: an image must be able to say what build it is › REJECTS an image built with no build-args at all — the ARG defaults are not an identity
+
+    spawnSync docker ENOENT
+
+      78 |     }
+      79 |     args.push('-t', tag, contextDir);
+    > 80 |     execFileSync('docker', args, { stdio: 'pipe' });
+         |                 ^
+      81 |     builtTags.push(tag);
+      82 |     return tag;
+      83 |   }
+
+      at buildFixtureImage (common/build-stamp-deploy-gate.spec.ts:80:17)
+      at Object.<anonymous> (common/build-stamp-deploy-gate.spec.ts:111:19)
+
+  ● deploy gate: an image must be able to say what build it is › REJECTS the half-stamped image the old workflow produced: real sha, empty CF_BUILD_TIME
+
+    spawnSync docker ENOENT
+
+      78 |     }
+      79 |     args.push('-t', tag, contextDir);
+    > 80 |     execFileSync('docker', args, { stdio: 'pipe' });
+         |                 ^
+      81 |     builtTags.push(tag);
+      82 |     return tag;
+      83 |   }
+
+      at buildFixtureImage (common/build-stamp-deploy-gate.spec.ts:80:17)
+      at Object.<anonymous> (common/build-stamp-deploy-gate.spec.ts:134:19)
+
+  ● deploy gate: an image must be able to say what build it is › REJECTS an image whose stamp is the literal placeholder rather than an identity
+
+    spawnSync docker ENOENT
+
+      78 |     }
+      79 |     args.push('-t', tag, contextDir);
+    > 80 |     execFileSync('docker', args, { stdio: 'pipe' });
+         |                 ^
+      81 |     builtTags.push(tag);
+      82 |     return tag;
+      83 |   }
+
+      at buildFixtureImage (common/build-stamp-deploy-gate.spec.ts:80:17)
+      at Object.<anonymous> (common/build-stamp-deploy-gate.spec.ts:146:19)
+
+  ● deploy gate: an image must be able to say what build it is › the gate and the runtime surface agree on what counts as an identity › a real sha is judged the same way by both
+
+    spawnSync docker ENOENT
+
+      78 |     }
+      79 |     args.push('-t', tag, contextDir);
+    > 80 |     execFileSync('docker', args, { stdio: 'pipe' });
+         |                 ^
+      81 |     builtTags.push(tag);
+      82 |     return tag;
+      83 |   }
+
+      at buildFixtureImage (common/build-stamp-deploy-gate.spec.ts:80:17)
+      at common/build-stamp-deploy-gate.spec.ts:182:21
+
+  ● deploy gate: an image must be able to say what build it is › the gate and the runtime surface agree on what counts as an identity › the Dockerfile ARG default is judged the same way by both
+
+    spawnSync docker ENOENT
+
+      78 |     }
+      79 |     args.push('-t', tag, contextDir);
+    > 80 |     execFileSync('docker', args, { stdio: 'pipe' });
+         |                 ^
+      81 |     builtTags.push(tag);
+      82 |     return tag;
+      83 |   }
+
+      at buildFixtureImage (common/build-stamp-deploy-gate.spec.ts:80:17)
+      at common/build-stamp-deploy-gate.spec.ts:182:21
+
+  ● deploy gate: an image must be able to say what build it is › the gate and the runtime surface agree on what counts as an identity › the ARG default in a different case is judged the same way by both
+
+    spawnSync docker ENOENT
+
+      78 |     }
+      79 |     args.push('-t', tag, contextDir);
+    > 80 |     execFileSync('docker', args, { stdio: 'pipe' });
+         |                 ^
+      81 |     builtTags.push(tag);
+      82 |     return tag;
+      83 |   }
+
+      at buildFixtureImage (common/build-stamp-deploy-gate.spec.ts:80:17)
+      at common/build-stamp-deploy-gate.spec.ts:182:21
+
+  ● deploy gate: an image must be able to say what build it is › the gate and the runtime surface agree on what counts as an identity › the empty string is judged the same way by both
+
+    spawnSync docker ENOENT
+
+      78 |     }
+      79 |     args.push('-t', tag, contextDir);
+    > 80 |     execFileSync('docker', args, { stdio: 'pipe' });
+         |                 ^
+      81 |     builtTags.push(tag);
+      82 |     return tag;
+      83 |   }
+
+      at buildFixtureImage (common/build-stamp-deploy-gate.spec.ts:80:17)
+      at common/build-stamp-deploy-gate.spec.ts:182:21
+
+  ● deploy gate: an image must be able to say what build it is › the gate and the runtime surface agree on what counts as an identity › whitespace only is judged the same way by both
+
+    spawnSync docker ENOENT
+
+      78 |     }
+      79 |     args.push('-t', tag, contextDir);
+    > 80 |     execFileSync('docker', args, { stdio: 'pipe' });
+         |                 ^
+      81 |     builtTags.push(tag);
+      82 |     return tag;
+      83 |   }
+
+      at buildFixtureImage (common/build-stamp-deploy-gate.spec.ts:80:17)
+      at common/build-stamp-deploy-gate.spec.ts:182:21
+
+FAIL src/common/build-stamp-taskdef.spec.ts
+  ● deploy: the task definition cannot outrank the image about the build stamp › runs the real transform (sanity: the image is swapped)
+
+    spawnSync jq ENOENT
+
+      112 |     const program = extractTaskDefJqProgram();
+      113 |
+    > 114 |     const output = execFileSync(
+          |                                ^
+      115 |       'jq',
+      116 |       [
+      117 |         '--arg',
+
+      at runTransform (common/build-stamp-taskdef.spec.ts:114:32)
+      at Object.<anonymous> (common/build-stamp-taskdef.spec.ts:155:12)
+
+  ● deploy: the task definition cannot outrank the image about the build stamp › carries ordinary configuration forward — the strip must be surgical, not a purge
+
+    spawnSync jq ENOENT
+
+      112 |     const program = extractTaskDefJqProgram();
+      113 |
+    > 114 |     const output = execFileSync(
+          |                                ^
+      115 |       'jq',
+      116 |       [
+      117 |         '--arg',
+
+      at runTransform (common/build-stamp-taskdef.spec.ts:114:32)
+      at Object.<anonymous> (common/build-stamp-taskdef.spec.ts:159:12)
+
+  ● deploy: the task definition cannot outrank the image about the build stamp › does NOT inherit a stale CF_BUILD_SHA — the image is the only authority on the build
+
+    spawnSync jq ENOENT
+
+      112 |     const program = extractTaskDefJqProgram();
+      113 |
+    > 114 |     const output = execFileSync(
+          |                                ^
+      115 |       'jq',
+      116 |       [
+      117 |         '--arg',
+
+      at runTransform (common/build-stamp-taskdef.spec.ts:114:32)
+      at Object.<anonymous> (common/build-stamp-taskdef.spec.ts:164:28)
+
+  ● deploy: the task definition cannot outrank the image about the build stamp › does NOT inherit a stale CF_BUILD_TIME
+
+    spawnSync jq ENOENT
+
+      112 |     const program = extractTaskDefJqProgram();
+      113 |
+    > 114 |     const output = execFileSync(
+          |                                ^
+      115 |       'jq',
+      116 |       [
+      117 |         '--arg',
+
+      at runTransform (common/build-stamp-taskdef.spec.ts:114:32)
+      at Object.<anonymous> (common/build-stamp-taskdef.spec.ts:171:28)
+
+FAIL src/common/build-stamp-nest-build.spec.ts
+  ● the mandated build command stamps the build output › writes the stamp on a bare `nest build`, with no npm script involved
+
+    spawnSync git ENOENT
+
+      45 |
+      46 | function git(cwd: string, ...args: string[]): string {
+    > 47 |   return execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+         |                      ^
+      48 | }
+      49 |
+      50 | /**
+
+      at git (common/build-stamp-nest-build.spec.ts:47:22)
+      at makeFixtureProject (common/build-stamp-nest-build.spec.ts:63:3)
+      at Object.<anonymous> (common/build-stamp-nest-build.spec.ts:108:15)
+
+  ● the mandated build command stamps the build output › re-stamps rather than leaving the stamp `deleteOutDir` wiped
+
+    spawnSync git ENOENT
+
+      45 |
+      46 | function git(cwd: string, ...args: string[]): string {
+    > 47 |   return execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+         |                      ^
+      48 | }
+      49 |
+      50 | /**
+
+      at git (common/build-stamp-nest-build.spec.ts:47:22)
+      at makeFixtureProject (common/build-stamp-nest-build.spec.ts:63:3)
+      at Object.<anonymous> (common/build-stamp-nest-build.spec.ts:108:15)
+
+  ● the mandated build command stamps the build output › does not stamp a build that failed to compile
+
+    spawnSync git ENOENT
+
+      45 |
+      46 | function git(cwd: string, ...args: string[]): string {
+    > 47 |   return execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+         |                      ^
+      48 | }
+      49 |
+      50 | /**
+
+      at git (common/build-stamp-nest-build.spec.ts:47:22)
+      at makeFixtureProject (common/build-stamp-nest-build.spec.ts:63:3)
+      at Object.<anonymous> (common/build-stamp-nest-build.spec.ts:108:15)
+
+  ● the mandated build command stamps the build output › leaves the output unstamped when the build tree is not a git checkout
+
+    spawnSync git ENOENT
+
+      45 |
+      46 | function git(cwd: string, ...args: string[]): string {
+    > 47 |   return execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+         |                      ^
+      48 | }
+      49 |
+      50 | /**
+
+      at git (common/build-stamp-nest-build.spec.ts:47:22)
+      at makeFixtureProject (common/build-stamp-nest-build.spec.ts:63:3)
+      at Object.<anonymous> (common/build-stamp-nest-build.spec.ts:108:15)
+
+FAIL src/ai-governance/services/zz-adv-reporter-probe.live-pg.spec.ts
+  ● ADV: the reporter against prototype members their suite never fed it › FIFTH-1: the SEVEN Object.prototype members their suite never fed it
+
+    QueryFailedError: invalid input syntax for type uuid: "15adv000-0000-4000-8000-000000000001"
+
+      at PostgresQueryRunner.query (driver/postgres/PostgresQueryRunner.ts:325:19)
+      at DataSource.query (data-source/DataSource.ts:541:20)
+      at Object.<anonymous> (ai-governance/services/zz-adv-reporter-probe.live-pg.spec.ts:89:5)
+
+  ● ADV: the reporter against prototype members their suite never fed it › FIFTH-2: a bag whose jsonb is an ARRAY, not an object
+
+    QueryFailedError: invalid input syntax for type uuid: "15adv000-0000-4000-8000-000000000001"
+
+      at PostgresQueryRunner.query (driver/postgres/PostgresQueryRunner.ts:325:19)
+      at DataSource.query (data-source/DataSource.ts:541:20)
+      at Object.<anonymous> (ai-governance/services/zz-adv-reporter-probe.live-pg.spec.ts:89:5)
+
+  ● ADV: the reporter against prototype members their suite never fed it › FIFTH-3: a NESTED producer key inside causalArtifact — is the drop audible?
+
+    QueryFailedError: invalid input syntax for type uuid: "15adv000-0000-4000-8000-000000000001"
+
+      at PostgresQueryRunner.query (driver/postgres/PostgresQueryRunner.ts:325:19)
+      at DataSource.query (data-source/DataSource.ts:541:20)
+      at Object.<anonymous> (ai-governance/services/zz-adv-reporter-probe.live-pg.spec.ts:89:5)
+
+
+  ● Test suite failed to run
+
+    QueryFailedError: invalid input syntax for type uuid: "15adv000-0000-4000-8000-000000000001"
+
+      at PostgresQueryRunner.query (driver/postgres/PostgresQueryRunner.ts:325:19)
+      at DataSource.query (data-source/DataSource.ts:541:20)
+      at Object.<anonymous> (ai-governance/services/zz-adv-reporter-probe.live-pg.spec.ts:100:7)
+
+FAIL src/ai-governance/controllers/ai.controller.export.spec.ts
+  ● Test suite failed to run
+
+    src/ai-governance/controllers/ai.controller.export.spec.ts:83:16 - error TS2554: Expected 7 arguments, but got 6.
+
+     83   const ctrl = new AiController(
+                       ~~~~~~~~~~~~~~~~~
+     84     queryService,
+        ~~~~~~~~~~~~~~~~~
+    ... 
+     89     { custodyReadiness: () => ({ control: 'correlation-keys', available: false, cause: 'master-key-not-configured', detail: 'synthetic test readiness' }) } as never,
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     90   );
+        ~~~
+
+      src/ai-governance/controllers/ai.controller.ts:115:5
+        115     private readonly optOutCoverage: AiOptOutCoverageService
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        An argument for 'optOutCoverage' was not provided.
+
+FAIL src/ai-governance/controllers/ai-runtime-filter.wire.spec.ts
+  ● Test suite failed to run
+
+    src/ai-governance/controllers/ai-runtime-filter.wire.spec.ts:92:18 - error TS2554: Expected 7 arguments, but got 6.
+
+     92     const ctrl = new AiController(
+                         ~~~~~~~~~~~~~~~~~
+     93       { listActivity } as never,
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ... 
+     98       { custodyReadiness: () => ({ control: 'correlation-keys', available: false, cause: 'master-key-not-configured', detail: 'synthetic test readiness' }) } as never,
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     99     );
+        ~~~~~
+
+      src/ai-governance/controllers/ai.controller.ts:115:5
+        115     private readonly optOutCoverage: AiOptOutCoverageService
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        An argument for 'optOutCoverage' was not provided.
+    src/ai-governance/controllers/ai-runtime-filter.wire.spec.ts:125:18 - error TS2554: Expected 7 arguments, but got 6.
+
+    125     const ctrl = new AiController(
+                         ~~~~~~~~~~~~~~~~~
+    126       { listActivity } as never,
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ... 
+    131       { custodyReadiness: () => ({ control: 'correlation-keys', available: false, cause: 'master-key-not-configured', detail: 'synthetic test readiness' }) } as never,
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    132     );
+        ~~~~~
+
+      src/ai-governance/controllers/ai.controller.ts:115:5
+        115     private readonly optOutCoverage: AiOptOutCoverageService
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        An argument for 'optOutCoverage' was not provided.
+
+FAIL src/agents/ai-correlation-key-custody.readiness.spec.ts
+  ● Test suite failed to run
+
+    src/agents/ai-correlation-key-custody.readiness.spec.ts:92:12 - error TS2554: Expected 7 arguments, but got 6.
+
+     92     return new AiController(
+                   ~~~~~~~~~~~~~~~~~
+     93       { getProtectionDepth: async () => depth } as never,
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ... 
+     98       serviceWith(masterKey)
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     99     );
+        ~~~~~
+
+      src/ai-governance/controllers/ai.controller.ts:115:5
+        115     private readonly optOutCoverage: AiOptOutCoverageService
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        An argument for 'optOutCoverage' was not provided.
+
+FAIL src/ai-governance/controllers/ai.controller.qa-remediation.spec.ts
+  ● Test suite failed to run
+
+    src/ai-governance/controllers/ai.controller.qa-remediation.spec.ts:25:26 - error TS2554: Expected 7 arguments, but got 6.
+
+     25       const controller = new AiController(
+                                 ~~~~~~~~~~~~~~~~~
+     26         queryService as never,
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ... 
+     38         } as never
+        ~~~~~~~~~~~~~~~~~~
+     39       );
+        ~~~~~~~
+
+      src/ai-governance/controllers/ai.controller.ts:115:5
+        115     private readonly optOutCoverage: AiOptOutCoverageService
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        An argument for 'optOutCoverage' was not provided.
+    src/ai-governance/controllers/ai.controller.qa-remediation.spec.ts:81:24 - error TS2554: Expected 7 arguments, but got 6.
+
+     81     const controller = new AiController(
+                               ~~~~~~~~~~~~~~~~~
+     82       queryService as never,
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ... 
+     94       } as never
+        ~~~~~~~~~~~~~~~~
+     95     );
+        ~~~~~
+
+      src/ai-governance/controllers/ai.controller.ts:115:5
+        115     private readonly optOutCoverage: AiOptOutCoverageService
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        An argument for 'optOutCoverage' was not provided.
+
+FAIL src/ai-governance/controllers/ai.controller.exceptions.spec.ts
+  ● Test suite failed to run
+
+    src/ai-governance/controllers/ai.controller.exceptions.spec.ts:54:16 - error TS2554: Expected 7 arguments, but got 6.
+
+     54   const ctrl = new AiController(
+                       ~~~~~~~~~~~~~~~~~
+     55     { setProviderPolicy: jest.fn() } as never, // queryService
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ... 
+     60     { custodyReadiness: () => ({ control: 'correlation-keys', available: false, cause: 'master-key-not-configured', detail: 'synthetic test readiness' }) } as never,
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     61   );
+        ~~~
+
+      src/ai-governance/controllers/ai.controller.ts:115:5
+        115     private readonly optOutCoverage: AiOptOutCoverageService
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        An argument for 'optOutCoverage' was not provided.
+
+PASS src/licenses/__tests__/exceptions.create.spec.ts
+PASS src/licenses/__tests__/recompute.atomicity.spec.ts
+PASS src/licenses/__tests__/deleteByTenant.scope.spec.ts
+PASS src/licenses/__tests__/exceptions.delete.notFound.spec.ts
+
+Summary of all failing tests
+FAIL ai-governance/services/ai-query.thread-sort-order.spec.ts
+  ● Test suite failed to run
+
+    src/ai-governance/services/ai-query.thread-sort-order.spec.ts:469:16 - error TS2554: Expected 7 arguments, but got 6.
+
+    469   controller = new AiController(
+                       ~~~~~~~~~~~~~~~~~
+    470     service as never,
+        ~~~~~~~~~~~~~~~~~~~~~
+    ... 
+    475     {} as never
+        ~~~~~~~~~~~~~~~
+    476   );
+        ~~~
+
+      src/ai-governance/controllers/ai.controller.ts:115:5
+        115     private readonly optOutCoverage: AiOptOutCoverageService
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        An argument for 'optOutCoverage' was not provided.
+
+FAIL packages/services/scanner-cache-schema.spec.ts
+  ● Cache-version literal lockdown (Codex Phase 0 MEDIUM regression) › no Backend file outside the canonical allowlist declares a numeric cache-version literal
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "/app/src/packages/services/scanner-cache-schema.spec.ts",
+    + ]
+
+      282 |       LITERAL_RE.lastIndex = 0;
+      283 |     }
+    > 284 |     expect(violations).toEqual([]);
+          |                        ^
+      285 |   }, 30000);
+      286 |
+      287 |   describeOrSkipIntelLockdown('the Ceragon-Intelligence tree', () => {
+
+      at Object.<anonymous> (packages/services/scanner-cache-schema.spec.ts:284:24)
+
+FAIL ai-governance/aicp-m1-invariants.e2e.spec.ts (8.966 s)
+  ● AICP M1 invariants (real Postgres, real services) › INVARIANT 3 — dead-man switch records a went-dark agent, idempotently
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "agent_went_dark"
+    Received: "AGENT_WENT_DARK"
+
+      245 |     );
+      246 |     expect(tamperRow.endpoint_id).toBe(darkId);
+    > 247 |     expect(tamperRow.metadata.reason).toBe('agent_went_dark');
+          |                                       ^
+      248 |
+      249 |     // The alert's `darkEpisodeId` IS the episode the sweep opened on the
+      250 |     // endpoint's own row — the correlation that makes a duplicate alert
+
+      at Object.<anonymous> (ai-governance/aicp-m1-invariants.e2e.spec.ts:247:39)
+
+FAIL common/build-stamp-dist.spec.ts
+  ● §10 #20 — a locally built backend reports the build its DIST was compiled from › reports the sha the dist was built from
+
+    spawnSync git ENOENT
+
+      34 |
+      35 | function git(dir: string, ...args: string[]): string {
+    > 36 |   return execFileSync('git', args, {
+         |                      ^
+      37 |     cwd: dir,
+      38 |     encoding: 'utf8',
+      39 |     stdio: ['ignore', 'pipe', 'pipe'],
+
+      at git (common/build-stamp-dist.spec.ts:36:22)
+      at makeRepoWithCommit (common/build-stamp-dist.spec.ts:47:3)
+      at Object.<anonymous> (common/build-stamp-dist.spec.ts:112:18)
+
+  ● §10 #20 — a locally built backend reports the build its DIST was compiled from › keeps reporting the OLD sha when the checkout moves on but the dist is NOT rebuilt
+
+    spawnSync git ENOENT
+
+      34 |
+      35 | function git(dir: string, ...args: string[]): string {
+    > 36 |   return execFileSync('git', args, {
+         |                      ^
+      37 |     cwd: dir,
+      38 |     encoding: 'utf8',
+      39 |     stdio: ['ignore', 'pipe', 'pipe'],
+
+      at git (common/build-stamp-dist.spec.ts:36:22)
+      at makeRepoWithCommit (common/build-stamp-dist.spec.ts:47:3)
+      at Object.<anonymous> (common/build-stamp-dist.spec.ts:129:18)
+
+  ● §10 #20 — a locally built backend reports the build its DIST was compiled from › outranks a stale stamp inherited from the launch environment
+
+    spawnSync git ENOENT
+
+      34 |
+      35 | function git(dir: string, ...args: string[]): string {
+    > 36 |   return execFileSync('git', args, {
+         |                      ^
+      37 |     cwd: dir,
+      38 |     encoding: 'utf8',
+      39 |     stdio: ['ignore', 'pipe', 'pipe'],
+
+      at git (common/build-stamp-dist.spec.ts:36:22)
+      at makeRepoWithCommit (common/build-stamp-dist.spec.ts:47:3)
+      at Object.<anonymous> (common/build-stamp-dist.spec.ts:150:18)
+
+  ● §10 #20 — a locally built backend reports the build its DIST was compiled from › never writes a placeholder into the stamp it does write
+
+    spawnSync git ENOENT
+
+      34 |
+      35 | function git(dir: string, ...args: string[]): string {
+    > 36 |   return execFileSync('git', args, {
+         |                      ^
+      37 |     cwd: dir,
+      38 |     encoding: 'utf8',
+      39 |     stdio: ['ignore', 'pipe', 'pipe'],
+
+      at git (common/build-stamp-dist.spec.ts:36:22)
+      at makeRepoWithCommit (common/build-stamp-dist.spec.ts:47:3)
+      at Object.<anonymous> (common/build-stamp-dist.spec.ts:245:18)
+
+FAIL common/build-stamp-deploy-gate.spec.ts
+  ● deploy gate: an image must be able to say what build it is › ACCEPTS an image stamped the way a correct deploy stamps it
+
+    spawnSync docker ENOENT
+
+      78 |     }
+      79 |     args.push('-t', tag, contextDir);
+    > 80 |     execFileSync('docker', args, { stdio: 'pipe' });
+         |                 ^
+      81 |     builtTags.push(tag);
+      82 |     return tag;
+      83 |   }
+
+      at buildFixtureImage (common/build-stamp-deploy-gate.spec.ts:80:17)
+      at Object.<anonymous> (common/build-stamp-deploy-gate.spec.ts:99:19)
+
+  ● deploy gate: an image must be able to say what build it is › REJECTS an image built with no build-args at all — the ARG defaults are not an identity
+
+    spawnSync docker ENOENT
+
+      78 |     }
+      79 |     args.push('-t', tag, contextDir);
+    > 80 |     execFileSync('docker', args, { stdio: 'pipe' });
+         |                 ^
+      81 |     builtTags.push(tag);
+      82 |     return tag;
+      83 |   }
+
+      at buildFixtureImage (common/build-stamp-deploy-gate.spec.ts:80:17)
+      at Object.<anonymous> (common/build-stamp-deploy-gate.spec.ts:111:19)
+
+  ● deploy gate: an image must be able to say what build it is › REJECTS the half-stamped image the old workflow produced: real sha, empty CF_BUILD_TIME
+
+    spawnSync docker ENOENT
+
+      78 |     }
+      79 |     args.push('-t', tag, contextDir);
+    > 80 |     execFileSync('docker', args, { stdio: 'pipe' });
+         |                 ^
+      81 |     builtTags.push(tag);
+      82 |     return tag;
+      83 |   }
+
+      at buildFixtureImage (common/build-stamp-deploy-gate.spec.ts:80:17)
+      at Object.<anonymous> (common/build-stamp-deploy-gate.spec.ts:134:19)
+
+  ● deploy gate: an image must be able to say what build it is › REJECTS an image whose stamp is the literal placeholder rather than an identity
+
+    spawnSync docker ENOENT
+
+      78 |     }
+      79 |     args.push('-t', tag, contextDir);
+    > 80 |     execFileSync('docker', args, { stdio: 'pipe' });
+         |                 ^
+      81 |     builtTags.push(tag);
+      82 |     return tag;
+      83 |   }
+
+      at buildFixtureImage (common/build-stamp-deploy-gate.spec.ts:80:17)
+      at Object.<anonymous> (common/build-stamp-deploy-gate.spec.ts:146:19)
+
+  ● deploy gate: an image must be able to say what build it is › the gate and the runtime surface agree on what counts as an identity › a real sha is judged the same way by both
+
+    spawnSync docker ENOENT
+
+      78 |     }
+      79 |     args.push('-t', tag, contextDir);
+    > 80 |     execFileSync('docker', args, { stdio: 'pipe' });
+         |                 ^
+      81 |     builtTags.push(tag);
+      82 |     return tag;
+      83 |   }
+
+      at buildFixtureImage (common/build-stamp-deploy-gate.spec.ts:80:17)
+      at common/build-stamp-deploy-gate.spec.ts:182:21
+
+  ● deploy gate: an image must be able to say what build it is › the gate and the runtime surface agree on what counts as an identity › the Dockerfile ARG default is judged the same way by both
+
+    spawnSync docker ENOENT
+
+      78 |     }
+      79 |     args.push('-t', tag, contextDir);
+    > 80 |     execFileSync('docker', args, { stdio: 'pipe' });
+         |                 ^
+      81 |     builtTags.push(tag);
+      82 |     return tag;
+      83 |   }
+
+      at buildFixtureImage (common/build-stamp-deploy-gate.spec.ts:80:17)
+      at common/build-stamp-deploy-gate.spec.ts:182:21
+
+  ● deploy gate: an image must be able to say what build it is › the gate and the runtime surface agree on what counts as an identity › the ARG default in a different case is judged the same way by both
+
+    spawnSync docker ENOENT
+
+      78 |     }
+      79 |     args.push('-t', tag, contextDir);
+    > 80 |     execFileSync('docker', args, { stdio: 'pipe' });
+         |                 ^
+      81 |     builtTags.push(tag);
+      82 |     return tag;
+      83 |   }
+
+      at buildFixtureImage (common/build-stamp-deploy-gate.spec.ts:80:17)
+      at common/build-stamp-deploy-gate.spec.ts:182:21
+
+  ● deploy gate: an image must be able to say what build it is › the gate and the runtime surface agree on what counts as an identity › the empty string is judged the same way by both
+
+    spawnSync docker ENOENT
+
+      78 |     }
+      79 |     args.push('-t', tag, contextDir);
+    > 80 |     execFileSync('docker', args, { stdio: 'pipe' });
+         |                 ^
+      81 |     builtTags.push(tag);
+      82 |     return tag;
+      83 |   }
+
+      at buildFixtureImage (common/build-stamp-deploy-gate.spec.ts:80:17)
+      at common/build-stamp-deploy-gate.spec.ts:182:21
+
+  ● deploy gate: an image must be able to say what build it is › the gate and the runtime surface agree on what counts as an identity › whitespace only is judged the same way by both
+
+    spawnSync docker ENOENT
+
+      78 |     }
+      79 |     args.push('-t', tag, contextDir);
+    > 80 |     execFileSync('docker', args, { stdio: 'pipe' });
+         |                 ^
+      81 |     builtTags.push(tag);
+      82 |     return tag;
+      83 |   }
+
+      at buildFixtureImage (common/build-stamp-deploy-gate.spec.ts:80:17)
+      at common/build-stamp-deploy-gate.spec.ts:182:21
+
+FAIL common/build-stamp-taskdef.spec.ts
+  ● deploy: the task definition cannot outrank the image about the build stamp › runs the real transform (sanity: the image is swapped)
+
+    spawnSync jq ENOENT
+
+      112 |     const program = extractTaskDefJqProgram();
+      113 |
+    > 114 |     const output = execFileSync(
+          |                                ^
+      115 |       'jq',
+      116 |       [
+      117 |         '--arg',
+
+      at runTransform (common/build-stamp-taskdef.spec.ts:114:32)
+      at Object.<anonymous> (common/build-stamp-taskdef.spec.ts:155:12)
+
+  ● deploy: the task definition cannot outrank the image about the build stamp › carries ordinary configuration forward — the strip must be surgical, not a purge
+
+    spawnSync jq ENOENT
+
+      112 |     const program = extractTaskDefJqProgram();
+      113 |
+    > 114 |     const output = execFileSync(
+          |                                ^
+      115 |       'jq',
+      116 |       [
+      117 |         '--arg',
+
+      at runTransform (common/build-stamp-taskdef.spec.ts:114:32)
+      at Object.<anonymous> (common/build-stamp-taskdef.spec.ts:159:12)
+
+  ● deploy: the task definition cannot outrank the image about the build stamp › does NOT inherit a stale CF_BUILD_SHA — the image is the only authority on the build
+
+    spawnSync jq ENOENT
+
+      112 |     const program = extractTaskDefJqProgram();
+      113 |
+    > 114 |     const output = execFileSync(
+          |                                ^
+      115 |       'jq',
+      116 |       [
+      117 |         '--arg',
+
+      at runTransform (common/build-stamp-taskdef.spec.ts:114:32)
+      at Object.<anonymous> (common/build-stamp-taskdef.spec.ts:164:28)
+
+  ● deploy: the task definition cannot outrank the image about the build stamp › does NOT inherit a stale CF_BUILD_TIME
+
+    spawnSync jq ENOENT
+
+      112 |     const program = extractTaskDefJqProgram();
+      113 |
+    > 114 |     const output = execFileSync(
+          |                                ^
+      115 |       'jq',
+      116 |       [
+      117 |         '--arg',
+
+      at runTransform (common/build-stamp-taskdef.spec.ts:114:32)
+      at Object.<anonymous> (common/build-stamp-taskdef.spec.ts:171:28)
+
+FAIL common/build-stamp-nest-build.spec.ts
+  ● the mandated build command stamps the build output › writes the stamp on a bare `nest build`, with no npm script involved
+
+    spawnSync git ENOENT
+
+      45 |
+      46 | function git(cwd: string, ...args: string[]): string {
+    > 47 |   return execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+         |                      ^
+      48 | }
+      49 |
+      50 | /**
+
+      at git (common/build-stamp-nest-build.spec.ts:47:22)
+      at makeFixtureProject (common/build-stamp-nest-build.spec.ts:63:3)
+      at Object.<anonymous> (common/build-stamp-nest-build.spec.ts:108:15)
+
+  ● the mandated build command stamps the build output › re-stamps rather than leaving the stamp `deleteOutDir` wiped
+
+    spawnSync git ENOENT
+
+      45 |
+      46 | function git(cwd: string, ...args: string[]): string {
+    > 47 |   return execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+         |                      ^
+      48 | }
+      49 |
+      50 | /**
+
+      at git (common/build-stamp-nest-build.spec.ts:47:22)
+      at makeFixtureProject (common/build-stamp-nest-build.spec.ts:63:3)
+      at Object.<anonymous> (common/build-stamp-nest-build.spec.ts:108:15)
+
+  ● the mandated build command stamps the build output › does not stamp a build that failed to compile
+
+    spawnSync git ENOENT
+
+      45 |
+      46 | function git(cwd: string, ...args: string[]): string {
+    > 47 |   return execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+         |                      ^
+      48 | }
+      49 |
+      50 | /**
+
+      at git (common/build-stamp-nest-build.spec.ts:47:22)
+      at makeFixtureProject (common/build-stamp-nest-build.spec.ts:63:3)
+      at Object.<anonymous> (common/build-stamp-nest-build.spec.ts:108:15)
+
+  ● the mandated build command stamps the build output › leaves the output unstamped when the build tree is not a git checkout
+
+    spawnSync git ENOENT
+
+      45 |
+      46 | function git(cwd: string, ...args: string[]): string {
+    > 47 |   return execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+         |                      ^
+      48 | }
+      49 |
+      50 | /**
+
+      at git (common/build-stamp-nest-build.spec.ts:47:22)
+      at makeFixtureProject (common/build-stamp-nest-build.spec.ts:63:3)
+      at Object.<anonymous> (common/build-stamp-nest-build.spec.ts:108:15)
+
+FAIL ai-governance/services/zz-adv-reporter-probe.live-pg.spec.ts
+  ● ADV: the reporter against prototype members their suite never fed it › FIFTH-1: the SEVEN Object.prototype members their suite never fed it
+
+    QueryFailedError: invalid input syntax for type uuid: "15adv000-0000-4000-8000-000000000001"
+
+      at PostgresQueryRunner.query (driver/postgres/PostgresQueryRunner.ts:325:19)
+      at DataSource.query (data-source/DataSource.ts:541:20)
+      at Object.<anonymous> (ai-governance/services/zz-adv-reporter-probe.live-pg.spec.ts:89:5)
+
+  ● ADV: the reporter against prototype members their suite never fed it › FIFTH-2: a bag whose jsonb is an ARRAY, not an object
+
+    QueryFailedError: invalid input syntax for type uuid: "15adv000-0000-4000-8000-000000000001"
+
+      at PostgresQueryRunner.query (driver/postgres/PostgresQueryRunner.ts:325:19)
+      at DataSource.query (data-source/DataSource.ts:541:20)
+      at Object.<anonymous> (ai-governance/services/zz-adv-reporter-probe.live-pg.spec.ts:89:5)
+
+  ● ADV: the reporter against prototype members their suite never fed it › FIFTH-3: a NESTED producer key inside causalArtifact — is the drop audible?
+
+    QueryFailedError: invalid input syntax for type uuid: "15adv000-0000-4000-8000-000000000001"
+
+      at PostgresQueryRunner.query (driver/postgres/PostgresQueryRunner.ts:325:19)
+      at DataSource.query (data-source/DataSource.ts:541:20)
+      at Object.<anonymous> (ai-governance/services/zz-adv-reporter-probe.live-pg.spec.ts:89:5)
+
+
+  ● Test suite failed to run
+
+    QueryFailedError: invalid input syntax for type uuid: "15adv000-0000-4000-8000-000000000001"
+
+      at PostgresQueryRunner.query (driver/postgres/PostgresQueryRunner.ts:325:19)
+      at DataSource.query (data-source/DataSource.ts:541:20)
+      at Object.<anonymous> (ai-governance/services/zz-adv-reporter-probe.live-pg.spec.ts:100:7)
+
+FAIL ai-governance/controllers/ai.controller.export.spec.ts
+  ● Test suite failed to run
+
+    src/ai-governance/controllers/ai.controller.export.spec.ts:83:16 - error TS2554: Expected 7 arguments, but got 6.
+
+     83   const ctrl = new AiController(
+                       ~~~~~~~~~~~~~~~~~
+     84     queryService,
+        ~~~~~~~~~~~~~~~~~
+    ... 
+     89     { custodyReadiness: () => ({ control: 'correlation-keys', available: false, cause: 'master-key-not-configured', detail: 'synthetic test readiness' }) } as never,
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     90   );
+        ~~~
+
+      src/ai-governance/controllers/ai.controller.ts:115:5
+        115     private readonly optOutCoverage: AiOptOutCoverageService
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        An argument for 'optOutCoverage' was not provided.
+
+FAIL ai-governance/controllers/ai-runtime-filter.wire.spec.ts
+  ● Test suite failed to run
+
+    src/ai-governance/controllers/ai-runtime-filter.wire.spec.ts:92:18 - error TS2554: Expected 7 arguments, but got 6.
+
+     92     const ctrl = new AiController(
+                         ~~~~~~~~~~~~~~~~~
+     93       { listActivity } as never,
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ... 
+     98       { custodyReadiness: () => ({ control: 'correlation-keys', available: false, cause: 'master-key-not-configured', detail: 'synthetic test readiness' }) } as never,
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     99     );
+        ~~~~~
+
+      src/ai-governance/controllers/ai.controller.ts:115:5
+        115     private readonly optOutCoverage: AiOptOutCoverageService
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        An argument for 'optOutCoverage' was not provided.
+    src/ai-governance/controllers/ai-runtime-filter.wire.spec.ts:125:18 - error TS2554: Expected 7 arguments, but got 6.
+
+    125     const ctrl = new AiController(
+                         ~~~~~~~~~~~~~~~~~
+    126       { listActivity } as never,
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ... 
+    131       { custodyReadiness: () => ({ control: 'correlation-keys', available: false, cause: 'master-key-not-configured', detail: 'synthetic test readiness' }) } as never,
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    132     );
+        ~~~~~
+
+      src/ai-governance/controllers/ai.controller.ts:115:5
+        115     private readonly optOutCoverage: AiOptOutCoverageService
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        An argument for 'optOutCoverage' was not provided.
+
+FAIL agents/ai-correlation-key-custody.readiness.spec.ts
+  ● Test suite failed to run
+
+    src/agents/ai-correlation-key-custody.readiness.spec.ts:92:12 - error TS2554: Expected 7 arguments, but got 6.
+
+     92     return new AiController(
+                   ~~~~~~~~~~~~~~~~~
+     93       { getProtectionDepth: async () => depth } as never,
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ... 
+     98       serviceWith(masterKey)
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     99     );
+        ~~~~~
+
+      src/ai-governance/controllers/ai.controller.ts:115:5
+        115     private readonly optOutCoverage: AiOptOutCoverageService
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        An argument for 'optOutCoverage' was not provided.
+
+FAIL ai-governance/controllers/ai.controller.qa-remediation.spec.ts
+  ● Test suite failed to run
+
+    src/ai-governance/controllers/ai.controller.qa-remediation.spec.ts:25:26 - error TS2554: Expected 7 arguments, but got 6.
+
+     25       const controller = new AiController(
+                                 ~~~~~~~~~~~~~~~~~
+     26         queryService as never,
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ... 
+     38         } as never
+        ~~~~~~~~~~~~~~~~~~
+     39       );
+        ~~~~~~~
+
+      src/ai-governance/controllers/ai.controller.ts:115:5
+        115     private readonly optOutCoverage: AiOptOutCoverageService
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        An argument for 'optOutCoverage' was not provided.
+    src/ai-governance/controllers/ai.controller.qa-remediation.spec.ts:81:24 - error TS2554: Expected 7 arguments, but got 6.
+
+     81     const controller = new AiController(
+                               ~~~~~~~~~~~~~~~~~
+     82       queryService as never,
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ... 
+     94       } as never
+        ~~~~~~~~~~~~~~~~
+     95     );
+        ~~~~~
+
+      src/ai-governance/controllers/ai.controller.ts:115:5
+        115     private readonly optOutCoverage: AiOptOutCoverageService
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        An argument for 'optOutCoverage' was not provided.
+
+FAIL ai-governance/controllers/ai.controller.exceptions.spec.ts
+  ● Test suite failed to run
+
+    src/ai-governance/controllers/ai.controller.exceptions.spec.ts:54:16 - error TS2554: Expected 7 arguments, but got 6.
+
+     54   const ctrl = new AiController(
+                       ~~~~~~~~~~~~~~~~~
+     55     { setProviderPolicy: jest.fn() } as never, // queryService
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ... 
+     60     { custodyReadiness: () => ({ control: 'correlation-keys', available: false, cause: 'master-key-not-configured', detail: 'synthetic test readiness' }) } as never,
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     61   );
+        ~~~
+
+      src/ai-governance/controllers/ai.controller.ts:115:5
+        115     private readonly optOutCoverage: AiOptOutCoverageService
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        An argument for 'optOutCoverage' was not provided.
+
+
+Test Suites: 13 failed, 23 passed, 36 total
+Tests:       26 failed, 1 skipped, 801 passed, 828 total
+Snapshots:   0 total
+Time:        260.268 s
+Ran all test suites matching /src\/agents\/ai-correlation-key-custody.readiness.spec.ts|src\/ai-context\/ai-context.ingest.live-pg.spec.ts|src\/ai-governance\/aicp-m1-invariants.e2e.spec.ts|src\/ai-governance\/aicp-m2-demos.e2e.spec.ts|src\/ai-governance\/controllers\/ai-runtime-filter.wire.spec.ts|src\/ai-governance\/controllers\/ai.controller.exceptions.spec.ts|src\/ai-governance\/controllers\/ai.controller.export.spec.ts|src\/ai-governance\/controllers\/ai.controller.qa-remediation.spec.ts|src\/ai-governance\/prompt-evidence-contract.fixtures.spec.ts|src\/ai-governance\/prompt-evidence-truncated-contract.spec.ts|src\/ai-governance\/runtime-integrity-contract.fixtures.spec.ts|src\/ai-governance\/services\/ai-optout-coverage-unreadable.live-pg.spec.ts|src\/ai-governance\/services\/ai-prompt-single-row.live-pg.spec.ts|src\/ai-governance\/services\/ai-query.disposition-rollup.live-pg.spec.ts|src\/ai-governance\/services\/ai-query.sessions-sort.live-pg.spec.ts|src\/ai-governance\/services\/ai-query.thread-sort-order.spec.ts|src\/ai-governance\/services\/endpoint-evidence-commit.live-pg.spec.ts|src\/ai-governance\/services\/zz-adv-reporter-probe.live-pg.spec.ts|src\/audit\/audit.service.live-pg.spec.ts|src\/common\/build-stamp-deploy-gate.spec.ts|src\/common\/build-stamp-dist.spec.ts|src\/common\/build-stamp-nest-build.spec.ts|src\/common\/build-stamp-taskdef.spec.ts|src\/common\/contracts\/console-response-only-fields.spec.ts|src\/common\/pipes\/agent-wire-leniency.spec.ts|src\/endpoint\/endpoint.controller.wire.spec.ts|src\/github-app\/__tests__\/scrub-finding-secret-blobs.guards.spec.ts|src\/github-app\/controllers\/local-scans.controller.spec.ts|src\/github-app\/services\/backfill-suppress-synthetic-secrets.db.spec.ts|src\/licenses\/__tests__\/LicenseExceptionsService.validation.spec.ts|src\/licenses\/__tests__\/LicenseIssuesRepository.summary+charts.spec.ts|src\/licenses\/__tests__\/deleteByTenant.scope.spec.ts|src\/licenses\/__tests__\/exceptions.create.spec.ts|src\/licenses\/__tests__\/exceptions.delete.notFound.spec.ts|src\/licenses\/__tests__\/recompute.atomicity.spec.ts|src\/organizations\/org-prompt-evidence-purge.live-pg.spec.ts|src\/packages\/services\/scanner-cache-schema.spec.ts/i.
+Jest did not exit one second after the test run has completed.
+
+'This usually means that there are asynchronous operations that weren't stopped in your tests. Consider running Jest with `--detectOpenHandles` to troubleshoot this issue.
+reclassify exit=1
+classify-failures.sh: line 79: cular: command not found
+node:internal/modules/cjs/loader:1423
+  throw err;
+  ^
+
+Error: Cannot find module 'C:\Users\Owner\Documents\Ceragon\.plans\verify-prod-20260808\be-suite-lane\node_modules\jest\bin\jest.js'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1420:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+    at Module._load (node:internal/modules/cjs/loader:1226:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v25.2.1
+reclassify exit=1
+classify-failures.sh: line 91: unexpected EOF while looking for matching `''
+EXIT=2

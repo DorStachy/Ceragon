@@ -1,0 +1,37 @@
+{
+  "url": "/mcp?siteId=11111111-1111-4111-8111-111111111111",
+  "title": "DeVoid | AI Control Plane",
+  "overflow": null,
+  "found": {
+    "mcp-count-line": [
+      {
+        "text": "0 MCP SERVERS",
+        "attrs": {
+          "data-testid": "mcp-count-line"
+        }
+      }
+    ],
+    "mcp-coverage-counts": [],
+    "mcp-coverage-incomplete": [],
+    "mcp-coverage-not-served": [],
+    "mcp-coverage-unreported": [
+      {
+        "text": "DeVoid cannot say which configuration sources were read. No endpoint in this scope has reported its discovery coverage, which is indistinguishable from an agent whose report was dropped in transit. Treat the list above as what happened to be found, never as the set of MCP servers that exist.",
+        "attrs": {
+          "data-testid": "mcp-coverage-unreported"
+        }
+      }
+    ],
+    "mcp-coverage-no-rows": [],
+    "mcp-coverage-panel": [
+      {
+        "text": "CONFIGURATION SOURCES DeVoid cannot say which configuration sources were read. No endpoint in this scope has reported its discovery coverage, which is indistinguishable from an agent whose report was dropped in transit. Treat the list above as what happened to be found, never as the set of MCP servers that exist.",
+        "attrs": {
+          "data-testid": "mcp-coverage-panel"
+        }
+      }
+    ]
+  },
+  "consoleErrors": [],
+  "failed": []
+}

@@ -1,0 +1,36 @@
+{
+  "url": "/admin/endpoints?sub=coverage&siteId=11111111-1111-4111-8111-111111111111",
+  "title": "Endpoint Management · Admin · DeVoid",
+  "overflow": null,
+  "found": {
+    "optout-stat-not-reported": [
+      {
+        "text": "NOT REPORTED 0",
+        "attrs": {
+          "data-testid": "optout-stat-not-reported"
+        }
+      }
+    ],
+    "optout-coverage-count-disagreement": [],
+    "optout-coverage-rows-truncated": [
+      {
+        "text": "2 of 5endpoints are listed below. The counts above are the server’s and cover the whole scope; they cannot be checked against the rows on this screen.",
+        "attrs": {
+          "data-testid": "optout-coverage-rows-truncated"
+        }
+      }
+    ],
+    "optout-coverage-rows": [
+      {
+        "text": "DESKTOP-QA09 · codex No readable opt-out transition has been reported here, so opt-out coverage has not been measured. This is not a statement that it is governed. Not reported DESKTOP-QA10 · codex No readable opt-out transition has been reported here, so opt-out coverage has not been measured. This is not a statement that it is governed. Not reported",
+        "attrs": {
+          "data-testid": "optout-coverage-rows"
+        }
+      }
+    ]
+  },
+  "consoleErrors": [
+    "{\"timestamp\":\"2026-08-19T10:24:31.118Z\",\"level\":\"error\",\"message\":\"web-coverage fetch failed\",\"error\":{\"name\":\"Error\",\"message\":\"web coverage read returned no endpoint list\",\"stack\":\"Error: web coverage read returned no endpoint list\\n    a"
+  ],
+  "failed": []
+}

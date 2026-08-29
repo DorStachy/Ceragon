@@ -1,0 +1,65 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Backend full-Jest-suite lane — SOURCE INSIDE THE IMAGE, NOT BIND-MOUNTED.
+#
+# Why this file exists (S10 gate row A2, 2026-08-08): the Backend full suite has
+# never completed on this box. The recorded diagnosis was "I/O-bound on the
+# Windows bind mount, ~13-24 suites / 10 min => 7-13 h", and an attempt to
+# parallelise out of it (6 jest workers x 2560 MB in a 7.4 GiB Docker VM) wedged
+# the engine.
+#
+# This image copies the working tree in at BUILD time and runs `npm install`
+# INSIDE the container, so every read jest performs during the run is against
+# the container's own overlayfs — no virtiofs/9p hop to the Windows host, and no
+# `node_modules` junction into the primary Backend checkout.
+#
+# Node 24 deliberately: the repo pins it (CI `node-version: 24.x`, production
+# `Dockerfile FROM node:24-alpine`). `.nvmrc` says `lts/*`, and the Windows host
+# currently has Node 25.2.1 on PATH — a verdict taken with the host node is
+# therefore NOT a verdict taken on the pinned runtime.
+#
+# Debian (bookworm-slim) rather than the production image's Alpine because CI
+# runs `ubuntu-latest`; matching CI's libc is what makes a local red/green
+# transferable to a CI red/green.
+# ─────────────────────────────────────────────────────────────────────────────
+FROM node:24-bookworm-slim
+
+WORKDIR /app
+
+# python3/make/g++ are the node-gyp fallback for bcrypt when no prebuild matches;
+# postgresql-client gives the runner a `pg_isready` for the readiness gate.
+#
+# git + jq ADDED 2026-08-19 after the first full run. Three suites --
+# build-stamp-dist, build-stamp-taskdef, build-stamp-nest-build -- failed with
+# `spawnSync git ENOENT` / `spawnSync jq ENOENT`, i.e. the LANE was red, not the
+# code. All three PASS once these two binaries exist (measured: 14/14, 5/5,
+# and a green nest-build suite). They do NOT need a real `.git` -- the specs
+# build their own throwaway repos in a temp dir.
+#
+# build-stamp-deploy-gate.spec.ts is NOT fixed by this and is not meant to be:
+# it shells out to `docker build` to construct fixture images, so it needs a
+# Docker daemon inside the test. This lane does not provide one and must not --
+# mounting the host docker socket is precisely what the tool-risk guard blocks.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends ca-certificates python3 make g++ postgresql-client git jq \
+ && apt-get clean
+
+# `@ceragon/shared-contracts` is a `file:` dependency: its directory has to exist
+# before `npm install` or the local path will not resolve. Same ordering as the
+# production Dockerfile.
+COPY package*.json ./
+COPY packages ./packages/
+RUN npm install
+
+# The rest of the tree. The build context's `.dockerignore` already drops
+# node_modules/ (a junction into the primary checkout on this box), dist/ and
+# .git/, so this copies source + tests + scripts only.
+COPY . .
+
+# `COPY . .` overwrote packages/, but the `file:` install left a symlink at
+# node_modules/@ceragon/shared-contracts pointing INTO it, so there is nothing to
+# redo. The vendored `packages/shared-contracts/dist` IS committed (.gitignore
+# carries an explicit `!` exception for it), so contracts resolve without a
+# rebuild — see NOTE-PRETEST in run-be-suite.sh for what that skips.
+
+ENV NODE_ENV=test
+ENV CI=true

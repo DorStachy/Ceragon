@@ -1,0 +1,34 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+ACCOUNT
+Render QA Org
+Render QA Site
+CODING AI
+SESSIONS
+Search…
+ctrl
+K
+RQ
+Render QA
+Admin
+CODING AI
+Sessions
+
+Sessions from coding runtimes: Claude Code, Codex, and IDE agents.
+
+All states
+GROUP
+No grouping
+Show sessions with no recorded activity
+
+Sessions that recorded only a start and an end are hidden. They are excluded from this view and from its counts, never deleted: each stays openable by id and its lifecycle events stay in the Events feed.
+
+NO AI SESSIONS YET
+Coding-agent sessions appear here as agents like Claude Code and Codex connect from enrolled machines.

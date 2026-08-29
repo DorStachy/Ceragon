@@ -1,0 +1,411 @@
+{
+ "section": "Sections 0–4 — the evidence rule, the commit table, the 90-second version, the adversary model, the five checkpoints, §3.2 the order of checks, §3.3 COVERAGE HONESTLY, and the four walkthroughs in §4",
+ "claims": [
+  {
+   "docLine": "L28 (§0.1, PROVEN LIVE row)",
+   "claim": "\"Exactly one control in this product currently carries this label.\"",
+   "verdict": "STALE",
+   "evidence": "Installers/internal/liveproof/register.json at origin/main (5b129523) holds 8 proof objects, of which THREE have observed:true — `pretooluse-deny-stops-side-effect` (2026-08-26T17:11:57Z), `signed-bundle-activates-and-digest-reaches-backend` (2026-08-27T10:50:01Z, commit c25aaa92), and `codex-hook-fires-and-client-honours-deny` (2026-08-27T11:48:30Z, commit 21ce3cc3). Five remain quarantined.",
+   "correctedText": "| **PROVEN LIVE** | Someone observed it work on a real machine and recorded the evidence. **Three of the eight controls in the live-proof register currently carry this label.** See §15.",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L36–37 (§0.2)",
+   "claim": "\"the working checkouts on developer machines in this workspace are hundreds of commits behind\"",
+   "verdict": "STALE",
+   "evidence": "Measured 2026-08-28: `git rev-list --count <local HEAD>..origin/main` gives Installers 8e49a625 → 1,010 behind; Backend 15dd89ba → 773 behind; Frontend 1fe6e7a6 → 525 behind. Installers is over a thousand, not hundreds.",
+   "correctedText": "the working checkouts on developer machines in this workspace are between five hundred and a thousand commits behind (measured 2026-08-28: Installers 1,010, Backend 773, Frontend 525)",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L41 (§0.2, commit table)",
+   "claim": "`Installers` | `002e2cfd`",
+   "verdict": "STALE",
+   "evidence": "002e2cfd (\"Merge PR #178 fix/ext-0.5.17-source-pin\", 2026-08-27T01:36:55+03:00) is an ancestor of origin/main but 16 commits behind it. origin/main is 5b12952307db9903fa166d5d9ce1a0c058e0ad77 (2026-08-27T18:00:32+03:00). The gap is PR #179 (9503094e), shipped as agent 7.10.6 stable 2026-08-27T17:05:32Z, plus three live-proof commits (c25aaa92, 21ce3cc3, 4f302f0f) and 5b129523 itself.",
+   "correctedText": "| `Installers` | `5b129523` | endpoint agent, daemon, browser extension, Windows installer — shipped as agent **7.10.6**, stable 2026-08-27T17:05:32Z |",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L42 (§0.2, commit table)",
+   "claim": "`Backend` | `0b2aa28c`",
+   "verdict": "STALE",
+   "evidence": "0b2aa28c (\"Merge PR #284\", 2026-08-27T02:28:51+03:00) is 6 commits behind origin/main = 0cf9021e944b72ef2a3024e8687f4114db1f2468 (\"Merge PR #285 from r47a/integ-backend\", 2026-08-27T17:00:34+03:00). PR #285 carries dfbac545 (malicious floor on the read path), bbeed1f3 (tool-risk defaults onto D4), 2d8f73ba (HTTP boundary), 6b5ad9f9 (policy poll + credential over a real socket), 8cb1e9dc (live-pg fail-closed gate). It is DEPLOYED as ECS task definition 322.",
+   "correctedText": "| `Backend` | `0cf9021e` | policy authority, APIs, persistence, signing, the event chain — **deployed** as ECS task definition 322 |",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L43 (§0.2, commit table)",
+   "claim": "`Frontend` | `cac574ae`",
+   "verdict": "CONFIRMED",
+   "evidence": "`git rev-parse origin/main` in Frontend = cac574ae063b4e91ec38ddb205ec5abe4cbc3dff (\"Merge PR #188 fix/vendored-engine-refresh\", 2026-08-27T01:41:22+03:00). Still the tip; nothing has landed on Frontend main since the document was written.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L79–80 (§1, one-line coverage summary)",
+   "claim": "\"Claude Code on a Windows endpoint is comprehensively governed\"",
+   "verdict": "STALE",
+   "evidence": "The register's own `hook-lane-prompt-block` entry (register.json, quarantine reason) records 10 identical private-key prompt runs at the shipped 60-second hook timeout: 4 blocked with 0 requests to the model, 6 NOT blocked with the private-key bytes egressing. ~/.devoid/undecidable-hook-payloads.json recorded {\"total\":11,\"byReason\":{\"daemon-unreachable-budget-expired\":11}} over the same 20-minute window. The lane is comprehensively WIRED; it is not comprehensively governing under load.",
+   "correctedText": "Claude Code on a Windows endpoint is comprehensively wired — every checkpoint, the wire, and the launch — and it is the only lane measured failing open under ordinary machine load (§15.1: six of ten runs leaked)",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L80–81 (§1, one-line coverage summary)",
+   "claim": "\"Codex is governed at the machine layer while its cooperative hook lane is inert on current client versions\"",
+   "verdict": "WRONG",
+   "evidence": "Installers/internal/codexmanaged/hookdialect.go:166 — `knownHookTrustDialects = []hookTrustDialect{hookTrustDialect144, hookTrustDialect147}`, two rows (prefixes \"0.144.\" at :103 and \"0.147.\" at :114). The 0.147 row was added on measurement, not assumption: hookdialect.go:120-160 records a 9-vector oracle corpus read back from the client's own `currentHash`, plus a live `codex exec` trust negative control. Register entry `codex-hook-fires-and-client-honours-deny` is observed:true — codex-cli 0.147.0 dispatched the PreToolUse hook, DeVoid returned block for a curl-pipe-to-shell, and the client refused the tool.",
+   "correctedText": "Codex is governed at the machine layer, and its cooperative hook lane now fires on the two client families whose trust format has been measured (0.144.x and 0.147.x) — proven live on 0.147 — while staying inert on every other build and on any endpoint carrying the machine baseline",
+   "labelChange": "INERT -> CONDITIONAL (condition: client version in {0.144.x, 0.147.x} AND no machine baseline pinning allow_managed_hooks_only). PROVEN LIVE on 0.147 cooperative scope, per register entry codex-hook-fires-and-client-honours-deny."
+  },
+  {
+   "docLine": "L87–88 (§2)",
+   "claim": "\"the defaults lean toward *telling you* rather than *stopping you*\"",
+   "verdict": "WRONG",
+   "evidence": "Backend/src/ai-security-policy/ai-security-policy.constants.ts:1423 — `AI_TOOL_RISK_DEFAULT_ACTIONS = resolveToolRiskDefaults(AI_TOOL_RISK_CLASSES, AI_TOOL_RISK_D4_TIERS, AI_MALICIOUS_FLOOR)`. The file's own docblock at :1199 states the shipped tally: **23 block / 2 warn / 12 monitor / 3 allow**, not the D4 table's 15/6/16/3. 23 of 40 tool-risk classes stop the developer by default, and the 23 malicious-floor toolRisk members (ai-malicious-floor.ts:143-183) cannot be relaxed below block by any administrator now that withMaliciousFloorApplied is the first statement of assembleEffectiveDto (ai-security-policy.service.ts:2198).",
+   "correctedText": "That assumption shapes the *detectors*: they report far more than they stop. It no longer shapes the *defaults*. Twenty-three of the forty behavioural classes block on the shipped default, and thirty-nine classes across tool-risk, DLP and prompt-risk sit on a malicious floor that a customer's administrator cannot relax — the console will accept the change, store it, and serve the floored value anyway.",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L89–91 (§2)",
+   "claim": "\"a fail-closed checkpoint on an unprovable condition made a machine unusable in July 2026 and the operator removed the agent\"",
+   "verdict": "CONFIRMED",
+   "evidence": "Installers commit 444afe5a (2026-07-31T03:04:18+03:00), \"fix(ai-hooks): a dead daemon must not deny every tool call\": \"An unreachable daemon made EVERY hook checkpoint deny... on 2026-07-31 an operator uninstalled the agent to get their machine back.\" The mechanism is named: INTERVENTION_UNAVAILABLE was routed to the failure oracle and denied; it is now resolved to proceed in cmd/devoid/ai_failure_resolver.go:81 and internal/airuntime/runner.go:933.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L109 (§3, checkpoint 1)",
+   "claim": "\"refuse to start it; force its traffic through us; strip bypass flags\"",
+   "verdict": "CONFIRMED",
+   "evidence": "cmd/devoid/agent_shim.go runAgentShim: refusal at the surface gate, provider deny-list and governance (three `return 1` paths); transport injection at step 5 via buildAgentEnv/enforceManagedTransportRoute; flag strip at step 5b via enforceGovernanceBypassFlags. All three exist. BUT each is narrower than the row implies: TransportEnvFor (internal/aiagent/aiagent.go:~128) returns proxied=true only for claude-code, false for codex, and (\"\", false) for gemini — so this checkpoint forces NO traffic for Codex or Gemini; and claudeGovernanceBypassFlags (agent_shim.go) is a one-element list `{\"--bare\"}` applied only when normalized==\"claude\", and on a COOPERATIVE endpoint the flag is honoured rather than stripped (enforceGovernanceBypassFlags, `if !managed { … return args }`).",
+   "correctedText": "| 1 | **The launch** — we replace `claude` / `codex` / `gemini` on PATH | that an agent is starting, and with what flags | refuse to start it; force **Claude's** traffic through us (Codex is routed by a persisted config entry instead, Gemini not at all); strip **Claude's** one known bypass flag `--bare`, and only on a managed endpoint — a cooperative endpoint honours it and merely records the attempt |",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L110 (§3, checkpoint 2)",
+   "claim": "\"Claude Code and Codex call out to a program before acting… deny the prompt, deny the tool call, replace the tool result\"",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/airuntime/adapters/ contains exactly two directories, claudecode and codex (`git ls-tree -d origin/main internal/airuntime/adapters/`). Claude effects: internal/airuntime/adapters/claudecode/detect.go:29-33 (DenyPrompt, DenyTool, ReplaceOutput, None, None). Codex effects: internal/airuntime/adapters/codex/effects.go:44-50 (deny-prompt, deny-tool, replace-tool-result-with-feedback-and-continue, deny-escalation, none).",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L113 (§3, checkpoint 5)",
+   "claim": "\"the daemon watching configs, plugins, MCP servers, extensions… quarantine a plugin or MCP server; report drift\"",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/mcpsources/mcpsources.go defines 16 discovery sources across 12 distinct ClientIDs (claude-code ×2, claude-desktop, codex ×2, cursor ×2, windsurf, gemini-cli, claude-code-state, vscode ×2, vscode-insiders, vscodium, cursor-app, windsurf-app). internal/extwatch/watcher.go and internal/browserinv/browserinv.go carry the extension lane; internal/plugingate/ the plugin lane.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L120 (§3.1)",
+   "claim": "\"Where lanes overlap, they combine **most-restrictive-wins**.\"",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/daemon/ai_handlers.go:2759-2762 (`mergeToolDecision` — \"Neither scanner can relax the other\"), :2768 and :2791 (`foldArtifactDecision` / plugin fold — \"can only ever TIGHTEN\"), internal/daemon/ai_skill_verdict.go:235. In the browser lane the same posture appears as \"the daemon… can only *upgrade* the verdict\" (§5.4). NOTE the precision gap: every one of these folds is INSIDE one checkpoint's decision. There is no combiner that folds the hook lane's verdict with the wire lane's or the browser lane's — those overlap only in the weaker sense that either can independently refuse.",
+   "correctedText": "Where detectors overlap inside one checkpoint they combine **most-restrictive-wins**, and the code says so: neither the behaviour scanner nor the content scanner can relax the other, and an artifact or plugin verdict can only tighten. Across *lanes* there is no combiner: a prompt that traverses both the hook and the wire is decided twice, independently, and the strict outcome wins only because either lane can refuse on its own. Nothing reconciles a hook allow with a wire block, or records that the two disagreed.",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L124–125 (§3.2)",
+   "claim": "\"**Surface Access** — a five-row allow/monitor/block matrix over browser sites, CLI agents, IDE, third-party browser extensions and MCP\"",
+   "verdict": "CONFIRMED",
+   "evidence": "Backend/src/ai-security-policy/ai-security-policy.constants.ts:583-589 — `AI_SURFACE_KEYS = ['browser','cliAgents','ide','browserExtensions','mcp']`, exactly five. :573 — `AI_SURFACE_ACCESS_MODES = ['allow','monitor','block']`, exactly three.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L125–126 (§3.2)",
+   "claim": "\"is evaluated *first*, before any detector runs\"",
+   "verdict": "WRONG",
+   "evidence": "True on the shim and on both prompt lanes, false on the tool lane. internal/daemon/ai_handlers.go:2701 runs `findings := toolrisk.Scan(body.ToolName, body.ToolInput)` — the behavioural detector — as step 1; the surface gate `gv := evaluateAIGovernance(policy, body.AgentType, toolSurface)` is step 2a at :2717, sixteen lines later. By contrast the prompt lanes do put the gate first (:1245 and :2600 both precede their `dlp.ScanAll` at :2423 and :2630). The consequence is bounded — the surface short-circuit at :2718 returns `Findings: []` so nothing leaks — but the claim as written is not what the tool lane does.",
+   "correctedText": "A coarse gate outranks every fine one. **Surface Access** — a five-row allow/monitor/block matrix over browser sites, CLI agents, IDE, third-party browser extensions and MCP — is evaluated before any *decision* is composed. It is literally first on the shim and on both prompt lanes; on the tool lane the behavioural scan runs sixteen lines ahead of it (`ai_handlers.go:2701` vs `:2717`), so the gate short-circuits the decision but not the work, and the short-circuit response deliberately carries an empty findings array.",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L126–127 (§3.2)",
+   "claim": "\"If an administrator sets `cliAgents: block`, the shim prints a refusal and returns before it even locates the real binary.\"",
+   "verdict": "CONFIRMED",
+   "evidence": "cmd/devoid/agent_shim.go runAgentShim: the surface switch (`case aiagent.SurfaceModeBlock: … return 1`) sits between step 1 (policy fetch) and step 2 (provider deny-list); `resolveRealAgentBinary` is step 4, strictly after. agentShimSurfaceMode reads `policy.Surfaces.CliAgents` through `aiagent.NormalizeSurfaceMode`.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L127 (§3.2)",
+   "claim": "\"**SHIPS**; the default for every row is `allow`.\"",
+   "verdict": "CONFIRMED",
+   "evidence": "Backend ai-security-policy.constants.ts:600 — `AI_SURFACE_ACCESS_DEFAULT: AiSurfaceAccessMode = 'allow'`, with the docblock \"absent section, absent key, null, typo, or an injected token this runtime does not recognise\". Endpoint side: internal/aiagent/aiagent.go:58-67 `NormalizeSurfaceMode` — `default: return SurfaceModeAllow`. Label SHIPS holds; but the gate is skipped entirely, not merely defaulted, when `policyOK` is false (agent_shim.go `agentShimSurfaceMode` returns allow if `!policyOK || policy == nil || policy.Surfaces == nil`).",
+   "correctedText": "**SHIPS**; the default for every row is `allow` — and so is the *absence* of a policy. A shim that could not fetch a policy at all does not apply the surface gate, it allows: `agentShimSurfaceMode` returns `allow` whenever the fetch failed, the policy is nil, or the surfaces section is absent.",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L135 (§3.3, Claude Code CLI row — Hooks column)",
+   "claim": "\"5 events, 2 can deny\"",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/aihooks/settings.go:134 — `var managedEvents = []string{evUserPromptSubmit, evPreToolUse, evPostToolUse, evSessionStart, evSessionEnd}` — five. internal/airuntime/adapters/claudecode/detect.go:29-33 — only UserPromptSubmit (EffectDenyPrompt) and PreToolUse (EffectDenyTool) carry a deny; PostToolUse is EffectReplaceOutput, SessionStart/SessionEnd are EffectNone.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L135 (§3.3, Claude Code CLI row — Wire column)",
+   "claim": "\"yes (`ANTHROPIC_BASE_URL` injected)\"",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/aiagent/aiagent.go TransportEnvFor: `case AgentTypeClaude: return \"ANTHROPIC_BASE_URL\", true`. cmd/devoid/agent_shim.go agentProxyBaseURL() = daemonBaseURL()+\"/proxy/anthropic\". internal/aihooks/transport_route.go:31,38,45 pins the same key, subtree and default port 19280 so the terminal and IDE launches route identically.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L135 (§3.3, Claude Code CLI row — Verdict)",
+   "claim": "\"**Fully covered.** The reference lane.\"",
+   "verdict": "WRONG",
+   "evidence": "This is the one row a reader will quote, and it is the row §15.1 disproves. register.json `hook-lane-prompt-block`: at the shipped 60-second timeout, 6 of 10 identical private-key runs proceeded unchecked and the key egressed; the mechanism was DeVoid's own budget expiry (`daemon-unreachable-budget-expired`, 11 occurrences), not the client. A verdict cell that says \"fully covered\" beside a measured 60% leak rate is the most damaging single string in the document.",
+   "correctedText": "| **Claude Code (CLI)** | yes | 5 events, 2 can deny | yes (`ANTHROPIC_BASE_URL` injected) | n/a | **Every lane wired — and the only lane measured leaking.** The reference implementation; six of ten private-key prompts egressed under load (§15.1). |",
+   "labelChange": "Fully covered -> CONDITIONAL (condition: the daemon answers inside the 4-second decision budget; under load it does not)"
+  },
+  {
+   "docLine": "L136 (§3.3, Claude in an IDE / Desktop row — Launch gate)",
+   "claim": "\"no — never touches PATH\"",
+   "verdict": "CONFIRMED",
+   "evidence": "cmd/devoid/agent_shim.go, the `claudeGovernanceBypassFlags` docblock states it verbatim: \"An IDE-hosted Claude (the VS Code extension, Claude Desktop) never reaches runAgentShim, so it is not covered here.\" internal/aihooks/transport_route.go:10-23 gives the same reason for existing: \"an IDE extension hosts its own runtime and is not launched through our shim\".",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L136 (§3.3, IDE row — Wire column)",
+   "claim": "\"yes, asserted into that file\"",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/aihooks/transport_route.go `mergeTransportRoute`: \"It ASSERTS rather than defers to an existing value… a stale value left by an earlier install, a different port, or a hand-edited override would each silently route the IDE around every DeVoid control while the endpoint still reported itself managed.\" Key `ANTHROPIC_BASE_URL` (:31), value `http://127.0.0.1:19280/proxy/anthropic` (ProxyBaseURL, :45-54).",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L136 (§3.3, IDE row — Verdict)",
+   "claim": "\"No bypass-flag stripping, no plugin-install gate.\"",
+   "verdict": "WRONG",
+   "evidence": "There are FOUR plugin checkpoints, not one: internal/plugingate/recognize.go:52-63 defines SignalPluginBashTool, SignalPluginSlash, SignalPluginCLI and SignalPluginConfigWrite. Only SignalPluginCLI is the shim-argv path (recognize.go:141 ParseArgv). The other three ride the hook lanes — which the IDE-hosted client runs from the same `~/.claude/settings.json` this row's own Hooks column confirms. So the IDE loses one plugin checkpoint of four, not the gate.",
+   "correctedText": "| **Claude in an IDE / Desktop** | no — never touches PATH | yes, same settings file | yes, asserted into that file | n/a | **Prompts and traffic covered.** No bypass-flag stripping; three of the four plugin checkpoints still apply through the hooks, but the shim-argv one — a plugin install typed at a terminal the shim never saw — does not. |",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L137 (§3.3, Codex CLI row — Hooks column)",
+   "claim": "\"5 events, 3 gating\"",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/codexmanaged/hookset.go:92-96 — PreToolUse (Gating:true), UserPromptSubmit (Gating:true), PostToolUse (false), SessionStart (false), PermissionRequest (Gating:true). Five rows, three gating. Corroborated by internal/airuntime/adapters/codex/effects.go:44-50, where deny-prompt / deny-tool / deny-escalation are the three deny effects.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L137 (§3.3, Codex CLI row — Verdict)",
+   "claim": "\"**Machine lane covered; cooperative hook lane inert.**\"",
+   "verdict": "STALE",
+   "evidence": "hookdialect.go:166 now carries two dialect rows. The cooperative lane was measured firing on 0.147.0 (register.json `codex-hook-fires-and-client-honours-deny`, observed:true, 2026-08-27T11:48:30Z — client log \"hook: PreToolUse Blocked\", DENY_SIDE_EFFECT.txt absent, allow control created its marker, trust-hash negative control made the hook vanish entirely). What still kills the lane is OUR OWN configuration, not the dialect: cmd/devoid/ai_codex_lanes.go:296 and :347 and cmd/devoid/codex_machine_hook_argv.go:24 — the machine baseline's `allow_managed_hooks_only = true` \"suppresses the USER-scope hook lane\". The proof was taken on a box whose real C:\\\\ProgramData\\\\OpenAI\\\\Codex was EMPTY, and its own evidence says \"THIS PROOF DOES NOT COVER A MACHINE-BASELINED ENDPOINT\".",
+   "correctedText": "| **Codex (CLI)** | yes | 5 events, 3 gating — but see below | yes, via a config-persisted provider route | n/a | **Machine lane covered. Cooperative lane fires on 0.144.x and 0.147.x — and only where no machine baseline is present**, because our own `allow_managed_hooks_only` pin suppresses it. |",
+   "labelChange": "cooperative hook lane inert -> CONDITIONAL (conditions, both required: client version in {0.144.x, 0.147.x}; AND no machine baseline pinning allow_managed_hooks_only=true). PROVEN LIVE on 0.147 in the cooperative scope only."
+  },
+  {
+   "docLine": "L138 (§3.3, Codex desktop / VS Code row)",
+   "claim": "\"The full profile is a proven brick, so five of six admin locks are withheld.\"",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/codexmanaged/requirements.go:313 names them: \"withheld admin locks (R1, R2, R3, R4 and R6)\". :364 — `var desktopRequirements = []string{R5ProviderRoute, R7HookCoop, R8HookLifecycle}`. Six admin locks R1–R6 (:168-173); only R5 survives into the desktop set. The \"proven brick\" half gained a second, sharper measurement on 2026-08-27 (register.json, `codex-hook-fires-and-client-honours-deny`): under the full profile codex 0.147 downgrades `--sandbox workspace-write` to read-only on Windows while R2 pins workspace-write and R1 pins approval_policy=never, so the client declines every shell command itself in 0 ms — \"rejected: blocked by policy\" — and refuses danger-full-access outright.",
+   "correctedText": "| **Codex desktop / VS Code** | no | cooperative only | provider route only | n/a | **Deliberately degraded.** Five of the six admin locks (R1–R4, R6) are withheld; only the provider route survives. Re-measured 2026-08-27: under the full profile a Codex tool call cannot run on Windows *at all* — 0.147 downgrades `workspace-write` to read-only, so R1+R2 together make the client decline every command in 0 ms before any hook verdict can matter. |",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L139 (§3.3, Gemini CLI row)",
+   "claim": "\"yes | **none** | **none** | n/a | **Launch-time only.** Once it starts we see nothing.\"",
+   "verdict": "CONFIRMED",
+   "evidence": "Launch gate: cmd/devoid/agent_shim.go `agentShimNames() = {\"claude\",\"codex\",\"gemini\"}`. Hooks: `git ls-tree -d origin/main internal/airuntime/adapters/` returns exactly two directories, claudecode and codex — there is no Gemini adapter, and internal/aihooks manages only Claude's settings.json. Wire: internal/aiagent/aiagent.go TransportEnvFor — `case AgentTypeGemini: return \"\", false`, with the comment \"no stable base-URL override wired\".",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L140 (§3.3, Cursor / Copilot / Windsurf row)",
+   "claim": "\"**Inventoried, not intercepted.** Labels exist; no enforcer does.\"",
+   "verdict": "WRONG",
+   "evidence": "An enforcer does exist and it writes into both editors. internal/policybundle/extensions_allowed.go:30-35 targets four editor settings.json files; `desiredExtensionsAllowed` (:39-49) writes the deny-by-default baseline `{\"*\": false}` under `extensions.allowed` in enforce and audit modes. The same table marks Cursor `Honored: false` and Windsurf `Honored: false` — the struct field is documented at :17 as \"whether the host is known to honor extensions.allowed\", and a false value emits telemetry that the key may be ignored. Separately, internal/mcpsources/mcpsources.go carries five discovery sources for these editors (cursor user, cursor project, windsurf, cursor-app, windsurf-app), and MCP quarantine physically edits those configs. So it is not that no enforcer exists — it is that the one that exists writes a key those two editors are not known to read.",
+   "correctedText": "| **Cursor / Windsurf** | no | no | no | no — neither has a browser surface | **Configs written, nothing honoured.** MCP servers in their configs are discovered and quarantinable, and we write an `extensions.allowed` deny-by-default baseline into both — a control our own table records as **not honoured** by either editor (`extensions_allowed.go:32-34`, `Honored: false`). VS Code and VSCodium are the two hosts marked `Honored: true`. |\n| **GitHub Copilot** | no | no | no | yes, on `copilot.microsoft.com` and `github.com/copilot` | **Web chat covered; the IDE extension is not.** |",
+   "labelChange": "\"no enforcer does\" -> SHIPS-but-not-honoured. The assignment: policybundle.applyExtensionsAllowedToSettings writes the key; the editorSettings row for cursor/windsurf carries Honored:false."
+  },
+  {
+   "docLine": "L141 (§3.3, browser clients row)",
+   "claim": "\"**Covered** wherever the extension is installed.\"",
+   "verdict": "CONFIRMED",
+   "evidence": "browser-extension/manifest.json at origin/main: version 0.5.17; content_scripts run at document_start on nine origins, which include chatgpt.com, chat.openai.com, claude.ai, gemini.google.com, copilot.microsoft.com and github.com/copilot — all four clients named in the row. The hedge \"wherever installed\" is doing real work and is never cashed out: install-scripts/production/install.ps1:3373-3402 runs `browser-guard sync` to pre-stage HKLM ExtensionSettings force-install policies for seven browsers, pointing at the self-hosted feed internal/promptguard/constants.go:122 (`https://installers-prod.s3.eu-north-1.amazonaws.com/extensions/chrome/update.xml`, extension id ifbjklbconaoilidakfmmanclglagfem). That path is best-effort and non-fatal on Windows, and internal/browserinv/browserinv_darwinpolicy.go:31-38 and browserinv_unix.go:45-52 both state the hard limit: stock non-MDM macOS Chrome REFUSES off-store force_installed extensions regardless of delivery, and Linux/macOS have no per-user managed-policy path at all.",
+   "correctedText": "| **ChatGPT / Claude.ai / Gemini web / Copilot web** | n/a | n/a | n/a | yes | **Covered where the extension actually installs.** Windows: a best-effort HKLM force-install policy across seven browsers, from our own S3 update feed, retried by the daemon every sweep. macOS: stock non-MDM Chrome refuses an off-store force-install however it is delivered — an admin must install the emitted `.mobileconfig`. Linux/macOS per-user installs get no managed-policy path at all. The native-messaging host and the daemon-side controls work regardless; only the automatic *install* needs the profile. |",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L143–144 (§3.3, Codex caveat)",
+   "claim": "\"We pin exactly one format, matching Codex `0.144.x`.\"",
+   "verdict": "STALE",
+   "evidence": "internal/codexmanaged/hookdialect.go:166 — `var knownHookTrustDialects = []hookTrustDialect{hookTrustDialect144, hookTrustDialect147}`. Row 1 at :100-104 (`id: \"codex-hooktrust-0.144\"`, minorPrefixes {\"0.144.\"}); row 2 at :111-115 (`id: \"codex-hooktrust-0.147\"`, minorPrefixes {\"0.147.\"}). The two rows deliberately share `dialect144Identity` because 0.147 was MEASURED to produce byte-identical digests, and the file says why they are not merged into one \"0.14\" prefix: \"0.145/0.146 sit between them unmeasured. A single row spanning \\\"0.14\\\" would silently adopt them.\"",
+   "correctedText": "We pin exactly two formats, matching Codex `0.144.x` and `0.147.x`. They are two rows rather than one range on purpose: 0.145 and 0.146 sit between them and were never measured, and a wider prefix would silently adopt them — which is precisely how the old firewall went dead.",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L144–146 (§3.3, Codex caveat)",
+   "claim": "\"A survey on 2026-08-26 found three Codex builds on one machine — `0.147.0`, `0.149.0-alpha.4.1`, `0.130.0-alpha.5` — **none of them 0.144**.\"",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/codexmanaged/hookdialect.go:130-134 records the same survey verbatim: \"The 2026-08-26 survey of this table recorded THREE clients on this machine — codex-cli 0.147.0 (npm global), 0.149.0-alpha.4.1 (the desktop app's runtime), 0.130.0-alpha.5 (its launcher, below MinRuntimeVersion)\". Independently reconfirmed on the real-box run of 2026-08-27: the owner's own Codex client is 0.149.0-alpha.4.1.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L146–147 (§3.3, Codex caveat)",
+   "claim": "\"On today's shipped clients the cooperative Codex hook does not fire. **INERT.**\"",
+   "verdict": "WRONG",
+   "evidence": "Two independent disproofs. (1) hookdialect.go:139-160 records the acceptance artefacts for 0.147: `codex app-server` hooks/list returning currentHash = sha256:36c60bf4… byte-equal to the 0.144 golden vector and trustStatus \"trusted\", plus a live trust-gated `codex exec` with a one-nibble-wrong hash as the negative control. (2) register.json `codex-hook-fires-and-client-honours-deny` is observed:true — the client's own log reads \"hook: PreToolUse\" / \"Command blocked by PreToolUse hook\" / \"hook: PreToolUse Blocked\", the side-effect marker was never created, and removing only the `[hooks.state]` trusted_hash made the same command run. The conclusion the paragraph reaches nonetheless survives *for this machine*, for a different reason: 0.149.0-alpha.4.1 is outside both rows, and hookdialect.go:156-158 lists \"STILL UNMEASURED, STILL UNRESOLVABLE: 0.145, 0.146, 0.148 and the 0.149 alpha the desktop app runs.\"",
+   "correctedText": "On a 0.144.x or 0.147.x client with no machine baseline, the cooperative Codex hook fires, decides, and the client honours the deny — measured end to end on 0.147 with a trust-hash negative control (§15). It does not fire anywhere else, and \"anywhere else\" includes the client on the machine this document was written on: the owner's Codex is `0.149.0-alpha.4.1`, outside both rows, and 0.145 / 0.146 / 0.148 / 0.149 remain unmeasured and therefore unresolvable by design. It also does not fire on any machine-baselined endpoint, where our own `allow_managed_hooks_only = true` pin suppresses the user-scope lane regardless of dialect. **CONDITIONAL**, on both a named client family and the absence of the machine baseline.",
+   "labelChange": "INERT -> CONDITIONAL. The assignment that wires it: internal/codexmanaged/hookdialect.go:166 adding hookTrustDialect147 to knownHookTrustDialects (shipped in Installers PR #179 / agent 7.10.6)."
+  },
+  {
+   "docLine": "L149–150 (§3.3)",
+   "claim": "\"an unrecognised client version classifies as `hook-trust-dialect-unverified` and rolls up to a coverage downgrade, never a green\"",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/codexmanaged/requirements.go:68 — `ReasonHookTrustDialectUnverified DriftReason = \"hook-trust-dialect-unverified\"`; verify.go:633 returns `RequirementResult{Status: StatusUnknown, Reason: ReasonHookTrustDialectUnverified}`; verify.go:544-550 `hookTrustDialectConfirmed` returns the `hookTrustDialectFor` lookup directly. nochurn.go:42-46 states the roll-up explicitly: \"It does not upgrade the verdict. The report still rolls up `coverage-downgrade`, every posture surface still prints `[!]` and still exits non-zero, and HookTrustDialectConfirmed is still false.\" hookdialect.go:186-196 makes the empty-version and unknown-version cases indistinguishable on purpose.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L150–151 (§3.3)",
+   "claim": "\"The machine-scope lane and the provider route are what carry Codex governance today.\"",
+   "verdict": "CONFIRMED",
+   "evidence": "True and now load-bearing in a way the sentence does not say: on a machine-baselined endpoint they are not merely what carries governance, they are the ONLY thing that can, because the same baseline's `allow_managed_hooks_only = true` pin makes every user-scope hook group inert (cmd/devoid/ai_codex_lanes.go:296, :347; codex_machine_hook_argv.go:24). On a per-user endpoint with a 0.144/0.147 client the cooperative lane carries governance too.",
+   "correctedText": "On a machine-baselined endpoint the machine-scope lane and the provider route are the *only* things that carry Codex governance, because our own `allow_managed_hooks_only` pin makes every user-scope hook group inert there. On a per-user endpoint running a measured client family, the cooperative lane carries governance beside them.",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L153–155 (§3.3, Gemini paragraph)",
+   "claim": "\"A Gemini user gets exactly three launch-time checks — the surface gate, the provider deny-list, and the agent allowlist — and nothing whatsoever after the process starts.\"",
+   "verdict": "CONFIRMED",
+   "evidence": "cmd/devoid/agent_shim.go runAgentShim, in order: surface gate (`agentShimSurfaceMode` → `case aiagent.SurfaceModeBlock: return 1`), provider deny-list (`aiagent.ProviderBlocked(agentType, blockedProviders)` → return 1; ProviderKeyFor(gemini) = \"gemini-cli\"), governance/allowlist (`aiagent.Governance` + `ApplyEnforcementTier` → return 1). Nothing else gates gemini: TransportEnvFor returns (\"\", false); no adapter exists; and the plugin gate at step 5c cannot fire for it because internal/plugingate/recognize.go:110-112 `agentBinaries = {claude, codex, devoid, cera}` does not contain gemini. TWO precisions the paragraph misses. (a) There is a FOURTH launch-time refusal: on a MANAGED endpoint with an unreachable daemon the shim blocks gemini outright before the surface gate, printing \"cannot start — this endpoint is managed and the DeVoid daemon is unavailable\". (b) \"nothing whatsoever after the process starts\" is not quite right — internal/mcpsources/mcpsources.go carries a `gemini-cli` source (ScopeUser, ~/.gemini, basenames settings.json + mcp.json, Watch:true, SweepWalk:true), so an MCP server Gemini would load is discovered, risk-analysed and quarantinable by the machine lane. That is enforcement that changes what a Gemini session can reach — just not in-session.",
+   "correctedText": "**Gemini deserves its own sentence.** A Gemini user gets three policy checks at launch — the surface gate, the provider deny-list, and the agent allowlist — plus a fourth refusal that is not a policy check at all: on a *managed* endpoint with no reachable daemon the shim refuses to start it. After the process starts, nothing in the session is inspected: no prompt, no tool call, no traffic, and no plugin subcommand (the plugin recognizer's binary set is `claude, codex, devoid, cera` — Gemini is not in it). The one thing that does reach a running Gemini is the machine lane: `~/.gemini`'s `settings.json` / `mcp.json` is a watched MCP discovery source, so a server it would load can be risk-analysed and quarantined out from under it. Launching `gemini` by absolute path skips every launch-time check; it does not skip the MCP sweep.",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L155–156 (§3.3)",
+   "claim": "\"Launching `gemini` by absolute path skips even those three.\"",
+   "verdict": "CONFIRMED",
+   "evidence": "Structural. Dispatch is by invoked name: cmd/devoid/agent_shim.go `isAgentShim(normalizedName)` is reached only when the running binary's own basename normalises to claude/codex/gemini (main.go name-dispatch), and the shims are byte-copies of devoid.exe placed in `<ProgramData>\\\\devoid\\\\bin` on PATH. An absolute path to the real vendor binary never enters that dispatch.",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L162–165 (§4, walkthrough 1)",
+   "claim": "\"the daemon scans it. It finds a private key, consults policy, and answers `block`.\"",
+   "verdict": "WRONG",
+   "evidence": "That is the designed path, not the measured one, and the register says so. register.json `hook-lane-prompt-block` quarantine reason: \"THE TRIGGER IS NOT CONCLUSIVE… The block that fired was the DEGRADED fail-closed path: 'security inspection was degraded and policy denies the request (private-key-inspection:unsupported, failure-oracle:required, failure-oracle:deny, obligation:deny:SATISFIED, obligation:audit:FAILED:spool-not-configured)'. That is inspection failing safe, not a detection.\" The same entry records the adjacent false negative: \"a prompt carrying an AWS access key id AND its secret access key was NOT blocked — the gate returned allow, on the hook lane and again later on the wire lane.\"",
+   "correctedText": "**A developer types a prompt containing a private key.** The prompt hits Claude Code's `UserPromptSubmit` hook, which runs our binary. It reads the prompt from standard input and asks our local daemon. The intended answer is a detection: private key found, policy consulted, `block`. **What was actually measured on 2026-08-26 was not that.** The block that fired came from the *degraded* fail-closed path — `private-key-inspection:unsupported, failure-oracle:required, failure-oracle:deny` — which is inspection failing safe, not a detector firing. And in six of ten identical runs nothing blocked at all: the hook could not reach the daemon inside its 4-second budget, recorded `daemon-unreachable-budget-expired` eleven times, and proceeded unchecked while the private-key bytes egressed. The split tracked wall-clock, not content — blocked runs 27–55 s, leaking runs 63–143 s, and the leaks started when a Docker build put the box under load. In the same run the product reported \"5 of 5 hooks have fired\" and a block count of 21. Read this walkthrough as the design and §15.1 as the behaviour; they are not yet the same thing.",
+   "labelChange": "\"Measured\" -> CONDITIONAL (condition: the daemon answers inside the 4-second decision budget). The failure mode IS load, and it is our own fail-open, not the client's."
+  },
+  {
+   "docLine": "L171 (§4, walkthrough 2)",
+   "claim": "\"The class `pipe-to-shell` is HIGH severity and blocks by default.\"",
+   "verdict": "CONFIRMED",
+   "evidence": "Severity: Installers/internal/toolrisk/toolrisk.go:224 — `{class: \"pipe-to-shell\", severity: SeverityHigh, confidence: 94}`. Default: the D4 tier table alone says otherwise — Backend/src/ai-security-policy/ai-security-policy.constants.ts:1253 lists `'pipe-to-shell': 'monitor'` — but ai-malicious-floor.ts:149 makes it a `destructive()` floor member at minimumDisposition 'block', and constants.ts:1423 folds the floor into the shipped default. The file's own warning at :1182-1189 is explicit: \"⚠️ MEASURED 2026-08-27, ITEM 3.3 — THAT PARAGRAPH IS TRUE OF THIS TABLE AND FALSE OF WHAT SHIPS… `pipe-to-shell`, `base64-pipe-shell` and `powershell-download-exec` STILL BLOCK in the shipped default.\" So the claim holds, but only through the floor — anyone reading the tier table alone will conclude the opposite.",
+   "correctedText": "The class `pipe-to-shell` is HIGH severity and blocks by default — through the malicious floor, not through the tier table. The shipped default table sets it to `monitor`; the floor raises it back to `block` at serve time, and no administrator can relax it below that.",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L172–173 (§4, walkthrough 2)",
+   "claim": "\"**PROVEN LIVE** — the one control with a recorded field observation\"",
+   "verdict": "STALE",
+   "evidence": "The PROVEN LIVE label on this walkthrough is correct (register.json `pretooluse-deny-stops-side-effect`, observed:true, 2026-08-26T17:11:57Z, with the client's own permission_denials record and the absent marker file). \"The one control\" is not: three entries are now observed. Two of them are pre-tool denies — the Claude one here and the Codex one on 0.147 — verified the same way, by the absence of the side effect with an allow control on the identical rig.",
+   "correctedText": "**PROVEN LIVE** — one of three controls with a recorded field observation, and the only failure mode proven twice: the same deny, verified the same way, on Claude Code (2026-08-26) and on Codex 0.147 (2026-08-27). Both were verified by the *absence of the side effect* rather than by the hook's own claim, and both carry an allow control on the identical rig.",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L177–178 (§4, walkthrough 3)",
+   "claim": "\"the session is *tainted* for 30 minutes, so the next risky tool call is held for a human\"",
+   "verdict": "CONFIRMED",
+   "evidence": "Installers/internal/daemon/ai_taint.go:47 — `taintTTL = 30 * time.Minute`; :51 — `maxTaintedSessions = 1024`; :92 enforces the cap on insert. internal/daemon/ai_ingress.go:1170 reuses the same TTL for dedup (`ingressDedupTTL = taintTTL`).",
+   "correctedText": "",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L182 (§4, walkthrough 4)",
+   "claim": "\"A database connection string is redacted by default.\"",
+   "verdict": "CONFIRMED",
+   "evidence": "Backend/src/ai-security-policy/ai-malicious-floor.ts:171 — `credential('dlp', 'db-connection-string')`, and the `credential` constructor at :118-124 sets `minimumDisposition: section === 'dlp' ? 'redact' : 'block'`. Since 2026-08-27 this is not merely the default but a floor: withMaliciousFloorApplied is the unconditional first statement of assembleEffectiveDto (ai-security-policy.service.ts:2198), so a stored value below `redact` is raised at serve time on every policy pull.",
+   "correctedText": "A database connection string is redacted by default — and, since the malicious floor began holding on the read path, an administrator can store a weaker value but will be served `redact` anyway on the next pull.",
+   "labelChange": ""
+  },
+  {
+   "docLine": "L183–184 (§4, walkthrough 4)",
+   "claim": "\"a declarativeNetRequest rule redirects to our own blocked page\"",
+   "verdict": "CONFIRMED",
+   "evidence": "browser-extension/manifest.json at origin/main: `\"permissions\": [\"storage\",\"nativeMessaging\",\"alarms\",\"declarativeNetRequest\"]`, and `web_accessible_resources` exposes `dist/blocked.html` to `<all_urls>`. Extension version 0.5.17, content scripts at document_start on nine origins including chatgpt.com.",
+   "correctedText": "",
+   "labelChange": ""
+  }
+ ],
+ "additions": [
+  {
+   "where": "§3.3, immediately under the coverage table — a new short paragraph before the Codex caveat",
+   "text": "**When coverage begins is not when the installer finishes.** On a Windows machine-scope install the MSI does not wire the AI hook lane at all. It registers a per-user scheduled task — `Devoid AI Governance Reconcile`, principal BUILTIN\\Users at least privilege, pinned to `<machine root>\\bin\\devoid-daemon.exe ai reconcile` — whose logon trigger is deliberately delayed one minute so the reconcile does not race the logon storm and the daemon has time to bind its loopback proxy. It then repeats every five minutes, while the real work is throttled to fifteen. So a freshly installed endpoint has no Claude hooks and no asserted transport route for roughly the first minute of the user's session, and if the task fails to register the install still succeeds: registration is strictly best-effort and every outcome is logged and returned. Every 'yes' in the Hooks and Wire columns above is a statement about the steady state, not about minute zero.",
+   "evidence": "Installers/internal/aiwiretask/aiwiretask.go:144 (TaskName), :150 (TaskArguments = \"ai reconcile\"), :154 (TaskExeName), :170 (RepeatInterval = \"PT5M\"), :178 (LogonDelay = \"PT1M\"); cmd/devoid/ai_wire_user_task.go:41-46 (\"STRICTLY BEST-EFFORT… nothing here exits, prints to stdout/stderr, or propagates an error\"). Corroborated by the real-box MSI install/uninstall cycle of 2026-08-27 evening, which observed the hook lane appearing ~1 minute after the installer exited."
+  },
+  {
+   "where": "§3.2, appended to the paragraph",
+   "text": "Two things the ordering does not do. It does not survive an absent policy: a shim that could not fetch one applies no surface gate at all and proceeds as `allow` — the gate is skipped, not defaulted. And it is not literally first on every lane: on the tool-decision path the behavioural scan runs sixteen lines before the gate, so a blocked surface still costs the scan (the short-circuit response returns an empty findings array, so nothing computed is disclosed).",
+   "evidence": "cmd/devoid/agent_shim.go `agentShimSurfaceMode` returns aiagent.SurfaceModeAllow when `!policyOK || policy == nil || policy.Surfaces == nil`. internal/daemon/ai_handlers.go:2701 `findings := toolrisk.Scan(...)` vs :2717 `gv := evaluateAIGovernance(...)`; the short-circuit at :2736-2740 writes `Findings: []aiToolFindingR{}`."
+  },
+  {
+   "where": "§3, the five-checkpoint table — a sentence after it",
+   "text": "The coverage table in §3.3 has four columns for these five checkpoints. Checkpoint 5, the machine lane, has no column, and it is the only checkpoint that reaches Cursor, Windsurf, Gemini's MCP configuration and every client we do not intercept in-session. A reader who scans §3.3 for a row of 'no' will conclude those clients are untouched; they are not — their configs are read, risk-analysed and quarantinable. What they lack is in-session interception.",
+   "evidence": "internal/mcpsources/mcpsources.go defines 16 sources across 12 client identities including cursor, cursor (project), windsurf, cursor-app, windsurf-app and gemini-cli; internal/policybundle/extensions_allowed.go writes into Cursor and Windsurf settings.json. §3.3 columns are Launch gate / Hooks / Wire / Browser only."
+  },
+  {
+   "where": "§3.1, appended",
+   "text": "There is a fourth blindness the list omits, and it is the one that decides whether any of the others matter: every lane depends on reaching the daemon, and the daemon is reachable on a 4-second budget that was measured expiring under ordinary machine load. When it expires the hook proceeds — it does not hold, and it does not fall back to a local decision. A lane that cannot reach a decision is not a lane that decides conservatively; it is a lane that is not there.",
+   "evidence": "register.json `hook-lane-prompt-block`: ~/.devoid/undecidable-hook-payloads.json recorded {\"total\":11,\"byAdapter\":{\"claude-code\":11},\"byReason\":{\"daemon-unreachable-budget-expired\":11}} across 17:16:07Z–17:36:11Z, the exact window of the ten runs. §13.1's first row already names this \"the largest fail-open in the product\"; §3.1 does not mention it at all."
+  },
+  {
+   "where": "§3.3, the Codex caveat — a closing sentence",
+   "text": "The rule that produced the second row is worth stating because it is the only defence against this going dead a third time: a dialect row is legitimate only on two vendor artefacts taken against a real binary — the client's own `currentHash` agreeing with ours across a varied vector corpus, and the hook firing trust-gated with a wrong-hash negative control. Not a source read, not a guess, and never a widened prefix. 0.145, 0.146, 0.148 and 0.149 have neither artefact and are therefore reported as unverified rather than assumed either way.",
+   "evidence": "internal/codexmanaged/hookdialect.go:30-38 (\"WHAT WOULD MAKE A NEW DIALECT LEGITIMATE… Not a guess and not a source-code reading\"), :139-155 (the two artefacts for 0.147, including the one-nibble-wrong negative control), :156-158 (the unmeasured list), :186-196 (hookTrustDialectFor's refusal to distinguish 'unread' from 'unknown')."
+  },
+  {
+   "where": "§4, a fifth walkthrough after the fourth",
+   "text": "**A developer clears a cache directory.** `rm -rf ~/.npm/_cacache`, or `rm -rf $HOME/.cache/pip`, or `rm -rf $HOME/projects/scratch`. The `PreToolUse` hook fires, the shipped `destructive-rm` rule matches — its broad-target alternation accepts `~` followed by any path and `$HOME` followed by any path — and the class is a malicious-floor member at minimum disposition `block`. The tool call is refused. Because the floor now holds on the read path, an administrator who sets `destructive-rm` to `warn` in the console will see the value stored, get a 200, and be served `block` on the very next policy pull. There is no tenant configuration that makes this command run. `rm -rf ./build` and `rm -rf /tmp/mybuild` are correctly unaffected. This is the single most customer-visible behaviour in the product today and the most likely reason a developer uninstalls the agent — the exact failure §2 says the design exists to avoid.",
+   "evidence": "Rule: Installers/internal/toolrisk/toolrisk.go:121-122, alternation `(?:/\\s*$|/\\s+|/\\*|~(?:/\\S*)?|\\$HOME\\b|\\.{1,2}\\s*$|\\*\\s*$|/(?:etc|usr|var|bin|boot|lib|lib64|sbin|opt|root|home|sys|proc|dev)\\b)` — the `~(?:/\\S*)?` and `\\$HOME\\b` branches match any path under either. Floor membership: Backend/src/ai-security-policy/ai-malicious-floor.ts:155 `destructive('destructive-rm')` with minimumDisposition 'block' (:104-109). Non-relaxable: ai-security-policy.service.ts:2198 `withMaliciousFloorApplied` as the unconditional first statement of assembleEffectiveDto, whose docblock (:2194-2197) states 'this being the first statement is what makes the floor unbypassable rather than a property of whichever caller remembered'. The stored D4 tier is 'warn' (constants.ts:1238, comment '// system paths'), so the console will show the admin's value while the wire carries block."
+  },
+  {
+   "where": "§0.2, appended to the commit-table paragraph",
+   "text": "Two of the three trees moved within eighteen hours of this document being written, and both moves changed claims in it. Installers advanced sixteen commits into agent 7.10.6 (a second Codex hook-trust dialect, the rule-file walk's silent depth cap removed, the Claude lane no longer printing [OK] over undecided invocations, three uninstall data-loss fixes). Backend advanced six commits into task definition 322 (the malicious floor wired onto the read path, tool-risk stored sections migrated onto the D4 defaults). Anything read against the older pair should be re-checked against these two changes specifically.",
+   "evidence": "Installers 002e2cfd..5b129523 = 16 commits, including 9d167ed9 'fix(codex): the hook lane now fires on 0.147', 40f34362 'fix(ai-status): the Claude lane printed [OK] over invocations that were never decided', d506156f 'fix(inventory): the rule-file walk kept the silent cap'. Backend 0b2aa28c..0cf9021e = 6 commits, including dfbac545 'fix(ai-security-policy): the malicious floor had no consumer on the read path' and bbeed1f3 'r47a/toolrisk-default'."
+  }
+ ],
+ "omissions": [
+  {
+   "what": "The malicious floor is now a hard, non-negotiable ceiling on what an administrator can configure — and nothing in Part I says so.",
+   "whyItMatters": "§2 tells a CEO the product is tuned to avoid stopping developers wrongly, and §3.2 tells them the administrator's console setting is the coarse gate that outranks everything. Both are now false for 39 classes. An administrator can set `destructive-rm` to warn, see it stored, get a 200 back, and have the endpoint block anyway on the next pull. That is a support ticket the document gives no one the language to answer, and it is the first thing a customer will hit.",
+   "evidence": "Backend/src/ai-security-policy/ai-security-policy.service.ts:2198 — `const { config, raised: floorRaised } = withMaliciousFloorApplied(storedConfig);` as the first statement of assembleEffectiveDto, documented UNCONDITIONAL at :2193-2197. AI_MALICIOUS_FLOOR (ai-malicious-floor.ts:143-183) has 39 members: 23 toolRisk (13 destructive at block, 2 credential at block, 8 tamper at block), 12 dlp at redact, 4 promptRisk. The service logs the raise but the stored jsonb is deliberately not rewritten, so the console keeps showing the admin's value: 'The STORED policy is unchanged and still below the floor'.",
+   "proposedText": "Add to §3.2, after the Surface Access paragraph:\n\n**And one gate outranks the administrator entirely.** Thirty-nine detector classes sit on a *malicious floor* — thirteen destructive-execution classes and eight self-tampering classes pinned at `block`, twelve credential classes pinned at `redact`, four injection-that-acts classes, plus two credential-read tool classes. Since 2026-08-27 the floor is applied as the unconditional first statement of every effective-policy assembly, which is the only way to build a wire payload. An administrator may store a weaker value; the console will show it, the write returns 200, and the endpoint is served the floored value on the next pull. The stored row is not rewritten and a warning names every raise in the server log. This is deliberate — it is what makes the floor unbypassable rather than a property of whichever caller remembered to call it — but it means the sentence 'the customer's administrator sets the policy' in §1 has a named exception, and `destructive-rm` is the one customers will find first (§4)."
+  },
+  {
+   "what": "A clean uninstall leaves 41 files and ~424 MB in C:\\ProgramData\\devoid\\bin, including executables named claude.exe, codex.exe and npm.exe.",
+   "whyItMatters": "§3's checkpoint 1 explains that our interception mechanism is byte-copies of our binary wearing other programs' names on PATH. The document never says what happens to them when the product is removed. A customer's security team that finds an unowned `claude.exe` in ProgramData after uninstalling us will treat it as a compromise, not as leftover. The ACL is correct and PATH is cleaned so there is no interception — but the residue is permanent, because the hardening custom action has no uninstall counterpart anywhere in the .wxs set.",
+   "evidence": "windows-installer/msi-build/CustomActions.wxs:600-601 — CA_Rollback_HardenShims and CA_HardenShims are both conditioned `(NOT Installed OR REINSTALL) AND NOT REMOVE~=\"ALL\"`. Grepping the three .wxs files (Bundle.wxs, CustomActions.wxs, Product.wxs) for a shim-removal counterpart finds none; the uninstall sequence at :643-656 runs CA_KillProcesses, CA_TeardownMachineState, CA_DeregisterEndpoint and CA_RemoveDaemonTask only. Observed on the real-box MSI install/uninstall cycle of 2026-08-27: install and uninstall both exit 0, every user config file restores byte-identical, and 41 files / ~424 MB remain in C:\\ProgramData\\devoid\\bin.",
+   "proposedText": "Add to §3, as a note under the five-checkpoint table (and cross-reference from §14):\n\n**Checkpoint 1 leaves a permanent trace.** The shims are byte-copies of our binary named `claude.exe`, `codex.exe`, `npm.exe` and thirteen others, in `%ProgramData%\\devoid\\bin`. Measured on a real box on 2026-08-27: a clean uninstall exits 0, restores every user configuration file byte-identically, and leaves 41 files and roughly 424 MB of that directory in place. PATH is cleaned and the directory ACL is correct, so nothing is intercepted afterwards — but nothing removes them either, because the install-time hardening action is conditioned `NOT REMOVE~=\"ALL\"` and has no uninstall counterpart in the WiX set. A customer auditing that machine will find unowned executables with vendor names."
+  },
+  {
+   "what": "Nothing in §0–§4 states what happens when a checkpoint cannot reach a decision — the document's own definition of the thing that matters most.",
+   "whyItMatters": "§0.1 defines four labels for whether code runs. It has no label, and Part I has no sentence, for the state the whole product actually lives in: reachable code that could not decide in time. §18's glossary defines fail-open/fail-closed, and §13 inventories them, but a CEO reading Part I straight through — which the preface tells them to do — finishes with 'comprehensively governed' and never learns that the largest fail-open in the product is the ordinary case under load. The evidence rule is the document's own quality mechanism and it currently cannot express its own most important finding.",
+   "evidence": "§0.1's four labels (L23-28) are all about whether a path executes. The measured condition in register.json `hook-lane-prompt-block` is a path that executed, was reachable, was correctly configured, and still produced an ungoverned proceed 6 times in 10 — a state none of SHIPS / CONDITIONAL / INERT / PROVEN LIVE names. §13.1's first row calls it 'the largest fail-open in the product'; §1 and §3.3 do not mention it.",
+   "proposedText": "Add a fifth row to the §0.1 table:\n\n| **FAILS OPEN UNDER LOAD** | The path is reachable and correctly configured, and still produces an ungoverned proceed when the daemon cannot be reached inside the decision budget. It is not INERT — it works when it is reached. It is not SHIPS — it was measured not reaching. Every control on the hook lanes carries this today; §13.1 and §15.1 are the inventory. |\n\nand add one sentence to §1 after the one-line coverage summary: \"Read that sentence with §15.1 beside it: on the reference lane, under ordinary machine load, six of ten identical private-key prompts were never decided at all and the key left the machine.\""
+  },
+  {
+   "what": "The coverage table gives no row for the client the product is actually running against on the machine this document describes.",
+   "whyItMatters": "The Codex caveat names three surveyed builds and the paragraph's whole argument turns on which of them we cover. After the second dialect row, one of the three is covered and two are not — and the one the owner's own desktop runs, 0.149.0-alpha.4.1, is outside every row including the new one. A reader who takes 'we now cover 0.147' as the headline will conclude Codex is fixed. The honest framing is that the pin moved by exactly one family and the client in front of us moved past it again.",
+   "evidence": "internal/codexmanaged/hookdialect.go:166 (two rows: 0.144., 0.147.), :130-134 (the three surveyed builds), :156-158 ('STILL UNMEASURED, STILL UNRESOLVABLE: 0.145, 0.146, 0.148 and the 0.149 alpha the desktop app runs'). Real-box survey 2026-08-27: the owner's Codex client is 0.149.0-alpha.4.1.",
+   "proposedText": "Add a small table under the Codex caveat:\n\n| Client build | Where it was seen | Hook-trust dialect | Cooperative hook |\n|---|---|---|---|\n| `0.144.x` | vendor source, first measurement | covered | fires |\n| `0.147.0` | npm global on the survey box | covered, measured 2026-08-27 | fires — **PROVEN LIVE** |\n| `0.145`, `0.146`, `0.148` | not seen | unmeasured | reported unverified; does not fire |\n| `0.149.0-alpha.4.1` | the Codex desktop app's runtime, **including on the author's own machine** | unmeasured | reported unverified; does not fire |\n| `0.130.0-alpha.5` | the desktop launcher | below the minimum runtime version | n/a |\n\nThe pin moved by exactly one family, on two vendor artefacts. It did not catch up with the desktop app."
+  },
+  {
+   "what": "§4's walkthroughs never show a decision that is neither allowed nor blocked — the hold, the warn dialog, and what the developer does next.",
+   "whyItMatters": "All four walkthroughs end in a clean allow or a clean block. The product's most common interactive outcome is neither: a warn becomes an interactive hold on the wire, a hold has a 40-second ceiling and a 30-second dialog, and an unanswered warn on a non-interactive session downgrades to allow — except for a conclusive secret, which becomes a block. A PM reading §4 will not know the product ever asks the human anything, and will not know that an unanswered question resolves *permissively* by default. That is the behaviour a customer will describe as 'it let it through'.",
+   "evidence": "§6.1's budget table (hold ceiling 40 s, warn dialog 30 s) and §13.1's row 'A warn with no interactive human → Downgrades to allow — except a conclusive secret, which becomes block' both exist deep in Part II; §4 has no walkthrough for either. cmd/devoid/agent_shim.go threads `interactive := stdinIsTerminal()` into buildAgentEnv and the control headers precisely so the wire lane knows whether a human can answer.",
+   "proposedText": "Add a fourth-and-a-half walkthrough:\n\n**A developer's prompt trips a warn, and nobody is at the keyboard.** A warn is not a soft block — on the wire it becomes an interactive hold, released only by a single-use, digest-bound allow-once. The developer gets 30 seconds to answer in a dialog, inside a 40-second hold ceiling, inside the host's 60-second hook timeout. If the session is not interactive — a CI job, an agent running headless, a piped stdin — there is nobody to ask, and the warn **downgrades to allow**. The single exception is a conclusive secret, which becomes a block instead. So the same policy produces opposite outcomes depending on whether a terminal is attached, and the permissive one is the default."
+  }
+ ],
+ "reorganisation": "Four structural changes, in priority order.\n\n1. **§3.3 needs a fifth column and two split rows.** The table has four columns for a five-checkpoint model, and the missing column — the machine lane — is the only one that reaches Cursor, Windsurf and Gemini's MCP configuration. Add a \"Machine lane\" column. Then split the \"Cursor / Copilot / Windsurf\" row: Copilot's web chat is genuinely covered on two origins by the extension, while Cursor and Windsurf have no browser surface at all, so bundling them under \"partly, via the browser lane\" is the table's least accurate cell. The corrected rows are in my claims for L140.\n\n2. **The Verdict column must stop being a grade and start being a condition.** \"Fully covered\" and \"inert\" are the two strings that get quoted, and both are now wrong on the same row for opposite reasons. Every verdict cell should name the condition under which the row holds: Claude Code holds when the daemon answers inside 4 seconds; Codex cooperative holds on 0.144.x/0.147.x with no machine baseline; the browser row holds where the force-install policy is honoured. The document already has a label for exactly this — CONDITIONAL, \"the condition is always named\" — and §3.3 is the one place it is never used.\n\n3. **§4 should lead with what customers actually hit, not with the four cleanest cases.** The four walkthroughs are one measured-and-caveated block, one proven block, one shipping-with-limits detection, and one browser redaction. None of them is a false positive, none is a hold, and none is a decision an administrator cannot change. Add the `rm -rf ~/anything` walkthrough (my additions) and the unanswered-warn walkthrough (my omissions), and move the private-key one out of first position — it is the walkthrough whose measured behaviour least matches its narrative, and leading with it sets the wrong expectation for everything after.\n\n4. **Move the \"when does coverage begin\" fact out of §5.2 and into §3.3.** It currently sits three sections downstream of the table it qualifies, under a heading (\"What a fresh install does NOT do\") that nobody reading the coverage table will reach. Every \"yes\" in the Hooks and Wire columns is a steady-state claim that is false for the first minute of a user's session and false indefinitely if the per-user scheduled task failed to register — which the install treats as non-fatal and does not surface.\n\nOne thing to preserve exactly as it is: §0.2's instruction not to trust file references from older documents. It was correct then and it is more correct now — the local checkouts are 1,010 / 773 / 525 commits behind, and two of the three named commits moved within eighteen hours of the document being written. The commit table should be updated, not softened."
+}

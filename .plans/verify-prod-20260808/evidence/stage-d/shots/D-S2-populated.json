@@ -1,0 +1,83 @@
+{
+  "url": "/admin/endpoints?sub=coverage&siteId=11111111-1111-4111-8111-111111111111",
+  "title": "Endpoint Management · Admin · DeVoid",
+  "overflow": null,
+  "found": {
+    "tr:has([data-cell=\"status\"])": [
+      {
+        "text": "TRAP-COUNT-0-NO-SOURCE NOT REPORTED The extension has not reported coverage. This is measured absence, not a pass: nothing here has been shown to block. NOT REPORTED NOT REPORTED No guard-health reading. This is measured absence, not a pass: nothing here has been shown to inspect a send. 0.5.13 Aug 18, 10:16 PM",
+        "attrs": {
+          "data-web-guard-row": "wep-trap",
+          "data-web-guard-state": "Not reported",
+          "data-nav-block": "not-reported",
+          "data-guard-health": "not-reported"
+        }
+      },
+      {
+        "text": "MEASURED-DISARM BLOCKS NOT ARMED The extension read its own block engine and found no installed rules. 0 ARMED NOT REPORTED No guard-health reading. This is measured absence, not a pass: nothing here has been shown to inspect a send. 0.5.13 Aug 18, 10:16 PM",
+        "attrs": {
+          "data-web-guard-row": "wep-disarm",
+          "data-web-guard-state": "Blocks not armed",
+          "data-nav-block": "not-armed",
+          "data-guard-health": "not-reported"
+        }
+      },
+      {
+        "text": "MEASURED-ARMED-COUNT-0 ACTIVE 0 ARMED HEALTHY The endpoint read its own guard and reported no fail-open episodes. Reading from Aug 18, 10:17 PM. 0.5.13 Aug 18, 10:16 PM",
+        "attrs": {
+          "data-web-guard-row": "wep-armed",
+          "data-web-guard-state": "Active",
+          "data-nav-block": "armed",
+          "data-guard-health": "healthy"
+        }
+      },
+      {
+        "text": "GUARD-FAIL-OPEN FAILING OPEN Sends went out unverified while the in-page guard was broken. 0 ARMED FAILING OPEN 3 sends went out unverified while the in-page guard was broken. Degraded since Aug 18, 10:02 PM. Reading from Aug 18, 10:17 PM. selector-miss / chat.openai.com 3 unverified 0.5.13 Aug 18, 10:16 PM",
+        "attrs": {
+          "data-web-guard-row": "wep-failopen",
+          "data-web-guard-state": "Failing open",
+          "data-nav-block": "armed",
+          "data-guard-health": "fail-open"
+        }
+      },
+      {
+        "text": "GUARD-KEY-ABSENT ACTIVE 0 ARMED NOT REPORTED No guard-health reading. This is measured absence, not a pass: nothing here has been shown to inspect a send. 0.5.13 Aug 18, 10:16 PM",
+        "attrs": {
+          "data-web-guard-row": "wep-silent",
+          "data-web-guard-state": "Active",
+          "data-nav-block": "armed",
+          "data-guard-health": "not-reported"
+        }
+      },
+      {
+        "text": "GUARD-UNKNOWN-TOKEN ACTIVE 0 ARMED UNREADABLE STATE The endpoint reported a guard state this console does not recognise, so it is not being called healthy. Reported state: OK_PROBABLY Reading from Aug 18, 10:17 PM. 0.5.13 Aug 18, 10:16 PM",
+        "attrs": {
+          "data-web-guard-row": "wep-unknown",
+          "data-web-guard-state": "Active",
+          "data-nav-block": "armed",
+          "data-guard-health": "unrecognised"
+        }
+      },
+      {
+        "text": "GUARD-NOT-REPORTED ACTIVE 0 ARMED NOT REPORTED No guard-health reading. This is measured absence, not a pass: nothing here has been shown to inspect a send. 0.5.13 Aug 18, 10:16 PM",
+        "attrs": {
+          "data-web-guard-row": "wep-nr",
+          "data-web-guard-state": "Active",
+          "data-nav-block": "armed",
+          "data-guard-health": "not-reported"
+        }
+      },
+      {
+        "text": "EXTENSION-MISSING EXTENSION MISSING No fresh health beacon. Nothing about this browser is being measured. NOT REPORTED NOT REPORTED No guard-health reading. This is measured absence, not a pass: nothing here has been shown to inspect a send. 0.5.13 Aug 18, 10:16 PM",
+        "attrs": {
+          "data-web-guard-row": "wep-off",
+          "data-web-guard-state": "Extension missing",
+          "data-nav-block": "not-reported",
+          "data-guard-health": "not-reported"
+        }
+      }
+    ]
+  },
+  "consoleErrors": [],
+  "failed": []
+}

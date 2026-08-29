@@ -1,0 +1,84 @@
+{
+  "url": "/admin/endpoints?sub=coverage&siteId=11111111-1111-4111-8111-111111111111",
+  "title": "Endpoint Management · Admin · DeVoid",
+  "overflow": null,
+  "found": {
+    "enforcement-proof-rollup": [
+      {
+        "text": "ENFORCEMENT PROOF, PER RUNTIME INSTANCE 8 instances PROVEN 1 NOT PROVEN 1 NEVER TESTED 1 COULD NOT TEST 3 PROOF EXPIRED 1 Only “Not proven” is a measured enforcement gap. “Never tested” and “Could not test” are the absence of a measurement, and “Proof expired” is a measurement that has lapsed: none of the three is a pass, and none of the three is a defect. 1 adapter carried no instance-integrity block at all, so it is in none of the counts above. A missing block is not a clean instance.",
+        "attrs": {
+          "data-testid": "enforcement-proof-rollup"
+        }
+      }
+    ],
+    "proof-rollup-instances": [
+      {
+        "text": "8 instances",
+        "attrs": {
+          "data-testid": "proof-rollup-instances"
+        }
+      }
+    ],
+    "proof-count-proven": [
+      {
+        "text": "1",
+        "attrs": {
+          "data-testid": "proof-count-proven"
+        }
+      }
+    ],
+    "proof-count-not-proven": [
+      {
+        "text": "1",
+        "attrs": {
+          "data-testid": "proof-count-not-proven"
+        }
+      }
+    ],
+    "proof-count-never-tested": [
+      {
+        "text": "1",
+        "attrs": {
+          "data-testid": "proof-count-never-tested"
+        }
+      }
+    ],
+    "proof-count-could-not-test": [
+      {
+        "text": "3",
+        "attrs": {
+          "data-testid": "proof-count-could-not-test"
+        }
+      }
+    ],
+    "proof-count-proof-expired": [
+      {
+        "text": "1",
+        "attrs": {
+          "data-testid": "proof-count-proof-expired"
+        }
+      }
+    ],
+    "proof-rollup-not-served": [
+      {
+        "text": "1 adapter carried no instance-integrity block at all, so it is in none of the counts above. A missing block is not a clean instance.",
+        "attrs": {
+          "data-testid": "proof-rollup-not-served"
+        }
+      }
+    ],
+    "proof-rollup-caption": [
+      {
+        "text": "Only “Not proven” is a measured enforcement gap. “Never tested” and “Could not test” are the absence of a measurement, and “Proof expired” is a measurement that has lapsed: none of the three is a pass, and none of the three is a defect.",
+        "attrs": {
+          "data-testid": "proof-rollup-caption"
+        }
+      }
+    ]
+  },
+  "consoleErrors": [],
+  "failed": [
+    "500 /api/ai-control-plane/web-coverage?siteId=11111111-1111-4111-8111-111111111111",
+    "500 /api/github/ws-token"
+  ]
+}

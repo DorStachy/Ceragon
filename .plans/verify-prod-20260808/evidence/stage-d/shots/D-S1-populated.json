@@ -1,0 +1,129 @@
+{
+  "url": "/admin/endpoints?sub=coverage&siteId=11111111-1111-4111-8111-111111111111",
+  "title": "Endpoint Management · Admin · DeVoid",
+  "overflow": null,
+  "found": {
+    "ai-optout-coverage-panel": [
+      {
+        "text": "AI GOVERNANCE OPT-OUTS An endpoint can be authorized to stop DeVoid governing a runtime. While an opt-out is in force that runtime is not governed on that endpoint, and it is not repaired automatically. Where no readable opt-out transition has been reported, the row reads “Not reported”: that coverage has not been measured. ENDPOINTS IN SCOPE 5 OPT-OUT IN FORCE 1 OPT-OUT EXPIRED 1 NOT REPORTED 2 DESKTOP-QA01 · codex This runtime is deliberately not governed on this endpoint. Prompts and tool calls run without AI-security checks until the opt-out is cleared. Authorized by CORP\\maya Lever pause Expires 8/18/2026, 11:02:01 PM Observed 8/18/2026, 9:52:01 PM Reason: Debugging a false positive on ",
+        "attrs": {
+          "data-testid": "ai-optout-coverage-panel"
+        }
+      }
+    ],
+    "optout-coverage-row": [
+      {
+        "text": "DESKTOP-QA01 · codex This runtime is deliberately not governed on this endpoint. Prompts and tool calls run without AI-security checks until the opt-out is cleared. Authorized by CORP\\maya Lever pause Expires 8/18/2026, 11:02:01 PM Observed 8/18/2026, 9:52:01 PM Reason: Debugging a false positive on the release branch Opt-out in force",
+        "attrs": {
+          "data-testid": "optout-coverage-row",
+          "data-state": "SKIPPED_AUTHORIZED"
+        }
+      },
+      {
+        "text": "DESKTOP-QA02 · claude-code An opt-out reached its expiry and is no longer honoured. The endpoint reported the lapse; governance resumed. Authorized by CORP\\ariel Lever uninstall-hooks Expires 8/18/2026, 8:02:01 PM Observed 8/18/2026, 8:32:01 PM Opt-out expired",
+        "attrs": {
+          "data-testid": "optout-coverage-row",
+          "data-state": "OPTOUT_EXPIRED"
+        }
+      },
+      {
+        "text": "DESKTOP-QA03 · codex An opt-out was observed being cleared, so this runtime is under governance again. Authorized by CORP\\maya Lever pause Expires - Observed 8/18/2026, 9:57:01 PM Governed",
+        "attrs": {
+          "data-testid": "optout-coverage-row",
+          "data-state": "COVERED"
+        }
+      },
+      {
+        "text": "DESKTOP-QA04 · wsl:Ubuntu-22.04 No readable opt-out transition has been reported here, so opt-out coverage has not been measured. This is not a statement that it is governed. Not reported",
+        "attrs": {
+          "data-testid": "optout-coverage-row",
+          "data-state": "NOT_REPORTED"
+        }
+      },
+      {
+        "text": "DESKTOP-QA05 No readable opt-out transition has been reported here, so opt-out coverage has not been measured. This is not a statement that it is governed. Not reported",
+        "attrs": {
+          "data-testid": "optout-coverage-row",
+          "data-state": "NOT_REPORTED"
+        }
+      }
+    ],
+    "optout-state-badge": [
+      {
+        "text": "Opt-out in force",
+        "attrs": {
+          "data-testid": "optout-state-badge",
+          "data-state": "SKIPPED_AUTHORIZED",
+          "data-tone": "warn"
+        }
+      },
+      {
+        "text": "Opt-out expired",
+        "attrs": {
+          "data-testid": "optout-state-badge",
+          "data-state": "OPTOUT_EXPIRED",
+          "data-tone": "warn"
+        }
+      },
+      {
+        "text": "Governed",
+        "attrs": {
+          "data-testid": "optout-state-badge",
+          "data-state": "COVERED",
+          "data-tone": "success"
+        }
+      },
+      {
+        "text": "Not reported",
+        "attrs": {
+          "data-testid": "optout-state-badge",
+          "data-state": "NOT_REPORTED",
+          "data-tone": "neutral"
+        }
+      },
+      {
+        "text": "Not reported",
+        "attrs": {
+          "data-testid": "optout-state-badge",
+          "data-state": "NOT_REPORTED",
+          "data-tone": "neutral"
+        }
+      }
+    ],
+    "optout-stat-endpoints": [
+      {
+        "text": "ENDPOINTS IN SCOPE 5",
+        "attrs": {
+          "data-testid": "optout-stat-endpoints"
+        }
+      }
+    ],
+    "optout-stat-in-force": [
+      {
+        "text": "OPT-OUT IN FORCE 1",
+        "attrs": {
+          "data-testid": "optout-stat-in-force"
+        }
+      }
+    ],
+    "optout-stat-expired": [
+      {
+        "text": "OPT-OUT EXPIRED 1",
+        "attrs": {
+          "data-testid": "optout-stat-expired"
+        }
+      }
+    ],
+    "optout-stat-not-reported": [
+      {
+        "text": "NOT REPORTED 2",
+        "attrs": {
+          "data-testid": "optout-stat-not-reported"
+        }
+      }
+    ],
+    "optout-coverage-all-unmeasured": []
+  },
+  "consoleErrors": [],
+  "failed": []
+}

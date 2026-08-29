@@ -1,0 +1,530 @@
+{
+ "section": "Part III — The Honest Part (§13 fail-open/fail-closed inventory, §14 false-greens, §15 live-proof register, §16 built-but-not-executing, §17 decision-maker ranking)",
+ "claims": [
+  {
+   "docLine": "L819 (§13, decider 1)",
+   "claim": "The closed-world failure oracle: 882 pinned rows from a digest-verified contract artefact.",
+   "verdict": "CONFIRMED",
+   "evidence": "Counted the artefact, not the test. Installers@5b129523 internal/aipolicycontract/embedded/0.5.0/portable-contract.v1.jcs.json → failureOracle.catalog.rows = 882 exactly; 4 surfaces (BROWSER_COMPOSER, BROWSER_UPLOAD, LOCAL_PROXY, RUNTIME_ADAPTER); axes = 9 checkpoints x 14 failures x 7 impacts. Pinned by internal/aipolicycontract/oracle_obligation_sections_test.go:29-31. Digest binding: contract.go:22 (//go:embed 0.5.0) + accessors.go:134-138 routing through SelfCheck-gated checkedEmbeddedCopy.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L819-820 (§13, decider 1)",
+   "claim": "An absent row denies. It fails open only where a row explicitly requires it.",
+   "verdict": "CONFIRMED",
+   "evidence": "Closed-world miss → deny: cmd/devoid/ai_failure_resolver.go:21-22 and :174-180 ('closed-world-deny'). Fail-open rows counted: exactly 108 of 882 carry policyFailOpenRequired=true; all 108 are outcome=PROCEED_OBSERVED_ONLY and all 108 are impact=LOW_IMPACT; the sets are identical in both directions. Outcome distribution: RESTRICT_CAPABILITY 344, DENY 250, HOLD 125, PROCEED_OBSERVED_ONLY 108, REQUIRE_CONFIRMATION 55.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L821-822 (§13, decider 2)",
+   "claim": "The hook failure resolver: a policy object that intercepts three failure classes before the oracle is ever consulted, and proceeds.",
+   "verdict": "CONFIRMED",
+   "evidence": "cmd/devoid/ai_failure_resolver.go — HookFailureInterventionUnavailable intercepted at :93-98 ('daemon-unreachable-proceed'); HookFailureEmptyPayload and HookFailureIndeterminateShape intercepted together at :142-147 ('undecidable-payload-proceed'). failureoracle.Resolve is not reached until :150. Exactly three classes, all FailClosed:false.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L823-824 (§13, decider 3)",
+   "claim": "The proxy's fail mode: only the literal string \"open\" flips it; empty, garbage and absent all stay closed.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/proxy/ai_proxy.go:270-274 — `return h.cfg.ProxyFailMode() != \"open\"`. internal/daemon/ai_handlers.go:2278-2284 returns \"\" on a nil cached policy. Both production composition roots wire the accessor: internal/daemon/server.go:752 and internal/daemon/openai_wire.go:110, each with static fallback FailClosed:true (server.go:710, openai_wire.go:109).",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L830 (§13.1 row 1)",
+   "claim": "Daemon unreachable, or the 4-second decision budget expires → the call proceeds, warned once on stderr and counted; the code calls it the largest fail-open in the product.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/airuntime/runner.go:52 — `const HookDecisionBudget = 4 * time.Second`. 'The single largest fail-open in the product' appears verbatim at internal/airuntime/runner.go:324, internal/airuntime/undecidable.go:62 and internal/controls/attestation.go:940. Warned once: ungovernedWarnOnce (*sync.Once) at cmd/devoid/ai_failure_resolver.go:253-267, writing to os.Stderr only (never stdout — that is the hook protocol channel).",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L831 (§13.1 row 2)",
+   "claim": "Empty payload, or an object with no recognisable marker → proceeds, warned and counted; both were silent allows before.",
+   "verdict": "CONFIRMED",
+   "evidence": "cmd/devoid/ai_failure_resolver.go:100-147. The docblock states the prior state in the code's own words: 'THEY WERE SILENT ALLOWS UNTIL THIS COMMIT... Both then rode on to the executor and were recorded as ordinary decided allows.' The four classes that still deny are named at :135-137 (STDIN_OVERSIZE, STDIN_TIMEOUT, STDIN_ERROR, NORMALIZE).",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L832 (§13.1 row 3)",
+   "claim": "A backend opinion that misses its 2500 ms hop → the local decision stands and a later server upgrade is discarded.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/daemon/ai_backend_hop_budget.go:80 — `aiDecisionHopBudget = 2500 * time.Millisecond`. The discard is stated at :39-42: 'A backend UPGRADE that arrives after the budget cannot tighten a decision that has already been given — that is a real, named cost.' awaitBackendHop's timer/ctx select is at :131-138.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L833 (§13.1 row 4)",
+   "claim": "The deferred follow-up pool at its bound of 8 → every ninth session's follow-up completes without the server's answer.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/daemon/ai_backend_hop_budget.go:92 — `aiDeferredHopLimit = 8`; the overflow branch is :155-171, and the code's own wording at :164-166 is 'During a backend outage — the exact condition that fills this pool — every ninth session silently lost its local record.' The follow-up now runs immediately with errDeferredHopPoolFull (:171) rather than being skipped.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L834 (§13.1 row 5)",
+   "claim": "A warn with no interactive human downgrades to allow — except a conclusive secret, which becomes block.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/daemon/ai_handlers.go:1397-1425 (prompt lane) and :1682-1700 (tool lane). The guard is `secretFloorApplies := !canInterrupt || holdDesktopOnly` (:1306). Conclusive branch at :1399-1414 sets aiDecisionBlock with reason `noninteractive-secret:block`; degrade branch at :1416-1424 sets aiDecisionAllow with OverrideReasonDegradedNonInteractive. The three-way table is written out in internal/aihooks/hold_surface.go:32-35.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L835 (§13.1 row 6)",
+   "claim": "Nil policy: egress allowlist, upload policy, web-guard drift mode — all permissive.",
+   "verdict": "CONFIRMED",
+   "evidence": "Three separate accessors, all in internal/daemon/ai_handlers.go: aiEgressPolicy :2242-2248 (nil → zero-value, 'empty Mode is treated as UNCONFIGURED/permissive'); aiUploadsPolicy :2262-2268 (nil → zero value, 'treated as UNCONFIGURED/permissive by UploadDecide'); aiWebGuardDriftFailMode :2311-2315 (absent policy → literal \"open\").",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L836 (§13.1 row 7)",
+   "claim": "Agent shim, daemon unreachable, on a cooperative endpoint → the agent runs completely ungoverned.",
+   "verdict": "CONFIRMED",
+   "evidence": "cmd/devoid/agent_shim.go:512-533. The managed branch returns 1 at :531; the cooperative branch falls through to :532-533, logging 'daemon unreachable, failing open (no governance, no transport inject)' and printing the stderr warning, then proceeding to exec. Transport injection is also suppressed (buildAgentEnv at :594 takes daemonReachable=false → no ANTHROPIC_BASE_URL), so neither the hook lane nor the proxy lane covers the session.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L837 (§13.1 row 8)",
+   "claim": "A user-set ANTHROPIC_BASE_URL on a cooperative endpoint is honoured; the proxy is bypassed.",
+   "verdict": "CONFIRMED",
+   "evidence": "cmd/devoid/agent_shim.go:595-601 — 'On a COOPERATIVE endpoint a user's own base-URL is still honoured (that is what appendEnvIfMissing does). On a MANAGED endpoint it is a provider-route bypass', and enforceManagedTransportRoute is called only inside `if managedEndpoint()`.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L838 (§13.1 row 9)",
+   "claim": "The plugin gate on an unreachable daemon, plus five error paths → proceeds.",
+   "verdict": "CONFIRMED",
+   "evidence": "Counted both halves. cmd/devoid/ai_plugingate.go:233-235 is the unreachable-daemon short-circuit (`return 0`). askDaemonPluginDecision has exactly FIVE error returns — :273, :278, :285, :289, :303 — each returning answered=false, which gateAgentShimPlugin turns into `return 0` at :251-253. The doc's arithmetic is exact.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L839 (§13.1 row 10)",
+   "claim": "Codex hook timeout, crash, or non-zero exit → the vendor proceeds. Inverted versus Claude Code.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/codexmanaged/machine_projection.go:41-45 — 'a Codex hook that times out does NOT deny (the deny protocol is INVERTED — a deny requires exit 0 plus a canonical deny payload, so ANY failure of the hook to produce one fails OPEN). A configured hook therefore can never, by itself, support an enforcement claim; only a live canary can.' Constant HookTimeoutFailOpen at :116-117. Our own honour rule mirrors it at cmd/devoid/ai.go:916-924.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L840 (§13.1 row 11)",
+   "claim": "A daemon that cannot write its own program directory logs one warning and keeps running; remote self-update then silently never applies.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/daemon/selfcheck.go:24-38. Single logger.Warn at :34-37, explicitly NON-FATAL per the docblock at :10-13.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L841 (§13.1 row 12)",
+   "claim": "Surface access with an absent section or an unknown token resolves to allow, not to the strictest mode.",
+   "verdict": "CONFIRMED",
+   "evidence": "Two layers, both permissive. cmd/devoid/agent_shim.go:622-628 (agentShimSurfaceMode): `if !policyOK || policy == nil || policy.Surfaces == nil { return aiagent.SurfaceModeAllow }`. internal/aiagent/aiagent.go:58-67 (NormalizeSurfaceMode): only the literal \"block\" and \"monitor\" are recognised; `default: return SurfaceModeAllow`. So a typo'd or future token in a signed policy silently opens the surface.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L847 (§13.2 row 1)",
+   "claim": "No daemon token minted → 503 on every mutating route.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/daemon/daemon_auth.go:317-323 — requireDaemonToken: `want := s.daemonToken; if want == \"\" { http.Error(w, \"daemon authentication unavailable\", http.StatusServiceUnavailable); return }`, with the comment 'Fail closed: if the daemon has no token (e.g. crypto/rand failure at start), no mutating request may proceed.' A present-but-wrong token is 401 (:344), which is the §14.1 path.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L848 (§13.2 row 2)",
+   "claim": "Oversized, timed-out, unreadable or unparseable hook input at a gating checkpoint → denied via the closed-world oracle.",
+   "verdict": "CONFIRMED",
+   "evidence": "cmd/devoid/ai_failure_resolver.go:150-159 resolves at SurfaceRuntimeAdapter x ImpactTrustIntegrity. Counted the resulting cells in the artefact: RUNTIME_ADAPTER x TRUST_INTEGRITY = 42 rows, split exactly (PRE_PROMPT, DENY) 14, (PRE_TOOL, DENY) 14, (POST_TOOL, RESTRICT_CAPABILITY) 14. failClosedVerb (:164-171) returns true only for Deny and Hold.",
+   "correctedText": "| Oversized, timed-out, unreadable or unparseable hook input at a **gating** checkpoint | Denied via the closed-world oracle. Counted: the RUNTIME_ADAPTER x TRUST_INTEGRITY cells are DENY at PRE_PROMPT and PRE_TOOL (14 failure classes each) and **RESTRICT_CAPABILITY at POST_TOOL** — an unevaluable post-tool checkpoint stops nothing, because the effect already happened. |"
+  },
+  {
+   "docLine": "L849 (§13.2 row 3)",
+   "claim": "An unknown daemon verdict on a prompt blocks; there is deliberately no generic unknown-verdict fallback.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/aihooks/promptsubmit.go:36-51 — MapPromptVerdict's `default:` arm returns PromptBlock, with the comment 'K02G-b: NO generic unknown-verdict fallback... fail CLOSED to the prompt block, never a silent proceed.' Note warn maps to PromptAllow at the prompt checkpoint (:40-43) by design, not by omission.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L850 (§13.2 row 4)",
+   "claim": "Proxy request unscannable → held unless the fail mode is literally \"open\"; a panic in the scan path is recovered into a hold.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/proxy/ai_proxy.go:331-338 (unreadable/oversized) and :344-356 (unparseable), both gated on resolveFailClosed. Panic recovery at :291-311. But two limits are unstated: (a) http.ErrAbortHandler is deliberately RE-PANICKED, not held (:306-308); (b) the hold only exists for POST to two paths — isAIScanTarget at :1274-1277 matches only `/v1/messages` and `/v1/messages/count_tokens`; every other method or path takes the transparent `h.forward(w, r, nil)` at :320-324 with no scan and no decision.",
+   "correctedText": "| Proxy request unscannable | Held, unless the fail mode is literally `\"open\"`. A panic in the scan path is recovered into a hold — **except `http.ErrAbortHandler`, which is re-panicked** (that sentinel means the developer pressed Stop, and recording it would put a spurious HELD row in the spool). **Scope: only POST to `/v1/messages` and `/v1/messages/count_tokens` is scanned at all**; every other method and path forwards transparently, unscanned and unrecorded. |"
+  },
+  {
+   "docLine": "L851 (§13.2 row 5)",
+   "claim": "Signed policy stale, expired or contained → policy resolves nil, the built-in floor applies, and a fail-open terminal is refused and converted to block.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/daemon/ai_policy_authority.go:808-810 (Policy() is nil under expired/contained), :843-852 (newDecisionPolicy forces out.policy = nil as defence in depth), and :869-884 (expiredDecisionFloor): `case failureoracle.VerbFailOpen, failureoracle.VerbProceedObservedOnly: return aiDecisionBlock, \"policy-expired:fail-open-refused\"`. The floor can only upgrade (applyPolicyExpiredToolDecision, :834-845).",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L852 (§13.2 row 6)",
+   "claim": "Unparseable, forged or rolled-back bundle → refused; last-known-good retained.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/daemon/ai_policy_activate.go:120-123 — 'Every failure returns before persistence, retaining the prior LKG pair and the prior floor.' Anti-rollback high-water mark documented at :294. Refusal path at :225.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L853 (§13.2 row 7)",
+   "claim": "Clock skew: trusted time is a monotonic floor; a wall-clock regression can only fail to move time forward.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/daemon/ai_policy_authority.go:360-376 — TrustedNow returns max(wall, LastTrustedServerTime, observedNanos high-water). Fields declared at :253-263.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L854 (§13.2 row 8)",
+   "claim": "MCP verdicts unobtainable under enforce → hold; stale data may only ever tighten.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/daemon/ai_mcp_gate.go:264-300 (lookup) — past TTL a stale BLOCK is still served (:292-297) while a stale APPROVAL is discarded; the rule is stated verbatim at :273 ('Stale data may only ever tighten'). The HOLD is at :647-670; the state table is at :485.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L855 (§13.2 row 9)",
+   "claim": "Audit sink unavailable → the prompt oracle reverts a fail-open terminal to deny.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/daemon/ai_oracle_receipt.go:157-192 — on a receipt-spool failure, effectiveAction is forced to failureActionBlock (:174) and a VerbFailOpen / VerbProceedObservedOnly terminal is rebuilt as VerbDeny with Issue.Code `failure-oracle:audit-unavailable-deny` (:175-190).",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L856 (§13.2 row 10)",
+   "claim": "Git push with the scan unreachable, on a protected or release ref → blocks regardless of the knob.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/pushgate/gate.go:296-309 — `enforced()`: monitor mode returns false for everything EXCEPT githook.RefClassProtected, RefClassRelease and RefClassTagRelease, which stay Enforced=true; balanced and strict enforce everywhere (:298-300). The unproducible-artifact case is a separate FailClosed field (:89-90) with reasons at :326-328.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L857 (§13.2 row 11)",
+   "claim": "Agent shim, daemon unreachable, on a managed endpoint → refuses to start the agent at all.",
+   "verdict": "CONFIRMED",
+   "evidence": "cmd/devoid/agent_shim.go:520-531 — records a LocalDisablementDecision with Reason PROVIDER_ROUTE_BYPASS / Response `daemon-unavailable-managed`, prints the refusal, and returns 1.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L858 (§13.2 row 12)",
+   "claim": "Package gate, non-interactive → the fail-open setting is forcibly disabled.",
+   "verdict": "CONFIRMED",
+   "evidence": "cmd/devoid/main.go:4758-4762 — `if cfg.FailOpen && (aiCtx.IsAIAgent || cfg.NonInteractive || !isTerminal()) { ... cfg.FailOpen = false }`, logged as 'Fail-open disabled (no interactive human session)'.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L859 (§13.2 row 13)",
+   "claim": "Backend signing master key missing → production boot fails; it is in the required environment list.",
+   "verdict": "CONFIRMED",
+   "evidence": "Backend@0cf9021e src/config/env.validation.ts:64 — 'CODEFENCE_SIGNING_MASTER_KEY' is a member of the production-required array; the rationale at :39-63 names both consequences (Ed25519Service disables policy signing; EvidenceAckKeyRingService cannot mint the per-org EVIDENCE_ACK signer and AiPolicyService swallows it). Pinned by src/config/env.validation.signing-master-key.spec.ts.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L861-869 (§13.3)",
+   "claim": "\"Managed\" is read from a seal file that is only written once the endpoint has reached attested trust; on an unattested endpoint every managed branch is inert and the cooperative fail-open side runs.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/airuntimeintegrity/local_disablement.go:49-56 — ManagedEndpoint reads ONLY `<stateDir>/seal.json` and returns `ok && seal.SignedRequired`; a missing or unreadable seal answers false. cmd/devoid/ai_local_bypass.go:43-51 — an unresolvable path also returns false ('We do not invent managed mode'). The single writer is internal/daemon/ai_integrity_subsystem.go:279-290 (sealSignedRequiredIfLatched), guarded by `aiPolicy.authority.SignedRequired()`, calling Store.MarkSignedRequired (internal/airuntimeintegrity/state.go:257-265), which is one-way and set-only. In the shim there are exactly three managedEndpoint() gates: agent_shim.go:520, :599, :609.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L873 (§14 preamble)",
+   "claim": "Eight instances, each substantiated.",
+   "verdict": "CONFIRMED",
+   "evidence": "14.1 through 14.8 are present and numbered. Of the eight, four stand as written, one is partly closed (14.4), and three are stale (14.2, 14.6, 14.7). The count is right; three of the eight descriptions are not.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L875-880 (§14.1)",
+   "claim": "The unreadable daemon token: the caller reports \"daemon unreachable\" and proceeds, while the daemon is alive and heartbeating, so the off-box dead-man never fires.",
+   "verdict": "CONFIRMED",
+   "evidence": "The fail-open and the dead-man gap hold: the class is HookFailureInterventionUnavailable → FailClosed:false (ai_failure_resolver.go:93-98), a 401 is produced by daemon_auth.go:344, and /health still answers 200 (server.go:1359-1367). Group membership is best-effort: install-scripts/production/install.sh:435-439 uses `usermod -aG ... || true`, `gpasswd -a ... || true`, `adduser ... || true`. BUT the human-visible half is already fixed: cmd/devoid/ai_failure_resolver.go:284-296 calls daemon.ReadTokenDetailed and, on TokenUnreadable, prints a DIFFERENT sentence naming the token path, 'permission denied', and 'The daemon may well be running; starting it again will not help.' That branch predates this document (present at base commit 002e2cfd).",
+   "correctedText": "**14.1 The unreadable daemon token — the worst one.** On a machine install whose interactive user is not in the product's group, the daemon answers its health check in 14 ms, the capability token cannot be read, every request goes out unauthenticated, the daemon returns 401, and the caller **proceeds** — while the daemon is alive and heartbeating, so the off-box dead-man alarm never fires either. The group membership is added on a best-effort basis at install (`usermod || true`). The *stderr notice* now separates the two causes and names the token path and the remedy; what has not changed is that the checkpoint is not evaluated, that the internal reason bucket still reads `daemon-unreachable-*`, and that nothing off-box distinguishes this from a healthy endpoint."
+  },
+  {
+   "docLine": "L881-885 (§14.2)",
+   "claim": "The daemon is a scheduled task with no service control-manager registration, no security descriptor, no failure/recovery configuration, and no watchdog; because the trigger is \"at startup\" there is no restart after a crash until reboot.",
+   "verdict": "STALE",
+   "evidence": "Three of the five sub-claims are false as written. (1) Failure/recovery EXISTS on two of the three registration paths: install-scripts/production/install.ps1:2921-2926 sets `-RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)`, and internal/daemon/persistence_windows.go:230-233 emits `<RestartOnFailure><Interval>PT1M</Interval><Count>3</Count></RestartOnFailure>`. (2) A WATCHDOG exists: internal/daemon/server.go:2178 and :2186 call ensureDaemonPersistence on start and on every tick of a 5-minute ticker (aiWireReconcileInterval, server.go:2140), which re-registers a missing or misconfigured task and writes a high-severity `daemon_persistence_recreated` bypass event (internal/daemon/persistence.go:186-194). (3) The MSI path is the one that has NO restart config: CA_InstallDaemonTask runs `devoid.exe setup install-daemon` (CustomActions.wxs:179), which uses plain `schtasks /Create /F /TN .. /SC ONSTART /RU SYSTEM /RL HIGHEST` (cmd/devoid/setup_installer.go:853-859) — and plain /Create cannot express RestartOnFailure. The reconciler will never repair it: taskInfo.configuredFor (internal/daemon/persistence.go:66-86) inspects exists/boot-trigger/SYSTEM/HighestAvailable/command/arguments and NEVER inspects RestartOnFailure. What remains true: no SCM registration, no security descriptor, and the same `schtasks /Delete /TN <name> /F` the product itself uses (cmd/devoid/main.go:2697) removes it.",
+   "correctedText": "**14.2 The daemon is not a Windows service.** It is a scheduled task (`/SC ONSTART /RU SYSTEM /RL HIGHEST`). There is no service control-manager registration and no security descriptor on it, and any local **administrator** can delete it with the same command the product itself uses (`schtasks /Delete /TN \"Devoid Daemon\" /F`, `cmd/devoid/main.go:2697`). Two things that WERE listed here are no longer true, and the third is now narrower. **Failure recovery exists on two of the three registration paths** — `install.ps1:2921-2926` sets `-RestartCount 3 -RestartInterval 1m`, and the daemon's own XML re-registration carries `RestartOnFailure Count=3 Interval=PT1M` (`internal/daemon/persistence_windows.go:230-233`). **A watchdog exists** — `ensureDaemonPersistence` runs at start and every 5 minutes (`server.go:2178,2186`), re-registers a deleted or misconfigured task, and emits a high-severity `daemon_persistence_recreated` event. It is an *in-process* watchdog, so it cannot run while the daemon is dead: deleting the task with the daemon stopped is permanent until the next start. **The MSI path still has no restart configuration at all** — `CA_InstallDaemonTask` shells out to `setup install-daemon`, which uses plain `schtasks /Create` (`cmd/devoid/setup_installer.go:853-859`), and plain `/Create` cannot set restart-on-failure. `taskInfo.configuredFor` (`persistence.go:66-86`) never inspects `RestartOnFailure`, so the reconciler judges that task \"present\" and never upgrades it. **MSI-installed endpoints therefore have no crash recovery; script-installed endpoints do.**"
+  },
+  {
+   "docLine": "L886-889 (§14.3)",
+   "claim": "The health endpoint is unauthenticated and unconditionally 200; it carries the daemon name, version, proxy state and uptime and no governance posture at all. The real posture moved to a token-gated route.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/daemon/server.go:1359-1367 — handleHealth writes StatusOK unconditionally for any GET. The body is exactly five keys, pinned as a closed list: healthLivenessKeys = {status, daemon, version, wireProxy, uptime} at :1318, built at :1325-1343. The gated route is `GET /v1/health/detail` behind requireDaemonToken (server.go:512), with a sibling `GET /v1/health/observed` (:522). The docblock at :1346-1358 records what the open body used to leak.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L890-895 (§14.4)",
+   "claim": "The hook status command prints \"all hooks installed, N of M have fired\"; the undecided count returns early on zero and never changes the verdict, and the vendor fail-open printer is called only on the Codex lane.",
+   "verdict": "STALE",
+   "evidence": "Half closed by Installers 40f34362 ('fix(ai-status): the Claude lane printed [OK] over invocations that were never decided'), shipped in 7.10.6. On the CLAUDE lane: undecidedVerdictTerm (cmd/devoid/ai.go:723-735) now renders in all three states including a measured zero, and is appended to EVERY verdict branch via ungovernedSuffix (ai.go:470, used at :488, :495, :498, :501, :504); printVendorHookFailOpenTo is now called with the claude-code adapter id (ai.go:460); and the [OK] is gated by `ungoverned := rollup.undecided > 0 || vendorDiscarded > 0 || !rollup.state.Measured()` (ai.go:483), routing to a new 'UNGOVERNED Claude Code invocations' headline at :493-496 returning false. On the CODEX lane nothing changed: ai_codex_hooks.go:508 calls printUndecidableHookPayloads(codex.CodexAdapterID) as a bare statement and :513 calls printVendorHookFailOpen() with no adapter id, and neither result is threaded into printCodexObservedAndVerdict (ai_codex_lanes.go:189-395), whose verdict composes only observedTerm and the two lane attestability flags. The footnote printer still returns early on a measured zero (ai.go:701-710).",
+   "correctedText": "**14.4 The hook status command — the Claude half is closed, the Codex half is not.** *Closed 2026-08-27 (Installers `40f34362`, agent 7.10.6): on the Claude lane the undecided count now rides the primary verdict line in every state including a measured zero, the vendor-discard count reaches that same line, and a non-zero count (or an unmeasurable counter) turns the `[OK]` into `[!] ... UNGOVERNED Claude Code invocations` and a non-zero exit —* `cmd/devoid/ai.go:447-504`, `:723-735`. **What remains:** the Codex lane still prints both numbers as footnotes and throws them away. `ai_codex_hooks.go:508` and `:513` discard their return values, and `printCodexObservedAndVerdict` (`ai_codex_lanes.go:189-395`) composes its verdict from the fired/applicable count and the two lane-attestability flags only. `[devoid] [OK] Codex managed controls installed + compliant` can therefore still stand over a non-zero undecided count. The footnote printer also still returns early on a measured zero (`ai.go:701-710`), so on the Codex lane silence and nought remain indistinguishable."
+  },
+  {
+   "docLine": "L896-898 (§14.5)",
+   "claim": "The transport route indicator printed \"anthropic: NEVER OBSERVED\" after a request demonstrably travelled that route; the indicator is contradicted by the traffic.",
+   "verdict": "WRONG",
+   "evidence": "The indicator is not contradicted by the traffic — it measures a different thing, and it is correctly wired. recordTransportRouteDecision (internal/daemon/ai_transport_observation.go:60) is called from recordAIProxyAlert (internal/daemon/ai_handlers.go:2360), which is the AlertObserver wired at server.go:712 and openai_wire.go:113. It increments on every proxy DECISION. It cannot increment on traffic that produces no decision, and most traffic produces none: isAIScanTarget (internal/proxy/ai_proxy.go:1274-1277) admits only POST to `/v1/messages` and `/v1/messages/count_tokens`; everything else takes `h.forward(w, r, nil)` at :320-324 with no emitAlert call anywhere on that path. The §15 register row (L931) says the same thing in the other direction — 'no decision was recorded anywhere' — which is the honest finding.",
+   "correctedText": "**14.5 The transport route indicator counts decisions, not traffic.** The row reads `NEVER OBSERVED` until the route has carried a *decision*, and the counter behind it is correctly wired (`recordTransportRouteDecision`, `internal/daemon/ai_transport_observation.go:60`, called from the proxy AlertObserver at `ai_handlers.go:2360`). The gap is that only a POST to `/v1/messages` or `/v1/messages/count_tokens` is ever scanned (`internal/proxy/ai_proxy.go:1274-1277`); every other method and path is forwarded transparently at `:320-324` with no alert and therefore no observation. So a request can demonstrably travel the route and leave the indicator at NEVER OBSERVED — not because the indicator is wrong, but because *nothing decided anything*. The label is what misleads: it reads as a statement about traffic and is a statement about verdicts."
+  },
+  {
+   "docLine": "L899-904 (§14.6)",
+   "claim": "A restrictive descriptor exists, and a test pins it in both directions — over a descriptor no production file carries.",
+   "verdict": "STALE",
+   "evidence": "The code names this exact claim as stale about itself. internal/winacl/machine_secret_windows.go:63-69: 'ONE production file DOES carry this descriptor: endpoint-identity.json, via internal/core/config/endpoint_identity_windows.go (§10 register defect #1, 2026-08-18). Saying so here matters because the liveproof register entry for item 101 [H1], written 2026-08-07, still records \"NO PRODUCTION FILE CARRIES THAT DESCRIPTOR YET\" — true when written, stale since.' The writer is hardenMachineEndpointIdentity at internal/core/config/endpoint_identity_windows.go:30-32 → winacl.HardenMachineSecret. The rest stands: credentials.json (credentials_atomic_windows.go:19,63) and the daemon token (internal/daemon/daemon_token_perm_windows.go:17 → winacl.HardenMachineLocalRead) both sit on MachineLocalReadSDDL = 'O:SYG:SYD:P(A;;FA;;;SY)(A;;FA;;;BA)(A;;0x120089;;;BU)' — a BUILTIN\\Users FILE_GENERIC_READ ACE. The blocker is named in code at daemon_token_perm_windows.go:9-16.",
+   "correctedText": "**14.6 The machine-secret ACL.** The restrictive descriptor is `MachineSecretSDDL = \"O:SYG:SYD:P(A;;FA;;;SY)(A;;FA;;;BA)\"` — SYSTEM and Administrators only, no `BUILTIN\\Users` ACE. *Closed in part 2026-08-18: exactly one production file now carries it — `endpoint-identity.json`, the endpoint signing private key, written through `hardenMachineEndpointIdentity` (`internal/core/config/endpoint_identity_windows.go:30-32`), pinned by `winacl.TestMachineDescriptorRouting`.* **Still open:** the credentials file and the daemon token remain on `MachineLocalReadSDDL`, which grants `BUILTIN\\Users` `FILE_GENERIC_READ` (`0x120089`) — readable by every local user. It cannot simply be narrowed: `attachDaemonToken` reads the machine token in the non-elevated user's context on every shim and every `devoid ai hook` invocation, and tightening it would 401 every non-elevated package install fleet-wide. The precondition is a per-user credential split that does not exist yet (`internal/daemon/daemon_token_perm_windows.go:9-16`, `internal/winacl/machine_secret_windows.go:71-91`)."
+  },
+  {
+   "docLine": "L905-908 (§14.7)",
+   "claim": "Agent payloads tolerate-and-drop unknown fields; a mistyped field is dropped and the agent believes it reported it. Only a debug log records the drop.",
+   "verdict": "STALE",
+   "evidence": "'Only a debug log' was already false when this document was written (the code is present at the doc's own base commit Backend 0b2aa28c). Backend/src/common/pipes/agent-wire-drift.ts is a per-DTO, per-key-path counter (recordAgentWireDrift, :237), bounded at 64 DTOs x 64 paths x depth 8 x 2000 nodes (:57-75) with named overflow sentinels (:79-84). The pipe logs at WARN on the first sighting of each shape and debug thereafter (agent-ingest-validation.pipe.ts:158-166). It has a read surface: GET /api/v1/agent-wire-drift behind JwtAuthGuard + RolesGuard restricted to OWNER / ORGANIZATION_ADMIN (health.controller.ts:218-224). The file records the measurement that killed the debug-log claim (agent-wire-drift.ts:14-21: LOG_LEVEL appears nowhere in any deployment, so the safety net wrote nothing at all).",
+   "correctedText": "**14.7 Silent agent-wire field loss.** Agent-authed DTOs tolerate-and-drop unknown fields rather than 400 the whole fleet (`AgentIngestValidationPipe`, `src/main.ts:77`; the leniency travels with `RequiredKeyType(ApiKeyType.CLI_AGENT)`). That trade is right — the 400 form took the fleet down four times — and the cost is that a mistyped field vanishes and **the agent believes it reported it**. *Closed in part: the drop is now counted, not merely logged.* `recordAgentWireDrift` (`src/common/pipes/agent-wire-drift.ts:237`) keeps a per-DTO, per-key-path count; the pipe logs at **warn** on the first sighting of each shape and debug after (`agent-ingest-validation.pipe.ts:158-166`); and `GET /api/v1/agent-wire-drift` reads it back, gated to OWNER / ORGANIZATION_ADMIN (`health.controller.ts:218-224`). **What remains:** the counter is process-local and resets on restart, has no console surface, is capped at 64 DTOs x 64 paths per DTO with an overflow sentinel, and nothing subtracts it from any coverage denominator yet."
+  },
+  {
+   "docLine": "L909-912 (§14.8)",
+   "claim": "At the prompt checkpoint the deny capability is a function that returns nil — a no-op that always stamps \"deny: satisfied\".",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/daemon/ai_oracle_receipt.go:80-102 — promptObligationCaps returns obligation.Capabilities{...}; line 82 is literally `Deny: func() error { return nil },`. The DelegatedApproval and Audit capabilities in the same struct do real work (:83-101), which is what makes the Deny no-op stand out.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L913-916 (§14, contrast paragraph)",
+   "claim": "The console's enforcement-proof panel demotes \"proven\" when the server does not hold a receipt, when the tested timestamp is missing, and when the proof has expired — and there is no input that promotes it upward.",
+   "verdict": "CONFIRMED",
+   "evidence": "Frontend@cac574ae app/ai-control-plane/protection-depth.tsx:850-861 — 'the PROVEN gate. Three ways out, none of them upward.': `serverHoldsReceipt !== true` → could-not-test/`proof-without-receipt`; `!enforcementTestedAt` → could-not-test/`proof-without-observation`; expiry null/NaN/past → `proof-expired`. Every branch carries demotedFrom:\"proven\"; no branch returns a state stronger than its input.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L925 (§15)",
+   "claim": "Eight entries. One observed. Seven quarantined.",
+   "verdict": "STALE",
+   "evidence": "Read internal/liveproof/register.json at Installers@5b129523 and counted: 8 proofs, observed=true on THREE, quarantined on FIVE. The two new observations landed 2026-08-27 in commits c25aaa92 ('proof(2.4): a signed policy bundle activates and its digest reaches the Backend') and 21ce3cc3 ('proof(2.2): a Codex hook fired, decided, and 0.147 honoured the deny'), both merged in Installers PR #179.",
+   "correctedText": "**Eight entries. Three observed. Five quarantined.** (Was one observed / seven quarantined until 2026-08-27; the signed-bundle and Codex-hook entries landed that morning.)"
+  },
+  {
+   "docLine": "L934 (§15 table, signed bundle row)",
+   "claim": "A signed bundle activates and its digest reaches the server | no | Attempted and structurally refused. A build-flag bind means one version stamp feeds both the bundle floor and the decision whether a local backend is honoured — no value satisfies both.",
+   "verdict": "STALE",
+   "evidence": "register.json entry `signed-bundle-activates-and-digest-reaches-backend` (item 2.4) now has observed=true with a full five-field evidence block: observedAt 2026-08-27T10:50:01Z, rig w47b-liveproof on CND34521VN, enrolled endpoint 67b1a614-f56a-4505-a438-bfd89a224c61, org 90461ce0-b821-4f05-8fc0-b35d6fa086fa, against a local Backend at origin/main with 242 migrations and signing provisioned. The build-flag bind was fixed by Installers 8b72d26a ('fix(config): split the version stamp from the release-build posture'). The register's validator would fail the build if the evidence block were incomplete (liveproof.go:128-151).",
+   "correctedText": "| A signed bundle activates and its digest reaches the server | **YES** | 2026-08-27T10:50:01Z, rig `w47brig` on CND34521VN, enrolled endpoint `67b1a614…`, against a **local** Backend at `origin/main` (242 migrations) with `CODEFENCE_SIGNING_MASTER_KEY` provisioned as 32-byte hex. The blocker was removed by `8b72d26a`, which split the version stamp from the release-build posture. **Not observed against production.** |"
+  },
+  {
+   "docLine": "L936 (§15 table, Codex hook row)",
+   "claim": "The Codex hook fires and the client honours a deny | no | One dialect pinned, at 0.144.; the installed client is 0.147.0.",
+   "verdict": "STALE",
+   "evidence": "register.json entry `codex-hook-fires-and-client-honours-deny` (item 2.2) now has observed=true: observedAt 2026-08-27T11:48:30Z, codex-cli 0.147.0, vendor binary sha256 935a1911ed2556e4ffcec995f4886ac2ac425863ba26fed264df62e30272ad9d, rig w47crig, UNENROLLED (local floor was the deciding authority; the backend was pinned to a dead loopback port). The dialect pin was widened by Installers 9d167ed9: internal/codexmanaged/hookdialect.go:99-115 now declares hookTrustDialect144 and hookTrustDialect147, and knownHookTrustDialects at :165 holds both.",
+   "correctedText": "| The Codex hook fires and the client honours a deny | **YES** | 2026-08-27T11:48:30Z on codex-cli **0.147.0** (vendor binary `935a1911…`), sandboxed rig, **UNENROLLED — the deciding authority was the endpoint's local floor.** Two dialects are now pinned, `0.144.` and `0.147.` (`internal/codexmanaged/hookdialect.go:99-115,165`), each on its own measurement. 0.145, 0.146, 0.148 and the 0.149 alpha remain unmeasured and unresolvable — including **0.149.0-alpha.4.1, which is what the desktop app on the owner's own box runs** (`hookdialect.go:128,161-163`). |"
+  },
+  {
+   "docLine": "L933 (§15 table, machine-secret row)",
+   "claim": "A machine secret denies local users | no | The descriptor exists; no production file carries it. §14.6.",
+   "verdict": "STALE",
+   "evidence": "The 'no' verdict is correct — register.json still has `machine-secret-denies-local-users` (item 101 [H1]) quarantined, reviewBy 2026-11-05 — but the stated REASON is the exact sentence internal/winacl/machine_secret_windows.go:63-69 calls out as stale: endpoint-identity.json carries MachineSecretSDDL as of 2026-08-18. The control named by the entry is specifically %ProgramData%\\devoid\\credentials.json and the daemon token, and those are still on the local-read boundary.",
+   "correctedText": "| A machine secret denies local users | no | The named files — `%ProgramData%\\devoid\\credentials.json` and the daemon token — are still on `MachineLocalReadSDDL`, readable by `BUILTIN\\Users`. §14.6. (The older reason, \"no production file carries the descriptor\", is stale: `endpoint-identity.json` has carried `MachineSecretSDDL` since 2026-08-18 — the code says so at `internal/winacl/machine_secret_windows.go:63-69`.) |"
+  },
+  {
+   "docLine": "L931 (§15 table, transport row)",
+   "claim": "The Anthropic transport route carries a decision | no | Traffic traversed the route; no decision was recorded anywhere, and the status surface still said never-observed.",
+   "verdict": "CONFIRMED",
+   "evidence": "register.json entry `anthropic-transport-decision` (item 99 [C12]) is still observed=false, quarantined, reviewBy 2026-11-05. The mechanism is verified under §14.5: the counter is wired but only a POST to two paths ever produces a decision. The quarantine reason also records a routing trap worth keeping: a VERSION-STAMPED agent build ignores a configured loopback backend and silently uses https://api.devoid.one (internal/core/config.normalizeBackendURL, gated on isReleaseBuild()) — six enrolment attempts reached the production backend before that was understood, all rejected 401.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L938-940 (§15)",
+   "claim": "Nothing outside its own package imports the register. It is a test, and nothing else. There is no release smoke run that prints it.",
+   "verdict": "CONFIRMED",
+   "evidence": "grep -rn 'internal/liveproof' across the whole Installers tree at origin/main returns zero hits outside internal/liveproof/ itself. The package's own doc states the same discipline (liveproof.go:1-30). The parallel Codex ledger is deliberately a _test.go file for the same reason: internal/codexmanaged/liveproof_ledger_test.go:16-23 — 'Nothing in the shipped agent reads this ledger, and nothing should... Compiling it into `devoid` would put an exported LiveProofLedger API in a security agent that promises a capability the binary does not have.'",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L941-964 (§15.1)",
+   "claim": "Ten identical runs at the shipped 60-second hook timeout: 4 blocked (27-55s), 6 not blocked and the private-key bytes egressed (63-143s); the split tracks wall-clock; a durable rollup recorded eleven undecided invocations with reason \"daemon unreachable, budget expired\"; the product reported a prompt-block count of 21 and \"5 of 5 hooks have fired\".",
+   "verdict": "CONFIRMED",
+   "evidence": "Still the best evidence in the document, and the load fail-open is still open. The measurement is recorded verbatim in the register quarantine for `hook-lane-prompt-block` (item 97 [C5]), which names the window 17:16:07Z-17:36:11Z and the file ~/.devoid/undecidable-hook-payloads.json holding {\"total\":11,\"byAdapter\":{\"claude-code\":11},\"byReason\":{\"daemon-unreachable-budget-expired\":11}}. Both constants check out: the shipped host budget is 60s (internal/aihooks/settings.go:112 promptSubmitTimeoutSeconds, returned uniformly by hookTimeoutFor at :546-548, bounded by the projection's own maxHookTimeoutSeconds=60 at providers/claude/projection.go:244), and the daemon round-trip budget inside it is 4s (airuntime/runner.go:52). Nothing in 7.10.6 touched either budget or the fail-open — 40f34362 changed only the reporting. The entry's own instruction stands: 'DO NOT close this entry by re-running on a quiet box until a run passes. The control's failure mode IS load.'",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L966-972 (§15.2)",
+   "claim": "The canary cannot go green: the receipt sink is never assigned anywhere in the daemon or the CLI, an undelivered receipt demotes proven to error, and the server refuses to mint a challenge for an endpoint with no applied bundle — a refusal that fired 2,081 times in a seven-day window.",
+   "verdict": "CONFIRMED",
+   "evidence": "Receipt sink: `Receipts:` is assigned in exactly four places, all _test.go (internal/airuntimeintegrity/maintenance_test.go:64, codexmanaged/canary_host_test.go:289, canary_live_test.go:74, canary_test.go:111). The nil path is an explicit delivery FAILURE, not a no-op: providers/claude/canary.go:55-59 (errNoReceiptSink) and :335-343, reason slug ReasonCanaryReceiptUndelivered (:51). The docblock at :335-341 states '`Receipts` is unassigned in production, so it was the DEFAULT path, not an edge case.' Server refusal: Backend src/ai-policy-delivery/endpoint-control-authority.service.ts:278-289 — CodedHttpException('AI_CANARY_NO_APPLIED_BUNDLE', ..., HttpStatus.CONFLICT), with the count in the source comment at :279-281: 'in a fleet where no endpoint has ever applied a signed bundle this fires on every canary request (2081x in the QA 7-day window)'.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L979 (§16 bullet 1)",
+   "claim": "The governed prompt-evidence lane. No tenant key is ever assigned, and there is no uploader.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/daemon/ai_prompt_capture_wiring.go:46 — `var promptEvidenceTenantKeySource func() []byte`, declared and never assigned outside pe3_prompt_evidence_health_test.go:324. The docblock at :34-45 says so in place: 'IT IS NIL IN PRODUCTION, and that is the honest state... With no key the capture decision reports MISSING_REQUIRED / CORRELATION_KEY_UNAVAILABLE, which is a named, non-green fact.'",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L980-981 (§16 bullet 2)",
+   "claim": "The ingress stream scanner. Complete, tested, 256 KiB cap — its observer is never assigned, so streamed model output is not inspected at all.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/ingressrisk/stream.go:38 (`streamDefaultMaxBytes = 256 * 1024`), :87 NewStreamScanner, :92 NewStreamScannerWithLimit. Both constructors are called only from stream_test.go — zero production callers anywhere in the tree. (The separately-named `IngressObserver` on the request path IS wired, at server.go:765 and openai_wire.go:112; the two must not be conflated.)",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L982-983 (§16 bullet 3)",
+   "claim": "The cross-message ingress correlator. Zero production callers, so a split-across-turns attack is uncovered.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/ingressrisk/accumulate.go:50 — `func Correlate(window []MessageFindings) []CrossSignal`. No caller anywhere outside the package. The file's header at :3-11 describes the intended wiring — 'The daemon owns the session store; it builds a []MessageFindings window from its existing per-message findings and calls Correlate' — which is exactly the step that does not exist.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L984 (§16 bullet 4)",
+   "claim": "Ingress destination annotation. Computed on every scan and read by nothing.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/ingressrisk/ingressrisk.go:266 — `annotateDestinations(text, ranked)` is called unconditionally in the scan path; the field is Finding.Destination at :101-108. The reader, `Destinations(findings []Finding) []string` at :314-327, has no caller outside the package.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L985 (§16 bullet 5)",
+   "claim": "The Codex cooperative hook lane. Pinned to a client version nobody runs.",
+   "verdict": "STALE",
+   "evidence": "Installers 9d167ed9 (7.10.6) added a second measured dialect. internal/codexmanaged/hookdialect.go:99-104 (hookTrustDialect144, minorPrefixes 0.144.) and :106-115 (hookTrustDialect147, minorPrefixes 0.147., same identity construction), both in knownHookTrustDialects at :165. The addition is evidenced, not guessed: two artefacts recorded at :138-160 (the client's own hooks/list digest byte-equal to 0.144's for the same vector, and a three-way trust-gated dispatch test where one wrong nibble of our digest is the whole difference). The lane is now PROVEN LIVE on 0.147 (register item 2.2, 2026-08-27T11:48:30Z). Not universally live: hookdialect.go:161-163 names 0.145, 0.146, 0.148 and the 0.149 alpha as still unmeasured, and 0.149.0-alpha.4.1 is what the desktop app on the reference box runs.",
+   "labelChange": "INERT -> CONDITIONAL (reachable only on a client in the 0.144. or 0.147. families; hookTrustDialectFor, internal/codexmanaged/hookdialect.go:183-196, answers no for every other version)",
+   "correctedText": "- **The Codex cooperative hook lane — CONDITIONAL, no longer inert.** *Closed 2026-08-27 (Installers `9d167ed9`, agent 7.10.6): a second measured dialect, `0.147.`, joins `0.144.` (`internal/codexmanaged/hookdialect.go:99-115,165`), and the lane was PROVEN LIVE on codex-cli 0.147.0 the same day (§15).* It fires only for a client in one of those two families. 0.145, 0.146, 0.148 and the 0.149 alpha are unmeasured and `hookTrustDialectFor` answers no for all of them — **including 0.149.0-alpha.4.1, the runtime the Codex desktop app ships**, so the desktop lane is still ungoverned. Do not widen the pin without two vendor artefacts per family; that is how it went silently dead the first time."
+  },
+  {
+   "docLine": "L986-988 (§16 bullet 6)",
+   "claim": "The plugin capability model. Eight capability tokens are computed and shipped on the wire, and the function that would gate on them does not exist.",
+   "verdict": "CONFIRMED",
+   "evidence": "Counted: exactly 8 tokens in internal/plugingate/capability.go — hooks (:14), mcp-servers (:18), monitors (:21), executables (:24), skills (:27), commands (:29), agents (:31), scripts (:36). Computed in activation.go:155-239 and put on the wire at cmd/devoid/ai_plugingate.go:383-390 (`out[\"capabilities\"] = caps`). The only reader, ComponentGraph.HasCapability (activation.go:99-104), is called exclusively from test files (aicanary/plugingatedefeat_test.go:265, plugingate/activation_codex_manifest_test.go:64, activation_inline_mcp_test.go:59,116, activation_test.go:86,139).",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L989-990 (§16 bullet 7)",
+   "claim": "The permit authority for pre-push reuse. Behind an environment flag that ships false, and dependent on a shim nothing installs.",
+   "verdict": "CONFIRMED",
+   "evidence": "Backend src/github-app/controllers/scan-permit.controller.ts:61 — 'env flag `EGRESS_PERMIT_AUTHORITY_ENABLED` (default false). When OFF, both...'; the read is at :289 and the module guard at github-app.module.ts:55. The endpoint half is fail-safe by construction and says so: cmd/devoid/git_scan_permit.go:27-32 — 'the SERVER feature flag alone gates the feature (the backend 404s when off), and any error / 404 / 403 / missing-anchor path leaves the push to proceed exactly as today.'",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L991 (§16 bullet 8)",
+   "claim": "Alert egress. Off unless an environment variable is exactly `true`.",
+   "verdict": "CONFIRMED",
+   "evidence": "Backend src/app.module.ts:150-154 — the IntegrationsModule is spread in only when `process.env.INTEGRATIONS_MODULE_ENABLED === 'true'`. The same exact-string rule is restated at src/notifications/outbox/alert-outbox-readiness.service.ts:112-114 ('True only for the exact string \"true\" — same rule AppModule gates on'). src/config/env.validation.ts:286 records 'optional boolean; defaults to false'.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L992-993 (§16 bullet 9)",
+   "claim": "The malicious-floor assertion. Its own docblock says it is called on the effective read; it has zero production callers, so a direct section write never consults it.",
+   "verdict": "STALE",
+   "evidence": "Backend PR #285, deployed as ECS td 322. `withMaliciousFloorApplied(storedConfig)` is now the FIRST statement of assembleEffectiveDto — src/ai-security-policy/ai-security-policy.service.ts:2198, imported at :183, defined at ai-malicious-floor.ts:285-309 — and it RAISES rather than throwing, logging every raise at warn (:2199-2211). The read path is therefore covered for every tenant on every policy pull. But the specific symbol the doc names, `assertMaliciousFloorHeld`, is STILL unwired, and the file now says so honestly: ai-malicious-floor.ts:312-323 — 'NOT WIRED INTO ANY PRODUCTION PATH, and that is deliberate... An earlier version of this docblock claimed it ran inside `assembleEffectiveDto`; it did not, and the claim survived long enough to be cited as evidence that the read path was covered.' The floor has 37 members (13 destructive, 12 credential, 8 self-tampering, 4 injection-that-acts) — counted at ai-malicious-floor.ts:143-188.",
+   "labelChange": "INERT -> SHIPS, wired by `withMaliciousFloorApplied` at Backend/src/ai-security-policy/ai-security-policy.service.ts:2198, deployed as ECS task definition 322",
+   "correctedText": "- **The malicious floor — CLOSED on the read path 2026-08-27, deployed as ECS td 322.** `withMaliciousFloorApplied` is now the first statement of `assembleEffectiveDto` (`Backend/src/ai-security-policy/ai-security-policy.service.ts:2198`), so all **37** floor members (13 destructive-execution, 12 credential-exfil, 8 self-tampering, 4 injection-that-acts — `ai-malicious-floor.ts:143-188`) are raised to their minimum on every policy pull, for every tenant, unconditionally. It **raises**; it does not throw, because throwing would fail the pull for any tenant already below the floor and strand that endpoint on its last policy. The stored jsonb is unchanged, and each raise is logged at warn naming section, class, stored and minimum. *What is still inert is the sharp form:* `assertMaliciousFloorHeld` has zero production callers and its docblock now says so in place (`ai-malicious-floor.ts:312-323`). **Consequence, and it is the biggest one in this document: see §17.1 — the floor now makes `destructive-rm` unrelaxable by any administrator on any tenant.**"
+  },
+  {
+   "docLine": "L994 (§16 bullet 10)",
+   "claim": "MCP extra sources from policy. No non-test caller merges them.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/policybundle/mcp_sources.go:75 — `func McpExtraSources(p *backend.AiPolicy) ([]mcpsources.Source, []RejectedSource)`. Called only from mcp_sources_test.go (:47, :60, :78). The only other mention in the tree is a docblock reference at internal/core/backend/ai_prompt.go:415.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L995-996 (§16 bullet 11)",
+   "claim": "The Claude machine-scope adapter lane. Nothing assigns it, so every Claude report says \"cooperative\" even where a machine-scope projection is compiled.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/airuntime/adapters/claudecode/claudecode.go:58-60 — `func New(launcher string) *Adapter { return &Adapter{Launcher: launcher} }`. Neither `Machine` nor `Proof` is ever assigned; the only production constructions are registry.go:31 and cmd/devoid/ai_hook_runner.go:118,1120, all via New. machineLane() therefore returns ok=false (machine_lane.go:86-91), and the documented consequence is at machine_lane.go:74-77: 'ok=false means this build or this endpoint has no machine lane wired, which keeps the adapter reporting the pre-RA-4 truth: user-scope, cooperative.' The constant is detect.go:15, returned unconditionally at :264.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L997 (§16 bullet 12)",
+   "claim": "The discovery walker. Zero importers.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/discovery/ contains exactly one file, walker.go. grep -rn 'internal/discovery' across the tree returns no hit outside that directory.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L998 (§16 bullet 13)",
+   "claim": "Posture flags. Only ever written if a human runs the command; neither automatic sweep computes them.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/posture/posture.go:66 (Scan) has exactly one caller: cmd/devoid/ai.go:1456, inside runAIPosture (ai.go:1434) — the `devoid ai posture` subcommand. Neither automatic sweep calls it: runOneAISweep (internal/daemon/server.go:2607) and runArtifactAISweep (cmd/devoid/artifact_user_sweep.go:291) both go through sweep.RunAI, which never touches internal/posture. So stampToolPosture / stampClaudeHooks / stampCodexNetwork (posture.go:113,126,147) run only on a typed command.",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L999-1000 (§16 bullet 14)",
+   "claim": "Both daemon inventory sweeps are skipped on a machine service — measured at 4 records against a real surface of 133.",
+   "verdict": "CONFIRMED",
+   "evidence": "internal/daemon/server.go:2582-2592 — runOneAISweep returns early on `daemonUserContext().MachineService`, and the measurement is in the comment verbatim: 'Measured on the reference box: 4 AI records against a real user surface of 133.' The compensating path exists and is named there (:2588-2589): cmd/devoid/artifact_user_sweep.go runArtifactAISweep, driven by the per-user scheduled task `Devoid AI Governance Reconcile` (internal/aiwiretask/aiwiretask.go:144), which runs `devoid ai reconcile` (:150) on a logon trigger with a PT1M delay (:178) plus a PT5M repetition (:170) as BUILTIN\\Users / LeastPrivilege (:207-211). So the sweep is DELEGATED, not simply absent — but it covers only profiles whose owner logs on, and only after the task fires.",
+   "correctedText": "- **Both daemon inventory sweeps are skipped on a machine service** — measured at 4 records against a real surface of 133 (`internal/daemon/server.go:2582-2592`). It is a **delegation, not an omission**: the reading happens in the user's own context, driven by the per-user scheduled task `Devoid AI Governance Reconcile` (logon trigger + PT1M delay + PT5M repetition, `BUILTIN\\Users` / LeastPrivilege — `internal/aiwiretask/aiwiretask.go:144-211`), which runs `devoid ai reconcile` → `runArtifactAISweep`. The residual gap is a profile whose owner never logs on, and the window between install and the task's first fire."
+  },
+  {
+   "docLine": "L999-1000 (§16 bullet 14, second half — the depth cap, absent from the document)",
+   "claim": "[The rule-file walk depth cap is not in the document at all; the task names it as fixed by 7.10.6.]",
+   "verdict": "CONFIRMED",
+   "evidence": "Installers d506156f ('fix(inventory): the rule-file walk kept the silent cap the resolver was rebuilt to kill', in 7.10.6): DetectRuleFiles pruned at a hardcoded depth 8 with a bare filepath.SkipDir and `_ = filepath.WalkDir(...)`. Both live call sites pass roots=[$HOME]. Measured on the reference box: depth 8 → 585 rule files in 1m37s; depth 32 → 1,099 in 8m20s. 514 of 1,099 (47%) were invisible while runArtifactAISweep logged 'AI inventory sweep complete'. Default is now 32 with pruned/unreadable directories counted and sampled into a RuleWalkCoverage, surfaced as sweep.AIResult.Complete (internal/sweep/sweep_ai.go:43-55, populated :80-92). BUT no caller reads it: artifact_user_sweep.go:302-303 still logs only items/accepted, and server.go:2607-2621 discards the result entirely. So the walk is fixed and the surface still cannot tell a complete walk from a truncated one.",
+   "labelChange": "INERT -> SHIPS for the walk depth (Installers d506156f, agent 7.10.6); the coverage REPORT remains INERT — sweep.AIResult.Complete has zero readers",
+   "correctedText": ""
+  },
+  {
+   "docLine": "L1024-1025 (§17 item 10)",
+   "claim": "51 detector classes have no policy vocabulary, so an administrator cannot tune them and cannot see them.",
+   "verdict": "CONFIRMED",
+   "evidence": "Recounted independently: extracting class literals from internal/toolrisk, internal/dlp, internal/promptrisk and internal/ingressrisk gives 118 agent detector classes, of which 52 appear nowhere as a quoted token in any non-spec file under Backend/src/ai-security-policy/. My extraction is regex-based and approximate to about one class, so 51 is right within the method's precision. The SHAPE is worth adding: all 52 are DLP secret detectors — vendor token patterns (stripe-key, vercel-token, datadog-key, huggingface-token, telegram-bot-token, vault-token, …) plus iban, base64-wrapped-secret, hex-credential-at-rest, credential-in-url and private-key-candidate. Separately, of the 55 rows in the PINNED detector catalog (internal/aipolicycontract/detector_catalog_generated.go), only 8 lack a policy token: base64-wrapped-secret, custom-blocklist, high-risk-file-type, iban, image-upload, jwt, kubeconfig, private-key-candidate.",
+   "correctedText": "10. **51 detector classes have no policy vocabulary**, so an administrator cannot tune them and cannot see them. Re-counted 2026-08-28: 118 detector classes exist across `toolrisk`/`dlp`/`promptrisk`/`ingressrisk`, and **52** have no token anywhere under `Backend/src/ai-security-policy/`. Almost all are **DLP vendor-token detectors** (`stripe-key`, `vercel-token`, `datadog-key`, `huggingface-token`, `vault-token`, …) plus `iban`, `base64-wrapped-secret`, `hex-credential-at-rest`, `credential-in-url` and `private-key-candidate`. They still fire — they inherit the section default — so the administrator sees findings from classes that do not exist in the console. Against the *pinned* 55-row detector catalog the gap is only 8 classes; the 52 is the gap between what the agent detects and what the catalog and the policy know about."
+  }
+ ],
+ "additions": [
+  {
+   "where": "§13, decider 3 (L823-824)",
+   "text": "Add the unwired case, because the sentence as written implies the literal-\"open\" rule is unconditional: \"`resolveFailClosed` applies the literal-`\"open\"` rule only while the per-site accessor is wired. With a nil accessor it falls back to the static `FailClosed` posture the handler was constructed with — which is `true` in both production composition roots, so the fallback is also closed. The rule is therefore safe in production and would silently invert in any build that forgot to wire it.\"",
+   "evidence": "internal/proxy/ai_proxy.go:270-274; wired at internal/daemon/server.go:752 and internal/daemon/openai_wire.go:110, static fallback FailClosed:true at server.go:710 and openai_wire.go:109."
+  },
+  {
+   "where": "§13.1, after row 3 (L832) — a missing budget",
+   "text": "Add a row: \"| A **session** lifecycle report that misses its 800 ms hop | The session start/end proceeds without the server's answer. Deliberate: session start and session end gate nothing (the executor returns `EffectNone` on both), and the wait was the single largest measured stall in the product — a real SESSION_START took **50.1 seconds** because the session lane's client is configured with four attempts at a ninety-second per-attempt timeout. |\"",
+   "evidence": "internal/daemon/ai_backend_hop_budget.go:47-58 (`aiSessionHopBudget = 800 * time.Millisecond`) and :16-23 (the 50.1s measurement, p95 494 ms). The document gives the 2500 ms decision budget and omits the 800 ms session budget entirely, so a reader cannot see that the two hops have different rules."
+  },
+  {
+   "where": "§13.1 row 11 (L840) — the failure mode below the failure mode",
+   "text": "Append: \"There is a second, quieter state: if the daemon cannot resolve its own executable path at all, `daemonProgramDir()` returns empty and the probe **stays silent rather than warn**, on the stated grounds that it cannot probe. So the one log line that reports this gap is itself conditional on a step that can fail.\"",
+   "evidence": "internal/daemon/selfcheck.go:25-30 — `if dir == \"\" { // Could not resolve our own executable path — can't probe; stay quiet rather than emit a misleading warning. return }`."
+  },
+  {
+   "where": "§13.3 (L861-869) — make the hinge countable",
+   "text": "Add: \"The hinge is three call sites in the shim, not a diffuse property: `agent_shim.go:520` (refuse to launch on an unreachable daemon), `:599` (override a user-set provider route), `:609` (strip vendor bypass flags). All three read the same `managedEndpoint()`. Two further consumers sit outside the shim — `internal/uninstall.ManagedGuard` and `internal/aiwire`'s managed probe, both installed by `installManagedProbes` at CLI start-up. A single missing `seal.json` turns all five cooperative at once, and it is read without the store lock so any CLI process can consult it while the daemon owns the state.\"",
+   "evidence": "cmd/devoid/agent_shim.go:520,599,609; cmd/devoid/ai_local_bypass.go:54-71 (installManagedProbes wiring uninstall.ManagedGuard and aiwire.SetManagedProbe); internal/airuntimeintegrity/local_disablement.go:25-26 ('read WITHOUT taking the store lock and WITHOUT writing anything')."
+  },
+  {
+   "where": "§14.4 — the editing rule requires a dated closed line, not a rewrite",
+   "text": "Per the document's own rule, keep the original finding and date the closure rather than replacing it: \"*Closed 2026-08-27 (Installers `40f34362`, shipped in agent 7.10.6): on the Claude lane the undecided count and the vendor-discard count now ride the primary verdict line in every state and gate the `[OK]`.* The Codex half of the finding stands unchanged.\"",
+   "evidence": "Installers commit 40f34362, 2026-08-27 10:46:51 +0300, merged in PR #179 and shipped as agent 7.10.6 (stable 2026-08-27T17:05:32Z). The Codex-lane discard is at cmd/devoid/ai_codex_hooks.go:508,513."
+  },
+  {
+   "where": "§15 — what the codexmanaged ledger says, which the document never mentions",
+   "text": "Add after the register table: \"**A second, separate ledger governs the Codex lane, and it is stricter.** `internal/codexmanaged/testdata/liveproof/ledger.json` demands a `CanaryProven` outcome per (build, lane) for two required builds — 0.134.0 and 0.146.0-alpha.3.1 — on **both** the machine and user lanes. It now carries **two gating observations** (both 2026-08-27, both the *user* lane, receipt hashes `6c207ff5…` and `8a14b287…`) and **nine partial observations**, which the gate deliberately does not read. Its top-level `status` field still reads `UNFIRED`, and the four required (build, lane) pairs are half met. The Windows **machine** lane is measured as failing, not merely unobserved: with a full DeVoid machine baseline in a redirected `%ProgramData%` root, codex-cli 0.134.0 and 0.146.0-alpha.3.1 each fired **zero** hooks and sent the deny prompt straight to the provider — both vendor binaries resolve the machine root through `SHGetKnownFolderPath(FOLDERID_ProgramData)`, which an environment variable cannot move, so the only Windows machine root that can be measured is the operator's own.\"",
+   "evidence": "internal/codexmanaged/testdata/liveproof/ledger.json — status \"UNFIRED\"; requiredBuilds [0.134.0 (machine,user), 0.146.0-alpha.3.1 (machine,user)]; observations = 2 entries, both lane \"user\", outcome CanaryProven, observedAt 2026-08-27T13:34:59Z and 13:35:13Z; partialObservations = 9; the Windows machine-gap entry quoted verbatim. Gate contract at internal/codexmanaged/liveproof_ledger_test.go:58-72."
+  },
+  {
+   "where": "§15.2 — the newly found aicanary defect",
+   "text": "Add: \"**And the proof path itself has a defect that manufactures false failures.** `aicanary.Run` hard-codes `cmd.WaitDelay = 5s`, and a Codex turn holds the captured pipes longer than that after the process exits — so `cmd.Run()` returns `exec: WaitDelay expired before I/O complete` and the canary classifies a **real deny** as `CanaryError` / `canary-host-launch-failed`. Measured: two of six `TestLiveCanary_RealCodexHost` attempts across the two required builds failed this way on invocations where the client, in the same launch, printed `hook: UserPromptSubmit Blocked`. Re-measured on identical argv with a 90 s WaitDelay: `waitErr=nil`, exit 0, 11.3 s wall clock, full transcript captured including the Blocked line. There is no field on `ProcessSpec` that overrides it, so the value cannot be raised per call site.\"",
+   "evidence": "internal/aicanary/exec.go:125 (`cmd.WaitDelay = 5 * time.Second`, with no spec field feeding it; the ProcessSpec knobs are Timeout and MaxOutput, :77-95), classification in `finish` at :145-161. The measurement is the last `partialObservations` entry in internal/codexmanaged/testdata/liveproof/ledger.json, quoted verbatim."
+  },
+  {
+   "where": "§16, bullet 6 (plugin capability model)",
+   "text": "Sharpen the second sentence: \"…and the function that would gate on them does not exist — `ComponentGraph.HasCapability` exists but is called only from five test files. The tokens are nonetheless computed on every resolved plugin subject and put on the wire as `capabilities` (`cmd/devoid/ai_plugingate.go:383-390`), so a console or a policy could be written against a field nothing enforces.\"",
+   "evidence": "internal/plugingate/capability.go:14-36 (8 tokens); activation.go:99-104 (HasCapability), callers only in aicanary/plugingatedefeat_test.go:265 and plugingate/*_test.go; cmd/devoid/ai_plugingate.go:383-390."
+  },
+  {
+   "where": "§16, bullet 2 (ingress stream scanner) — disambiguation",
+   "text": "Add a parenthetical so a reader does not conclude the ingress lane is entirely dead: \"(Not to be confused with the request-side `IngressObserver`, which **is** wired — `internal/daemon/server.go:765`, `internal/daemon/openai_wire.go:112`. What is unwired is the response-**stream** scanner.)\"",
+   "evidence": "internal/proxy/ai_ingress.go:245-248 and :415-423 (IngressObserver fires on every ingress decision); wired at server.go:765 / openai_wire.go:112. The stream scanner is internal/ingressrisk/stream.go:87,92, test-only."
+  }
+ ],
+ "omissions": [
+  {
+   "what": "The destructive-rm hard block: an unrelaxable block on every `rm -rf ~/<anything>` and `rm -rf $HOME/<anything>`.",
+   "whyItMatters": "It is the most customer-visible fact about the product today and it is absent from the whole document. Three separate mechanisms combine into it, and each is individually documented while the combination is not: (1) the shipped regex treats any home-relative path as a \"broad target\"; (2) `destructive-rm` is a malicious-floor member at `minimumDisposition: 'block'`; (3) since Backend PR #285 / ECS td 322 the floor holds on the READ path, so the raise is applied to every policy pull for every tenant. The consequence is that a developer's agent cannot run `rm -rf ~/.npm/_cacache` or `rm -rf $HOME/.cache/pip`, and no administrator on any tenant can relax it from the console — the stored value is raised back to `block` at serve time. The D4 default table says `warn`, so an operator reading the constants will conclude the opposite of what ships.",
+   "evidence": "COMPILED THE SHIPPED REGEX AND RAN IT. Installers@5b129523 internal/toolrisk/toolrisk.go:121-122, pattern `\\brm\\s+(?:-[a-zA-Z]*\\s+)*-?[rf]{1,2}[a-zA-Z]*\\s+(?:-[a-zA-Z]+\\s+)*(?:/\\s*$|/\\s+|/\\*|~(?:/\\S*)?|\\$HOME\\b|\\.{1,2}\\s*$|\\*\\s*$|/(?:etc|usr|var|bin|boot|lib|lib64|sbin|opt|root|home|sys|proc|dev)\\b)`. Results — TRUE: `rm -rf $HOME/.cache/pip`, `rm -rf ~/.npm/_cacache`, `rm -rf $HOME/projects/scratch`, `rm -rf ~/dev/myapp/node_modules`, `rm -rf ~/Downloads/tmp`, `rm -rf /var/log/foo`. FALSE: `rm -rf ./build`, `rm -rf /tmp/mybuild`, `rm -rf build/`, `rm -rf node_modules`, `rm -rf ../sibling`. The alternative that does it is `~(?:/\\S*)?`, plus `\\$HOME\\b` which matches the prefix of `$HOME/anything`. Floor membership: Backend/src/ai-security-policy/ai-malicious-floor.ts:155 via `destructive()` at :104-109 (`minimumDisposition: 'block'`). Read-path enforcement: ai-security-policy.service.ts:2198. D4 default: ai-security-policy.constants.ts:1238 (`'destructive-rm': 'warn', // system paths`), and the comment at :1330-1341 still describes the raise as happening only on the WRITE path via `applyMaliciousFloor` in `buildRiskGroupUpdateDto` — that comment is now itself stale. Bonus false negative from the same compile: `rm -rf /tmp/x ~/.cache` returns FALSE, because only the first target after the flags is inspected.",
+   "proposedText": "### 17.1 The destructive-rm hard block — the most customer-visible defect today\n\n**What a customer sees.** An agent session cannot run `rm -rf ~/.npm/_cacache`, `rm -rf $HOME/.cache/pip`, or `rm -rf ~/dev/myapp/node_modules`. Each is refused as `destructive-rm`. `rm -rf ./build` and `rm -rf /tmp/mybuild` are fine.\n\n**Why.** Three correct-in-isolation decisions compose into it.\n\n1. The shipped rule treats *any* home-relative path as a broad target. The alternation is `~(?:/\\S*)?` and `\\$HOME\\b` — `internal/toolrisk/toolrisk.go:122`. The comment two lines above says \"Narrow `rm -rf ./build` does NOT match (the target must be broad)\", which is true and is not the case that fires. **Compiled and run 2026-08-28**: true for `rm -rf $HOME/.cache/pip`, `rm -rf ~/.npm/_cacache`, `rm -rf $HOME/projects/scratch`; false for `rm -rf ./build`, `rm -rf /tmp/mybuild`.\n2. `destructive-rm` is a malicious-floor member at `minimumDisposition: 'block'` — `ai-malicious-floor.ts:155`, `:104-109`.\n3. Since Backend PR #285 (ECS td 322) the floor holds on the **read** path: `withMaliciousFloorApplied` is the first statement of `assembleEffectiveDto` (`ai-security-policy.service.ts:2198`).\n\n**Therefore no administrator on any tenant can relax it.** Setting `toolRisk.destructive-rm` to `warn` or `monitor` in the console stores that value and the endpoint is served `block` on the very next pull, with a warn line in the server log and nothing in the console explaining the divergence.\n\n**The D4 default table says `warn`** (`ai-security-policy.constants.ts:1238`), so the constants and the wire disagree by design. The comment at `:1330-1341` still describes the raise as happening on the write path only; that is now stale.\n\n**A false negative in the same rule, worth knowing:** only the first target after the flags is inspected, so `rm -rf /tmp/x ~/.cache` does **not** fire.\n\n**The decision is a product decision, not a bug fix.** Either narrow the rule so a path under `$HOME` is not automatically broad, or lower `destructive-rm` beneath the floor in `ai-malicious-floor.ts`. Doing the second alone leaves the detector firing at `warn` fleet-wide; doing the first alone leaves the floor correct and the detector honest. Do not \"fix\" it by editing the D4 table — the floor overrides it."
+  },
+  {
+   "what": "A clean MSI uninstall leaves the entire `C:\\ProgramData\\devoid\\bin` payload on disk, and the reason is not harden-shims.",
+   "whyItMatters": "It is residue, not exposure — the ACL is correct and PATH is cleaned, so nothing intercepts — but it is 41 files and roughly 424 MB per machine that never goes away, including executables named `claude.exe`, `codex.exe` and `npm.exe`, on every endpoint that has ever had an earlier DeVoid MSI installed. More importantly, the causal story matters: the proposed explanation (\"harden-shims has no uninstall counterpart\") is wrong, and acting on it would fix nothing.",
+   "evidence": "PROVEN from the 2026-08-27 real-box uninstall log, cross-checked against the .wxs. The MSI log records `Disallowing uninstallation of component: {GUID} since another client exists` 63 times, including `{A1C7D3E9-4B62-4F18-9E2A-7C5B0D4F8A13}` (comp_claude_exe) and `{B2D8E4FA-5C73-4A29-8F3B-6D4C1E5A9B24}` (comp_codex_exe) — the exact GUIDs at windows-installer/msi-build/Product.wxs:235,239. Consequence: with `REMOVE=ALL` and features `CoreAgent` and `DependencyShims` both resolving `Action: Absent`, ALL 79 components resolved to `Action: Null` (only 4 got `Action: Absent`, all the Firefox-policy-removed pair). `RemoveFiles` and `RemoveFolders` both ran in 0 ms and returned 1 having deleted nothing. The unregister ops carry `PreviouslyPinned=1`. The .wxs is not at fault: `Permanent=\"no\"` (Product.wxs:376), and at install the components registered with `SharedDllRefCount=0`. Sizing: Product.wxs has 43 `<File Id=` rows, of which 2 are browser native-messaging manifests that live outside BINDIR → 41 files in BINDIR, and 20 of them are separate copies of `devoid.exe` (plus `devoid-daemon.exe` and `devoid-prompt-guard-host.exe`), which is where ~424 MB comes from. harden-shims is not implicated: it only re-applies ACLs to files already present (cmd/devoid/main.go:8370-8386 → security.HardenShimDirectory, internal/security/shim_hardening.go:14-32), it creates nothing, and MSI never reached the delete step.",
+   "proposedText": "### 17.2 A clean uninstall leaves the whole bin payload behind\n\n**Observed 2026-08-27 on a real Windows box.** Install and uninstall both exit 0, every user config file restores byte-identical, PATH is cleaned, and the ACL on what remains is correct — so **nothing intercepts anything**. But `C:\\ProgramData\\devoid\\bin` still holds **41 files, roughly 424 MB**, including executables named `claude.exe`, `codex.exe` and `npm.exe`. It is residue, not exposure.\n\n**The cause is MSI component ownership, not a missing custom action.** The uninstall log records `Disallowing uninstallation of component: {…} since another client exists` **63 times** — including the exact GUIDs of `comp_claude_exe` and `comp_codex_exe` from `Product.wxs:235,239`. With `REMOVE=ALL` and both features resolving `Action: Absent`, every one of the 79 components still resolved to `Action: Null`; `RemoveFiles` and `RemoveFolders` each ran in 0 ms and deleted nothing. The unregister ops carry `PreviouslyPinned=1`.\n\n\"Another client\" means an **earlier DeVoid ProductCode is still registered against the same ComponentIds** under `HKLM\\SOFTWARE\\Classes\\Installer\\Components`. So any machine that has ever carried a previous DeVoid MSI uninstalls to a full bin directory, and a fresh machine does not. The `.wxs` is innocent: components are `Permanent=\"no\"` (`Product.wxs:376`) and register with `SharedDllRefCount=0` at install.\n\n**41 files / ~424 MB is exactly the MSI's own BINDIR payload**: 43 `<File>` rows minus the 2 browser native-messaging manifests that live elsewhere, and 20 of the 41 are separate copies of `devoid.exe`.\n\n**`harden-shims` is not the cause.** It re-applies ACLs to files already on disk (`cmd/devoid/main.go:8370-8386`); it creates nothing, and MSI never reached a delete step for it to have undone. A teardown custom action would work, but the root fix is component-ownership hygiene across ProductCodes."
+  },
+  {
+   "what": "§16 has no dated \"closed\" line, so a reader cannot tell which entries were verified this week and which are inherited.",
+   "whyItMatters": "The document's own editing rule (§0.1) says a fixed gap moves to a closed line with a date and is never deleted. Three §16 entries changed state between 2026-08-27 and 2026-08-28 — the malicious floor (wired on the read path, deployed td 322), the Codex dialect (0.147 added, proven live), and the inventory walk depth cap (8 → 32) — and none of them can currently be told apart from the eleven that did not move.",
+   "evidence": "Doc §0.1 (L18-31) states the rule; §16 (L974-1000) has no dates on any of its fourteen bullets. The three state changes are Backend PR #285 → td 322 (ai-security-policy.service.ts:2198), Installers 9d167ed9 (hookdialect.go:99-115,165), Installers d506156f (internal/inventory/aitools + internal/sweep/sweep_ai.go).",
+   "proposedText": "Add immediately under the §16 lead paragraph:\n\n> **Closed since this list was written.** Entries are moved here, never deleted.\n>\n> - *2026-08-27 — the malicious floor on the read path.* `withMaliciousFloorApplied` became the first statement of `assembleEffectiveDto` (Backend PR #285, deployed ECS task definition 322). The read path is covered for all 37 floor members. The throwing form `assertMaliciousFloorHeld` is still spec-only and its docblock now says so.\n> - *2026-08-27 — the Codex cooperative hook lane.* A second measured dialect, `0.147.`, joins `0.144.` (Installers `9d167ed9`, agent 7.10.6), and the lane was proven live on codex-cli 0.147.0 the same day. Still unmeasured: 0.145, 0.146, 0.148 and the 0.149 alpha the desktop app runs.\n> - *2026-08-27 — the inventory rule-file depth cap.* The walk moved from a hardcoded depth 8 to 32 with counted coverage (Installers `d506156f`, agent 7.10.6). 47% of rule files on the reference box had been invisible while the log said \"sweep complete\". **The coverage report itself is still inert** — `sweep.AIResult.Complete` has no reader on either sweep surface.\n> - *2026-08-27 — the Claude-lane hook status verdict.* See §14.4."
+  },
+  {
+   "what": "§17 does not say where each gap is verifiable, so the ranking cannot be re-audited without redoing the work.",
+   "whyItMatters": "The section is the one a decision-maker reads and the only one with no citations. Every other part of Part III carries a §-reference or a file:line; §17 carries neither, which makes it the easiest part of the document to let rot.",
+   "evidence": "Structural: §17 (L1002-1026) is ten numbered items, each pointing at another § of this document but at no code. §13, §14, §15 and §16 all name mechanisms precisely enough to re-check.",
+   "proposedText": "Re-rank §17 as follows, with the two new entries and one demotion, each carrying its verification anchor:\n\n1. **`rm -rf ~/<anything>` is a hard block no administrator can relax.** §17.1. `internal/toolrisk/toolrisk.go:122` + `ai-malicious-floor.ts:155` + `ai-security-policy.service.ts:2198`. New, and the most customer-visible thing in the product. A decision, not a bug: narrow the rule or lower the floor member.\n2. **The hook fails open under load and the surfaces did not say so.** §15.1. *The reporting half is now fixed on the Claude lane* (`cmd/devoid/ai.go:483`), *and not on the Codex lane* (`ai_codex_lanes.go:189-395`). The budget itself is untouched: `airuntime/runner.go:52`. Six in ten is still six in ten.\n3. **The managed/cooperative hinge.** §13.3. `internal/airuntimeintegrity/local_disablement.go:49-56`. Until an endpoint reaches attested posture, all three shim fail-closed branches are inert. Knowing what fraction of the fleet is attested is a prerequisite to claiming any of §13.2.\n4. **Codex governance is conditional on two client families, and the desktop app is in neither.** §16. `internal/codexmanaged/hookdialect.go:99-115,161-165`. Demoted from 3 because the lane is now proven live on 0.147 — but 0.149.0-alpha.4.1 is what the Codex desktop app runs, so the desktop lane is ungoverned on the reference box itself.\n5. **Machine secrets are readable by every local user**, and cannot be narrowed without the per-user credential split. §14.6. `internal/daemon/daemon_token_perm_windows.go:9-17`.\n6. **The daemon task has no crash recovery on MSI installs**, and the reconciler will never repair it because it does not inspect that field. §14.2. `cmd/devoid/setup_installer.go:853-859` + `internal/daemon/persistence.go:66-86`.\n7. **Prompt evidence produces nothing.** §10.2, §16. `internal/daemon/ai_prompt_capture_wiring.go:46`. Every governed-evidence claim in any older document is currently false.\n8. **Alert egress is off by default** while outbox rows accumulate. §12. `Backend/src/app.module.ts:154`.\n9. **The canary cannot go green**, so \"is enforcement alive\" has no continuous answer — and the proof path itself mis-reports a real deny as a launch failure at a 5 s `WaitDelay`. §15.2. `internal/aicanary/exec.go:125`.\n10. **Gemini is unprotected after launch**, and is presented in the console beside two clients that are. §3.3.\n11. **52 detector classes have no policy vocabulary**, almost all of them DLP vendor-token detectors. §17 item 10 above.\n12. **A clean uninstall leaves 41 files / ~424 MB in `ProgramData\\devoid\\bin`.** §17.2. Residue, not exposure — ACL correct, PATH cleaned. Ranked last on risk and named because it is visible to every customer who uninstalls."
+  }
+ ],
+ "reorganisation": "Part III is structurally sound and should keep its shape; three targeted changes would make it hold its value as things get fixed.\n\n**1. Give §16 a dated closed block, and start using it.** The document's own editing rule already demands this and §16 is the only list that has outgrown it — three of its fourteen entries moved state in the twenty-four hours before this audit and nothing distinguishes them from the eleven that did not. The proposed block is in the omissions above. Do the same in §14.4, §14.6 and §14.7, where the closure is partial and the *remainder* is the finding: each should read as \"closed <date>: <what changed, with the commit>. What remains: <the narrower, still-true fact>.\" That format is what stops a half-fix from reading as a whole one, which is the failure mode this section exists to prevent.\n\n**2. Split §17 into two lists, because it currently mixes two questions.** Items 1-6 answer \"is this fleet protected right now\" and items 7-10 answer \"what does the product claim that it cannot back up\". They deserve different urgency and different readers. With the destructive-rm block added, the first list is also no longer only about gaps in coverage — it now contains a control that is working *too hard* and cannot be tuned, which is a different kind of customer harm and belongs at the top precisely because it is the one a customer notices today. Add the file:line anchors; §17 is the one section with no citations and therefore the one most likely to rot.\n\n**3. Add §17.1 and §17.2 as full subsections rather than list items.** Both need more than a line: the destructive-rm block is a three-mechanism composition where each part is individually correct, and the uninstall residue has a proposed cause that is *wrong* and a proven cause that is not obvious. A one-line entry for either would be re-derived incorrectly by the next reader — which is exactly what happened to the harden-shims explanation.\n\nTwo cross-cutting notes.\n\n*On §15:* the register now disagrees with §14.6 in a way the code itself has already flagged. `internal/winacl/machine_secret_windows.go:63-69` names the register's machine-secret quarantine reason as stale and dates the change (2026-08-18). When a source file goes to the trouble of saying \"this document is out of date about me\", that is the highest-quality staleness signal available, and it is worth a standing habit: before trusting a §15 quarantine reason, grep the named package for the entry id.\n\n*On the two live proofs that landed 2026-08-27:* both were taken on sandboxed rigs against a **local** Backend or with the backend pinned to a dead loopback port, and the pre-tool-deny proof records that \"the deciding authority was the endpoint's LOCAL floor, not server policy\". The register's evidence blocks say this plainly; §15's table currently does not. Whatever wording the table adopts, it should carry that qualifier, because three observed entries all resting on the local floor is a materially weaker statement than three entries resting on server policy, and the difference is exactly what §13.3 is about."
+}

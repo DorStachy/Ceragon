@@ -1,0 +1,677 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+ACCOUNT
+Render QA Org
+Render QA Site
+ADMIN
+ENDPOINTS
+Search…
+ctrl
+K
+RQ
+Render QA
+Admin
+ADMINISTRATION
+Admin
+ENDPOINTS
+Endpoint Management
+Install & Enrollment
+Fleet
+Coverage
+Fleet Coverage
+
+Per-machine AI protection coverage and rollout readiness: which controls are live, by team and by endpoint. Only attested controls count; configured is not enforced.
+
+One honest coverage truth per machine: exactly which protections are live, derived from what each endpoint actually uses. A machine is flagged only when a tool it uses is unprotected.
+
+Governance profile truth unavailable
+
+This deployment cannot prove which protections satisfy the selected profile, so it is not ready for external reliance.
+
+ROLLOUT READINESS
+0
+of 1 endpoint ready
+UNKNOWN
+0
+READY
+0
+AT RISK
+0
+NOT READY
+1
+UNKNOWN
+ALL ENDPOINTS · 1
+ENDPOINT	VERDICT	HEALTH	PROMPT GUARD	COMMAND HOOKS	PACKAGE GATE	PUSH PROTECTION	WEB AI GUARD	MCP GOVERNANCE	AI RUNTIME	POLICY INTEGRITY	EVIDENCE CHAIN
+DESKTOP-QA01	
+UNKNOWN	
+	
+	
+	
+	
+	
+	
+	
+	
+-
+UNKNOWN	-
+PROTECTED
+SELF-REPORTED
+GAP
+NOT APPLICABLE
+UNKNOWN
+RUNTIME PROTECTION DEPTH
+
+How deep governance reaches for each AI runtime, and what is proven live. A checkpoint reads “Active” only after DeVoid has observed it enforce; unknown, stale, drifted, or observed-only states are never shown as protected.
+
+9
+ACTIVE
+0
+OBSERVED
+0
+INSTALLED (UNVERIFIED)
+0
+UNVERIFIED VERSION
+0
+DRIFTED
+0
+STALE
+0
+UNSUPPORTED
+0
+UNKNOWN
+9 adapters · 1 endpoint
+ENFORCEMENT PROOF, PER RUNTIME INSTANCE
+8 instances
+PROVEN
+0
+NOT PROVEN
+0
+NEVER TESTED
+0
+COULD NOT TEST
+0
+PROOF EXPIRED
+0
+
+Only “Not proven” is a measured enforcement gap. “Never tested” and “Could not test” are the absence of a measurement, and “Proof expired” is a measurement that has lapsed: none of the three is a pass, and none of the three is a defect.
+
+BY ENDPOINT
+DESKTOP-QA01
+ATTESTED 8/18/2026, 11:11:59 PM
+POLICY INTEGRITY
+
+This endpoint has never sent an accepted policy-integrity report, or the block it sent was rejected. Nothing about its policy state is proven.
+
+-
+UNKNOWN
+
+NEXT · Confirm the agent reports policy integrity, then re-enrol if it does not.
+
+APPLIED BUNDLE
+never applied
+ISSUED BUNDLE
+never issued
+SIGNATURE
+Signature unverified
+ENDPOINT STATE
+Unknown
+CONTAINMENT
+Containment unknown
+ENDPOINT VERIFIED
+never
+SERVER ACCEPTED
+never
+LIVENESS BOUND
+unknown
+REPORT SEQUENCE
+none accepted
+EVIDENCE WATERMARK
+unknown
+CRITICAL EVIDENCE PENDING
+unknown
+INTEGRITY-CAPABLE SINCE
+never
+SIGNED CONTROL TARGETS
+unknown
+UNBOUND TARGETS
+unknown
+UNRESOLVED TARGETS
+unknown
+CONFLICTING TARGETS
+unknown
+
+At least one bundle revision is unknown (a legacy, never-issued or never-applied endpoint). That is unknown: it is not a pending refresh, and it is not proof of agreement.
+
+Endpoint-attested, not hardware-attested. Local proof is authenticated to this agent identity; it is not independent of the machine.
+
+Open this endpoint’s detections
+claude-code
+on DESKTOP-QA01
+WINDOWS
+RUNTIME NATIVE
+ACTIVE
+TAMPER RESISTANT
+ENDPOINT-REPORTED TIER UNKNOWN
+SURFACE CERTIFICATE
+OS
+not reported
+RUNTIME VERSION
+not reported
+CLIENT BUILD
+not reported
+EXECUTION HOST
+not reported
+PROVIDER ROUTE
+not reported
+TRANSPORT
+not reported
+AUTH MODE
+not reported
+INSTANCE INTEGRITY
+ri-pre-0
+STATE
+Converged
+CONTAINMENT
+Endpoint
+LAUNCH ORIGIN
+Launch origin unknown
+PROJECTION
+unknown
+CONFIGURED
+never
+LOADED
+never
+OBSERVED
+never
+LAST REPAIR
+never
+ENFORCEMENT PROOF
+NOT SERVED
+
+This deployment served no enforcement-proof state for the instance, so nothing can be said about whether it has ever been shown to enforce. An unanswered question is not a clean answer.
+
+OBSERVED
+no live proof
+EXPIRES
+no live proof
+RECEIPT HELD
+unknown
+RUNTIME VERSION
+not reported
+LAST OBSERVATION
+never
+ENDPOINT-REPORTED (NOT EVIDENCE)
+REPORTED LAST CANARY
+never
+REPORTED EXPIRY
+never
+claude-code
+on DESKTOP-QA01
+WINDOWS
+RUNTIME NATIVE
+ACTIVE
+TAMPER RESISTANT
+ENDPOINT-REPORTED TIER UNKNOWN
+SURFACE CERTIFICATE
+OS
+not reported
+RUNTIME VERSION
+not reported
+CLIENT BUILD
+not reported
+EXECUTION HOST
+not reported
+PROVIDER ROUTE
+not reported
+TRANSPORT
+not reported
+AUTH MODE
+not reported
+INSTANCE INTEGRITY
+ri-pre-1
+STATE
+Converged
+CONTAINMENT
+Endpoint
+LAUNCH ORIGIN
+Launch origin unknown
+PROJECTION
+unknown
+CONFIGURED
+never
+LOADED
+never
+OBSERVED
+never
+LAST REPAIR
+never
+ENFORCEMENT PROOF
+NOT SERVED
+
+This deployment served no enforcement-proof state for the instance, so nothing can be said about whether it has ever been shown to enforce. An unanswered question is not a clean answer.
+
+OBSERVED
+no live proof
+EXPIRES
+no live proof
+RECEIPT HELD
+unknown
+RUNTIME VERSION
+not reported
+LAST OBSERVATION
+never
+ENDPOINT-REPORTED (NOT EVIDENCE)
+REPORTED LAST CANARY
+never
+REPORTED EXPIRY
+never
+codex
+on DESKTOP-QA01
+WINDOWS
+RUNTIME NATIVE
+ACTIVE
+TAMPER RESISTANT
+ENDPOINT-REPORTED TIER UNKNOWN
+SURFACE CERTIFICATE
+OS
+not reported
+RUNTIME VERSION
+not reported
+CLIENT BUILD
+not reported
+EXECUTION HOST
+not reported
+PROVIDER ROUTE
+not reported
+TRANSPORT
+not reported
+AUTH MODE
+not reported
+INSTANCE INTEGRITY
+ri-pre-2
+STATE
+Converged
+CONTAINMENT
+Endpoint
+LAUNCH ORIGIN
+Launch origin unknown
+PROJECTION
+unknown
+CONFIGURED
+never
+LOADED
+never
+OBSERVED
+never
+LAST REPAIR
+never
+ENFORCEMENT PROOF
+NOT SERVED
+
+This deployment served no enforcement-proof state for the instance, so nothing can be said about whether it has ever been shown to enforce. An unanswered question is not a clean answer.
+
+OBSERVED
+no live proof
+EXPIRES
+no live proof
+RECEIPT HELD
+unknown
+RUNTIME VERSION
+not reported
+LAST OBSERVATION
+never
+ENDPOINT-REPORTED (NOT EVIDENCE)
+REPORTED LAST CANARY
+never
+REPORTED EXPIRY
+never
+codex
+on DESKTOP-QA01
+WINDOWS
+RUNTIME NATIVE
+ACTIVE
+TAMPER RESISTANT
+ENDPOINT-REPORTED TIER UNKNOWN
+SURFACE CERTIFICATE
+OS
+not reported
+RUNTIME VERSION
+not reported
+CLIENT BUILD
+not reported
+EXECUTION HOST
+not reported
+PROVIDER ROUTE
+not reported
+TRANSPORT
+not reported
+AUTH MODE
+not reported
+INSTANCE INTEGRITY
+ri-pre-3
+STATE
+Converged
+CONTAINMENT
+Endpoint
+LAUNCH ORIGIN
+Launch origin unknown
+PROJECTION
+unknown
+CONFIGURED
+never
+LOADED
+never
+OBSERVED
+never
+LAST REPAIR
+never
+ENFORCEMENT PROOF
+NOT SERVED
+
+This deployment served no enforcement-proof state for the instance, so nothing can be said about whether it has ever been shown to enforce. An unanswered question is not a clean answer.
+
+OBSERVED
+no live proof
+EXPIRES
+no live proof
+RECEIPT HELD
+unknown
+RUNTIME VERSION
+not reported
+LAST OBSERVATION
+never
+ENDPOINT-REPORTED (NOT EVIDENCE)
+REPORTED LAST CANARY
+never
+REPORTED EXPIRY
+never
+cursor
+on DESKTOP-QA01
+WINDOWS
+RUNTIME NATIVE
+ACTIVE
+TAMPER RESISTANT
+ENDPOINT-REPORTED TIER UNKNOWN
+SURFACE CERTIFICATE
+OS
+not reported
+RUNTIME VERSION
+not reported
+CLIENT BUILD
+not reported
+EXECUTION HOST
+not reported
+PROVIDER ROUTE
+not reported
+TRANSPORT
+not reported
+AUTH MODE
+not reported
+INSTANCE INTEGRITY
+ri-pre-4
+STATE
+Converged
+CONTAINMENT
+Endpoint
+LAUNCH ORIGIN
+Launch origin unknown
+PROJECTION
+unknown
+CONFIGURED
+never
+LOADED
+never
+OBSERVED
+never
+LAST REPAIR
+never
+ENFORCEMENT PROOF
+NOT SERVED
+
+This deployment served no enforcement-proof state for the instance, so nothing can be said about whether it has ever been shown to enforce. An unanswered question is not a clean answer.
+
+OBSERVED
+no live proof
+EXPIRES
+no live proof
+RECEIPT HELD
+unknown
+RUNTIME VERSION
+not reported
+LAST OBSERVATION
+never
+ENDPOINT-REPORTED (NOT EVIDENCE)
+REPORTED LAST CANARY
+never
+REPORTED EXPIRY
+never
+cursor
+on DESKTOP-QA01
+WINDOWS
+RUNTIME NATIVE
+ACTIVE
+TAMPER RESISTANT
+ENDPOINT-REPORTED TIER UNKNOWN
+SURFACE CERTIFICATE
+OS
+not reported
+RUNTIME VERSION
+not reported
+CLIENT BUILD
+not reported
+EXECUTION HOST
+not reported
+PROVIDER ROUTE
+not reported
+TRANSPORT
+not reported
+AUTH MODE
+not reported
+INSTANCE INTEGRITY
+ri-pre-5
+STATE
+Converged
+CONTAINMENT
+Endpoint
+LAUNCH ORIGIN
+Launch origin unknown
+PROJECTION
+unknown
+CONFIGURED
+never
+LOADED
+never
+OBSERVED
+never
+LAST REPAIR
+never
+ENFORCEMENT PROOF
+NOT SERVED
+
+This deployment served no enforcement-proof state for the instance, so nothing can be said about whether it has ever been shown to enforce. An unanswered question is not a clean answer.
+
+OBSERVED
+no live proof
+EXPIRES
+no live proof
+RECEIPT HELD
+unknown
+RUNTIME VERSION
+not reported
+LAST OBSERVATION
+never
+ENDPOINT-REPORTED (NOT EVIDENCE)
+REPORTED LAST CANARY
+never
+REPORTED EXPIRY
+never
+windsurf
+on DESKTOP-QA01
+WINDOWS
+RUNTIME NATIVE
+ACTIVE
+TAMPER RESISTANT
+ENDPOINT-REPORTED TIER UNKNOWN
+SURFACE CERTIFICATE
+OS
+not reported
+RUNTIME VERSION
+not reported
+CLIENT BUILD
+not reported
+EXECUTION HOST
+not reported
+PROVIDER ROUTE
+not reported
+TRANSPORT
+not reported
+AUTH MODE
+not reported
+INSTANCE INTEGRITY
+ri-pre-6
+STATE
+Converged
+CONTAINMENT
+Endpoint
+LAUNCH ORIGIN
+Launch origin unknown
+PROJECTION
+unknown
+CONFIGURED
+never
+LOADED
+never
+OBSERVED
+never
+LAST REPAIR
+never
+ENFORCEMENT PROOF
+NOT SERVED
+
+This deployment served no enforcement-proof state for the instance, so nothing can be said about whether it has ever been shown to enforce. An unanswered question is not a clean answer.
+
+OBSERVED
+no live proof
+EXPIRES
+no live proof
+RECEIPT HELD
+unknown
+RUNTIME VERSION
+not reported
+LAST OBSERVATION
+never
+ENDPOINT-REPORTED (NOT EVIDENCE)
+REPORTED LAST CANARY
+never
+REPORTED EXPIRY
+never
+windsurf
+on DESKTOP-QA01
+WINDOWS
+RUNTIME NATIVE
+ACTIVE
+TAMPER RESISTANT
+ENDPOINT-REPORTED TIER UNKNOWN
+SURFACE CERTIFICATE
+OS
+not reported
+RUNTIME VERSION
+not reported
+CLIENT BUILD
+not reported
+EXECUTION HOST
+not reported
+PROVIDER ROUTE
+not reported
+TRANSPORT
+not reported
+AUTH MODE
+not reported
+INSTANCE INTEGRITY
+ri-pre-7
+STATE
+Converged
+CONTAINMENT
+Endpoint
+LAUNCH ORIGIN
+Launch origin unknown
+PROJECTION
+unknown
+CONFIGURED
+never
+LOADED
+never
+OBSERVED
+never
+LAST REPAIR
+never
+ENFORCEMENT PROOF
+NOT SERVED
+
+This deployment served no enforcement-proof state for the instance, so nothing can be said about whether it has ever been shown to enforce. An unanswered question is not a clean answer.
+
+OBSERVED
+no live proof
+EXPIRES
+no live proof
+RECEIPT HELD
+unknown
+RUNTIME VERSION
+not reported
+LAST OBSERVATION
+never
+ENDPOINT-REPORTED (NOT EVIDENCE)
+REPORTED LAST CANARY
+never
+REPORTED EXPIRY
+never
+AI POLICY SIGNING ROOT
+
+The cryptographic root that signs AI-security policy, and how the fleet has adopted the current root. Endpoints without a provable ack of the current root read UNKNOWN, never as converged.
+
+CURRENT ROOT FINGERPRINT
+- no root established
+ROTATION SEQUENCE
+-
+LAST ROTATED
+-
+CONVERGENCE
+NaN%of eligible
+ON CURRENT
+ON PREVIOUS
+UNKNOWN
+ROTATION LEDGER
+
+No rotations recorded: the signing root has not been rotated.
+
+ENFORCEMENT PROOF
+
+A live deny canary is the only evidence that a runtime actually enforced the policy it was sent. This card reports whether one has ever run, and how many endpoints hold an attested trust anchor. Neither is inferred from the other, and neither is inferred from a policy having been delivered.
+
+No canary has ever run on this fleet. No runtime instance has produced an enforcement proof, so nothing here has been shown to enforce. This is a measured absence: not a pass, and not an error.
+
+CHALLENGES ISSUED
+CHALLENGES REDEEMED
+ENDPOINTS CHALLENGED
+ENDPOINT TRUST ANCHORS
+ATTESTED
+of eligible
+PENDING
+LEGACY UNSIGNED
+
+An attested anchor is what lets an endpoint receive a signed bundle. It is not evidence that the bundle was ever applied, and not evidence that anything was enforced.
+
+Browser AI used without the Web AI Guard extension is only partly detectable. With no extension there are no browser prompt events, so an unprotected browser-AI user may not appear here. We never mark such use falsely “ready.”
+
+AI GOVERNANCE OPT-OUTS
+
+An endpoint can be authorized to stop DeVoid governing a runtime. While an opt-out is in force that runtime is not governed on that endpoint, and it is not repaired automatically. Where no readable opt-out transition has been reported, the row reads “Not reported”: that coverage has not been measured.
+
+No endpoints are in scope, so there is no opt-out coverage to report. This is not a statement that any runtime is governed.

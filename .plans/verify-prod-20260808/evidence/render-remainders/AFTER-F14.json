@@ -1,0 +1,22 @@
+{
+  "url": "/admin/endpoints?sub=coverage&siteId=11111111-1111-4111-8111-111111111111",
+  "title": "Endpoint Management · Admin · DeVoid",
+  "overflow": null,
+  "found": {
+    "web-guard-unread": [
+      {
+        "text": "Web AI Guard coverage could not be read, so nothing here is known about which browsers are guarded. No count is shown: a zero would be indistinguishable from a fleet with no managed browsers. read failed gnimialc si GUARD: HEALTHY xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "attrs": {
+          "data-testid": "web-guard-unread"
+        }
+      }
+    ]
+  },
+  "consoleErrors": [
+    "{\"timestamp\":\"2026-08-19T10:38:45.096Z\",\"level\":\"error\",\"message\":\"web-coverage fetch failed\",\"error\":{\"name\":\"Error\",\"message\":\"read failed ‮gnimialc‍ si‬\\nGUARD: HEALTHY \\u0007xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  ],
+  "failed": [
+    "502 /api/ai-control-plane/web-coverage?siteId=11111111-1111-4111-8111-111111111111",
+    "502 /api/ai-control-plane/web-coverage?siteId=11111111-1111-4111-8111-111111111111"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "fetchedAt": "2026-08-29",
+  "repos": {
+    "Backend": {
+      "before": "fec535952d3191c7f754c256b3ef445c3e66b1ec",
+      "after": "c0b533ef7da51ca8144a0217e2455d33117c149d"
+    },
+    "Frontend": {
+      "before": "cac574ae063b4e91ec38ddb205ec5abe4cbc3dff",
+      "after": "cac574ae063b4e91ec38ddb205ec5abe4cbc3dff"
+    },
+    "Installers": {
+      "before": "b7c0c1359a98a594ce159a123e061d1ada04b330",
+      "after": "657aed6ba4301fa60502435cb6b3e106723fd98f"
+    },
+    "Ceragon-Intelligence": {
+      "before": "20b5a463b74a942d9599164669c80cadc34384c7",
+      "after": "98be888ea4a8fa502c9fc9b6c8d93e3b93d54322"
+    },
+    "Static-Worker": {
+      "before": "f5cddcc27d6992ee5995ad7d2348a3a221f53a4a",
+      "after": "f5cddcc27d6992ee5995ad7d2348a3a221f53a4a"
+    },
+    "Sandbox-Worker": {
+      "before": "2831997dfe840d4a4313f25c3ad0ebeff35722f9",
+      "after": "2831997dfe840d4a4313f25c3ad0ebeff35722f9"
+    },
+    "GithubApp-Bot-Scanner-Worker": {
+      "before": "3d4116a5e5b1f48a9a9e33f487e490133fba47d9",
+      "after": "3d4116a5e5b1f48a9a9e33f487e490133fba47d9"
+    }
+  }
+}

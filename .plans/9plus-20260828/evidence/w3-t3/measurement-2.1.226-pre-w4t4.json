@@ -1,0 +1,407 @@
+{
+  "schema": "devoid.claude-route-precedence.v1",
+  "measuredAt": "2026-08-29T03:10:07.603Z",
+  "binary": {
+    "product": "claude-code",
+    "version": "2.1.226",
+    "sha256": "cec4e772e8237357554a8a5a86f821db9081e9fb05499bc4e5fd14b73f48708c",
+    "path": "C:/Users/Owner/.local/bin/claude.exe"
+  },
+  "seam": {
+    "machineScope": "CLAUDE_CODE_MANAGED_SETTINGS_PATH -> <tmp>/machine/managed-settings.json (machineMode=dropin; 'dropin' plants <tmp>/machine/managed-settings.d/90-devoid.json, 'base' plants managed-settings.json itself)",
+    "machineMode": "dropin",
+    "observation": "distinct loopback sentinel base URL per scope; winner = the sentinel path the binary connected to"
+  },
+  "sources": [
+    {
+      "key": "process",
+      "bit": 0,
+      "label": "process environment"
+    },
+    {
+      "key": "machine",
+      "bit": 1,
+      "label": "machine managed-settings.d/90-devoid.json"
+    },
+    {
+      "key": "user",
+      "bit": 2,
+      "label": "~/.claude/settings.json env"
+    },
+    {
+      "key": "project",
+      "bit": 3,
+      "label": "<proj>/.claude/settings.json env"
+    },
+    {
+      "key": "projectlocal",
+      "bit": 4,
+      "label": "<proj>/.claude/settings.local.json env"
+    }
+  ],
+  "cells": [
+    {
+      "cell": 0,
+      "present": [],
+      "winner": "none",
+      "observedRequests": []
+    },
+    {
+      "cell": 1,
+      "present": [
+        "process"
+      ],
+      "winner": "process",
+      "observedRequests": [
+        "/s-process/api/hello"
+      ]
+    },
+    {
+      "cell": 2,
+      "present": [
+        "machine"
+      ],
+      "winner": "none",
+      "observedRequests": []
+    },
+    {
+      "cell": 3,
+      "present": [
+        "process",
+        "machine"
+      ],
+      "winner": "process",
+      "observedRequests": [
+        "/s-process/api/hello"
+      ]
+    },
+    {
+      "cell": 4,
+      "present": [
+        "user"
+      ],
+      "winner": "user",
+      "observedRequests": [
+        "/s-user/api/hello"
+      ]
+    },
+    {
+      "cell": 5,
+      "present": [
+        "process",
+        "user"
+      ],
+      "winner": "user",
+      "observedRequests": [
+        "/s-user/api/hello"
+      ]
+    },
+    {
+      "cell": 6,
+      "present": [
+        "machine",
+        "user"
+      ],
+      "winner": "user",
+      "observedRequests": [
+        "/s-user/api/hello"
+      ]
+    },
+    {
+      "cell": 7,
+      "present": [
+        "process",
+        "machine",
+        "user"
+      ],
+      "winner": "user",
+      "observedRequests": [
+        "/s-user/api/hello"
+      ]
+    },
+    {
+      "cell": 8,
+      "present": [
+        "project"
+      ],
+      "winner": "project",
+      "observedRequests": [
+        "/s-project/v1/messages?beta=true"
+      ]
+    },
+    {
+      "cell": 9,
+      "present": [
+        "process",
+        "project"
+      ],
+      "winner": "process",
+      "observedRequests": [
+        "/s-process/api/hello"
+      ]
+    },
+    {
+      "cell": 10,
+      "present": [
+        "machine",
+        "project"
+      ],
+      "winner": "project",
+      "observedRequests": [
+        "/s-project/v1/messages?beta=true"
+      ]
+    },
+    {
+      "cell": 11,
+      "present": [
+        "process",
+        "machine",
+        "project"
+      ],
+      "winner": "process",
+      "observedRequests": [
+        "/s-process/api/hello"
+      ]
+    },
+    {
+      "cell": 12,
+      "present": [
+        "user",
+        "project"
+      ],
+      "winner": "user",
+      "observedRequests": [
+        "/s-user/api/hello"
+      ]
+    },
+    {
+      "cell": 13,
+      "present": [
+        "process",
+        "user",
+        "project"
+      ],
+      "winner": "user",
+      "observedRequests": [
+        "/s-user/api/hello"
+      ]
+    },
+    {
+      "cell": 14,
+      "present": [
+        "machine",
+        "user",
+        "project"
+      ],
+      "winner": "user",
+      "observedRequests": [
+        "/s-user/api/hello"
+      ]
+    },
+    {
+      "cell": 15,
+      "present": [
+        "process",
+        "machine",
+        "user",
+        "project"
+      ],
+      "winner": "user",
+      "observedRequests": [
+        "/s-user/api/hello"
+      ]
+    },
+    {
+      "cell": 16,
+      "present": [
+        "projectlocal"
+      ],
+      "winner": "projectlocal",
+      "observedRequests": [
+        "/s-projectlocal/v1/messages?beta=true"
+      ]
+    },
+    {
+      "cell": 17,
+      "present": [
+        "process",
+        "projectlocal"
+      ],
+      "winner": "process",
+      "observedRequests": [
+        "/s-process/api/hello"
+      ]
+    },
+    {
+      "cell": 18,
+      "present": [
+        "machine",
+        "projectlocal"
+      ],
+      "winner": "projectlocal",
+      "observedRequests": [
+        "/s-projectlocal/v1/messages?beta=true"
+      ]
+    },
+    {
+      "cell": 19,
+      "present": [
+        "process",
+        "machine",
+        "projectlocal"
+      ],
+      "winner": "process",
+      "observedRequests": [
+        "/s-process/api/hello"
+      ]
+    },
+    {
+      "cell": 20,
+      "present": [
+        "user",
+        "projectlocal"
+      ],
+      "winner": "user",
+      "observedRequests": [
+        "/s-user/api/hello"
+      ]
+    },
+    {
+      "cell": 21,
+      "present": [
+        "process",
+        "user",
+        "projectlocal"
+      ],
+      "winner": "user",
+      "observedRequests": [
+        "/s-user/api/hello"
+      ]
+    },
+    {
+      "cell": 22,
+      "present": [
+        "machine",
+        "user",
+        "projectlocal"
+      ],
+      "winner": "user",
+      "observedRequests": [
+        "/s-user/api/hello"
+      ]
+    },
+    {
+      "cell": 23,
+      "present": [
+        "process",
+        "machine",
+        "user",
+        "projectlocal"
+      ],
+      "winner": "user",
+      "observedRequests": [
+        "/s-user/api/hello"
+      ]
+    },
+    {
+      "cell": 24,
+      "present": [
+        "project",
+        "projectlocal"
+      ],
+      "winner": "projectlocal",
+      "observedRequests": [
+        "/s-projectlocal/v1/messages?beta=true"
+      ]
+    },
+    {
+      "cell": 25,
+      "present": [
+        "process",
+        "project",
+        "projectlocal"
+      ],
+      "winner": "process",
+      "observedRequests": [
+        "/s-process/api/hello"
+      ]
+    },
+    {
+      "cell": 26,
+      "present": [
+        "machine",
+        "project",
+        "projectlocal"
+      ],
+      "winner": "projectlocal",
+      "observedRequests": [
+        "/s-projectlocal/v1/messages?beta=true"
+      ]
+    },
+    {
+      "cell": 27,
+      "present": [
+        "process",
+        "machine",
+        "project",
+        "projectlocal"
+      ],
+      "winner": "process",
+      "observedRequests": [
+        "/s-process/api/hello"
+      ]
+    },
+    {
+      "cell": 28,
+      "present": [
+        "user",
+        "project",
+        "projectlocal"
+      ],
+      "winner": "user",
+      "observedRequests": [
+        "/s-user/api/hello"
+      ]
+    },
+    {
+      "cell": 29,
+      "present": [
+        "process",
+        "user",
+        "project",
+        "projectlocal"
+      ],
+      "winner": "user",
+      "observedRequests": [
+        "/s-user/api/hello"
+      ]
+    },
+    {
+      "cell": 30,
+      "present": [
+        "machine",
+        "user",
+        "project",
+        "projectlocal"
+      ],
+      "winner": "user",
+      "observedRequests": [
+        "/s-user/api/hello"
+      ]
+    },
+    {
+      "cell": 31,
+      "present": [
+        "process",
+        "machine",
+        "user",
+        "project",
+        "projectlocal"
+      ],
+      "winner": "user",
+      "observedRequests": [
+        "/s-user/api/hello"
+      ]
+    }
+  ]
+}

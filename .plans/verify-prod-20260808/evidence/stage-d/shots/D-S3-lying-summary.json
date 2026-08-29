@@ -1,0 +1,81 @@
+{
+  "url": "/mcp?siteId=11111111-1111-4111-8111-111111111111",
+  "title": "DeVoid | AI Control Plane",
+  "overflow": null,
+  "found": {
+    "mcp-count-line": [
+      {
+        "text": "1 MCP SERVER · 7 OF 7 CONFIGURATION SOURCES READ",
+        "attrs": {
+          "data-testid": "mcp-count-line"
+        }
+      }
+    ],
+    "mcp-coverage-counts": [
+      {
+        "text": "7 answered · 0 unanswered · 1 endpoint reporting",
+        "attrs": {
+          "data-testid": "mcp-coverage-counts"
+        }
+      }
+    ],
+    "mcp-coverage-incomplete": [],
+    "mcp-coverage-not-served": [],
+    "mcp-coverage-unreported": [],
+    "mcp-coverage-no-rows": [],
+    "mcp-coverage-state": [
+      {
+        "text": "COULD NOT READ",
+        "attrs": {
+          "data-testid": "mcp-coverage-state"
+        }
+      },
+      {
+        "text": "COULD NOT PARSE",
+        "attrs": {
+          "data-testid": "mcp-coverage-state"
+        }
+      },
+      {
+        "text": "CONFIG NOT UNDERSTOOD",
+        "attrs": {
+          "data-testid": "mcp-coverage-state"
+        }
+      },
+      {
+        "text": "SKIMMED",
+        "attrs": {
+          "data-testid": "mcp-coverage-state"
+        }
+      },
+      {
+        "text": "READ",
+        "attrs": {
+          "data-testid": "mcp-coverage-state"
+        }
+      },
+      {
+        "text": "READ, EMPTY",
+        "attrs": {
+          "data-testid": "mcp-coverage-state"
+        }
+      },
+      {
+        "text": "NOT PRESENT",
+        "attrs": {
+          "data-testid": "mcp-coverage-state"
+        }
+      }
+    ],
+    "mcp-coverage-panel": [
+      {
+        "text": "CONFIGURATION SOURCES 7 answered · 0 unanswered · 1 endpoint reporting claude-code · user · json COULD NOT READ C:/Users/other/.claude.json DeVoid could not open this file, so what it declares is unknown. Servers configured here would not appear anywhere in this console. (permission denied) claude-code · project · json COULD NOT PARSE C:/repo/.mcp.json DeVoid opened this file and could not parse it, so what it declares is unknown. Servers configured here would not appear anywhere in this console. (invalid JSON syntax) claude-code · project · json CONFIG NOT UNDERSTOOD C:/repo/mcp.yaml DeVoid has no reader for this file's format, so what it declares is unknown. Servers configured here would n",
+        "attrs": {
+          "data-testid": "mcp-coverage-panel"
+        }
+      }
+    ]
+  },
+  "consoleErrors": [],
+  "failed": []
+}

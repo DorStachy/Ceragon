@@ -1,0 +1,94 @@
+target       : postgres@codefense-postgressdb.c56akiuead81.eu-north-1.rds.amazonaws.com:5432/codefense_db (sslmode=require)
+mode         : read-only
+network      : cluster=backend subnet=subnet-043fba9d9893864a4 sg=sg-02e5e94735f154e7f
+sql          : SELECT 'QA::TRAF::' || coalesce(replace(max(event_time)::text,' ','T'),'none') || '|' || count(*)::text || '|' || (count(*) FILTER (WHERE event_time > now() - interval '7 days'))::text AS r FROM ai_events; SELECT 'QA::TRAFA::' || coalesce(replace(max("createdAt")::text,' ','T'),'none') || '|' || count(*)::text AS r FROM audit_events; SELECT 'QA::E56R::' || count(*)::text || '|' || count(DISTINCT org_id)::text || '|' || coalesce(replace(max(created_at)::text,' ','T'),'none') AS r FROM ai_policy_bundle_application_receipt; SELECT 'QA::E56B::' || (SELECT count(*) FROM ai_policy_bundle_state)::text || '|' || (SELECT count(*) FROM ai_policy_bundle_history)::text AS r; SELECT 'QA::E56T::' || count(*)::text AS r FROM ai_prompt_evidence_artifacts; SELECT 'QA::E56A::' || coalesce(string_agg(state || '=' || n::text, ',' ORDER BY state),'none') AS r FROM (SELECT state, count(*) AS n FROM ai_prompt_evidence_artifacts GROUP BY 1) t; SELECT 'QA::E59::' || coalesce(string_agg(et || '=' || n::text, ',' ORDER BY et),'none') AS r FROM (SELECT "eventType" AS et, count(*) AS n FROM audit_events WHERE "eventType" LIKE '%PROMPT_EVIDENCE%' GROUP BY 1) t; SELECT 'QA::E59S::' || coalesce(string_agg(coalesce(s,'(no-surface)') || '=' || n::text, ',' ORDER BY 1),'none') AS r FROM (SELECT payload->>'surface' AS s, count(*) AS n FROM audit_events WHERE "eventType" LIKE '%PROMPT_EVIDENCE%' GROUP BY 1) t; SELECT 'QA::E59T::' || count(*)::text || '|' || count(DISTINCT "eventType")::text AS r FROM audit_events; SELECT 'QA::E59G::' || count(*)::text AS r FROM ai_prompt_evidence_access_grants; SELECT 'QA::E62R::' || coalesce(string_agg(coalesce(runtime,'(null)') || '=' || n::text, ',' ORDER BY n DESC),'none') AS r FROM (SELECT runtime, count(*) AS n FROM ai_events GROUP BY 1) t; SELECT 'QA::E62S::' || coalesce(string_agg(coalesce(surface,'(null)') || '=' || n::text, ',' ORDER BY n DESC),'none') AS r FROM (SELECT surface, count(*) AS n FROM ai_events GROUP BY 1) t; SELECT 'QA::E62K::' || coalesce(string_agg(coalesce(client_kind,'(null)') || '=' || n::text, ',' ORDER BY n DESC),'none') AS r FROM (SELECT client_kind, count(*) AS n FROM ai_sessions GROUP BY 1) t; SELECT 'QA::E65::' || left(id::text,8) || '|' || coalesce(replace(chat_title,' ','_'),'(null)') || '|' || coalesce(replace(title,' ','_'),'(null)') || '|' || coalesce(replace(username,' ','_'),'(null)') AS r FROM ai_sessions WHERE id::text LIKE '9c13f9e5%' OR id::text LIKE 'abd7495f%' ORDER BY 1; SELECT 'QA::E65N::' || count(*)::text || '|' || (count(*) FILTER (WHERE chat_title IS NOT NULL))::text || '|' || (count(*) FILTER (WHERE title IS NOT NULL))::text || '|' || (count(*) FILTER (WHERE username IS NOT NULL))::text || '|' || (count(*) FILTER (WHERE chat_title IS NULL AND title IS NULL))::text AS r FROM ai_sessions; SELECT 'QA::E68F::' || count(*)::text || '|' || count(DISTINCT endpoint_id)::text || '|' || count(DISTINCT org_id)::text AS r FROM ai_context_findings; SELECT 'QA::E68C::' || count(*)::text || '|' || count(DISTINCT endpoint_id)::text || '|' || coalesce(sum(nodes_resolved),0)::text || '|' || (count(*) FILTER (WHERE complete))::text AS r FROM ai_context_coverage; SELECT 'QA::ORGS::' || count(*)::text AS r FROM orgs; SELECT 'QA::E68IDC::' || count(*)::text || '|' || (count(*) FILTER (WHERE a_hit))::text || '|' || (count(*) FILTER (WHERE k_hit))::text AS r FROM (SELECT EXISTS (SELECT 1 FROM agents g WHERE g.id::text = c.endpoint_id) AS a_hit, EXISTS (SELECT 1 FROM api_keys k WHERE k.id::text = c.endpoint_id) AS k_hit FROM ai_context_coverage c) t; SELECT 'QA::E68IDF::' || count(*)::text || '|' || (count(*) FILTER (WHERE a_hit))::text || '|' || (count(*) FILTER (WHERE k_hit))::text AS r FROM (SELECT EXISTS (SELECT 1 FROM agents g WHERE g.id::text = f.endpoint_id) AS a_hit, EXISTS (SELECT 1 FROM api_keys k WHERE k.id::text = f.endpoint_id) AS k_hit FROM ai_context_findings f) t;
+log group    : /ecs/codefence-sql-runner (exists)
+task definition: reusing codefence-sql-runner:1 (unchanged)
+task         : 637bd4e4dcd64537b3c4671a6431b3c8
+waiting for the task to stop...
+
+----- psql output -----
+                     r                      
+--------------------------------------------
+ QA::TRAF::2026-08-04T05:20:34+00|7923|7923
+(1 row)
+                      r                       
+----------------------------------------------
+ QA::TRAFA::2026-08-07T06:36:26.032296+00|587
+(1 row)
+         r          
+--------------------
+ QA::E56R::0|0|none
+(1 row)
+       r       
+---------------
+ QA::E56B::1|3
+(1 row)
+      r      
+-------------
+ QA::E56T::0
+(1 row)
+       r        
+----------------
+ QA::E56A::none
+(1 row)
+       r       
+---------------
+ QA::E59::none
+(1 row)
+       r        
+----------------
+ QA::E59S::none
+(1 row)
+        r         
+------------------
+ QA::E59T::587|36
+(1 row)
+      r      
+-------------
+ QA::E59G::0
+(1 row)
+                        r                        
+-------------------------------------------------
+ QA::E62R::claude-code=6458,codex=1428,(null)=37
+(1 row)
+                                                                 r                                                                 
+-----------------------------------------------------------------------------------------------------------------------------------
+ QA::E62S::desktop=4531,tool-output=1730,web-ai-proxy=689,cli=639,pretooluse=123,openai-wire-ingress=94,unknown=70,(null)=38,ide=9
+(1 row)
+                                                           r                                                           
+-----------------------------------------------------------------------------------------------------------------------
+ QA::E62K::claude-desktop=109,(null)=55,unknown=30,claude-vscode-ext=12,codex-vscode-ext=2,codex-cli=2,codex-desktop=1
+(1 row)
+                                    r                                    
+-------------------------------------------------------------------------
+ QA::E65::9c13f9e5|Pull_all_repos|Ceragon_/_feat/push-depth-cli-ui|Owner
+ QA::E65::abd7495f|(null)|(null)|(null)
+(2 rows)
+              r              
+-----------------------------
+ QA::E65N::211|16|18|164|189
+(1 row)
+        r        
+-----------------
+ QA::E68F::0|0|0
+(1 row)
+         r         
+-------------------
+ QA::E68C::0|0|0|0
+(1 row)
+      r      
+-------------
+ QA::ORGS::2
+(1 row)
+         r         
+-------------------
+ QA::E68IDC::0|0|0
+(1 row)
+         r         
+-------------------
+ QA::E68IDF::0|0|0
+(1 row)
+----- end output -----
+
+task stopped : exitCode=0 reason=Essential container in task exited

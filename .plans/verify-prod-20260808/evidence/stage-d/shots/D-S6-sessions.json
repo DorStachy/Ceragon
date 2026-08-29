@@ -1,0 +1,61 @@
+{
+  "url": "/coding-ai/sessions?siteId=11111111-1111-4111-8111-111111111111",
+  "title": "Sessions · Coding AI · DeVoid",
+  "overflow": null,
+  "found": {
+    "span[title^=\"No user was attributed\"]": [],
+    "[data-continuation]": [],
+    "[data-session-row]": [
+      {
+        "text": "CRITICAL Claude Code sess-1 Untitled session 4 attempts stopped DEV-LAPTOP-07 · dana · anthropic · coding 20:52 23:52 · live edge Run shape: 4 blocks and 2 holds, the first 0% into the run, all at effectively the same point in the run, Allowed and redacted traffic is sampled, so its positions are approximate. 133 allowed 1 redacted 2 held 4 blocked ≥ 3h 143 events yesterday, 3h ago Live last event 24m ago",
+        "attrs": {
+          "data-session-row": "sess-1"
+        }
+      },
+      {
+        "text": "CRITICAL Codex (CLI) sess-2 Untitled session BUILD-AGENT-02 · sam · openai 18:54 19:41 Run shape: 2 blocks and 1 hold, the first 0% into the run, all at effectively the same point in the run, Allowed and redacted traffic is sampled, so its positions are approximate. 92 allowed 1 redacted 1 held 2 blocked 47m 98 events yesterday, 5h ago Ended (inferred) ended yesterday, 4h ago",
+        "attrs": {
+          "data-session-row": "sess-2"
+        }
+      },
+      {
+        "text": "CRITICAL Cursor sess-3 Untitled session DESIGN-MBP-11 · ravi · anthropic · coding 16:54 17:35 Run shape: 1 block and 1 hold, the first 0% into the run, Allowed and redacted traffic is sampled, so its positions are approximate. 74 allowed 0 redacted 1 held 1 blocked 41m 76 events yesterday, 7h ago Ended (inferred) ended yesterday, 6h ago",
+        "attrs": {
+          "data-session-row": "sess-3"
+        }
+      },
+      {
+        "text": "CRITICAL Claude Code sess-4 Untitled session QA-DESKTOP-04 · lee · anthropic · coding 14:34 15:12 Run shape: 1 block, the first 0% into the run, Allowed and redacted traffic is sampled, so its positions are approximate. 56 allowed 0 redacted 0 held 1 blocked 38m 61 events yesterday, 9h ago Ended (inferred) ended yesterday, 9h ago",
+        "attrs": {
+          "data-session-row": "sess-4"
+        }
+      },
+      {
+        "text": "HIGH Claude Code sess-5 Untitled session DEV-LAPTOP-07 · dana · anthropic · coding 12:14 12:46 Run shape: 1 hold, the first 0% into the run, Allowed and redacted traffic is sampled, so its positions are approximate. 43 allowed 0 redacted 1 held 0 blocked 32m 44 events yesterday, 12h ago Ended (inferred) ended yesterday, 11h ago",
+        "attrs": {
+          "data-session-row": "sess-5"
+        }
+      },
+      {
+        "text": "LOW Codex (CLI) sess-6 Untitled session BUILD-AGENT-02 · sam · openai 09:14 09:39 Run shape: nothing was blocked or held at any point in this run, Allowed and redacted traffic is sampled, so its positions are approximate. 30 allowed 0 redacted 0 held 0 blocked 25m 31 events yesterday, 15h ago Ended (inferred) ended yesterday, 14h ago",
+        "attrs": {
+          "data-session-row": "sess-6"
+        }
+      },
+      {
+        "text": "LOW Cursor sess-7 Untitled session DESIGN-MBP-11 · ravi · anthropic · coding 07:04 07:23 Run shape: nothing was blocked or held at any point in this run, Allowed and redacted traffic is sampled, so its positions are approximate. 22 allowed 0 redacted 0 held 0 blocked 19m 22 events yesterday, 17h ago Ended (inferred) ended yesterday, 16h ago",
+        "attrs": {
+          "data-session-row": "sess-7"
+        }
+      },
+      {
+        "text": "LOW Claude Code sess-8 Untitled session QA-DESKTOP-04 · lee · anthropic · coding 04:14 04:20 Run shape: nothing was blocked or held at any point in this run, Allowed and redacted traffic is sampled, so its positions are approximate. 9 allowed 0 redacted 0 held 0 blocked 6m 9 events yesterday, 20h ago Ended (inferred) ended yesterday, 19h ago",
+        "attrs": {
+          "data-session-row": "sess-8"
+        }
+      }
+    ]
+  },
+  "consoleErrors": [],
+  "failed": []
+}

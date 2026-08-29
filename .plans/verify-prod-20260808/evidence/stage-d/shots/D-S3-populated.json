@@ -1,0 +1,88 @@
+{
+  "url": "/mcp?siteId=11111111-1111-4111-8111-111111111111",
+  "title": "DeVoid | AI Control Plane",
+  "overflow": null,
+  "found": {
+    "mcp-count-line": [
+      {
+        "text": "2 MCP SERVERS · 4 OF 7 CONFIGURATION SOURCES READ",
+        "attrs": {
+          "data-testid": "mcp-count-line"
+        }
+      }
+    ],
+    "mcp-coverage-counts": [
+      {
+        "text": "4 answered · 3 unanswered · 1 endpoint reporting",
+        "attrs": {
+          "data-testid": "mcp-coverage-counts"
+        }
+      }
+    ],
+    "mcp-coverage-incomplete": [
+      {
+        "text": "3 configuration sources could not be read or could not be understood. A source with no answer is not an empty source: any MCP server declared there is absent from this console, and DeVoid is not claiming there is none.",
+        "attrs": {
+          "data-testid": "mcp-coverage-incomplete"
+        }
+      }
+    ],
+    "mcp-coverage-not-served": [],
+    "mcp-coverage-unreported": [],
+    "mcp-coverage-no-rows": [],
+    "mcp-coverage-state": [
+      {
+        "text": "COULD NOT READ",
+        "attrs": {
+          "data-testid": "mcp-coverage-state"
+        }
+      },
+      {
+        "text": "COULD NOT PARSE",
+        "attrs": {
+          "data-testid": "mcp-coverage-state"
+        }
+      },
+      {
+        "text": "CONFIG NOT UNDERSTOOD",
+        "attrs": {
+          "data-testid": "mcp-coverage-state"
+        }
+      },
+      {
+        "text": "SKIMMED",
+        "attrs": {
+          "data-testid": "mcp-coverage-state"
+        }
+      },
+      {
+        "text": "READ",
+        "attrs": {
+          "data-testid": "mcp-coverage-state"
+        }
+      },
+      {
+        "text": "READ, EMPTY",
+        "attrs": {
+          "data-testid": "mcp-coverage-state"
+        }
+      },
+      {
+        "text": "NOT PRESENT",
+        "attrs": {
+          "data-testid": "mcp-coverage-state"
+        }
+      }
+    ],
+    "mcp-inventory-reconciliation": [
+      {
+        "text": "This count and Inventory's MCP count can differ. This registry is built from MCP servers found in an agent's configuration files. Inventory can also list an MCP item that reached us through the runtime shim when an agent used it. That path records the item; it does not register a server here.",
+        "attrs": {
+          "data-testid": "mcp-inventory-reconciliation"
+        }
+      }
+    ]
+  },
+  "consoleErrors": [],
+  "failed": []
+}

@@ -1,0 +1,17 @@
+{
+  "url": "/mcp?siteId=11111111-1111-4111-8111-111111111111",
+  "title": "DeVoid | AI Control Plane",
+  "overflow": null,
+  "found": {
+    "mcp-coverage-rows-unlisted": [
+      {
+        "text": "0 of the 7 configuration sources this deployment counted are listed below. The counts above are the server’s; only a source on this screen contradicting them can be checked here.",
+        "attrs": {
+          "data-testid": "mcp-coverage-rows-unlisted"
+        }
+      }
+    ]
+  },
+  "consoleErrors": [],
+  "failed": []
+}

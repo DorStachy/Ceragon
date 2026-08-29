@@ -1,0 +1,36 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+ACCOUNT
+Render QA Org
+Render QA Site
+MCP CONTROL TOWER
+Search…
+ctrl
+K
+RQ
+Render QA
+Admin
+Servers
+Activity
+MCP CONTROL TOWER
+MCP Control Tower
+
+Every MCP server detected across your agents' configurations: declared capabilities, static-analysis verdict, approval state, and enforcement. Coding agents and autonomous agents both consume MCP, so the registry is governed here, once. This view is read-only. Approve or block servers from Admin.
+
+REVIEW IN ADMIN →
+0 MCP SERVERS
+
+This count and Inventory's MCP count can differ. This registry is built from MCP servers found in an agent's configuration files. Inventory can also list an MCP item that reached us through the runtime shim when an agent used it. That path records the item; it does not register a server here.
+
+NO MCP SERVERS FOUND IN WHAT WAS READ
+No MCP server was found in the configuration sources DeVoid was able to read. That is not the same as there being none: see the configuration-source coverage below for which locations were read and which were not.
+CONFIGURATION SOURCES
+
+DeVoid cannot say which configuration sources were read. No endpoint in this scope has reported its discovery coverage, which is indistinguishable from an agent whose report was dropped in transit. Treat the list above as what happened to be found, never as the set of MCP servers that exist.

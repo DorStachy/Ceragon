@@ -1,0 +1,72 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+ACCOUNT
+Render QA Org
+Render QA Site
+MCP CONTROL TOWER
+Search…
+ctrl
+K
+RQ
+Render QA
+Admin
+Servers
+Activity
+MCP CONTROL TOWER
+MCP Control Tower
+
+Every MCP server detected across your agents' configurations: declared capabilities, static-analysis verdict, approval state, and enforcement. Coding agents and autonomous agents both consume MCP, so the registry is governed here, once. This view is read-only. Approve or block servers from Admin.
+
+REVIEW IN ADMIN →
+1 MCP SERVER · 3 OF 3 CONFIGURATION SOURCES READ
+
+This count and Inventory's MCP count can differ. This registry is built from MCP servers found in an agent's configuration files. Inventory can also list an MCP item that reached us through the runtime shim when an agent used it. That path records the item; it does not register a server here.
+
+SERVER
+	1 · SOURCE PERMITTED
+	2 · EXACT MATERIAL ANALYZED
+	CAPABILITIES
+	RISK RESULT
+	3 · TENANT APPROVED
+	4 · RUNTIME EFFECT ENFORCED
+
+filesystem
+Client not measured for this row
+	Unknown source	
+coverage incomplete
+unknown transport
+	
+Fs.read
+	
+not analyzed	PENDING	No permitted runtime effect
+CONFIGURATION SOURCES
+3 answered · 0 unanswered · 1 endpoint reporting
+claude-code · user · json
+READ
+
+C:/Users/x/.claude.json
+
+DeVoid read this file and understood it.
+
+2 servers declared here.
+
+codex · user · toml
+READ, EMPTY
+
+C:/Users/x/.codex/config.toml
+
+DeVoid read this file and it declares no MCP servers. (no servers declared)
+
+claude-code · machine · json
+NOT PRESENT
+
+C:/ProgramData/devoid/mcp.json
+
+This location was checked and there is no file there. (no file at this path)

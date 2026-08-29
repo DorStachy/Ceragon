@@ -1,0 +1,386 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+ACCOUNT
+Render QA Org
+RQ
+ADMINISTRATION
+Admin
+POLICIES
+AI Security
+Supply Chain Security
+Code Security
+Approvals & Exceptions
+AI Security Policy
+
+One policy for every AI lane (browser AI sites, on-box coding agents, and the MCP servers they load), enforced by the browser extension and the endpoint daemon together. Organized by decision: what's allowed, what data may leave, how threats are answered, and how the runtime defends itself.
+
+Viewing policy for:
+Render QA Site
+›
+All teams
+
+All teams is the site baseline every team inherits. A team gets its own policy only when you pick it here and change something. Until then it follows this baseline.
+
+Enforcing
+Detections act according to the dials below.
+Simulate
+Enforce
+Security Baseline
+Data protection Strict · 1 custom·AI autonomy Guided
+Adjust
+Governance
+Data Protection
+Threat Response & Runtime
+MCP
+AI SECURITY
+Governance
+
+Which AI surfaces, providers, on-box coding agents, and network destinations are allowed at all: one answer enforced across the browser extension and the endpoint daemon.
+
+STORED POLICY
+
+Live provider usage across the account lives in Web AI → Sessions. This page publishes configuration for the selected scope. Endpoint and browser coverage are reported separately; this editor does not infer a completed runtime effect from a saved policy.
+
+Policy authority: Site policy
+
+Confirmed by the server for this read. Revision rev-2026-08-16-004 will be checked before publishing. This is the editor revision for optimistic concurrency; it is not the signed bundle revision an endpoint enforces.
+
+SURFACE ACCESS
+Surface Access
+BROWSER EXTENSION + ENDPOINT DAEMON
+
+Which governed AI lanes this scope may use at all: decided before every control below. A blocked supported surface shuts the whole lane. Rows you have not set default to Allow.
+
+Web AI sites (DeVoid Web AI Guard)
+Enforced in supported AI chat pages by the DeVoid browser extension.
+Allow
+Monitor
+Block
+CLI coding agents
+Enforced by the endpoint daemon (shims + AI request proxy).
+Allow
+Monitor
+Block
+IDE agents
+Endpoint daemon via editor hooks: partial coverage.
+Allow
+Monitor
+Block
+AI browser extensions (ChatGPT and Claude)
+Access enforced by endpoint-managed Chromium policy for the reviewed ChatGPT and Claude extension IDs. Monitor permits access and records policy reconciliation, not prompt content.
+Allow
+Monitor
+Block
+MCP servers
+Enforced by the endpoint daemon (MCP governance).
+Allow
+Monitor
+Block
+
+A blocked surface wins over every allowlist below: CLI coding agents on Block stops all on-box agents even if they are approved under AI Agent Governance. Monitor records usage where that lane exposes telemetry; for third-party browser extensions it records policy reconciliation only.
+
+PROVIDER GOVERNANCE
+AI Providers
+BROWSER EXTENSION + ENDPOINT DAEMON
+
+Choose what happens with each AI provider DeVoid supports. Approved means allowed and secured by DeVoid: traffic is governed and prompts are inspected, with secrets redacted before they leave. Blocked means stopped on the endpoint and in the browser.
+
+Your AI autonomy baseline additionally warns first on a curated set of higher-risk AI providers on top of the statuses below. A status you set here is never relaxed by it.
+
+Unknown AI sites
+One default for AI sites that are not in the catalog below. Enforced by the browser extension. Allow keeps today’s behavior.
+Allow
+Monitor
+Warn
+Block
+
+Browser AI services
+
+Enforced by the browser extension: the active tab's host resolves to one of these providers.
+
+PROVIDER	KEY	VENDOR	STATUS	CAPABILITY
+OpenAI (ChatGPT)	openai	OpenAI	
+Approved
+Blocked
+	Governed: prompt DLP + provider gate. Blocked: navigation, enrolled endpoints.
+Anthropic (Claude.ai)	anthropic	Anthropic	
+Approved
+Blocked
+	Governed: prompt DLP + provider gate. Blocked: navigation, enrolled endpoints.
+Google (Gemini)	google	Google	
+Approved
+Blocked
+	Governed: prompt DLP + provider gate. Blocked: navigation, enrolled endpoints.
+GitHub / Microsoft Copilot (web)	github	GitHub / Microsoft	
+Approved
+Blocked
+	Governed: prompt DLP + provider gate. Blocked: navigation, enrolled endpoints.
+Perplexity	perplexity	Perplexity	
+Approved
+Blocked
+	Governed: prompt DLP + provider gate. Blocked: navigation, enrolled endpoints.
+Poe	poe	Quora	
+Approved
+Blocked
+	Governed: prompt DLP + provider gate. Blocked: navigation, enrolled endpoints.
+
+Named web apps
+
+Blocked = the site is unreachable on enrolled endpoints (navigation-level).
+
+PROVIDER	KEY	VENDOR	STATUS	CAPABILITY
+DeepSeek	deepseek	DeepSeek	
+Approved
+Blocked
+	Blocked: navigation, enrolled endpoints.
+Qwen (Tongyi)	qwen	Alibaba	
+Approved
+Blocked
+	Blocked: navigation, enrolled endpoints.
+Kimi	kimi	Moonshot AI	
+Approved
+Blocked
+	Blocked: navigation, enrolled endpoints.
+Manus	manus	Manus	
+Approved
+Blocked
+	Blocked: navigation, enrolled endpoints.
+Zhipu GLM (Z.ai)	zhipu	Zhipu AI	
+Approved
+Blocked
+	Blocked: navigation, enrolled endpoints.
+Le Chat (Mistral)	mistral	Mistral AI	
+Approved
+Blocked
+	Blocked: navigation, enrolled endpoints.
+Grok	grok	xAI	
+Approved
+Blocked
+	Blocked: navigation, enrolled endpoints.
+Meta AI	meta-ai	Meta	
+Approved
+Blocked
+	Blocked: navigation, enrolled endpoints.
+You.com	you	You.com	
+Approved
+Blocked
+	Blocked: navigation, enrolled endpoints.
+HuggingChat	huggingchat	Hugging Face	
+Approved
+Blocked
+	Blocked: navigation, enrolled endpoints.
+Character.AI	character-ai	Character.AI	
+Approved
+Blocked
+	Blocked: navigation, enrolled endpoints.
+Pi	pi	Inflection AI	
+Approved
+Blocked
+	Blocked: navigation, enrolled endpoints.
+
+AI coding tools
+
+Enforced on the endpoint: AI agents and IDE tools detected on developer machines.
+
+PROVIDER	KEY	VENDOR	STATUS	CAPABILITY
+Cursor	cursor	Anysphere	
+Approved
+Blocked
+	Governed: endpoint runtime enforcement.
+Claude Code	claude-code	Anthropic	
+Approved
+Blocked
+	Governed: endpoint runtime enforcement.
+Windsurf	windsurf	Codeium	
+Approved
+Blocked
+	Governed: endpoint runtime enforcement.
+GitHub Copilot	github-copilot	GitHub	
+Approved
+Blocked
+	Governed: endpoint runtime enforcement.
+Cline	cline	Cline	
+Approved
+Blocked
+	Governed: endpoint runtime enforcement.
+Gemini CLI	gemini-cli	Google	
+Approved
+Blocked
+	Governed: endpoint runtime enforcement.
+Codex	codex	OpenAI	
+Approved
+Blocked
+	Governed: endpoint runtime enforcement.
+
+Other
+
+Providers configured on this site that are not in the built-in catalog.
+
+PROVIDER	KEY	VENDOR	STATUS	CAPABILITY
+Unsupported provider	unknown-vendor	custom	
+UNSUPPORTED	Recorded only: not enforced by any lane.
+
+Add a custom provider
+
+Record an AI web app or tool that isn’t in the built-in catalog by its provider key. It is stored under “Other” and reported, but not enforced by any lane until the key is added to the built-in catalog.
+
+ADD
+
+Corporate instance control
+
+BROWSER EXTENSION · PHASE 1
+
+Allow a provider only through your corporate workspace and decide what happens on personal accounts. The browser extension reads the signed-in workspace context on AI sites and enforces these rules; endpoint enforcement follows in a later phase. A provider with no rule behaves as today.
+
+Allow
+Warn
+Block
+ADD RULE
+AI AGENTS
+AI Agent Governance
+ENDPOINT DAEMON
+
+Restrict which AI coding agents may run on this site's endpoints. In Enforce mode the devoid daemon blocks any agent not on the allowlist; in Monitor mode it observes and alerts only. An empty allowlist is permissive (no restriction).
+
+Governance mode
+Off (permissive)
+Monitor (observe + alert)
+Enforce (block disallowed)
+ALLOWED AGENT TYPES
+Add an agent...
+Claude Code (claude-code)
+Codex CLI (codex)
+Gemini CLI (gemini)
+Custom...
+No allowlist: every agent may run.
+
+The list offers the agents this product can govern plus every agent already seen in your AI activity. Use Custom for an identity that is not listed yet.
+
+EGRESS ALLOWLIST
+Network Egress Allowlist
+ENDPOINT DAEMON
+
+Govern where the devoid daemon lets AI tooling reach out. In Enforce mode, egress to any destination not on the allowlist is blocked; in Monitor mode it is observed and alerted only. Blocked entries are always denied. Keep the built-in defaults on unless you fully self-manage the allowlist.
+
+Egress mode
+Off (permissive)
+Monitor (observe + alert)
+Enforce (block non-allowlisted)
+ALLOWED DESTINATIONS
+ADD
+-
+BLOCKED DESTINATIONS
+ADD
+-
+Merge the daemon’s built-in default allowlist alongside the entries above
+
+Destinations accept host / CIDR / glob (e.g. api.openai.com, 10.0.0.0/8, *.githubusercontent.com).
+
+AI SECURITY
+AI artifact load policy
+
+What happens when an endpoint loads an agent skill, MCP server, or editor extension, by the artifact's analysed risk. Applies org-wide, at load time, on every endpoint. Changes are recorded in the audit log.
+
+High risk
+Risk score 60-100, or any blocked verdict of record. Default: Block.
+Block: Refuse to load the artifact
+Warn: Load, but surface a warning to the developer
+Allow: Load without interruption
+Monitor: Load silently and record the event
+Medium risk
+Risk score 40-59. Default: Warn.
+Block: Refuse to load the artifact
+Warn: Load, but surface a warning to the developer
+Allow: Load without interruption
+Monitor: Load silently and record the event
+Low risk
+Risk score below 40, including clean results. Default: Allow.
+Block: Refuse to load the artifact
+Warn: Load, but surface a warning to the developer
+Allow: Load without interruption
+Monitor: Load silently and record the event
+Not yet analysed
+No verdict yet: never analysed, or analysis still running. The most common state the first time an artifact loads. Default: Warn.
+Block: Refuse to load the artifact
+Warn: Load, but surface a warning to the developer
+Allow: Load without interruption
+Monitor: Load silently and record the event
+Require promotion in the Approved Catalog
+Strict curated mode blocks every exact artifact digest that has not completed analysis, tenant approval, and promotion. It is off by default so existing tenants keep their current load behavior.
+Open Approved Catalog
+Apply load policy
+PLAYGROUND
+
+Test your policy with real content. Nothing is saved and the text never leaves this browser. Unsaved dial changes apply to the test; edits in the Advanced editor count once you press Apply Policy.
+
+Test a prompt
+Test a file path
+TEST PROMPT
+Personal data
+Secrets
+Injection
+Any provider
+Test
+Enforced authority
+
+The console revision above and the bundle revision below are separate sequences and are not comparable. This console cannot yet prove which console revision an endpoint is enforcing; it can prove which signed bundle it activated, and when.
+
+An edit reaches an endpoint on its next policy refresh. Measured: about 5 minutes, bounded by a 12 to 30 minute refresh cadence.
+
+No endpoint in this scope has reported a policy-integrity observation yet.
+
+DELIVERY ROLLOUT
+
+Which endpoints receive the signed policy bundle, and how strongly. This is the delivery ring. It is not the policy’s simulate/enforce translation setting, and changing it here never edits a policy. Every change is a new monotonic revision on the audit stream.
+
+SEGMENT
+CURRENT AUTHORITY
+Phase
+Unknown
+Cohort
+0% (0 bp)
+Revision
+unknown
+Changed
+unknown
+
+The server recorded a delivery phase this console does not recognise. What the endpoints in this segment are actually doing is NOT established here — it is not Shadow, and it is not proven harmless. Upgrade the console to a build that knows this phase before moving the ring. Overwriting an unread value could silently demote an enforcing segment. Moving the ring is blocked here until then.
+
+The actor for every change is recorded on the audit stream in the same transaction as the row. This panel shows the row; the audit trail is the record of who moved it.
+
+TARGET
+- no target staged -
+Shadow
+Canary
+Enforce
+Cohort (basis points, 1 = 0.01%)
+
+No target phase is staged. Pick one to see what it would do.
+
+Eligibility · 0% of segment m47-endpoint receives - no target staged -. Everything outside stays SHADOW.
+
+Assignment is a stable server-side hash of org, segment and endpoint. Raising the cohort only ever ADDS endpoints. It never reshuffles the ones already promoted, and nothing a client sends can move an endpoint into it.
+
+RECORD NEW REVISION
+FORWARD-ONLY ROLLBACK
+
+A rollback names a historical POLICY SNAPSHOT, never a bundle revision. Endpoints then reissue that older body inside a NEW, HIGHER bundle revision, so no endpoint ever accepts a lower one. The server re-checks eligibility at resolution and REFUSES a target that relied on a weakening which has since expired or been revoked.
+
+The immutable policy history is not readable from this console yet: no list endpoint is exposed. Eligibility is decided by the server when the intent is filed, and an ineligible target is refused with a reason. This panel never presents a target as eligible on its own.
+
+Policy snapshot id
+Reason
+Bad rollout
+False-positive storm
+Vendor incident
+DeVoid incident
+Approved exception
+Type ROLLBACK to confirm
+FILE ROLLBACK INTENT
