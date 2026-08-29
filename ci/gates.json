@@ -30,12 +30,12 @@
     {
       "id": "detector-vocab-parity",
       "script": "ci/lib/vocab-parity.mjs",
-      "why": "The tool-risk and DLP detector vocabularies are two contracts, each living as three hand-copied files in Installers, Backend and Frontend. Per-repo guards compare only against their local copy, so the workspace runner is the only gate that can prove both complete three-copy comparisons (2 vocabularies x 3 copies = 6 files)."
+      "why": "Tool-risk and DLP each live as three copied files across Installers, Backend and Frontend; the producer-owned content-risk roster lives as an exact-byte pair in Installers and Backend. Per-repo guards cannot prove the copy step, so the workspace runner is the only gate that compares all three contracts across all eight registered files."
     },
     {
       "id": "detector-vocab-parity-selftest",
       "script": "ci/lib/vocab-parity.test.mjs",
-      "why": "Mutation proof for both schemas: fabricates tool-risk and DLP producer-only classes and asserts the checker goes red naming the class and missing repos, while absent checkouts, unreadable refs and invalid JSON report NOT CHECKED rather than passing."
+      "why": "Mutation proof for all three contracts: fabricates tool-risk and DLP producer-only classes, exact-byte content-risk drift, and asserts absent checkouts, missing files, unreadable refs and invalid JSON report NOT CHECKED rather than passing."
     },
     {
       "id": "workflow-header-truth",
