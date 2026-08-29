@@ -43,6 +43,7 @@ function parseArgs() {
     else if (a[i] === '--cells') o.cells = a[++i].split(',').map(Number);
     else if (a[i] === '--timeout') o.timeoutMs = Number(a[++i]);
     else if (a[i] === '--machine-mode') o.machineMode = a[++i];
+    else if (a[i] === '--machine-root') o.machineRoot = a[++i];
   }
   if (!o.binary || !o.out) {
     console.error('usage: node measure.mjs --binary <claude.exe> --out <dir> [--port N] [--cells a,b,c]');
@@ -63,6 +64,24 @@ function sha256(file) {
 
 let MACHINE_MODE = 'dropin';
 
+// MACHINE_ROOT_OVERRIDE is the REAL machine managed-settings root to write into.
+//
+// It exists because CLAUDE_CODE_MANAGED_SETTINGS_PATH is INERT on claude-code
+// 2.1.226: the variable is declared and exported in the bundle and never read,
+// and the root is a memoized hard-coded platform constant
+// (`C:\Program Files\ClaudeCode`, `/Library/Application Support/ClaudeCode`,
+// `/etc/claude-code`). Measuring the machine scope therefore means writing into
+// the host's actual managed-settings root, which is only acceptable on a
+// DISPOSABLE rig.
+//
+//   --machine-root "C:/Program Files/ClaudeCode"
+//
+// NEVER pass this on a machine anyone works on: the harness creates and deletes
+// files under the root, and on a real endpoint that is the endpoint's own
+// enterprise policy. Without it the machine cells are measured as absent and
+// must be recorded `verified: false`.
+let MACHINE_ROOT_OVERRIDE = '';
+
 function sentinel(port, key) { return `http://127.0.0.1:${port}/s-${key}`; }
 
 function buildCell(root, cellIdx, port) {
@@ -71,11 +90,13 @@ function buildCell(root, cellIdx, port) {
 
   const home = path.join(dir, 'home');
   const proj = path.join(dir, 'proj');
-  const managedDir = path.join(dir, 'machine');
+  const managedDir = MACHINE_ROOT_OVERRIDE || path.join(dir, 'machine');
   const dropInDir = path.join(managedDir, 'managed-settings.d');
   fs.mkdirSync(path.join(home, '.claude'), { recursive: true });
   fs.mkdirSync(path.join(proj, '.claude'), { recursive: true });
   fs.mkdirSync(dropInDir, { recursive: true });
+  // A previous cell's fragment must never leak into this one.
+  try { fs.rmSync(path.join(dropInDir, '90-devoid.json'), { force: true }); } catch { /* absent is fine */ }
   fs.mkdirSync(path.join(dir, 'tmp'), { recursive: true });
   fs.mkdirSync(path.join(home, 'AppData', 'Roaming'), { recursive: true });
   fs.mkdirSync(path.join(home, 'AppData', 'Local'), { recursive: true });
@@ -130,6 +151,11 @@ function buildCell(root, cellIdx, port) {
 async function main() {
   const opts = parseArgs();
   MACHINE_MODE = opts.machineMode;
+  MACHINE_ROOT_OVERRIDE = opts.machineRoot || '';
+  if (MACHINE_ROOT_OVERRIDE) {
+    console.error(`WARNING: writing into the REAL machine managed-settings root ${MACHINE_ROOT_OVERRIDE}. ` +
+      `Do this only on a disposable rig.`);
+  }
   const bin = opts.binary;
   const outDir = opts.out;
   fs.mkdirSync(outDir, { recursive: true });
@@ -204,6 +230,8 @@ async function main() {
     seam: {
       machineScope: `CLAUDE_CODE_MANAGED_SETTINGS_PATH -> <tmp>/machine/managed-settings.json (machineMode=${MACHINE_MODE}; 'dropin' plants <tmp>/machine/managed-settings.d/90-devoid.json, 'base' plants managed-settings.json itself)`,
       machineMode: MACHINE_MODE,
+      machineRootOverride: MACHINE_ROOT_OVERRIDE || null,
+      machineScopeMeasured: Boolean(MACHINE_ROOT_OVERRIDE),
       observation: 'distinct loopback sentinel base URL per scope; winner = the sentinel path the binary connected to',
     },
     sources: SOURCES.map(s => ({ key: s.key, bit: s.bit, label: s.label })),

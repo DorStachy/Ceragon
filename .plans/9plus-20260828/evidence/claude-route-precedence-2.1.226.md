@@ -320,7 +320,8 @@ To take it, on a host where the machine managed-settings root is disposable:
 
 ```sh
 node .plans/9plus-20260828/evidence/w3-t3/measure-claude-route-precedence.mjs \
-  --binary "<claude>" --out ./out-post-w4t4 --port 19360 --timeout 35000
+  --binary "<claude>" --out ./out-post-w4t4 --port 19360 --timeout 35000 \
+  --machine-root "C:/Program Files/ClaudeCode"     # DISPOSABLE RIG ONLY
 diff <(jq -S .cells out-post-w4t4/measurement.json) \
      <(jq -S .cells .plans/9plus-20260828/evidence/w3-t3/measurement-2.1.226-pre-w4t4.json)
 ```
