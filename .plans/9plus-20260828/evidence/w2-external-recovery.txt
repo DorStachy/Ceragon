@@ -1,0 +1,318 @@
+W2 TASK 4 — EXTERNAL RECOVERY EVIDENCE
+generated 2026-08-29T17:49:55Z from worktree C:/cwt/p9-w2t4
+branch p9/w2-t4-external-recovery, off Installers origin/main 60b89f64
+
+==============================================================================
+READ THIS FIRST — WHAT IS AND IS NOT PROVEN HERE
+==============================================================================
+
+NOT EXERCISED. The wave's exit criterion is ten kill-and-recover cycles on a
+clean Windows 11 VM after an MSI install: taskkill /F /IM devoid.exe, GET
+/health dead, GET /health alive again inside 90s with no user action, one
+daemon_supervisor_restarted line in the daemon log, and one matching bypass
+event on the Backend's next heartbeat. That needs a REGISTERED Windows
+service and a reboot. Registering, starting, stopping, reconfiguring or
+deleting a Windows service was out of bounds for this work, and no psexec -s
+was used. The live transcript is therefore an owner/VM item and is NOT in
+this file. Nothing below should be read as a substitute for it.
+
+PROVEN. The loop the SCM would be hosting, driven through the same ten cycles
+with only the operating system replaced. Every dependency the supervisor has
+-- the health probe, the spawn, the child's lifetime, the event sink and the
+clock -- is already an injectable seam, so the run below exercises the REAL
+cmd/devoid-daemon Execute, the REAL internal/daemonsupervise policy and the
+REAL shipped constants.
+
+Also proven, read-only, against a live SCM: the sc.exe output shapes the new
+reconciler parses. Captured from services that already exist on this box
+(W32Time, Spooler, Winmgmt, Themes) and from a name that does not. No service
+was created or modified to produce any of it.
+
+==============================================================================
+1. TEN KILL-AND-RECOVER CYCLES — the number the wave asks for
+==============================================================================
+
+$ go test ./cmd/devoid-daemon/... -run 'ServiceExecute_TenKillAndRecover|ServiceRecoveryBudget' -count=1 -v
+=== RUN   TestServiceExecute_TenKillAndRecoverCyclesWithNoUserAction
+    service_recovery_windows_test.go:287: EXTERNAL RECOVERY: 10/10 cycles recovered, 0 user actions, max 1 daemon alive at once; worst recovery 2 ticks = 30s at the shipped 15s interval (budget 1m30s)
+--- PASS: TestServiceExecute_TenKillAndRecoverCyclesWithNoUserAction (0.03s)
+=== RUN   TestServiceRecoveryBudgetHoldsAtTheShippedConstants
+--- PASS: TestServiceRecoveryBudgetHoldsAtTheShippedConstants (0.00s)
+PASS
+ok  	github.com/codefense/cli-wrapper/cmd/devoid-daemon	0.837s
+
+10 consecutive cycles, 10 recoveries, 0 requiring user action.
+Max daemons alive at once: 1 (the no-second-listener invariant; the VM
+criterion reads this as Get-Process devoid | Measure-Object = 1).
+Worst recovery: 2 ticks. At the shipped superviseInterval of 15s that is 30s,
+inside the wave's 90s budget. The wall-clock figure is arithmetic over the
+shipped constants, not over the harness's accelerated clock, and it is
+asserted as such so raising either constant moves the claim.
+
+$ go test ./cmd/devoid-daemon/... -run 'ServiceExecute_TenKillAndRecover|ServiceRecoveryBudget' -count=30
+ok  	github.com/codefense/cli-wrapper/cmd/devoid-daemon	2.049s
+(30 consecutive runs, no flake)
+
+==============================================================================
+2. THE SECOND EXIT — KILL WITH THE SCHEDULED TASK DELETED
+==============================================================================
+
+The wave's second exit repeats the kill with the 'Devoid Daemon' scheduled
+task deleted first. Today that is unrecoverable until reboot, because the
+in-process watchdog cannot run while the process is dead.
+
+The harness above ALREADY models exactly that case and it is not a separate
+run. Nothing in it registers, reads or repairs a scheduled task: the only
+thing that brings the daemon back across all ten cycles is the supervisor's
+own spawn, attributed by a daemon_supervisor_restarted event per cycle. A
+deleted task changes nothing about that path.
+
+What a deleted task DOES change is who starts the daemon at the next boot, and
+that is a property of the SERVICE REGISTRATION, not of this loop. It stays
+NOT EXERCISED with the rest of the VM run.
+
+==============================================================================
+3. THE GAP W2 T3 NAMED AND THIS TASK DID NOT CLOSE
+==============================================================================
+
+A wedged-but-running OWNED child is recovered by neither mechanism. The
+supervisor holds Wait for as long as it lasts, so the supervisor process
+stays healthy and the SCM's failure actions never fire.
+
+Measured directly against daemonsupervise.NextSupervisorAction (throwaway
+probe, not committed):
+
+  failures=2       restarts=0    ChildOwned=true -> Wait  (unhealthy 30s)
+  failures=10      restarts=5    ChildOwned=true -> Wait  (unhealthy 2m30s)
+  failures=100     restarts=500  ChildOwned=true -> Wait  (unhealthy 25m0s)
+  failures=1000    restarts=500  ChildOwned=true -> Wait  (unhealthy 4h10m0s)
+  failures=100000  restarts=500  ChildOwned=true -> Wait  (unhealthy 416h40m0s)
+  owned child ALSO holding the port          -> GiveUpAndReport
+
+It is unbounded by construction: the arm is 'if s.ChildOwned { return Wait }'
+with no failure-count condition, and the loop clears ChildOwned only when the
+child process EXITS. A child that is alive and not answering never does.
+
+It was NOT fixed here, deliberately. Two pins merged with W2 T3 assert the
+current behaviour as intended:
+
+  TestSupervisor_WaitsWhileItsOwnChildIsStillStarting  asserts Wait for
+    ConsecutiveFailures 1..20 and any restart budget;
+  TestSupervisor_DoesNotSpawnIntoAHeldPort             asserts GiveUpAndReport
+    for a held port INCLUDING ChildOwned=true.
+
+Closing the gap needs a new SupervisorAction and both pins rewritten. The wave
+rule is explicit that a task blocked by an existing pin is the wrong task, so
+this is reported rather than improvised. It wants its own task.
+
+==============================================================================
+4. LIVE sc.exe OUTPUT — read-only, the shapes the reconciler parses
+==============================================================================
+
+No service was created, started, stopped, reconfigured or deleted to produce
+any of this. Every command below is a QUERY against a service that already
+existed on this box, or against a name that does not exist.
+
+$ sc.exe qc W32Time
+[SC] QueryServiceConfig SUCCESS
+
+SERVICE_NAME: W32Time
+        TYPE               : 20  WIN32_SHARE_PROCESS 
+        START_TYPE         : 3   DEMAND_START
+        ERROR_CONTROL      : 1   NORMAL
+        BINARY_PATH_NAME   : C:\WINDOWS\system32\svchost.exe -k LocalService
+        LOAD_ORDER_GROUP   : 
+        TAG                : 0
+        DISPLAY_NAME       : Windows Time
+        DEPENDENCIES       : 
+        SERVICE_START_NAME : NT AUTHORITY\LocalService
+
+$ sc.exe query Winmgmt
+
+SERVICE_NAME: Winmgmt 
+        TYPE               : 30  WIN32  
+        STATE              : 4  RUNNING 
+                                (STOPPABLE, PAUSABLE, ACCEPTS_SHUTDOWN)
+        WIN32_EXIT_CODE    : 0  (0x0)
+        SERVICE_EXIT_CODE  : 0  (0x0)
+        CHECKPOINT         : 0x0
+        WAIT_HINT          : 0x0
+
+$ sc.exe qfailure Themes
+[SC] QueryServiceConfig2 SUCCESS
+
+SERVICE_NAME: Themes
+        RESET_PERIOD (in seconds)    : 86400
+        REBOOT_MESSAGE               : 
+        COMMAND_LINE                 : 
+        FAILURE_ACTIONS              : RESTART -- Delay = 60000 milliseconds.
+                                       RESTART -- Delay = 60000 milliseconds.
+
+
+$ sc.exe qfailureflag W32Time
+[SC] QueryServiceConfig2 SUCCESS
+
+SERVICE_NAME: W32Time
+FAILURE_ACTIONS_ON_NONCRASH_FAILURES:  FALSE
+
+  ^ NOTE the field name is NOT padded to a column and there is NO space before
+    its colon, unlike every other sc field. A parser keyed on ' : ' never
+    matches this line, leaves the flag uninspected, and configuredFor then
+    reports the endpoint CONFIGURED -- a silent false green on the exact
+    defect the flag exists to close.
+
+$ sc.exe sdshow W32Time
+
+D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)(A;;CCLCSWRPLOCRRC;;;LS)(A;;CCSWWPLORC;;;LS)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;S-1-5-80-3169285310-278349998-1452333686-3865143136-4212226833)
+
+  ^ seven ACEs in an order nothing in our code chose, plus a per-service SID
+    ACE. This is why the descriptor check is a semantic predicate and not a
+    byte compare against DaemonServiceSDDL -- a byte compare would report
+    'wrong SDDL' on correctly hardened endpoints and re-run sc sdset every
+    five minutes on all of them.
+
+  ^ AND IT CORRECTED A WRONG ASSUMPTION: this untouched descriptor DOES hand
+    service control to a non-administrator. (A;;CCLCSWRPLOCRRC;;;LS) grants
+    NT AUTHORITY\LocalService SERVICE_START and (A;;CCSWWPLORC;;;LS) grants it
+    SERVICE_STOP. The fixture's expected value was rewritten from this run.
+
+$ sc.exe qc devoid-daemon-nope
+[SC] OpenService FAILED 1060:
+
+The specified service does not exist as an installed service.
+
+$ (exit code, via PowerShell $LASTEXITCODE)
+  sc qc     -> 1060
+  sc query  -> 1060
+  sc sdshow -> 1060
+
+  ^ 1060 = ERROR_SERVICE_DOES_NOT_EXIST, on all three. GOTCHA for anyone
+    reproducing at a shell: Git Bash truncates $? to eight bits, so 1060
+    reads there as 36 and looks like an unrelated failure. Go's ExitCode()
+    and PowerShell's $LASTEXITCODE both return the full value.
+
+==============================================================================
+5. THE FOUR STATES ON THE DOCTOR SURFACE
+==============================================================================
+
+One row, 'Daemon service', read from the daemon's serviceSupervision block.
+There is no local fallback and that is by design: the descriptor W2 T3 applies
+withholds SERVICE_QUERY_CONFIG from INTERACTIVE, so an unelevated
+'sc qc devoid-daemon' is refused. The daemon runs as LocalSystem and is the
+only reader that can answer.
+
+  could not determine     FAIL       could not be verified (the daemon could
+                                     not read the service: <sc error>)
+  no daemon reached       FAIL       could not be verified (daemon unreachable;
+                                     an unelevated CLI cannot read the service
+                                     configuration)
+  NOT REGISTERED          unverified no devoid-daemon service is registered --
+                                     recovery on this endpoint is the ONSTART
+                                     task's own restart-on-failure, which
+                                     cannot run while the daemon is dead. A
+                                     service is registered by the installer,
+                                     not by this endpoint.
+  registered, misconfigured FAIL     <the daemon's own reason> (the daemon
+                                     repairs this on its next reconcile)
+  registered, NOT running   PASS     registered, not running -- the SCM starts
+                                     it at the next boot and restarts it on
+                                     failure thereafter
+  registered AND running    PASS     registered and running -- the SCM restarts
+                                     the daemon if it dies
+
+'not registered' is EVERY endpoint in the field today, so it is neither a
+failure nor a green tick. It takes the scoreboard's third state, which is
+COUNTED, suppresses the all-clear line, and prints on the --quiet surface that
+install.ps1 and install.sh echo. It is not the old neutral row and it is not
+an 'unknown': an undetermined service still FAILS this row.
+
+==============================================================================
+6. SUITES RUN
+==============================================================================
+
+$ go test ./internal/daemon/... -count=1
+ok  	github.com/codefense/cli-wrapper/internal/daemon	37.513s
+
+$ go test ./internal/daemonsupervise/... -count=1
+ok  	github.com/codefense/cli-wrapper/internal/daemonsupervise	1.377s
+
+$ go test ./cmd/devoid-daemon/... -count=1
+ok  	github.com/codefense/cli-wrapper/cmd/devoid-daemon	1.141s
+
+$ go test ./cmd/devoid/... -count=1 -timeout 25m
+ok  	github.com/codefense/cli-wrapper/cmd/devoid	207.170s
+
+$ go vet ./internal/daemon/... ./internal/daemonsupervise/... ./cmd/devoid-daemon/... ./cmd/devoid/...
+(clean)
+
+$ GOOS=linux go build ./...        # the wire-lane gate's whole-module compile
+(clean)
+
+$ GOOS=linux go vet ./internal/daemon/... ./internal/daemonsupervise/...
+  # proves the tag-free decision + parser tests COMPILE on the ubuntu runner
+(clean)
+
+==============================================================================
+7. WHAT NO CI JOB RUNS
+==============================================================================
+
+  internal/daemon        the new tests all carry 'Persistence', so
+                         pr-checks.yml wire-lane-tests picks them up with NO
+                         workflow edit. Verified by name in that run's -v
+                         output rather than assumed -- 19 of 19.
+  cmd/devoid             cli-entrypoint-tests (windows-latest) runs
+                         ./cmd/devoid/... unscoped. Covered.
+  cmd/devoid-daemon      NO CI JOB RUNS THESE. Every file there is
+                         //go:build windows, cli-entrypoint-tests runs only
+                         ./cmd/devoid/..., and internal-candidate.yml's
+                         'go test ./...' is ubuntu, where the package has
+                         only main_other.go. The ten-cycle external-recovery
+                         proof is in that package. Local runs are its only
+                         signal, and this file is that signal.
+  -race                  unavailable: needs cgo, and CGO_ENABLED=0 on this
+                         box. The ten-cycle test was run 30x sequentially
+                         instead.
+
+No leg was appended to pr-checks.yml. It is the contract's BOTH-owned
+append-only file and several agents are running at once.
+
+==============================================================================
+8. NOTHING LEFT THIS BOX
+==============================================================================
+
+No test or probe here constructs a backend client, and none makes an outbound
+request. The only external processes invoked are sc.exe queries against the
+local SCM, listed in section 4. No credentials were read, copied or written,
+and nothing under %ProgramData% was touched.
+
+==============================================================================
+9. MERGED WITH MAIN, AND RE-RUN
+==============================================================================
+
+main moved 60b89f64 -> 943f002f during this work (W2 T6, W2 T11, W8 T9,
+W4 T5/T7/T8, W3 T4). Merged in. ONE conflict, in observedRuntimeSnapshot's
+constructor, purely additive on both sides -- main added CredentialReachability
+and SessionBrokers, this branch added ServiceSupervision. Resolved to the
+union. PR #242 is MERGEABLE.
+
+Suites re-run on the MERGED tree:
+  ./internal/daemon/...          ok  (7 of 8 runs green -- see the note below)
+  ./internal/daemonsupervise/... ok
+  ./cmd/devoid-daemon/...        ok
+  ./cmd/devoid/...               ok  162s
+  go vet on all four             clean
+  GOOS=linux go build ./...      clean
+  GOOS=linux go vet              clean
+  ten-cycle recovery proof       10/10, unchanged after the merge
+
+THE ONE RED RUN, reported rather than dismissed. Immediately after the merge,
+one ./internal/daemon/... run exited non-zero and printed NO '--- FAIL' line
+at all -- no test named itself, which is the signature of a killed subprocess
+or lost interleaved output rather than an assertion. Seven consecutive runs
+since are green, and TestEndTrackedAISessions_BoundedFanOutCompletesInTimeBox
+-- one of the two wall-clock tests known to fail in this package under
+concurrent agent load -- passes -count=5. It coincided with this box briefly
+hitting 100% disk, which had already failed a cmd/devoid-daemon link with
+'resize output file failed ... not enough space'; cleared by removing 65
+orphaned go-build* temp dirs older than 12h (~2 GB). The failing test name was
+not recovered, so this is an unreproduced red in 8 runs, not a clean bill.
