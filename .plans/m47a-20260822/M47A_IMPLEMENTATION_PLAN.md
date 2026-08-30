@@ -3982,6 +3982,13 @@ Each is a number or a named artifact, and each names the test that goes red on r
 
 # Wave 3 — Repair the measurement instrument, then give every lane a denominator
 
+> **Implementation checkpoint (2026-08-30):** the engineering tasks in this wave are implemented as
+> the stacked Installers PRs #251–#256, but remain unmerged behind the approved Wave 2 / Frontend
+> dependency chain. Tasks 4–5 and 11 remain with their explicitly moved owners. Exact candidates,
+> tests, blockers, and the no-certification boundary are recorded in
+> [`v2-waves/W3_RUN_LOG.md`](./v2-waves/W3_RUN_LOG.md). Source completion is not deployment and does
+> not make current degraded/zero-denominator evidence claimable.
+
 **Depends on:** Wave −1 (rebase, citation repair, the `ScanAll` correction), Wave 2 (the evidence-grade
 fields on `toolrisk.Finding`, which Task 7 carries onto the wire). Wave 0A and Wave 1 may run in
 parallel; nothing here blocks them.

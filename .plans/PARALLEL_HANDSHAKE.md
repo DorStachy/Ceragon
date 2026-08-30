@@ -2099,3 +2099,46 @@ Frontend PR `#197` remains open behind the known Vercel private-organization Hob
 that external account gate was not bypassed. Installers PR `#249` remains open so the source does not
 land ahead of its downstream consumer. No agent was released, no service was deployed, no AWS state
 was mutated, and no production verification is claimed.
+
+### 2026-08-30T03:54:29Z · P47 · WAVE 3 SOURCE COMPLETE + EXACT-HEAD APPROVED + MERGE BLOCK PRESERVED
+
+P47 Wave 3's actionable engineering tasks are implemented and pushed as the dependency-preserving
+Installers stack `#251` → `#252` → `#253` → `#254` → `#255` → `#256`. Tasks 4–5 remain intentional
+headstones owned by Wave 3B; Task 11 remains owned by Wave −1 Task 5. The complete-stack candidate is
+Installers PR `#256`, exact SHA `44d86b58d02ec51cf8657cf6a652b7f936f0c8cf`, stacked on `#255`.
+It received independent **APPROVED** review at that exact SHA after all four earlier blockers were
+repaired.
+
+The final corrective head makes the measurement populations executable rather than cosmetic. The
+official prompt EGRESS report actually runs 12 `promptrisk` cases with denominator 6 benign / 5
+attack and completeness 0 / 12. DLP runs separately as a 27-case auxiliary report with denominator
+17 / 7 and completeness 0 / 27. Both artifacts are terminal `UNKNOWN` under current zero-eligible and
+degraded-inspection conditions and serialize no detector, aggregate, or uncertainty rate. DLP rows
+are not folded into prompt lane A.
+
+The local per-class shadow now arms a private atomic incomplete-write marker before store replacement,
+clears it only after an atomic store write, and carries a failed/crashed write across restart as a
+terminal store error. The independent reporter cannot present an old valid prefix as a lossless
+suffix. The TOOL artifact step also runs before the fallible sealed-corpus seed/scoring chain, with
+artifact upload still `if: always()`.
+
+Exact-head gates are green: `go test ./... -count=1`, `go vet ./...`, C04 inertness, focused command /
+report / neutral-evaluation / daemon / contract suites, and the P9 immutable replay. The replay was
+not regenerated and remains exactly `strict=2717 drifted=0 tool=125` across all 2,842 decisions.
+No detector class, match predicate, policy disposition, or catalog membership changed, and the
+golden-covered local decisions did not drift. Task 6 did intentionally change the separate OpenAI
+downlink proxy path: an uninspectable authoritative response enters the tested sticky fail-closed
+hold instead of being treated as completely inspected. The 2,842-row local-decision golden does not
+claim coverage of that proxy behavior.
+
+The source stack is intentionally **not merged**. Its complete dependency graph is Frontend `#197` →
+Installers `#249` → `#251` → `#252` → `#253` → `#254` → `#255` → `#256`. Frontend `#197` remains
+source-approved but `UNSTABLE` because its required Vercel context reports the private-organization
+Hobby-account billing restriction. `#249` deliberately remains open so the source does not land ahead
+of that pinned consumer. P47 did not administrator-bypass, retarget around, or merge ahead of the
+external gate.
+
+No service or worker was deployed, no installer/agent was released, no AWS/IAM/RDS/ECS/Vercel billing
+state was mutated, no production canary ran, and no production, zero-false-positive, or 9+ claim is
+made. The next programme stage is Wave 3B's version identity and corpus governance, subject to this
+dependency and the existing authorization/consent boundaries.
