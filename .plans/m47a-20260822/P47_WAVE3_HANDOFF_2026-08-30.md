@@ -43,8 +43,9 @@ Do not collapse these into “done” or “not done.”
 At this checkpoint:
 
 - Wave 3 engineering source is **implemented but unmerged**.
-- Root plan/run-log/handoff documentation is **committed on `codex/p47-final-handoff` for publication
-  and merge into root `master`**; re-read the root PR/default branch for the live merge state.
+- Root plan/run-log/handoff documentation is **published in root PR #17 from
+  `codex/p47-final-handoff` for merge into `master`**; re-read the PR/default branch for the live
+  merge state.
 - The Frontend/Vercel dependency is **blocked**.
 - Wave 3B corpus governance is **not started by this handoff** and is the next programme stage.
 - Production deployment/release is **not authorized**.
@@ -80,7 +81,7 @@ state can change after this document is written.
 | 5 | Installers #254 | `codex/p47-w3-t8` → #253 branch | `2ef587666d1c0c5d7497815e5d264531933a49a7` | Draft/clean. Task 8. |
 | 6 | Installers #255 | `codex/p47-w3-t9-lane-shadow-report` → #254 branch | `830e2e892400213a4618085b5870ff57a7c2934c` | Draft/clean. Task 9. |
 | 7 | Installers #256 | `codex/p47-w3-t10-invalidation` → #255 branch | `44d86b58d02ec51cf8657cf6a652b7f936f0c8cf` | Draft/clean; independently **APPROVED** at this exact head. Task 10 plus complete-stack corrections. |
-| docs | Root publication PR (read current GitHub state) | `codex/p47-final-handoff` → `master` | Read the PR head | Plan status, Wave 3 run log, handoff, fresh-chat prompt, and append-only handshake receipt. |
+| docs | Root #17 | `codex/p47-final-handoff` → `master` | Read the current PR head | Plan status, Wave 3 run log, handoff, fresh-chat prompt, and append-only handshake receipt. |
 
 Useful URLs:
 
@@ -92,6 +93,7 @@ Useful URLs:
 - Installers #254: <https://github.com/Ceragon-Prod/Installers/pull/254>
 - Installers #255: <https://github.com/Ceragon-Prod/Installers/pull/255>
 - Installers #256: <https://github.com/Ceragon-Prod/Installers/pull/256>
+- Root #17: <https://github.com/DorStachy/Ceragon/pull/17>
 
 ## 5. What Wave 3 implemented, in plain English
 
@@ -344,11 +346,17 @@ that green, and do not regenerate from a dirty or semantically changed tree just
 
 ### Use the VM for the missing Docker/workspace proof
 
-On a disposable VM with Docker available:
+On a disposable VM with Docker available, build the layout the workspace runner actually resolves:
+the root planning repository is the working directory and the exact Installers checkout is its
+`Installers` child. A standalone `C:\cwt\p47-w3-review` checkout is not sufficient because it does not
+contain root `ci/lib/run.mjs`.
 
-1. Fetch the exact PR #256 head and verify its SHA.
-2. Clone/fetch the root workspace so its `ci/lib/run.mjs` and component layout match the plan.
-3. Run `node ci/lib/run.mjs Installers holdout-score:score`.
+1. Clone/fetch the root repository into a clean VM directory such as `C:\vm\Ceragon`.
+2. Clone/fetch Installers into exactly `C:\vm\Ceragon\Installers`, detach it at PR #256 exact head
+   `44d86b58d02ec51cf8657cf6a652b7f936f0c8cf`, and verify that identity with
+   `git -C C:\vm\Ceragon\Installers rev-parse HEAD`.
+3. From `C:\vm\Ceragon`, verify `Test-Path .\ci\lib\run.mjs` and then run
+   `node ci/lib/run.mjs Installers holdout-score:score`.
 4. Preserve the failing stage and artifacts. If the stale ingress seed is the only failure, inspect
    the generated diff; do not hand-edit case digests or labels.
 5. Run the TOOL report separately with no store and verify it creates an UNKNOWN JSON artifact.

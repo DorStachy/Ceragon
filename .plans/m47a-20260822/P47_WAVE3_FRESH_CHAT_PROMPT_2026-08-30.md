@@ -114,11 +114,27 @@ silently regenerate or relabel the sealed corpus.
 
 ## Required VM/Docker proof
 
-Use a disposable VM with Docker available to reproduce the workspace gate at the exact #256 head:
+Use a disposable VM with Docker available to reproduce the workspace gate at the exact #256 head.
+The runner resolves components as children of the root workspace, so create a clean layout like this:
+
+```text
+C:\vm\Ceragon\ci\lib\run.mjs
+C:\vm\Ceragon\Installers\   # exact Installers #256 checkout
+```
+
+Clone/fetch the root repository at `C:\vm\Ceragon`; clone/fetch Installers into exactly its
+`Installers` child and detach it at `44d86b58d02ec51cf8657cf6a652b7f936f0c8cf`. Before running the
+gate, verify both paths and the source identity:
 
 ```powershell
+cd C:\vm\Ceragon
+Test-Path .\ci\lib\run.mjs
+git -C .\Installers rev-parse HEAD
 node ci/lib/run.mjs Installers holdout-score:score
 ```
+
+The SHA command must print `44d86b58d02ec51cf8657cf6a652b7f936f0c8cf`. Do not invoke the
+workspace runner from the standalone Installers worktree; it has no root `ci/lib/run.mjs`.
 
 Preserve the exact failing stage and produced artifacts. The expected prompt report has 12 executed
 and 12 result rows, `surface=promptrisk`, denominator 6/5, inspection 0/12, terminal UNKNOWN, and no
