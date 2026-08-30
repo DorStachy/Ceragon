@@ -2125,8 +2125,11 @@ artifact upload still `if: always()`.
 Exact-head gates are green: `go test ./... -count=1`, `go vet ./...`, C04 inertness, focused command /
 report / neutral-evaluation / daemon / contract suites, and the P9 immutable replay. The replay was
 not regenerated and remains exactly `strict=2717 drifted=0 tool=125` across all 2,842 decisions.
-No detector class, match predicate, policy disposition, catalog membership, or enforcement behavior
-changed.
+No detector class, match predicate, policy disposition, or catalog membership changed, and the
+golden-covered local decisions did not drift. Task 6 did intentionally change the separate OpenAI
+downlink proxy path: an uninspectable authoritative response enters the tested sticky fail-closed
+hold instead of being treated as completely inspected. The 2,842-row local-decision golden does not
+claim coverage of that proxy behavior.
 
 The source stack is intentionally **not merged**. Its complete dependency graph is Frontend `#197` →
 Installers `#249` → `#251` → `#252` → `#253` → `#254` → `#255` → `#256`. Frontend `#197` remains
