@@ -23,7 +23,7 @@ that was never run, and **MOVED** for a task re-homed to another wave rather tha
 
 | Repository | `origin/main` at draw time | Confirmed |
 |---|---|---|
-| Installers | `ed45aa72` | `git ls-remote` |
+| Installers | `48c3d2eb` | `git ls-remote` |
 | Backend | `eb5e2ef8` | `git ls-remote` |
 | Frontend | `3e6b739b` | `git ls-remote` |
 | GithubApp-Bot-Scanner-Worker | `c72579e` | `git ls-remote` |
@@ -39,8 +39,11 @@ that was never run, and **MOVED** for a task re-homed to another wave rather tha
   exit and defeat evidence pass, and no wave's exit set has been run end to end. Wave 3 is the
   clearest illustration — its code is correct and every artifact it emits is `UNKNOWN` by design,
   because the corpora that would make a number legitimate do not exist yet.
-- **1 task is BUILT · UNMERGED**: Wave 3B Task 1, commit `979d27de` on
-  `p47/w3b-t1-engine-version`. Held local at the owner's instruction.
+- **1 task is BUILT · UNMERGED**: Wave 3B Task 1, commit `f9672a9e` on
+  `p47/w3b-t1-engine-version`, rebased onto `48c3d2eb`. Held local at the owner's instruction.
+- **Installers `main` moved during this pass**, `ed45aa72` → `48c3d2eb`, carrying P9's C04 and
+  line-ending repairs. That is the standing rule in O-1 demonstrating itself: a ledger is a set of
+  claims about a tree, and this one had to be corrected twice before it was committed.
 - A percentage over lines or hours would mislead. By wave-exit accounting the programme is **0%**;
   by merged-task accounting it is roughly **22%** (32 of 144). Both numbers are true and neither is
   the answer on its own.
@@ -149,14 +152,30 @@ Source-merged. Every artifact it emits is `UNKNOWN`, which is the instrument wor
 | T10 Shared terminal invalidation | **MERGED** | #256 → `80c98470`. Eight triggers, exactly two production callers, all five rates through `InvalidationResult.Rate`. |
 | T11 Trigger-cost decision | **MOVED** → Wave −1 T5 | Owner-blocked there. |
 
-### Open against Wave 3, found 2026-09-02
+### Raised and closed against Wave 3, 2026-09-02
 
-- **The C04 inertness guard is RED on Installers `main`.** Green in a clean checkout at `d57138a8`,
-  red at `ed45aa72`. Cause: P9's `b9299f66` added `internal/neutraleval/capture.go` and
-  `capture_test.go`, which import `aipolicycontract` outside the gate-opened consumer set. Invisible
-  three ways: no CI job runs that package; the only `go test ./...` is Linux where the package is
-  already red for an unrelated CRLF pin; and 7 of the 10 post-handoff commits carry `[skip ci]`.
-  Raised as `CONFLICT` in `PARALLEL_HANDSHAKE.md`; repair is P9's call.
+- **The C04 inertness guard was RED on Installers `main`, and is now fixed.** Found by clean-checkout
+  A/B: green at `d57138a8`, red at `ed45aa72`, reducing to `internal/neutraleval/capture.go` and
+  `capture_test.go` from P9's `b9299f66`, which imported `aipolicycontract` outside the gate-opened
+  consumer set. Invisible three ways: no CI job runs that package; the only `go test ./...` is Linux
+  where the package was already red for an unrelated CRLF pin; and 7 of the 10 post-handoff commits
+  carry `[skip ci]`. Raised as `CONFLICT` in `PARALLEL_HANDSHAKE.md`; **P9 repaired it the same day**
+  using the second offered shape — `2a4fabaf` moved the budget projection into
+  `internal/localdecide/hardstop.go`, which was already in the allowlist, so the allowlist itself was
+  never widened. Verified independently in a clean checkout at `48c3d2eb`: **PASS**.
+
+- **The "stale ingress corpus" was never stale content.** The handoff records the committed ingress
+  corpus as stale relative to its generator, and the VM-proof script is written to expect that failure
+  stopping the ordered job. The real cause was line endings: `toolrisk-seed.json` hashed CRLF (seeded
+  on Windows) and `ingress-seed.json` hashed LF (seeded on Linux), so
+  `ai-security-holdout-seed --check` could not pass on **any** platform. P9 pinned the vector tree to
+  LF (`69deee97`), re-seeded toolrisk digests only (`f1837455`, 4 cases held, no label or budget
+  changed), widened the LF tripwire (`6a2a7f39`, `c707f26a`) and pinned `go.mod`/`go.sum`
+  (`48c3d2eb`). Verified independently at `48c3d2eb`: the check **exits 0** with holdout 39, ingress
+  28, toolrisk 4 all current.
+  **Consequence: the VM-proof script's expected stale-seed failure is obsolete.** Re-read
+  `vm-proof/run-wave3-proof.sh` before running it; the ordered workflow may now pass where the
+  handoff says it must fail. This is the fourth CRLF-blind guard found in this repository this month.
 - **The handoff's "105-row producer union" is wrong.** Measured 132 at both `d57138a8` and
   `ed45aa72` — `dlp` 79 + `promptrisk` 14 + `ingressrisk` 7 + `toolrisk` 31 + the policyeval
   blocklist class, deduplicated. The 136 rows in a holdout report are that 132 unioned with the
@@ -167,7 +186,7 @@ Source-merged. Every artifact it emits is `UNKNOWN`, which is the instrument wor
 
 | Task | State | Notes |
 |---|---|---|
-| T1 Mandatory engine version, stamped on the aggregate | **BUILT · UNMERGED** | `979d27de` on `p47/w3b-t1-engine-version`. Both defeat proofs go red on revert. Emits `system.engineVersion` = commit sha; `formatVersion` 3; denominator 6/5 unchanged. Two items flagged for review: the exit criterion's literal "0 occurrences of `m4.7`" is unsatisfiable alongside refusing the value by name (measured 4: three in the rejection test, one constant that performs the refusal), and the change touches P9's `capture.go` by one import and one field. |
+| T1 Mandatory engine version, stamped on the aggregate | **BUILT · UNMERGED** | `f9672a9e` on `p47/w3b-t1-engine-version`, rebased onto `48c3d2eb` (one import conflict in `capture.go`: P9 swapped in `localdecide`, this branch adds `core/config`; both kept). Green after rebase — build, vet, `neutraleval`, `ai-security-neutral` and `aipolicycontract` all pass. Both defeat proofs go red on revert. Emits `system.engineVersion` = commit sha; `formatVersion` 3; denominator 6/5 unchanged. Two items flagged for review: the exit criterion's literal "0 occurrences of `m4.7`" is unsatisfiable alongside refusing the value by name (measured 4: three in the rejection test, one constant that performs the refusal), and the change touches P9's `capture.go` by one import and one field. |
 | T2 The system-under-test tuple | NOT STARTED | Premises verified on current `main`: `RunnerIdentity` carries 5 fields against a target of 9; `contract.go` already names Wave 3B as the widener of `Valid()`. |
 | T3 Emit the evaluation report the spine defines | NOT STARTED | **O-12** satisfied — Wave 3 is merged. |
 | T4 One suite registry, six suites | NOT STARTED | **O-13: gates 4A / 4B / 4C / 7B exit numbers.** The highest-leverage remaining task in the programme. |
