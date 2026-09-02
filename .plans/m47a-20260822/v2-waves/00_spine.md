@@ -21,6 +21,12 @@
 >    `pr-checks.yml`. A reformat by one team turns every later diff into a conflict.
 >
 
+> **Owner execution directive:** before taking a task, read
+> [`../P47_EXECUTION_GUARDRAIL.md`](../P47_EXECUTION_GUARDRAIL.md). It exists because the first
+> implementation run consumed almost the entire session on Wave 0A without completing the wider
+> programme. Its scope-control, progress-accounting, and escalation rules are mandatory.
+
+
 # M4.7A — Runtime AI Security Protection and Detection Engine: Implementation Plan (v2)
 
 **Supersedes:** `M47A_IMPLEMENTATION_PLAN.md` (v1, 2026-08-22, 17,538 lines), which its own
@@ -36,24 +42,30 @@ finding against current `origin/main` and found **17 substantive errors in the r
 
 ## Rebase manifest
 
-Every line-level instruction in this plan was verified against these revisions. **If your `git fetch`
-disagrees with this table, the instructions below are invalid until revalidated** — that is a standing
-rule, not a courtesy. The 2026-08-27 disposition pass was handed a SHA list built from local
-checkouts and four of seven were stale; it caught the error by fetching first. Do the same.
+**THE STANDING RULE.** Every `path:line` in this plan is a claim about `origin/main` at the SHA
+recorded in [`REBASE_MANIFEST.md`](./REBASE_MANIFEST.md). Resolve citations with
+`git show origin/main:<path>`, never from the working tree. **A SHA list handed to you by a task
+brief is not evidence; the fetch is.** If your fetch disagrees with the manifest, the instructions
+below are invalid until revalidated.
 
-| Repository | `origin/main` @ 2026-08-27 | Moved since the review? |
-|---|---|---|
-| Backend | `0cf9021e` — **deployed as ECS task definition 322** | yes, from `787b71dc` |
-| Frontend | `cac574ae` — deployed as task definition 378 | yes, from `471658a7` |
-| Installers | `5b129523` — **agent 7.10.6 stable**, built from `9503094e` | yes, from `f29d6644` |
-| Static-Worker | `44d7aabb` | yes, from `e4c6069f` |
-| Sandbox-Worker | `2831997d` | yes, from `d68ee58d` |
-| GithubApp-Bot-Scanner-Worker | `3d4116a5` | **no — review findings are current** |
-| Ceragon-Intelligence | `deb70e64` | yes, from `08a58981` |
+The manifest is **generated, never hand-edited**, and there is now a gate that says so:
 
-`lastRebasedAt: 2026-08-28`
+```bash
+node ci/lib/rebase-manifest.mjs            # fetch all seven, then verify the manifest
+node ci/lib/rebase-manifest.mjs --write    # fetch, then regenerate it
+node ci/lib/w-1-rebase-manifest.test.mjs   # the mutation proof for that gate
+```
 
-⚠️ **This table drifted inside a single working session, and that is the point of the rule.** It was
+Exit 0 means the manifest describes the repositories. Exit 1 names the repository whose SHA has
+moved. Exit 2 means it could not be determined — a missing checkout or an unfetched remote is
+`NOT CHECKED`, never a pass.
+
+The table that used to sit here was hand-typed under the words "never hand-edit" while the
+generator it named did not exist. It has been removed rather than refreshed: a SHA list embedded in
+prose is stale the moment anyone merges, and this one was stale by seven repositories when it was
+found. Read the manifest, or better, run the gate.
+
+⚠️ **That removed table drifted inside a single working session, and that is the point of the rule.** It was
 written on 2026-08-27 pinning Ceragon-Intelligence at `486d937b`. By 2026-08-28 `origin/main` was
 `deb70e64` — **5 commits, 36 files, +12,372 insertions, 31 of them under `fp-agent/`**, all marked
 `[skip ci]`. That is a coworker actively building an autonomous false-positive-review agent: the exact
