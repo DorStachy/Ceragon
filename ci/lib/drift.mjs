@@ -146,16 +146,29 @@ function checkRepo(repoKey, wantCost) {
           cost.push({ id, runner: rn, legs, rate: RUNNER_RATE[rn] ?? null });
         }
       }
-      if (!gateTriggered) continue;
+      // COVERAGE IS AUDITED FOR EVERY JOB, NOT ONLY PUSH/PR-TRIGGERED ONES.
+      // Cost is scoped to push/PR above, because that is what a push actually
+      // bills. Coverage is a different question, and it used to share that
+      // scope: `if (!gateTriggered) continue;` sat here, so a workflow whose
+      // triggers were reduced to workflow_dispatch + schedule dropped out of
+      // the audit in silence. Measured 2026-09-02: pr-checks.yml lost its push
+      // and pull_request triggers in the 2026-08-25 cost gate, and FOUR jobs
+      // across two repositories have sat in neither mirrored nor cannotMirror
+      // since -- while this script printed "No drift". The fence built to catch
+      // exactly that was structurally blind to the file it most needed to read.
 
       if (repo.mirrored[id]) continue;
       const excuse = coveredByCannotMirror(repo.cannotMirror, wfName, jobId);
       if (excuse) continue;
 
+      const trigger = gateTriggered
+        ? 'is triggered by push/pull_request on origin/main but appears in neither'
+        : 'is triggered only by ' + (Object.keys(wf.on || {}).join(' + ') || 'nothing') +
+            ', so no push runs it, and it appears in neither';
       problems.push({
         level: 'error',
         msg:
-          `${id} is triggered by push/pull_request on origin/main but appears in neither ` +
+          `${id} ${trigger} ` +
           `mirrored nor cannotMirror.` +
           (runners.every((x) => isLinuxRunner(x.runner))
             ? `  It runs on ${runner}, so it is mirrorable -- add "${id}": {} to mirrored.`

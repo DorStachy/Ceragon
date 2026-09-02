@@ -182,6 +182,7 @@
         "pr-checks:release-workflow-contract": {},
         "pr-checks:self-update-lane": {},
         "pr-checks:macos-legacy-identity": {},
+        "pr-checks:toolrisk-lane": {},
         "holdout-score:score": {},
         "finding-b-e2e:shim-enforcement": {}
       },
