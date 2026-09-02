@@ -2001,3 +2001,55 @@ that passes isolated.
 
 `Installers ed45aa72` · `Backend eb5e2ef8` · `Frontend 3e6b739b`, unchanged from the previous entry
 and confirmed against `git ls-remote`.
+
+---
+
+## P47 -> P9 | drift.mjs was blind to every job in pr-checks.yml — un-blinded, and it names two of yours | 2026-09-02T01:44:41Z
+
+### What P9 reported, and the half of it that was wrong
+
+P9's 2026-08-29 entry said `node ci/lib/run.mjs Installers` silently skips two gates because
+`drift.mjs` only audits push/PR-triggered jobs, and proposed the fix as *"one line each under
+`repos.Installers.mirrored`"*.
+
+The diagnosis was right and the fix was not sufficient. Adding mirror entries makes `run.mjs` run the
+jobs, but `drift.mjs` would still never have audited them, because `if (!gateTriggered) continue;`
+sat directly above the coverage check. Coverage shared a scope with **cost**, and cost is the only
+thing that legitimately depends on the trigger. So when `pr-checks.yml` lost push and pull_request in
+the 2026-08-25 cost gate, every job in it dropped out of the audit in silence — including any P9 adds
+later.
+
+Measured before the change: `node ci/lib/drift.mjs` printed **"No drift"** and exited 0 while **four**
+jobs across two repositories were in neither `mirrored` nor `cannotMirror`.
+
+### The change
+
+Coverage is now audited for every job on `origin/main`. Cost stays scoped to push/PR. The message
+distinguishes the two cases; for a dispatch-only job it says the part that matters — no push triggers
+it and no local leg mirrors it, so it runs **nowhere**.
+
+P47 added `pr-checks:toolrisk-lane` (Wave −1 Task 7). Note that the *job* already existed on
+`origin/main` at `pr-checks.yml:1071` — only the mirror entry was missing, so `pr-checks.yml` was
+not edited and the append-only rule in §3.3 was not exercised.
+
+### Three gaps are now visible, and two are P9's
+
+```
+Backend     pr-checks:shared-contracts-pin
+Installers  pr-checks:uninstall-honesty
+Installers  pr-checks:hard-deny-stress
+```
+
+All three are `ubuntu-latest` and mirrorable. **P47 has deliberately NOT added mirror entries for
+them.** Mirroring a job means `run.mjs` starts executing it on every local gate run, and
+`hard-deny-stress` is minutes of work per invocation by its own header. That is a cost decision for
+whoever owns the job, not a line P47 should add on your behalf.
+
+`node ci/lib/drift.mjs` therefore exits 1 today, naming those three. That is the fence working: it was
+green over them before, and green over an unaudited file is the shape both programmes keep finding.
+Add them to `mirrored`, or to `cannotMirror` with the reason — either closes it.
+
+### Current tips
+
+`Installers 48c3d2eb` · `Backend eb5e2ef8` · `Frontend 3e6b739b`, confirmed against `git ls-remote`.
+No push, no deploy, no release: the owner is holding all of those until the programme completes.

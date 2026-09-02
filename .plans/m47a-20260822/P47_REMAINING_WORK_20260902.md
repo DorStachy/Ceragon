@@ -68,13 +68,13 @@ similar names; the governance-gap certificate is the thing that proves parity.
 
 | Task | State | Evidence / blocker |
 |---|---|---|
-| T1 Fetch first, publish a rebase manifest, make it standing | NOT STARTED | **O-1 gates every other task in the programme.** The manifest in `00_spine.md` is dated 2026-08-27 and every tip in it has moved. |
+| T1 Fetch first, publish a rebase manifest, make it standing | **BUILT · UNMERGED** | `1cec913`. `ci/lib/rebase-manifest.mjs` is the generator the old manifest already named but which did not exist; `w-1-rebase-manifest.test.mjs` is 15 mutation cases over real seven-repo git workspaces, proven non-inert (4 go red when the comparison is disabled). Exit measured: 7 rows, 40-char SHAs, integer behind counts, byte-identical re-runs. All seven repositories are now 0 behind. |
 | T2 Write the claim contract into the goal statement | NOT STARTED | |
 | T3 Resolve provenance of the pinned DLP vocabulary | **MERGED** (discovery only) | `W_MINUS_1_RUN_LOG.md`: source commit `d366f5f8` does not exist in 7/7 governed repositories. The tuple is a fork. No runtime source changed and no class count is asserted. |
 | T4 Repair every citation in the plan | NOT STARTED | Line numbers have already drifted — Wave 3B T1 cited `main.go:23` / `runner.go:467-469`; measured they are `:24` / `:510`. |
 | T5 `holdout-score.yml` header truth, then the trigger decision | **BLOCKED** | Owner cost decision. Also inherits Wave 3 Task 11. The header at `:6` claims "runs on PUSH TO MAIN and NIGHTLY"; `on:` is `workflow_dispatch` + cron only. |
 | T6 Declare the standards columns in the manifest schema | NOT STARTED | |
-| T7 Create the `toolrisk-lane` job and its mirror entry | NOT STARTED | Every later wave appends to this job. P9 also recorded that `ci/lib/run.mjs` silently skips this gate and reports green. |
+| T7 Create the `toolrisk-lane` job and its mirror entry | **BUILT · UNMERGED** | `353b173`. The task's recorded fact was stale: the *job* already exists at `pr-checks.yml:1071` with the exact command, so only the mirror entry was missing. Adding it was not enough — `drift.mjs` audited coverage only for push/PR-triggered jobs, so it printed "No drift" while four jobs sat in neither list. Coverage is now audited for every job; cost stays scoped to push/PR. Buys **nothing on GitHub** until T5's trigger decision; buys the mirrored local leg. Three pre-existing gaps are now visible and are not P47's to close. |
 | T8 Give the pinned-artifact guard a separately-runnable leg | NOT STARTED | |
 
 ## Wave 0A — stop hard-blocking ordinary work
