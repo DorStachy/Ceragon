@@ -12,9 +12,11 @@ The question that started this was "is my endpoint covered the way we want?" The
 
 ### F1 · P0 — Gating checkpoints are fail-open on this install, with the daemon UP
 
-Since the 08:01 install: `PRE_TOOL_USE` **61 decided / 1,571 `daemon-error` / 57 `daemon-unreachable-budget-expired`**. `USER_PROMPT_SUBMIT` **0 decided / 7 `daemon-error`**. `POST_TOOL_USE` decides fine (1,537). The primary enforcement checkpoint proceeds without asking anyone 96% of the time.
+Since the 08:01 install: `PRE_TOOL_USE` **61 decided / 1,786 `daemon-error` / 57 `daemon-unreachable-budget-expired`**. `USER_PROMPT_SUBMIT` **0 decided / 8 `daemon-error`**. `POST_TOOL_USE` reaches a decision 1,751 times, with 58 fail-safes of its own. The primary enforcement checkpoint proceeds without asking anyone 96% of the time.
 
 Evidence: [`evidence/hook-rollup-post-install-histogram.txt`](evidence/hook-rollup-post-install-histogram.txt).
+
+Every figure above is read from that committed histogram, not from a live count. An earlier draft of this section cited 1,571 / 7 / 1,537, taken from a doctor run 3.5 hours older than the evidence file; the prose was the outlier while two independent evidence files agreed with each other. The conclusion is unchanged and slightly worse at the real numbers.
 
 ### F2 · P0 — The cause of F1 is a mis-scoped daemon token, not "unenrolled by design"
 
@@ -45,19 +47,19 @@ The "only writer in the whole repo" comment (`internal/codexmanaged/migrate_argv
 
 ### F4 · P1 — Live exposure through foreign governance keys, on this box, now
 
-At the user tier — which the product deliberately does not rewrite (`internal/aiwire/reconcile_decision.go`, the four-rewrites-eight-events lesson) — `ai status codex` reports: `sandbox_workspace_write.network_access` **re-enabled outside the managed lock**; **7 projects marked trusted → approval prompts suppressed**, one classified `system-dir`; 2 un-attested MCP servers (`cua_repl`, `node_repl`); 1 un-pinned feature override (`js_repl`). All reported as `[i]` lines only (`cmd/devoid/ai_codex_hooks.go:495`) — never a bypass event, never on the wire, never in the console. Evidence: [`evidence/ai-status-codex.txt`](evidence/ai-status-codex.txt).
+At the user tier — which the product deliberately does not rewrite (`internal/aiwire/reconcile_decision.go`, the four-rewrites-eight-events lesson) — `ai status codex` reports: `sandbox_workspace_write.network_access` **re-enabled outside the managed lock**; **6 projects marked trusted → approval prompts suppressed**, one classified `system-dir`; 2 un-attested MCP servers (`cua_repl`, `node_repl`); 1 un-pinned feature override (`js_repl`). All reported as `[i]` lines only (`cmd/devoid/ai_codex_hooks.go:495`) — never a bypass event, never on the wire, never in the console. Evidence: [`evidence/ai-status-codex.txt`](evidence/ai-status-codex.txt).
 
 ### F5 · P2 — The installed Codex desktop runtime is `0.150.0-alpha.8`, outside every measured hook-trust dialect
 
-`knownHookTrustDialects = {0.144, 0.147}` (`internal/codexmanaged/hookdialect.go:166`), so R7/R8 read `unknown (coverage downgrade)`. The pin is **FROZEN for both programmes** (`.plans/PARALLEL_EXECUTION_CONTRACT.md §2.4`): a row needs two vendor artefacts off a real binary and goes through the owner. The 0.147 row's recipe needed no operator auth and no real `~/.codex` (`hookdialect.go:117-160`). **No capture tool exists — only tests.** Meanwhile the fail-open canary counts **3,536 delivered decisions** on this box: the hooks *are* firing on 0.150; DeVoid correctly refuses to *claim* it. CI pins `@openai/codex@0.134.0` (`.github/workflows/pr-checks.yml:650`); `requiredBuilds` = `[0.134.0, 0.146.0-alpha.3.1]`, ledger status `UNFIRED`. Installed here: npm `0.147.0`, desktop `0.150.0-alpha.8` (`%LOCALAPPDATA%\OpenAI\Codex\bin\6ca77c4a9caa4eed\codex.exe`, 313 MB, 2026-08-29).
+`knownHookTrustDialects = {0.144, 0.147}` (`internal/codexmanaged/hookdialect.go:166`), so R7/R8 read `unknown (coverage downgrade)`. The pin is **FROZEN for both programmes** (`.plans/PARALLEL_EXECUTION_CONTRACT.md §2.4`): a row needs two vendor artefacts off a real binary and goes through the owner. The 0.147 row's recipe needed no operator auth and no real `~/.codex` (`hookdialect.go:117-160`). **No capture tool exists — only tests.** Meanwhile the fail-open canary counts **3,733 delivered decisions** on this box: the hooks *are* firing on 0.150; DeVoid correctly refuses to *claim* it. CI pins `@openai/codex@0.134.0` (`.github/workflows/pr-checks.yml:650`); `requiredBuilds` = `[0.134.0, 0.146.0-alpha.3.1]`, ledger status `UNFIRED`. Installed here: npm `0.147.0`, desktop `0.150.0-alpha.8` (`%LOCALAPPDATA%\OpenAI\Codex\bin\6ca77c4a9caa4eed\codex.exe`, 313 MB, 2026-08-29).
 
 ### F6 · P2 — `desktop-safe` withholds R1–R4 and R6
 
 `desktopVendorWithheld` (`internal/codexmanaged/adapter_report.go:521-524`, reason `vendor-lock-unexpressible`) because the full user-tier profile bricks the desktop core (`internal/codexmanaged/merge.go:183-190`, proven live). The machine tier is where those locks could live — and that is exactly **W4 T10**, which was launched and produced nothing (`.plans/9plus-20260828/PROGRESS.md:76`: *"Both worktrees are empty — 0 commits"*).
 
-### F7 · P2 — The per-user reconcile task is being refused by Task Scheduler
+### F7 · P2 — The per-user reconcile task was observed refused by Task Scheduler, and the evidence does not confirm it
 
-`LastTaskResult 0x800710E0` = *"The operator or administrator has refused the request"*, every 5 minutes; principal `GroupId=Users, LogonType=Group, RunLevel=Limited`; the Operational log is disabled so the cause is unrecorded. The same action (`devoid-daemon.exe ai reconcile`) run interactively exits 0 and advanced the stamp to `2026-09-03T08:37:11Z`. Evidence: [`evidence/reconcile-task.txt`](evidence/reconcile-task.txt).
+`LastTaskResult 0x800710E0` = *"The operator or administrator has refused the request"*, every 5 minutes; principal `GroupId=Users, LogonType=Group, RunLevel=Limited`; the Operational log is disabled so the cause is unrecorded. The same action (`devoid-daemon.exe ai reconcile`) run interactively exits 0 and advanced the stamp to `2026-09-03T08:37:11Z`. **READ THE EVIDENCE BEFORE TRUSTING THIS FINDING.** [`evidence/reconcile-task.txt`](evidence/reconcile-task.txt) was captured AFTER an interactive reconcile run and records `LastTaskResult: 0 (0x00000000)` at 11:40:01 - a SUCCESS. The committed artefact therefore contradicts the refusal above, so the failure is at best intermittent. Two readings survive and this finding cannot choose between them: either the refusal is transient and self-clearing, or the interactive run cleared it. **W5 T4's first act is to re-capture this with the Task Scheduler Operational log enabled and settle which.** Until then F7 is an OBSERVATION, not a proven defect, and its severity is unproven.
 
 ### F8 · P3 — Endpoint-truth rows that mislead
 
@@ -91,7 +93,7 @@ DeVoid has two enforcement tiers for Codex — a user-owned cooperative layer th
 - **The endpoint never authors a "desired"** (RA-0). W2's daemon-ensure writes DeVoid's *own* baseline from the compiled projection; it invents no policy.
 - **A check that cannot answer FAILS rather than reporting installed** (rule 7). Every new row/verdict has a RED path.
 - **The five inert-test shapes** (`reference_inert_test_shapes`): every test in this plan is shown RED with its designed message first.
-- **File ownership** per `PARALLEL_EXECUTION_CONTRACT.md`: `ai_handlers.go` is P47's (seam requests only); `pr-checks.yml` append-only, one leg per commit; `release.yml` untouched.
+- **File ownership must be checked against all 28 rows of the contract table, not the three named here.** Three of this plan's own files are owned by a LIVE sibling programme and the first draft missed them: `internal/daemon/server.go` is **P9** (contract line 58, and the rule is absolute - *not a line, not an import*), `cmd/devoid/main.go` is **P9** (line 79), and `internal/codexmanaged/` - the primary surface of W2, W3 and W4 - is **contested and unresolved**, with P47 asking who owns it in the handshake at 2026-09-03T04:12 and no answer by the newest entry at 10:07. P9 and P47 are both active TODAY. Also unchanged: `ai_handlers.go` is P47's (seam requests only); `pr-checks.yml` append-only, one leg per commit; `release.yml` untouched. **See W-1, which gates W1.**
 - **No `git stash`; isolated worktrees under `C:/cwt/`; explicit `git add` paths; deploys and releases need a fresh owner ask.**
 
 ---
@@ -115,6 +117,29 @@ DeVoid has two enforcement tiers for Codex — a user-owned cooperative layer th
 
 Each task: **Files · Preconditions · Steps · DEFEAT · ROLLBACK · EXIT.** Order within a wave is the order to land. W1 and W5 have no external dependency and can start now.
 
+### W-1 — Reconcile with the two live sibling programmes (BLOCKING gate on W1) · no code
+
+This wave exists because the first draft checked file ownership against three named exclusions instead
+of the contract's 28-row table, and three of its own files are owned elsewhere. P9 and P47 are both
+active TODAY: the newest handshake entry is `2026-09-03T10:07`, about two hours before this plan.
+
+- [ ] **T1 Cross-check every file in every wave** against all 28 rows of
+      `.plans/PARALLEL_EXECUTION_CONTRACT.md` section 2, not just the three the plan named. Produce the table.
+- [ ] **T2 Post a SEAM REQUEST for `internal/daemon/server.go`** (needed by W1 T2; contract line 58,
+      **P9**, and the rule is absolute - not a line, not an import). Follow the section 2.1 pattern: P9 lands
+      the accessor as its own no-behaviour-change commit and replies with the SHA; this programme then
+      wires to it from files it owns.
+- [ ] **T3 Post a SEAM REQUEST for `cmd/devoid/main.go`** (needed by the W2 T1 service-install branch;
+      contract line 79, **P9**, which already has a live change in that file).
+- [ ] **T4 Get the `internal/codexmanaged/` ownership question answered.** P47 asked at
+      `2026-09-03T04:12` who owns it and got no reply by 10:07. W2, W3 and W4 touch six files under
+      that path. An owner ruling is required before any of them starts.
+- [ ] **T5 Check the W3 T3 `pr-checks.yml` append** against the legs P47 appended this same morning, so
+      one-leg-per-commit is honoured against the live file rather than the committed one.
+
+**EXIT:** the ownership table exists; a handshake entry exists for T2, T3 and T4; and no wave starts on
+a file whose owner has not answered. **W1 must not write to `server.go` until T2 clears.**
+
 ### W0 — Measure the enrolled path on this box (no code · ~1 hour · needs D1, then D2)
 
 The cheapest thing in the programme, and it decides the size of W2. Every step is a measurement.
@@ -123,6 +148,7 @@ The cheapest thing in the programme, and it decides the size of W2. Every step i
 - [ ] **T2 Restart the daemon deliberately.** Enrol's `startDaemon` will *not* restart a daemon that is already up at our version (`cmd/devoid/setup_installer.go:1039-1062`, `ourDaemonHealthy`), so F2's SYSTEM-profile token would persist. `devoid daemon stop`, then start the "Devoid Daemon" task. Record: `%ProgramData%\devoid\daemon-token` now EXISTS and is readable by a standard user.
 - [ ] **T3 Prove F1 closes.** Make 20 tool calls in Claude Code; histogram the rollup again. EXPECT `PRE_TOOL_USE` decided ≥ 19/20 and `daemon-error` = 0 in the new window. If not, F2's fix is insufficient and the cause is elsewhere — STOP AND REPORT.
 - [ ] **T4 Read the org's ring.** `GET /api/v1/ai/policy-delivery/rollout` for the org. If `SHADOW`/0 → **D2**. Record the value either way — this is the single most important unknown about the production fleet.
+- [ ] **T4b Count the fleet's real exposure.** Every EXIT bar in this plan is scored against one test box or one VM, yet F1 and F2 are ranked P0 on customer harm. Query whatever surface Backend exposes (heartbeats, `endpoint_control_state`) for how many currently-installed, non-test endpoints show the F1/F2 pattern right now: a reachable daemon alongside gating checkpoints that are not deciding. If the answer is small, the P0 ranking needs restating; if it is large, W1 stops being an engineering task and becomes an incident.
 - [ ] **T5 Watch the self-install.** After D2: tail the daemon's integrity store; EXPECT the `CODEX_REQUIREMENTS` target to go `UNKNOWN → MANAGED_CONFIG_DELETED (episode) → REPAIRING → MATCHED` within two sweeps + one heartbeat (≤ 10 min), `C:\ProgramData\OpenAI\Codex\requirements.toml` to appear SYSTEM-owned, and `ai codex-machine status` to read `baseline present: true` with MO1–MO4 not `UNKNOWN`. Save the transcript as `evidence/w0-enrolled-self-install.md`.
 
 **EXIT:** the transcript exists and states, for each of T3 and T5, PROVEN or FAILED with the observed value. A FAILED T5 with T1–T4 green is the finding that W2 T2 must cover enrolled boxes too.
@@ -135,17 +161,19 @@ The cheapest thing in the programme, and it decides the size of W2. Every step i
 
 ```bash
 cd C:/cwt/<wt> && sed -n '738,742p' internal/core/config/config.go                        # MUST show the Stat-on-credentials predicate
-grep -rn "IsSystemInstall()" --include=*.go internal/ cmd/ | grep -v _test | wc -l         # MUST print 19 (10 files) — the blast radius this task audits
+grep -rnE "config\.IsSystemInstall\(\)" --include=*.go internal/ cmd/ | grep -v _test | grep -vE "^[^:]+:[0-9]+:[[:space:]]*//"   # the CALL SITES to audit. Record the number; do not trust a figure
 grep -n "BoundaryRegistryPath" internal/wininstall/managed_windows.go                       # MUST show SOFTWARE\Devoid\SecurityBoundary
 ```
 
-- [ ] **T1 Define install scope from machine facts.** `IsSystemInstall()` becomes true when **any** of: `credentials.json` at the machine dir (today's rule, kept); **or** the MSI's machine marker `HKLM\SOFTWARE\Devoid\SecurityBoundary` exists (Windows; written by the guard, FROZEN lifetime, already read by `internal/uninstall/residue_probe_windows.go:99`); **or** the running binary lives under the hardened machine `bin` (`%ProgramData%\devoid\bin`, `/opt/devoid`…) — the derivation `deriveInstallRoot` already uses. Put the **19-call-site audit table** in the PR: for each site, behaviour on (machine-scope, unenrolled) before/after. `internal/aikeystore/location.go` (5 sites) and `internal/policybundle/trust_anchor_client.go` (2) are the ones most likely to have been silently per-user on deferred boxes — any behaviour change there is its own finding.
+- [ ] **T1 Define install scope from machine facts.** `IsSystemInstall()` becomes true when **any** of: `credentials.json` at the machine dir (today's rule, kept); **or** the MSI's machine marker `HKLM\SOFTWARE\Devoid\SecurityBoundary` exists (Windows; written by the guard, FROZEN lifetime, already read by `internal/uninstall/residue_probe_windows.go:99`); **or** the running binary lives under the hardened machine `bin` (`%ProgramData%\devoid\bin`, `/opt/devoid`…) — the derivation `deriveInstallRoot` already uses. Put the **call-site audit table** in the PR. Establish the count with the anchored grep above and record it: the loose grep prints 21 across 10 files, but 7 of those are doc-comment mentions, so roughly 14 are real calls. The first draft asserted 19 and its own precondition would have failed: for each site, behaviour on (machine-scope, unenrolled) before/after. `internal/aikeystore/location.go` (5 sites) and `internal/policybundle/trust_anchor_client.go` (2) are the ones most likely to have been silently per-user on deferred boxes — any behaviour change there is its own finding.
 - [ ] **T2 The daemon's paths follow scope.** `security.DefaultPaths()` is home-derived with no machine variant; add `security.PathsForScope()` used by the daemon (`server.go:1700`) so a SYSTEM daemon on a machine-scope install keeps its token (`daemon-token`), integrity store (`integrity/`), and bypass spool under `%ProgramData%\devoid`, ACL'd per `applyMachineTokenPerms`. Per-user daemons unchanged.
 - [ ] **T3 Enrol restarts what it must.** In `runSetupEnroll`, after credentials are written: if a daemon is listening at our version, perform a controlled restart (stop → start the task → wait for `/health` with our marker) and **verify the token path is machine-scope and user-readable**; otherwise fail the enrol with `enrol-daemon-token-not-machine-scoped`. Never report "enrolled" over a daemon that will keep 401-ing.
 - [ ] **T4 Make it visible.** (a) New doctor row **`Daemon capability token`**: `+ readable at <path>` / `x absent` / `x unreadable by this user (minted under <scope>)` — it reads the path the CLI reads, so an unelevated doctor sees what the hook sees. (b) The authority line distinguishes `authority-endpoint-unenrolled` from **`authority-daemon-refused-401`** — the condition the daemon already names (`daemonAskStatus`). (c) The daemon's `CredentialUnreadable` event is also written to `%ProgramData%\devoid\evidence\tamper.log`, not only to the heartbeat spool.
 - [ ] **T5 Install-time assertion.** `install.ps1` and a deferred CA (`Impersonate="no"`, `Return="ignore"`) run `devoid doctor --row daemon-token` after the daemon task starts and write the row's verdict to the MSI log; a deferred install that leaves the token unreadable prints it in red at the end.
 
 **DEFEAT (each RED first, with the designed message):** `TestSystemInstallScopeDoesNotDependOnCredentials` — sandboxed `ProgramData` (the w47b-rig pattern), marker present, no `credentials.json`: assert `IsSystemInstall()==true`; revert T1 → RED *"a machine-scope install with no credentials.json is reported per-user; the daemon will mint its token under the SYSTEM profile"*. `TestDaemonTokenIsUserReadableOnMachineScopeInstall` — start the daemon under a sandboxed SYSTEM-like home + machine root; assert the token at the machine path with Users-read ACL; revert T2 → RED naming the profile path. `TestEnrollRestartsAListeningDaemon` — fake listener at our version; assert restart + token-path check; revert T3 → RED *"enrol left a running daemon holding a per-user token"*. Doctor row: point the reader at a wrong path → RED.
+
+Additionally required on T1, and it is not optional: **`TestNoUnprivilegedProcessCanForgeMachineScope`**. T1 turns one check into an OR of three signals, which makes the predicate EASIER to satisfy. Every other defeat test here proves the false-negative direction only. This one proves the adversarial direction: assert that a standard, non-admin principal cannot create `HKLM\SOFTWARE\Devoid\SecurityBoundary`, cannot write into the hardened machine `bin`, and cannot place a `credentials.json` at the machine dir. If any of the three turns out to be reachable without admin, T1 is a privilege-escalation-shaped change and STOPS. The answer is probably "all three already require admin" - but that is a claim the plan was assuming rather than proving.
 
 **ROLLBACK:** T1 is a predicate change — revert restores the credentials rule; T2–T5 are additive.
 
@@ -167,6 +195,7 @@ git -C ../Backend merge-base --is-ancestor 4cdeccd1 bc11446c && echo ok         
 - [ ] **T2 Daemon ensure at startup, gated and loud (D4).** Extend `migrateCodexMachineBaselineArgv`'s lane from *repair* to *ensure*: on a machine-scope install (W1) where (i) a Codex client is discoverable at ≥ floor, (ii) `requirements.toml` is **absent** (a foreign file is never overwritten — the `isLegacyArgvCommand` discipline stands), and (iii) the verb's `Validate` passes — write DeVoid's own baseline through the same `Compile → ApplyAtomic → re-read → harden` path the verb uses, and record the outcome at **Info**, in `tamper.log`, and in the next heartbeat. This covers unenrolled and pre-ring boxes; on enrolled+ring boxes it converges with the controller (same projection, same hash — idempotent; `reconcile_decision.go`'s no-churn rule already applies to the machine target).
 - [ ] **T3 The machine tier on the wire and in the console.** Add `machineTier: { present, obligations: {MO1..MO4}, reason: baseline-absent | dialect-unverified | desktop-safe-withheld | client-version-unknown | not-applicable, lastVerdictAt }` beside `attestedProfile` in the Codex adapter report; Backend rebuilds it field-by-field (`runtime-adapter-shape.ts` is the enforcing boundary); console renders a **Codex · Machine tier** row under the assurance chip with the reason in words. The reasons are exactly the causes this investigation found — an operator sees *why* it says `cooperative`.
 - [ ] **T4 Rollout-ring visibility.** Endpoint pages show the org's runtime-integrity ring (`SHADOW/0` …) next to the integrity state, with the sentence *"no intents are delivered at SHADOW"*. F3b's gate (b), made visible; raising it stays an operator seam.
+- [ ] **T4b A way back from D2, and something watching it.** D2 advances a PRODUCTION rollout ring, and the moment it moves, W2 T2's boot-time lane starts writing machine files on real endpoints. As written D2 sets no cohort floor (cohort > 0 permits 1), has no documented way back, and T4 adds only a static visibility row. Add three things: a cohort-rollback procedure through the audited operator seam, a stated minimum cohort to start at, and one alert tied to the ring-advance moment - the count of `CODEX_REQUIREMENTS` targets entering `REPAIRING` or `FAILED` per hour. Visibility is not monitoring.
 - [ ] **T5 Live proof, appended.** Register the first `CODEX_REQUIREMENTS` target that reaches `MATCHED` on a real enrolled Windows endpoint (W0 T5 or the VM) in `liveproof/register.json` — the entry that replaces the stale "only writer" comment.
 
 **DEFEAT:** `TestEveryInstallPathAssertsTheCodexMachineBaseline` — parse `install.ps1`, `CustomActions.wxs`, and the `service-install` step list; assert each invokes the verdict step; delete one → RED naming the path. `TestDaemonEnsureNeverOverwritesAForeignBaseline` — seed a foreign `requirements.toml`; assert untouched, verdict `FOREIGN_PRESENT`. `TestDaemonEnsureIsLoud` — assert an Info log + a tamper record on every outcome; downgrade to Debug → RED *"the machine baseline outcome was logged at Debug — that is the silence this lane exists to end"*. `TestMachineTierReachesTheWire` — a report with `present:false` must carry `reason: baseline-absent`; drop the field → RED. Console: a render-harness fixture per reason (P9 appends fixtures; never edits).
@@ -208,7 +237,9 @@ git -C ../Backend merge-base --is-ancestor 4cdeccd1 bc11446c && echo ok         
 
 **ROLLBACK:** per key (T10's rule); T4/T5 additive.
 
-**EXIT:** ≥ 2 keys pinned at machine scope with committed probes (T10's number); `projects.*` disposition recorded either way; on this box the four foreign-key facts from F4 appear as events in the console within one heartbeat of enrolment.
+- [ ] **T6 The two F4 facts T1 to T5 never touch.** T1 covers `tools.web_search` and `features.computer_use`, which are F6 desktop-safe recoveries, not F4 facts. That leaves the un-attested MCP servers (`cua_repl`, `node_repl`) and the un-pinned feature override (`js_repl`) with no task at all. Either build attestation and pinning for them, or record an explicit reasoned deferral.
+
+**EXIT:** ≥ 2 keys pinned at machine scope with committed probes (T10's number); `projects.*` disposition recorded either way; and on this box **each of the four F4 facts is either an event in the console within one heartbeat of enrolment, or carries a written deferral naming why**. The first draft promised all four as events while building escalation for only two - an EXIT must not claim coverage the task list does not deliver.
 
 ### W5 — Endpoint truth rows (F1's visibility, F7, F8) · P2/P3 · no dependencies
 
@@ -258,6 +289,7 @@ CI                                 → dialect drift leg green on a ledger namin
 
 | order | wave | why first | cost |
 |---|---|---|---|
+| 0 | **W-1** (needs P9/P47 replies) | three of this plan's files are owned by live sibling programmes; W1 cannot write to `server.go` until the seam lands | hours, mostly waiting |
 | 1 | **W0** (needs D1) | one hour of measurement decides W2's size and checks the fleet's real gate (D2) | 1 h + owner |
 | 2 | **W1** | P0, no dependency, and W0 T3 needs it to pass | 2–3 days incl. the 19-site audit |
 | 3 | **W5 T1–T3** | independent; makes F1-class failures visible everywhere | 1–2 days |
