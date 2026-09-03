@@ -42,7 +42,7 @@
  */
 
 import { createHash } from 'node:crypto'
-import { readFileSync, existsSync } from 'node:fs'
+import { readFileSync, existsSync, readdirSync } from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
@@ -101,6 +101,39 @@ export function compare({ frontend, installers }) {
   const rows = []
   const drift = []
   const reasons = []
+
+  /*
+   * THE MANIFEST'S FILE LIST IS NOT SELF-CERTIFYING.
+   *
+   * This loop iterates the manifest. If the manifest is the only thing that says
+   * which files are vendored, then DELETING AN ENTRY makes the check green over
+   * a file that has drifted -- absence read as compliance, in the script whose
+   * own header refuses exactly that. The discipline was applied at the whole
+   * manifest (0 files is exit 2) and not per file.
+   *
+   * So the vendored DIRECTORY is the authority on what must be compared: a .js
+   * file sitting in it that the manifest does not name is unpinned, and that is
+   * NOT CHECKED rather than a pass.
+   *
+   * The OTHER direction is deliberately NOT checked, and saying so matters more
+   * than closing it. browser-extension/src/ is the whole extension, not three
+   * engines, so "every upstream file must be vendored" is false -- the manifest
+   * is the only thing that knows which upstream files the console is supposed
+   * to carry. An engine added upstream and never vendored therefore passes here,
+   * and only a human re-vendoring notices. That is a real gap in this check and
+   * it is stated rather than papered over.
+   */
+  let onDisk = []
+  try {
+    onDisk = readdirSync(path.join(frontend, 'lib/ai-security/vendored')).filter((f) => f.endsWith('.js'))
+  } catch (error) {
+    return { status: 'NOT CHECKED', reasons: [`cannot list the vendored directory: ${error.message}`] }
+  }
+  for (const f of onDisk) {
+    if (!Object.prototype.hasOwnProperty.call(files, f)) {
+      reasons.push(`${f} is vendored but the manifest does not name it, so nothing pins it; deleting a manifest entry must not silence this check`)
+    }
+  }
 
   for (const [name, declared] of Object.entries(files)) {
     const copyRead = readText(path.join(frontend, 'lib/ai-security/vendored', name))

@@ -129,6 +129,23 @@ expectExit('(c4) the manifest declares no files -- nothing compared is not a pas
   rawManifest: JSON.stringify({ source: {}, files: {} }),
 }, 2)
 
+expectExit('(e) a manifest entry DELETED for a drifted file is NOT a pass', {
+  copies: { 'dlp.js': ENGINE, 'promptrisk.js': ENGINE },
+  upstream: { 'dlp.js': ENGINE, 'promptrisk.js': MOVED },
+  // promptrisk.js is vendored and drifted, but the manifest no longer names it.
+  // Before 2026-09-04 this returned PASS: the loop only walked the manifest, so
+  // removing an entry removed the file from the comparison entirely.
+  rawManifest: JSON.stringify({
+    source: { repo: 'x/Installers', path: 'browser-extension/src/', commit: 'abc1234' },
+    files: { 'dlp.js': { sha256: sha(ENGINE), lines: 1 } },
+  }),
+}, 2)
+
+expectExit('(e2) an engine added UPSTREAM and never vendored passes -- the stated gap', {
+  copies: { 'dlp.js': ENGINE },
+  upstream: { 'dlp.js': ENGINE, 'newengine.js': ENGINE },
+}, 0)
+
 expectExit('(c5) LF vs CRLF is not drift', {
   copies: { 'dlp.js': ENGINE.replace(/\n/g, '\r\n') },
   upstream: { 'dlp.js': ENGINE },
