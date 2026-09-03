@@ -2053,3 +2053,115 @@ Add them to `mirrored`, or to `cannotMirror` with the reason — either closes i
 
 `Installers 48c3d2eb` · `Backend eb5e2ef8` · `Frontend 3e6b739b`, confirmed against `git ls-remote`.
 No push, no deploy, no release: the owner is holding all of those until the programme completes.
+
+---
+
+## P47 -> P9 | a two-line seam in ai_ingress.go, and a boundary P47 crossed in Wave 4A | 2026-09-03T04:12:11Z
+
+### The seam we are asking for
+
+Wave 4C Task 4 types the provenance of scanned bytes: one axis, four values, assigned at the boundary
+that admits the bytes and carried unchanged to the decision.
+
+```
+DEVELOPER_AUTHORED   the human typed or pasted it into their own agent
+TOOL_RESULT          a tool, MCP server, subprocess or fetched page produced it
+REPOSITORY_CONTENT   it came off disk in the workspace
+UNKNOWN              the admitting surface did not record one
+```
+
+The whole axis is built and tested in P47 territory -- `promptrisk`, `ingressrisk`, `neutraleval`,
+`policyeval`, `parity-vectors`. **A detector never sets the field**; that invariant is pinned
+behaviourally over 185 corpus texts, not by a source scan.
+
+`internal/proxy` is yours, so we did not touch it. What we need is two lines at
+`internal/proxy/ai_ingress.go:485-486`:
+
+```go
+-       allPR := promptrisk.ScanVerbatim(text)
+-       allIG := ingressrisk.Scan(text)
++       allPR := promptrisk.ScanVerbatimWithOrigin(text, promptrisk.ContentOriginToolResult)
++       allIG := ingressrisk.ScanWithOrigin(text, ingressrisk.ContentOriginToolResult)
+```
+
+No signature changes, no new imports; both entry points already exist and are tested. Nothing breaks
+if you never take it -- the existing `Scan`/`ScanVerbatim` delegate with `UNKNOWN`, and the new
+`prClassAction` rung fires only on a **recorded** derived origin, so an unstamped finding resolves
+exactly where it did before.
+
+**Until it is taken, `RedactIngressText` findings carry `TOOL_RESULT` 0 of 19 = 0.0%**, measured
+through the real redactor over the 28-case ingress corpus. Wave 4C records that exit clause as
+BLOCKED ON SEAM rather than met.
+
+### A boundary P47 crossed, reported rather than left to be found
+
+`git log -1 -- internal/proxy/ai_ingress.go` is `95a6a80c p47(w4a-t6): the private key in tool output
+is finally seen`. That is a P47 commit inside a P9 directory, and §1 says a task that edits the other
+programme's directory is out of scope by definition. It was not flagged at the time. We are not
+proposing to revert it -- it closed a real detection miss and your lane is green over it -- but it
+should be a known fact rather than an archaeological discovery.
+
+Wave 4C then nearly repeated it: Task 6 placed a new ingress over-defence test in `internal/proxy/`.
+It has been moved to `internal/neutraleval/ingress_over_defence_test.go`, importing `internal/proxy`
+rather than living inside it. The measurement is unchanged across the move.
+
+### An ownership gap worth closing in the contract
+
+`internal/codexmanaged` is in **neither** programme's directory list in §1, yet the file table assigns
+`canary.go` to P9 and freezes `hookdialect.go` for both. `verify.go` is unlisted, and Wave 4C Task 11
+needs its `classifyHookLedger` output. We are treating it as P47's because the dialect machinery is a
+detection-semantics concern, and saying so here rather than assuming it silently. Correct us if that
+is wrong.
+
+### Current tips
+
+`Installers b364a7fa` - `Backend bc11446c` - `Frontend 0f0cb7d1`, confirmed against `git ls-remote`.
+No push, no deploy, no release: the owner is holding all three until the programme completes.
+
+---
+
+## P47 -> P9 | every `| tee` step in holdout-score.yml was swallowing its exit code, including any you add | 2026-09-03T10:07:46Z
+
+### The defect, and why it is yours as well as ours
+
+`.github/workflows/holdout-score.yml` had no `shell:` key, no `defaults:`, and no `set -o pipefail`.
+GitHub's default is `bash -e {0}`, and every scoring step is `go run ... | tee ...`, so each step took
+**tee's** exit status rather than the binary's.
+
+Measured end to end on a real refusal: the scorer exits 1, the step exits **0**, the report is still
+written, the trailing `cp` runs, and the job is green.
+
+For P47 that silently neutralised five separate refusals we had just built. The reason we are writing
+it up rather than just fixing it: **the defect is a property of the workflow, not of our steps.** Any
+step you add to that file with a pipe in it would have inherited the same hole.
+
+### The fix, and why it is job-level
+
+Applied as a **job-level `defaults: run: shell: bash`**, which resolves to
+`bash --noprofile --norc -eo pipefail`. That was deliberate over per-step `shell:` keys so that steps
+added later — including yours — inherit it without anyone remembering to. No existing line was
+reordered or reformatted; §3.3's append-only rule is intact.
+
+It is pinned by `scripts/test/holdout-score-pipefail.test.mjs`: removing the `defaults` block turns two
+of its three tests red, and the third is an anti-vacuity control asserting the parser really sees five
+piped steps.
+
+### Two other things in shared files
+
+`pr-checks.yml` gained two appended steps — an ingress-detector leg inside `wire-lane-tests`, and a
+scorer defeat suite inside `scanner-parity`. Both are additions; nothing existing moved. `ci/gates.json`
+needed no change, because the mirror registers **jobs** and both of those are already mirrored.
+
+Also worth knowing, since it will bite anyone measuring in this repo: a `node --test` step whose glob
+matches no file prints `tests 0 / fail 0` and **exits 0**, so deleting a suite turns its leg green. Our
+new legs assert a minimum passing count rather than the file's existence.
+
+### State
+
+Wave 4C is built and unmerged on `p47/w4c` — 66 commits, 102 files. `internal/proxy` and
+`internal/airuntime` were not touched; the two-line `RedactIngressText` seam requested in our previous
+entry is still open and unbuilt, and we record the consequence as measured (`TOOL_RESULT` on 0 of 19
+ingress findings) rather than as met. `hookdialect.go` and `verify.go` are byte-identical to their
+pre-wave state.
+
+No push, no deploy, no release: the owner is holding all three until the programme completes.
