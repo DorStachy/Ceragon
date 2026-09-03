@@ -100,6 +100,8 @@ DeVoid has two enforcement tiers for Codex — a user-owned cooperative layer th
 
 ## 3. Owner decisions — before a wave that depends on them starts
 
+**Read this table as the critical path, because it is one.** Eight of the decisions below are answerable only by the owner, the wave order in section 7 is mostly serial, and W-1 additionally waits on replies from two sibling programmes. No single wave looks blocked; the programme is. If the eight are answered one at a time as each wave reaches them, the calendar cost is set by that queue and not by the engineering estimates. D1, D3, D4 and D7 can all be asked today, in one go, before any code starts.
+
 | # | Decision | Blocks | Why it is yours |
 |---|---|---|---|
 | D1 | **Enrol `CND34521VN`** (or a dedicated site/org) so W0 can measure the enrolled path. | W0 | Puts your machine in the fleet; needs your token |
@@ -108,7 +110,7 @@ DeVoid has two enforcement tiers for Codex — a user-owned cooperative layer th
 | D4 | **Accept reversing the boot-lane's "not an installer" stance** (W2 T2): the daemon *may* write DeVoid's own machine baseline on a box where Codex is present, *with* a durable verdict. The original objection was silence; the fix removes the silence, not the caution. | W2 | It reverses a recorded design decision |
 | D5 | **Run the 0.150 dialect measurement yourself** (W3 gives you one command) and add the row if both artefacts hold. | W3 | §2.4 |
 | D6 | **Is `desktop-safe` acceptable as terminal** for desktop boxes, or must W4 recover R3/R4 (and maybe R1) at the machine tier? | W4 | Risk appetite vs. vendor brick |
-| D7 | **A disposable Windows VM** for W4 probes and the W6 fresh-install E2E (the coworker's VM qualifies). | W4, W6 | The plan forbids probes on the owner's box |
+| D7 | **A disposable Windows VM.** Needed for W4's probes and W6's E2E - and also by **W1 and W2, whose own EXIT bars are both written against a fresh install on the VM**. The first draft listed only W4 and W6 here while running W1 and W2 earlier in the order, so a reader following this table would have started W1 believing it could close without the VM. | **W1, W2, W4, W6** | The plan forbids probes on the owner's box |
 | D8 | **Should runtime-integrity `mode` ship above `observe`**, and should the console expose it (F9)? | W6 T5 | Fleet-wide behaviour change |
 
 ---
@@ -131,9 +133,17 @@ active TODAY: the newest handshake entry is `2026-09-03T10:07`, about two hours 
       wires to it from files it owns.
 - [ ] **T3 Post a SEAM REQUEST for `cmd/devoid/main.go`** (needed by the W2 T1 service-install branch;
       contract line 79, **P9**, which already has a live change in that file).
-- [ ] **T4 Get the `internal/codexmanaged/` ownership question answered.** P47 asked at
-      `2026-09-03T04:12` who owns it and got no reply by 10:07. W2, W3 and W4 touch six files under
-      that path. An owner ruling is required before any of them starts.
+- [ ] **T3b Post a SEAM REQUEST for `Backend/src/ai-governance/runtime-adapter-shape.ts`** (needed by W2 T3; contract line 56, **P9**, 13 references, *the runtime binding is P9's core object*). This one was missed by the first W-1 draft too, which is the point: the check has to be the whole table, mechanically, not a reading. Name the exact `machineTier` field and type needed beside `attestedProfile`; P9 lands it as a no-behaviour-change commit and replies with the SHA; W2 T3 then CONSUMES that field from files this programme owns instead of editing the shape file. **W2 T3 does not start until this clears.**
+- [ ] **T4 Get the `internal/codexmanaged/` ownership question answered - and read what P47 actually wrote.** P47 did not merely ask - it staked a
+      **default claim**: *"We are treating it as P47's because the dialect machinery is a detection-semantics
+      concern... Correct us if that is wrong"* (`PARALLEL_HANDSHAKE.md:2110`). Reporting only the absence of a
+      reply understates it: **if that default stands, every file this plan touches under `codexmanaged/` is a
+      non-owner edit** - `provider.go`, `machine_projection.go`, `machine_effective.go`, `requirements.go`,
+      `hookdialect147_oracle_test.go`, the new `capability_disposition.go` and `dialectprobe/`, and the new
+      `testdata/` probe and disposition files. That turns direct-edit tasks in three waves into wait-on-seam
+      tasks, which is a different plan. Note also that the contract ALREADY resolves three files here and they
+      need no ruling: `canary.go` is P9, `hookdialect.go` is P47/FROZEN, and `testdata/liveproof/ledger.json`
+      is BOTH under the append-only rule - which is exactly what W3 T1 needs, so that append is already legal.
 - [ ] **T5 Check the W3 T3 `pr-checks.yml` append** against the legs P47 appended this same morning, so
       one-leg-per-commit is honoured against the live file rather than the committed one.
 
@@ -282,7 +292,7 @@ CI                                 → dialect drift leg green on a ledger namin
 - It does not add a dialect row (§2.4). It builds the measurement and hands the owner the command.
 - It does not write `sandbox_mode` at any scope, or `network_access` before an egress measurement.
 - It does not rewrite user-tier foreign keys. It escalates them and, where the vendor allows, out-ranks them at the machine tier.
-- It does not raise `mode`, advance any rollout ring, enrol any machine, deploy, or release. Those are D1/D2/D8 and fresh asks.
+- It does not raise `mode`, advance any rollout ring, deploy, or release. Those are D1/D2/D8 and fresh asks. **On enrolment, read W0 T1 rather than this line:** enrolling `CND34521VN` is D1, and the owner runs that command with their own token - no task and no agent enrols a machine, but the plan does depend on it happening.
 - It does not touch `ai_handlers.go` (P47), `release.yml`, or the PR gates beyond one appended leg.
 
 ## 7. Suggested order and rough cost
@@ -291,7 +301,7 @@ CI                                 → dialect drift leg green on a ledger namin
 |---|---|---|---|
 | 0 | **W-1** (needs P9/P47 replies) | three of this plan's files are owned by live sibling programmes; W1 cannot write to `server.go` until the seam lands | hours, mostly waiting |
 | 1 | **W0** (needs D1) | one hour of measurement decides W2's size and checks the fleet's real gate (D2) | 1 h + owner |
-| 2 | **W1** | P0, no dependency, and W0 T3 needs it to pass | 2–3 days incl. the 19-site audit |
+| 2 | **W1** (needs W-1 seams, D7) | P0, and W0 T3 needs it to pass | 2–3 days incl. the call-site audit (~14 real calls; the retracted 19 survived here after being corrected in the task body, which is its own small lesson about propagating a fix) |
 | 3 | **W5 T1–T3** | independent; makes F1-class failures visible everywhere | 1–2 days |
 | 4 | **W2** (needs D4) | the gap the week was about | 3–4 days + Backend/Frontend halves |
 | 5 | **W3** (owner runs T2) | unblocks R7/R8 honesty on 0.150 | 2 days + an owner hour |
