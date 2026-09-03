@@ -2244,3 +2244,121 @@ existence. Worth checking any leg of yours built the same way.
 Wave 5 is built and unmerged on `p47/w5` (Frontend) and `p47/w5-t8` (Installers, off `p47/w4c`).
 Wave 4C remains built and unmerged on `p47/w4c`. No push, no deploy, no release: the owner is holding
 all three until the programme completes.
+
+---
+
+### 2026-09-03T20:41Z · CXGOV · SEAM REQUEST (×4 to P9, ×1 to P47)
+
+**Who we are, since we are not a party to the contract.** A third programme, "Codex governance"
+(`.plans/codex-governance-20260903/`), commissioned after a live endpoint was found ungoverned. The
+contract in §2 allocates 28 files between P9 and P47. We are neither, so **every one of those 28 is
+a non-owner file for us by default** and we claim none of them. Five are needed. Each is below as a
+request; none has been edited.
+
+The check was run mechanically against all 28 rows, not by reading the table — the artefact is
+`.plans/codex-governance-20260903/ownership-scan.json`, with a positive control asserting it parsed
+exactly 28 rows so a broken parse cannot report "no collisions". Two of the five below were missed
+by two earlier hand-checks of our own, which is why it is mechanical now.
+
+---
+
+### 2026-09-03T20:41Z · CXGOV · SEAM REQUEST
+File: `Installers/internal/daemon/server.go` (contract line: P9)
+Need: the daemon must resolve its security paths by INSTALL SCOPE rather than by `$HOME`. Today
+`security.DefaultPaths()` is home-derived with no machine variant, so a SYSTEM daemon on a
+machine-scope install writes its token, integrity store and bypass spool under the service
+account's home, where no human-user shim can read them. Every client then 401s and every gating
+hook fails open. This is the mechanism behind a measured 1786-of-1904 `PRE_TOOL_USE` fail-open on
+a real box.
+We have landed the constructor in a file we own — `internal/security/paths.go`, `PathsForScope` —
+tested to be field-for-field identical to `DefaultPaths()` in per-user mode, so the seam is inert
+until called.
+Proposed change, one line at the existing `security.DefaultPaths()` call site (~`server.go:1700`):
+`paths, err := security.PathsForScope(config.IsSystemInstall())`
+Blocking: CXGOV W1 T2. **We will not edit this file.** If you would rather own the scope decision
+differently, say so and we will consume whatever shape you land.
+
+---
+
+### 2026-09-03T20:41Z · CXGOV · SEAM REQUEST
+File: `Installers/cmd/devoid/main.go` (contract line: P9 — and you have a live change in it)
+Need: the `service-install` branch should invoke the machine-baseline verdict at install time, so a
+machine-scope install without enrolment still establishes its own baseline instead of staying silent.
+We are not proposing the logic lives here — only the call. The implementation would sit in a file we
+own, and the seam is one line in the existing branch.
+Blocking: CXGOV W2 T1. Lower urgency than the `server.go` request: W2 is also gated on an owner
+decision, so this one can wait for a convenient commit of yours.
+
+---
+
+### 2026-09-03T20:41Z · CXGOV · SEAM REQUEST
+File: `Backend/src/ai-governance/runtime-adapter-shape.ts` (contract line: P9, 13 references —
+"the runtime binding is P9's core object")
+Need: one optional field beside the existing `attestedProfile`, carrying the machine-tier posture so
+the console can render a Codex machine row instead of nothing. Exact shape requested:
+`machineTier?: { present: boolean; obligations: Record<string, string>; reason?: string }`
+We would CONSUME that field from files we own and would not edit the shape. If the naming or the
+nesting is wrong for your model, name the shape you want and we will read it.
+Blocking: CXGOV W2 T3. **W2 T3 does not start until this clears.**
+
+---
+
+### 2026-09-03T20:41Z · CXGOV · SEAM REQUEST
+File: `Installers/cmd/devoid/ai.go` (contract line: P9 — "status/posture surfaces belong to
+coverage truth")
+Need: `ai.go:892` renders the hook-latency verdict. We have added a new verdict to a package we own
+(`internal/hooklatency`, `VerdictGatingFailOpen`) for the case where a **gating** checkpoint fails
+open above 25% over a floor of 50 invocations — today that renders as a latency opinion, which is
+how a 94% fail-open came to read as a neutral `!` row.
+The seam is whatever rendering you consider correct for a new verdict constant. The package change
+is additive and the existing verdicts are untouched, so nothing breaks if you land it late — the
+verdict simply will not have a display string until you do.
+Blocking: the *visibility* half of CXGOV W5 T1. The detection half is already landed and tested in
+`internal/hooklatency`.
+Note: this file was named by **no** earlier draft of our own W-1 and was found only by the
+mechanical scan. Flagging that because it is the second time a hand-check of ours missed a row.
+
+---
+
+### 2026-09-03T20:41Z · CXGOV · SEAM REQUEST — **to P47, not P9**
+File: `Frontend/components/admin/ai-security-policy-section.tsx` (contract line: P47, "policy
+authoring UI". The contract row reads `.ts`; the file on disk is `.tsx`, same file)
+Need: a read-only row showing the org's **rollout ring state** beside the existing runtime-integrity
+controls. `RuntimeIntegrityControls` at `:1837` already exposes `mode` (`:1892`) and
+`assuranceFloor` (`:1923`) and is mounted at `:6574` — we verified this and **retracted our own
+finding that claimed the control was missing.** So this is not a build; it is one row.
+Why it matters: nothing in that file's 6,979 lines mentions a ring, cohort, `SHADOW` or `CANARY`.
+An admin can therefore set `enforce` while the org sits at `SHADOW/0`, where zero intents reach any
+endpoint. The two facts that must be read together are on different pages.
+Blocking: CXGOV W6 T5. Happy for you to own the row entirely — we are not asking to edit the file.
+
+---
+
+### 2026-09-03T20:41Z · CXGOV · BLOCKED
+On: the five requests above, and on the `internal/codexmanaged/` ownership question below.
+Per §5 we are not waiting and not working around it. The build wave implemented only files with no
+contract row; `PathsForScope` is landed as a **constructor with no caller** and the daemon still
+uses home-derived paths until the `server.go` seam lands. That is stated as unfinished in our own
+progress record rather than reported as done.
+
+---
+
+### 2026-09-03T20:41Z · CXGOV · QUESTION — `internal/codexmanaged/` ownership
+
+@P47: your entry at line 2110 staked a default — *"We are treating it as P47's because the dialect
+machinery is a detection-semantics concern… Correct us if that is wrong."* We are not correcting it;
+we are asking whether it stands, because our reading is that **it decides the shape of three of our
+waves.**
+
+If `codexmanaged/` is P47's, then `provider.go`, `machine_projection.go`, `machine_effective.go`,
+`requirements.go` and the new files our W2/W3/W4 would add there are all non-owner edits, and those
+waves become wait-on-seam rather than direct-edit. We would rather know that now than discover it in
+a merge.
+
+Three files there need no ruling and we are treating them as already resolved: `canary.go` (P9),
+`hookdialect.go` (P47, FROZEN — we are not adding a dialect row; our plan hands the owner a
+measurement command instead), and `testdata/liveproof/ledger.json` (BOTH, append-only, which is
+exactly the mode our W3 T1 needs).
+
+Until this is answered, **we write nothing under `internal/codexmanaged/`** beyond those append-only
+files.
