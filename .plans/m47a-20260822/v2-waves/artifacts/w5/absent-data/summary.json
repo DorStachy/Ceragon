@@ -3,10 +3,10 @@
   "app": "http://localhost:3130",
   "stub": "http://127.0.0.1:2163",
   "width": 1440,
-  "out": "C:\\cwt\\parts\\w5-gate2\\absent-data",
+  "out": "C:\\cwt\\parts\\w5-gate6\\absent-data",
   "total": 11,
   "failed": 0,
-  "ranAt": "2026-09-03T19:41:25.112Z",
+  "ranAt": "2026-09-03T21:59:37.204Z",
   "caveat": "Evidence about how the console RENDERS a chosen wire state and how it behaves around ABSENT data. NOT evidence that any backend produces that state.",
   "results": [
     {
@@ -14,77 +14,77 @@
       "route": "/admin/policies/ai-security",
       "verdict": "OK",
       "failures": [],
-      "png": "C:\\cwt\\parts\\w5-gate2\\absent-data\\admin-policies-ai-security.png"
+      "png": "C:\\cwt\\parts\\w5-gate6\\absent-data\\admin-policies-ai-security.png"
     },
     {
       "name": "admin-endpoints",
       "route": "/admin/endpoints",
       "verdict": "OK",
       "failures": [],
-      "png": "C:\\cwt\\parts\\w5-gate2\\absent-data\\admin-endpoints.png"
+      "png": "C:\\cwt\\parts\\w5-gate6\\absent-data\\admin-endpoints.png"
     },
     {
       "name": "ai-control-plane-events",
       "route": "/ai-control-plane/events",
       "verdict": "OK",
       "failures": [],
-      "png": "C:\\cwt\\parts\\w5-gate2\\absent-data\\ai-control-plane-events.png"
+      "png": "C:\\cwt\\parts\\w5-gate6\\absent-data\\ai-control-plane-events.png"
     },
     {
       "name": "ai-control-plane-policy",
       "route": "/ai-control-plane/policy",
       "verdict": "OK",
       "failures": [],
-      "png": "C:\\cwt\\parts\\w5-gate2\\absent-data\\ai-control-plane-policy.png"
+      "png": "C:\\cwt\\parts\\w5-gate6\\absent-data\\ai-control-plane-policy.png"
     },
     {
       "name": "admin-policies-mcp",
       "route": "/admin/policies/mcp",
       "verdict": "OK",
       "failures": [],
-      "png": "C:\\cwt\\parts\\w5-gate2\\absent-data\\admin-policies-mcp.png"
+      "png": "C:\\cwt\\parts\\w5-gate6\\absent-data\\admin-policies-mcp.png"
     },
     {
       "name": "coding-ai-detections",
       "route": "/coding-ai/detections",
       "verdict": "OK",
       "failures": [],
-      "png": "C:\\cwt\\parts\\w5-gate2\\absent-data\\coding-ai-detections.png"
+      "png": "C:\\cwt\\parts\\w5-gate6\\absent-data\\coding-ai-detections.png"
     },
     {
       "name": "coding-ai-sessions",
       "route": "/coding-ai/sessions",
       "verdict": "OK",
       "failures": [],
-      "png": "C:\\cwt\\parts\\w5-gate2\\absent-data\\coding-ai-sessions.png"
+      "png": "C:\\cwt\\parts\\w5-gate6\\absent-data\\coding-ai-sessions.png"
     },
     {
       "name": "mcp",
       "route": "/mcp",
       "verdict": "OK",
       "failures": [],
-      "png": "C:\\cwt\\parts\\w5-gate2\\absent-data\\mcp.png"
+      "png": "C:\\cwt\\parts\\w5-gate6\\absent-data\\mcp.png"
     },
     {
       "name": "inventory",
       "route": "/inventory",
       "verdict": "OK",
       "failures": [],
-      "png": "C:\\cwt\\parts\\w5-gate2\\absent-data\\inventory.png"
+      "png": "C:\\cwt\\parts\\w5-gate6\\absent-data\\inventory.png"
     },
     {
       "name": "alerts",
       "route": "/alerts",
       "verdict": "OK",
       "failures": [],
-      "png": "C:\\cwt\\parts\\w5-gate2\\absent-data\\alerts.png"
+      "png": "C:\\cwt\\parts\\w5-gate6\\absent-data\\alerts.png"
     },
     {
       "name": "repositories",
       "route": "/repositories",
       "verdict": "OK",
       "failures": [],
-      "png": "C:\\cwt\\parts\\w5-gate2\\absent-data\\repositories.png"
+      "png": "C:\\cwt\\parts\\w5-gate6\\absent-data\\repositories.png"
     }
   ]
 }

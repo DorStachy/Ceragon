@@ -68,9 +68,9 @@ ENDPOINT
 DESKTOP-QA01
 WINDOWS · 0 ITEMS
 	
-UNKNOWN	-	-	1	-	-	-	-	Sep 3, 10:34 PM
+UNKNOWN	-	-	1	-	-	-	-	Sep 4, 12:52 AM
 
 DESKTOP-QA02
 WINDOWS · 0 ITEMS · NO AGENT
 	
-UNKNOWN	Not monitored	-	-	-	-	-	-	Sep 3, 09:39 PM
+UNKNOWN	Not monitored	-	-	-	-	-	-	Sep 3, 11:57 PM

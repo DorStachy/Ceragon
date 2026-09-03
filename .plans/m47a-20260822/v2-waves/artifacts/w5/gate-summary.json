@@ -3,12 +3,14 @@
     {
       "name": "no-such-route must be doc-status",
       "exit": 1,
-      "asExpected": true
+      "asExpected": true,
+      "note": ""
     },
     {
       "name": "broken-fixture must not grade a crashed page as OK",
       "exit": 1,
-      "asExpected": true
+      "asExpected": true,
+      "note": ""
     }
   ],
   "scenarios": [
@@ -29,10 +31,17 @@
       "exit": 0,
       "routes": 11,
       "shots": 11
+    },
+    {
+      "scenario": "read-failed",
+      "exit": 0,
+      "routes": 6,
+      "shots": 6
     }
   ],
-  "startedAt": "2026-09-03T19:33:58.543Z",
-  "finishedAt": "2026-09-03T19:41:25.132Z",
+  "startedAt": "2026-09-03T21:52:19.637Z",
+  "corpusProblems": [],
+  "finishedAt": "2026-09-03T22:00:24.771Z",
   "verdict": "PASS",
   "limits": [
     "Nothing here talks to a real Backend; the stub answers with fixtures. A green run says the console renders honestly GIVEN THAT WIRE STATE.",

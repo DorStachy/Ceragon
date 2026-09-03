@@ -29,9 +29,9 @@ run
 No run has a computed outcome roll-up, so there is no outcome split to state. This is missing measurement, not a run in which nothing happened.
 
 WHEN THESE 1 RUNS STARTED
-LOADED 22:40
-SEP 3, 21:09
-SEP 3, 21:09
+LOADED 00:58
+SEP 3, 23:27
+SEP 3, 23:27
 UNKNOWN
 1
 
@@ -76,7 +76,7 @@ claude-opus-4
 -
 1h
 143 events
-1h ago
+yesterday, 1h ago
 Ended (inferred)
 ended 31m ago
 Run shape not recorded: its outcome counts were not computed, but not when in the run each event happened.

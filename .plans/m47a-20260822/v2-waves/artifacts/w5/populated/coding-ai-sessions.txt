@@ -30,9 +30,9 @@ runs
 1
 run blocked or held something
 WHEN THESE 2 RUNS STARTED
-LOADED 22:35
-SEP 3, 21:04
-SEP 3, 22:19
+LOADED 00:54
+SEP 3, 23:22
+SEP 4, 00:37
 CRITICAL
 1
 UNKNOWN
@@ -90,7 +90,7 @@ held
 blocked
 1h
 143 events
-1h ago
+yesterday, 1h ago
 Ended
 ended 31m ago
 Run shape not recorded: 135 allowed events, 5 redactions, 1 hold and 2 blocks, but not when in the run each event happened.

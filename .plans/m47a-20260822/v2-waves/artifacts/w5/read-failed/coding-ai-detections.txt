@@ -1,0 +1,65 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+RQ
+Render QA
+Admin
+ACCOUNT
+Render QA Org
+Render QA
+CODING AI
+DETECTIONS
+Search…
+ctrl
+K
+CODING AI
+Detections
+
+Findings and non-allow outcomes only: every row is something that fired. The full record of any one run is its session timeline.
+
+ALERTS
+FILTERS
+-
+
+Filters only. Per-value counts are not computed for this list.
+
+SEVERITY
+Critical
+High
+Medium
+Low
+RULE
+
+Values seen on the detections loaded below.
+
+No rule keys are present on the detections loaded below.
+
+ENDPOINT
+All endpoints
+
+Endpoint list unavailable, so this picker cannot be populated.
+
+Values seen on the detections loaded below.
+
+No endpoint is identified on the detections loaded below.
+
+HIDDEN ROWS
+Show hidden rows
+
+Loading detections…
+
+24h
+7d
+30d
+All
+Custom
+Export page
+COULD NOT LOAD DETECTIONS
+detections read failed: upstream unavailable
+RETRY

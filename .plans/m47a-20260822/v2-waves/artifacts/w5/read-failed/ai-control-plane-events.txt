@@ -1,0 +1,27 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+RQ
+Render QA
+Admin
+ACCOUNT
+Render QA Org
+Render QA
+AI CONTROL PLANE
+EVENTS
+Search…
+ctrl
+K
+Events
+
+The org-wide AI event ledger: prompts, tool calls, package installs, pushes, MCP activity, and policy decisions in evidence-chain order, one hop from session replay.
+
+COULD NOT LOAD ACTIVITY
+activity read failed: upstream unavailable
+RETRY

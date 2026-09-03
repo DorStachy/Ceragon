@@ -1,0 +1,29 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+RQ
+Render QA
+Admin
+ACCOUNT
+Render QA Org
+Render QA
+MCP CONTROL TOWER
+Search…
+ctrl
+K
+MCP Control Tower
+
+Every MCP server detected across your agents' configurations: declared capabilities, static-analysis verdict, approval state, and enforcement. This view is read-only. Approve or block servers from Admin.
+
+Review in Admin
+Servers
+Activity
+COULD NOT LOAD MCP SERVERS
+mcp read failed: upstream unavailable
+RETRY
