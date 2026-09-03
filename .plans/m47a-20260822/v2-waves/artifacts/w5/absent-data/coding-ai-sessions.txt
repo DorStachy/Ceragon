@@ -1,0 +1,88 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+RQ
+Render QA
+Admin
+ACCOUNT
+Render QA Org
+Render QA
+CODING AI
+SESSIONS
+Search…
+ctrl
+K
+CODING AI
+Sessions
+
+Sessions from coding runtimes: Claude Code, Codex, and IDE agents.
+
+1
+run
+
+No run has a computed outcome roll-up, so there is no outcome split to state. This is missing measurement, not a run in which nothing happened.
+
+WHEN THESE 1 RUNS STARTED
+LOADED 22:40
+SEP 3, 21:09
+SEP 3, 21:09
+UNKNOWN
+1
+
+One more run is not in this split: no outcome roll-up was computed for sess-1, so its events are in no total here.
+
+All states
+GROUP
+No grouping
+Empty runs hidden
+Compact
+Comfortable
+
+Sessions that recorded only a start and an end are hidden, never deleted: each stays openable by id and its lifecycle events stay in the Events feed.
+
+RECORDED RUNS
+KEY
+allowed
+redacted
+held
+blocked
+unaccounted
+Newest run first (the server's order)
+Columns
+RISK
+RUN
+ENDPOINT
+AGENT
+OUTCOMES
+DURATION
+STARTED
+STATUS
+UNKNOWN
+sess-1
+Unattributed
+·
+anthropic
+·
+coding
+ep-1
+Claude Code
+claude-opus-4
+-
+1h
+143 events
+1h ago
+Ended (inferred)
+ended 31m ago
+Run shape not recorded: its outcome counts were not computed, but not when in the run each event happened.
+1 run
+J
+K
+move
+↵
+open run

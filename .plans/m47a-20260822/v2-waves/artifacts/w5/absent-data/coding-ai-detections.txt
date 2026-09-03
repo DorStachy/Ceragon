@@ -1,0 +1,151 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+RQ
+Render QA
+Admin
+ACCOUNT
+Render QA Org
+Render QA
+CODING AI
+DETECTIONS
+Search…
+ctrl
+K
+CODING AI
+Detections
+
+Findings and non-allow outcomes only: every row is something that fired. The full record of any one run is its session timeline.
+
+ALERTS
+FILTERS
+2
+
+Filters only. Per-value counts are not computed for this list.
+
+SEVERITY
+Critical
+High
+Medium
+Low
+RULE
+
+Values seen on the detections loaded below.
+
+Prompt submitted
+Secret API key
+ENDPOINT
+All endpoints
+
+This read returned no endpoint to list. That is not a statement that none has reported AI activity.
+
+The picker above is a separate read of this site’s endpoints; the values below are from the detections on this page. Where they disagree, neither is the whole fleet.
+
+Values seen on the detections loaded below.
+
+DESKTOP-QA01
+HIDDEN ROWS
+Show hidden rows
+0
+
+~2 detections grouped into 2 signals on this page, from ~2 matching events · host DESKTOP-QA01
+
+24h
+7d
+30d
+All
+Custom
+Export page
+SEVERITY DISTRIBUTION
+~2 detections · last 7 days
+
+This server doesn't return a severity split for the filtered set, so the distribution can't be drawn. The rows below are unaffected.
+
+~2 / ~2 events
+detections grouped
+
+This server doesn't reconcile outcomes for the filtered set, so we can't say how many got through.
+
+got through
+~2
+unresolved
+No facets applied. Showing Triage: new · last 7 days.
+All
+~2
+in - groups
+New
+~2
+in ~2 groups
+Investigating
+~0
+in - groups
+Resolved
+~0
+in - groups
+Sort
+Recent
+Severity
+Nothing selected
+Select a signal to act on it
+Mark investigating
+Resolve
+Assign
+Clear
+
+This server doesn't return an hourly firing pattern for a group, so the last 24 hours can't be drawn for these rows. The counts and timestamps beside them are unaffected.
+
+SEVERITY
+DETECTION
+24H
+COUNT
+OUTCOME
+TRIAGE
+LAST
+not classified
+not graded
+
+Secret API key in a call to Anthropic
+
+Anthropic
+·
+Coding agent
+secret.api-key
+no pattern
+×
+1
+Blocked
+New
+benign · expected
+11 min ago
+not classified
+not graded
+
+Prompt submitted in a call to Anthropic
+
+Anthropic
+·
+Coding agent
+prompt-submitted
+no pattern
+×
+8
+Not recorded
+New
+benign · expected
+1 h ago
+J
+K
+move
+E
+peek
+A
+select
+Esc
+close
+2 of ~2 detections · 9 of ~2 matching events

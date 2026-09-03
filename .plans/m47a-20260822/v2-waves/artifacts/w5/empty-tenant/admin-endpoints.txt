@@ -1,0 +1,81 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+RQ
+Render QA
+Admin
+ACCOUNT
+Render QA Org
+Render QA
+ADMIN
+ENDPOINTS
+Search…
+ctrl
+K
+ADMINISTRATION
+Admin
+ENDPOINTS
+Endpoint Management
+Install & Enrollment
+Fleet
+Coverage
+Endpoint Management
+
+Agent lifecycle across the fleet: enrollment, updates, uninstall, purge, and deploy. Teams live under Access; the security view of every machine lives in Inventory.
+
+2
+
+Endpoints
+
+1
+
+Online
+
+0
+
+Needs Attention
+
+0
+
+Outdated
+
+behind v7.10.4
+
+All statuses
+All OS
+Deploy Agent
+Export
+Refresh
+	Endpoint
+	SITE
+	IP ADDRESS
+	OS
+	WORST ITEM
+	ITEMS
+	VERSION
+	Last Seen
+	STATUS
+	ACTIONS
+
+
+	DESKTOP-QA01
+not reported
+	Render QA	10.0.0.11	
+	
+UNKNOWN	0	
+7.10.4
+	1 min ago	
+Online	
+
+	DESKTOP-QA02	-	-	
+	
+UNKNOWN	0	-	9/3/2026	
+NO AGENT	
+View inventory →
+Updated 10:37:20 PM

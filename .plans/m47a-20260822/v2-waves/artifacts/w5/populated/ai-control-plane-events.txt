@@ -1,0 +1,51 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+RQ
+Render QA
+Admin
+ACCOUNT
+Render QA Org
+Render QA
+AI CONTROL PLANE
+EVENTS
+Search…
+ctrl
+K
+Events
+
+The org-wide AI event ledger: prompts, tool calls, package installs, pushes, MCP activity, and policy decisions in evidence-chain order, one hop from session replay.
+
+0 EVENTS
+Export page
+Prompt text is never exported. Only its content-free availability is included.
+All Decisions
+All Time
+All Agents
+All endpoints
+
+1 endpoint has no recorded hostname and can't be listed by name.
+
+FROM
+TO
+ALL
+PROMPT
+RESPONSE
+TOOL
+FILE
+PUSH
+PR
+PACKAGE
+MCP
+DIFF
+EXCEPTION
+POSTURE
+OTHER
+NO AI ACTIVITY YET
+Events appear here as AI agents operate in this account.

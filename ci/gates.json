@@ -85,7 +85,8 @@
       "cannotMirror": {
         "vendored-upstream-drift:drift": "Compares the vendored engine against Installers@main over the network with a token. Cross-repo and scheduled, not a PR gate.",
         "deploy-frontend-ecs:required_checks": "Reads GitHub check runs for the SHA, same as Backend's.",
-        "deploy-frontend-ecs:deploy": "OIDC role + ECR + ECS. Deploys stay on GitHub."
+        "deploy-frontend-ecs:deploy": "OIDC role + ECR + ECS. Deploys stay on GitHub.",
+        "render-harness:gate": "Needs three processes at once -- headless Chrome over CDP, next dev --webpack, and the fixture stub -- and takes about ten minutes for 33 shots. The CI image carries no browser, and adding Chromium to ci/images/node20.Dockerfile to run it on every PR is a cost decision nobody has taken. It is also the wrong shape for a PR gate: it produces EVIDENCE about how the console looks around absent data, against a wire state the author chose, and its own README says a green run proves nothing about whether a Backend ever produces that state. It is run deliberately, per wave, and banked -- see .plans/m47a-20260822/v2-waves/artifacts/w5/. The one part of it that IS cheap and deterministic runs per-PR through Frontend's own pretest instead: check:render-harness-markers, which pins the string the harness greps for to recognise a crashed page. Without that pin, renaming a log line in app/error.tsx silently stops the harness noticing that a page crashed at all."
       }
     },
     "Ceragon-Intelligence": {

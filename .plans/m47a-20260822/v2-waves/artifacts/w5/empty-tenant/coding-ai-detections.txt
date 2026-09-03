@@ -1,0 +1,105 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+RQ
+Render QA
+Admin
+ACCOUNT
+Render QA Org
+Render QA
+CODING AI
+DETECTIONS
+Search…
+ctrl
+K
+CODING AI
+Detections
+
+Findings and non-allow outcomes only: every row is something that fired. The full record of any one run is its session timeline.
+
+ALERTS
+FILTERS
+0
+
+Filters only. Per-value counts are not computed for this list.
+
+SEVERITY
+Critical
+High
+Medium
+Low
+RULE
+
+Values seen on the detections loaded below.
+
+No rule keys are present on the detections loaded below.
+
+ENDPOINT
+All endpoints
+
+This read returned no endpoint to list. That is not a statement that none has reported AI activity.
+
+Values seen on the detections loaded below.
+
+No endpoint is identified on the detections loaded below.
+
+HIDDEN ROWS
+Show hidden rows
+0
+
+0 detections grouped into 0 signals on this page, from 0 matching events
+
+24h
+7d
+30d
+All
+Custom
+Export page
+SEVERITY DISTRIBUTION
+0 detections · last 7 days
+0
+CRITICAL
+0
+HIGH
+0
+MEDIUM
+0
+LOW
+0 / 0 events
+detections grouped
+0
+got through · 0 blocked, 0 held
+0
+unresolved
+No facets applied. Showing Triage: new · last 7 days.
+All
+0
+in - groups
+New
+0
+in 0 groups
+Investigating
+0
+in - groups
+Resolved
+0
+in - groups
+Sort
+Recent
+Severity
+Nothing selected
+Select a signal to act on it
+Mark investigating
+Resolve
+Assign
+Clear
+
+No detections match the current filters.
+
+CLEAR FILTERS

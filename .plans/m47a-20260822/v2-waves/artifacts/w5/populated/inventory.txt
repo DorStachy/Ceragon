@@ -1,0 +1,80 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+RQ
+Render QA
+Admin
+ACCOUNT
+Render QA Org
+Render QA
+INVENTORY
+Search…
+ctrl
+K
+Inventory
+
+Everything on every machine: packages, MCP servers, extensions, and the AI agents operating on them.
+
+By Endpoint
+One row per machine
+By Item
+Who has this package?
+All Verdicts
+FLEET EXPOSURE
+0%
+PACKAGE VERDICT
+1
+FLAGGED
+
+of 2 endpoints
+
+MOST EXPOSED
+DESKTOP-QA01
+2 blocked movements
+AI ON FLEET
+With AI agents
+2
+With risk flags
+0
+Blocked movement
+2
+
+across recent sessions
+
+ENDPOINT INVENTORY · FLEET
+
+One row per machine: what's installed on it, and what AI agents are doing on it.
+
+2 ENDPOINTS
+ENDPOINT
+	WORST ITEM
+	AI AGENTS
+	FLAGS
+	SESSIONS
+	BLOCKED
+	PKGS
+	EXT
+	MCP
+	LAST SEEN
+
+
+DESKTOP-QA01
+WINDOWS · 0 ITEMS
+	
+UNKNOWN	
+claude-code
+codex
+	NOT SWEPT	2	2	-	-	-	Sep 3, 10:29 PM
+
+DESKTOP-QA02
+WINDOWS · 0 ITEMS · NO AGENT
+	
+UNKNOWN	
+codex
+	NOT SWEPT	-	-	-	-	-	Sep 3, 09:34 PM

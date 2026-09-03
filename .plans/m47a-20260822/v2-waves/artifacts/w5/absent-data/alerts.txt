@@ -1,0 +1,51 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+RQ
+Render QA
+Admin
+ACCOUNT
+Render QA Org
+Render QA
+ALERTS
+Search…
+ctrl
+K
+Alerts
+
+Signal stream across packages, repositories, prompts, and AI policy matches.
+
+DETECTIONS
+All
+0
+Packages
+0
+Repositories
+0
+Package prompts
+0
+AI Alerts
+0
+0 ALERTS
+ALL0
+HIGH RISK0
+CRITICAL0
+HIGH0
+MEDIUM0
+LOW0
+All Status
+All Actions
+All Time
+COMFORTABLE
+COMPACT
+
+Severity has two independent axes. Alert is the band this alert is raised at; Finding is the worst raw severity underneath it, shown only when it is worse.
+
+ALL CLEAR
+No alerts across packages, repositories, prompts, or AI policy matches.

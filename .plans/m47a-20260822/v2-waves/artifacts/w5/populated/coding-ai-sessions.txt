@@ -1,0 +1,122 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+RQ
+Render QA
+Admin
+ACCOUNT
+Render QA Org
+Render QA
+CODING AI
+SESSIONS
+Search…
+ctrl
+K
+CODING AI
+Sessions
+
+Sessions from coding runtimes: Claude Code, Codex, and IDE agents.
+
+2
+runs
+1 still reporting
+2 blocked, 1 held
+1
+run blocked or held something
+WHEN THESE 2 RUNS STARTED
+LOADED 22:35
+SEP 3, 21:04
+SEP 3, 22:19
+CRITICAL
+1
+UNKNOWN
+1
+
+One more run is not in this split: no outcome roll-up was computed for sess-2, so its events are in no total here.
+
+All states
+All agents (2)
+GROUP
+No grouping
+Empty runs hidden
+Compact
+Comfortable
+
+Sessions that recorded only a start and an end are hidden, never deleted: each stays openable by id and its lifecycle events stay in the Events feed.
+
+RECORDED RUNS
+KEY
+allowed
+redacted
+held
+blocked
+unaccounted
+Newest run first (the server's order), with 1 lifted above it
+Columns
+RISK
+RUN
+ENDPOINT
+AGENT
+OUTCOMES
+DURATION
+STARTED
+STATUS
+NEEDS ATTENTION
+1
+run on this page had something blocked or held
+CRITICAL
+sess-1
+CORP\maya
+·
+anthropic
+·
+coding
+DESKTOP-QA01
+Claude Code
+claude-opus-4
+135
+allowed
+5
+redacted
+1
+held
+2
+blocked
+1h
+143 events
+1h ago
+Ended
+ended 31m ago
+Run shape not recorded: 135 allowed events, 5 redactions, 1 hold and 2 blocks, but not when in the run each event happened.
+EVERYTHING ELSE
+1
+run on this page, newest first
+UNKNOWN
+sess-2
+Unattributed
+·
+openai
+·
+coding
+DESKTOP-QA02
+Codex (CLI)
+gpt-5-codex
+-
+≥ 13m
+12 events
+16m ago
+Live
+last event 3m ago
+Run shape not recorded: its outcome counts were not computed, but not when in the run each event happened.
+2 runs
+J
+K
+move
+↵
+open run
