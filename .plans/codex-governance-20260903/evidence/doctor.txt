@@ -1,0 +1,59 @@
+# captured 2026-09-03 11:42:51 on CND34521VN, agent 7.10.9, ENROLLMENT_MODE=deferred, unelevated
+devoid doctor
+--------------------------------------------------------------------------------------
+v7.10.9 diagnostic sweep
+
+Config
+  + Config directory           C:\ProgramData\devoid
+  x Credentials file           C:\ProgramData\devoid\credentials.json
+
+Shims
+  + Shim directory             C:\ProgramData\devoid\bin
+  + npm shim                  
+  + pip shim                  
+  + yarn shim                 
+  + pnpm shim                 
+
+PATH Priority
+  + In Machine PATH           
+  + PATH order                 correct in the registry; this shell has a stale environment — open a new terminal
+  + npm resolves to devoid     correct in registry; this shell is stale — open a new terminal
+
+Daemon
+  + Daemon reachable           port 19280 (DeVoid v7.10.9)
+  x Daemon persistence         could not be verified (daemon unreachable and task metadata unreadable)
+  x Daemon service             could not be verified (daemon unreachable; an unelevated CLI cannot read the service configuration)
+
+AI Hook Latency
+  ! Hook decision p95           decision p95 126.212ms exceeds the 100ms target over 1822 decisions · end-to-end p95 431.127ms incl. process spawn exceeds the 150ms target · solo p95 152.258ms, busy p95 91.296ms · 1911 invocations reached NO decision (excluded from the percentiles above)
+  -   POST_TOOL_USE             decisions n=1753 p50=25.001ms p95=114.825ms max=3.548387s (solo n=719 p95=151.309ms · busy n=1034 p95=88.843ms) · end-to-end p95=397.109ms · no-decision n=58
+  -   PRE_TOOL_USE              decisions n=61 p50=23.998ms p95=136.35ms max=1.482708s (solo n=57 p95=136.35ms · busy n=4 p95=1.482708s) · end-to-end p95=718.157ms · no-decision n=1845
+  -   SESSION_END               decisions n=4 p50=44.528ms p95=840.497ms max=840.497ms (solo n=4 p95=840.497ms · busy n=0 p95=0s) · end-to-end p95=2.192147s · no-decision n=0
+  -   SESSION_START             decisions n=4 p50=4.000678s p95=4.00791s max=4.00791s (solo n=2 p95=4.00791s · busy n=2 p95=4.007072s) · end-to-end p95=6.552816s · no-decision n=0
+  -   USER_PROMPT_SUBMIT        decisions n=0 p50=0s p95=0s max=0s (solo n=0 p95=0s · busy n=0 p95=0s) · end-to-end not measured · no-decision n=8
+
+AI runtimes
+  + Claude Code hooks          wired on all 1 profiles
+  + Claude transport route     installed on all 1 profiles
+  + AI provider route (Claude) routed (user scope)
+  x Codex managed controls     coverage-downgrade, desktop-safe (ChatGPT/Codex desktop app + VS Code Codex extension present) — per-user cooperative layer (user-owned); machine baseline is a separate row
+  x Codex machine baseline     MO4-managed-hook-commands did not survive composition: UNCONSTRAINED (machine-requirements-absent). Detail: devoid ai codex-machine status
+  x Browser extension beacon   could not be verified (the daemon answered /health but its beacon store could not be read: daemon observed-runtime returned 401)
+
+Release Provenance
+  ! Release manifest           provenance not verified: manifest endpoint returned HTTP 503: RELEASE_MANIFEST_PATH unset and no manifest at any default location (/app/release-manifest.json, /app/dist/release-manifest.json, /etc/devoid/release-manifest.json)
+
+Runtime Control Integrity
+  - Integrity mirror            no local control-integrity attempts recorded
+
+| x Doctor found issues
+|   13 checks passed
+|   6 checks failed
+|   1 checks could not be verified
+|   Run devoid doctor --fix to repair PATH and shim drift.
+status: ATTENTION
+passed: 13
+failed: 6
+unverified: 1
+next: devoid doctor --fix
+

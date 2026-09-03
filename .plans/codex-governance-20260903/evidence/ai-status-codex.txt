@@ -1,0 +1,71 @@
+# captured 2026-09-03 11:42:51 on CND34521VN, agent 7.10.9, ENROLLMENT_MODE=deferred, unelevated
+AI governance readiness: READY — AI governance is wired in this context (ready): last reconcile 2026-09-03T08:37:11Z, at or after the installed generation 2026-09-02T12:22:10Z
+[devoid] Codex posture — attested requirement set: R1–R8 (desktop-safe subset: R5,R7,R8)
+
+── layer 1/3: per-user cooperative controls (user-owned, user-revertible) ──
+[devoid] Codex managed-controls status (C:\Users\Owner\.codex):
+  mode: desktop-safe (ChatGPT/Codex desktop app + VS Code Codex extension present)
+  R5-provider-route      installed [OK]
+  R7-hook-cooperative    unknown (coverage downgrade) (hook-trust-dialect-unverified)
+  R8-hook-lifecycle      unknown (coverage downgrade) (hook-trust-dialect-unverified)
+  R1-approval-lock       not-attested (desktop-safe profile) (vendor-lock-unexpressible)
+  R2-sandbox-lock        not-attested (desktop-safe profile) (vendor-lock-unexpressible)
+  R3-websearch-off       not-attested (desktop-safe profile) (vendor-lock-unexpressible)
+  R4-feature-lock        not-attested (desktop-safe profile) (vendor-lock-unexpressible)
+  R6-mcp-audit           not-attested (desktop-safe profile) (vendor-lock-unexpressible)
+  [i] codex client 0.150.0-alpha.8 is outside every build whose persisted hook-trust format
+                         DeVoid has observed accepted — the hooks are not claimed to fire.
+  managed-block hash: d5e082c2626daba97c6ec5515c75edded7d77e798d668528704ddf8defec033d
+  [i] foreign governance key: features.js_repl (un-pinned feature override took effect)
+  [i] foreign governance key: mcp_servers.cua_repl (un-attested MCP server took effect)
+  [i] foreign governance key: mcp_servers.node_repl (un-attested MCP server took effect)
+  [i] foreign governance key: projects.25f9ea955994e3d7 (project marked trusted (temp-dir) — approval prompts suppressed for that tree)
+  [i] foreign governance key: projects.27ec468cdbd037de (project marked trusted (system-dir) — approval prompts suppressed for that tree)
+  [i] foreign governance key: projects.7e961831c7f4cfe9 (project marked trusted (temp-dir) — approval prompts suppressed for that tree)
+  [i] foreign governance key: projects.c25bb179d656021f (project marked trusted (user-dir) — approval prompts suppressed for that tree)
+  [i] foreign governance key: projects.cf82d5311c3c1bf9 (project marked trusted (temp-dir) — approval prompts suppressed for that tree)
+  [i] foreign governance key: projects.da808c1a13d94a5c (project marked trusted (temp-dir) — approval prompts suppressed for that tree)
+  [i] foreign governance key: sandbox_workspace_write.network_access (sandbox egress re-enabled outside the managed lock)
+  scope: per-user cooperative layer (user-owned). Machine baseline: `devoid ai codex-machine status`.
+  [i] vendor hook fail-open: measured zero, over 3733 delivered decision(s) · NOT MEASURED by this observer: hook-never-spawned (an invocation the client never spawned leaves no spawn-side trace)
+  OBSERVED (runtime artifacts recorded by the daemon):
+    PreToolUse:         NEVER FIRED
+    UserPromptSubmit:   NEVER FIRED
+    PostToolUse:        NEVER FIRED
+    SessionStart:       NEVER FIRED
+    PermissionRequest:  NEVER FIRED
+    SessionEnd:         NOT WIRED by DeVoid on the Codex lane (the client dispatches one; DeVoid takes session end from the daemon's own session tracking)
+    wire egress route:  no decision recorded
+  LANES (each governs independently; a verdict about one is not a verdict about the other):
+  hook lane: NOT attestable (hook-trust-dialect-unverified)
+  wire lane: R5 provider route installed · no decision recorded
+  authority: NOT GOVERNABLE [authority-endpoint-unenrolled] — this endpoint holds no agent identity; the cooperative layer fails open, so these controls are a preference file — enrol it
+[devoid] [!] Codex posture NOT fully attestable — hook lane: NOT attestable (hook-trust-dialect-unverified); wire lane: R5 provider route installed · no decision recorded · 0 of 5 checkpoints have fired · 0 invocations undecided (measured zero).
+
+── layer 2/3: machine requirements baseline (DeVoid-owned) ──
+[devoid] Codex MACHINE requirements baseline: C:\ProgramData\OpenAI\Codex\requirements.toml
+         managed hook directory:              C:\ProgramData\OpenAI\Codex\devoid-managed-hooks
+         observed client version:             0.150.0-alpha.8 (floor >= 0.134.0, no ceiling)
+         baseline present:                    false
+         winning authority tier (control-target): UNKNOWN
+[devoid] Composed effective requirements (across every active source):
+  MO1-features-hooks-pinned  UNKNOWN [requirements-source-unobserved]
+  MO2-managed-hooks-only     UNKNOWN [requirements-source-unobserved]
+  MO3-managed-hook-dir       UNKNOWN [requirements-source-unobserved]
+  MO4-managed-hook-commands  UNCONSTRAINED [machine-requirements-absent]
+[devoid] Authority tier ↔ requirements source (same object, two questions; HIGHEST→LOWEST):
+  REMOTE_MANAGED     (control-target tier)  ↔  CLOUD_REQUIREMENTS     (requirements source)
+  USER_FILE          (control-target tier)  ↔  LEGACY_MANAGED_CONFIG  (requirements source)
+  MACHINE_FILE       (control-target tier)  ↔  MACHINE_REQUIREMENTS   (requirements source)
+[devoid] [!] Obligations did not all survive composition (machine-requirements-absent).
+  scope: the two layers above describe the WINDOWS Codex surface ONLY. A Codex inside WSL reads /etc/codex/requirements.toml in ITS OWN distro and is governed (or not) separately.
+
+── layer 3/3: WSL distro surfaces (each distro is its OWN machine baseline) ──
+  Ubuntu                   WSL_UNCOVERED (baseline-not-a-regular-file) — no usable baseline at /etc/codex/requirements.toml
+      DeVoid is not installed inside this distro. A Codex running here is outside
+      the Windows machine lock, which covers Windows processes only.
+      Govern it as its OWN endpoint: `devoid wsl bootstrap --distro Ubuntu`
+  WSL surfaces: 0 covered · 1 uncovered · 0 unknown
+  excluded from this roll-up (registered, but not a developer environment): docker-desktop [vendor-managed-vm]
+
+[devoid] [!] NEITHER Codex layer is clean.
