@@ -36,6 +36,16 @@
       "id": "toolrisk-vocab-parity-selftest",
       "script": "ci/lib/vocab-parity.test.mjs",
       "why": "Mutation proof for the check above: fabricates divergent trios, including the historical interpreter-exec/fetch-then-exec/substitution-exfil incident, and asserts it goes red naming the class and the repos missing it -- plus that a missing checkout reports NOT CHECKED rather than passing. A drift check nobody has made go red has not been run."
+    },
+    {
+      "id": "vendored-engine-parity",
+      "script": "ci/lib/vendored-engine-parity.mjs",
+      "why": "The console's AI Security policy playground evaluates admin-typed prompts through a VERBATIM COPY of the endpoint's browser engine. Frontend's vendored-digest.test.ts compares that copy against a manifest sitting beside it -- both halves in the same repo -- so it is structurally incapable of seeing the copy and the manifest agreeing with each other while the Installers source has moved, which is exactly when the console starts demonstrating behaviour the endpoint does not have. The GitHub-side answer, vendored-upstream-drift.yml, is dispatch plus a daily cron and needs a cross-repo token; its per-PR trigger is an owner cost decision owned by Wave -1. Both checkouts are already on disk here, so this asks the question with no token, no network, and nothing a GitHub setting can switch off."
+    },
+    {
+      "id": "vendored-engine-parity-selftest",
+      "script": "ci/lib/vendored-engine-parity.test.mjs",
+      "why": "Mutation proof for the check above. Nine fabricated trios, including the blind case it exists for -- manifest and copy agreeing while upstream moved -- plus a missing checkout, a missing upstream file, unparseable JSON and an empty file map all reporting NOT CHECKED rather than a pass, and CRLF-vs-LF NOT counting as drift. If the blind case ever passes, the check has stopped doing the only job that justifies it."
     }
   ],
   "repos": {
