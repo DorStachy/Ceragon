@@ -65,11 +65,13 @@ At the user tier — which the product deliberately does not rewrite (`internal/
 
 - Doctor's latency verdict is **neutral** whenever *any* decision exists (`internal/hooklatency/summary.go:286-291` — RED only at `Decisions.Count == 0`), so F1's 96% fail-open rendered as `!`.
 - `Daemon persistence` / `Daemon service` print `x … daemon unreachable` while `Daemon reachable` is `+` on the line above (`cmd/devoid/doctor_persistence.go`).
-- `Release Provenance` is red on **every** endpoint because the **backend** container ships no `release-manifest.json` (`cmd/devoid/release_check.go:254-262`; no `Backend/Dockerfile` or workflow ships one) — a server defect wearing an endpoint row. Evidence: [`evidence/doctor.txt`](evidence/doctor.txt).
+- `Release Provenance` is **unverified** on every endpoint because the **backend** container ships no `release-manifest.json` (`cmd/devoid/release_check.go:254-262`; no `Backend/Dockerfile` or workflow ships one) — a server defect wearing an endpoint row. **Corrected after review:** the row is *not* red. `main.go:1679` routes it through `sb.unverified`, which `main.go:1275-1279` deliberately gives its own warning-weight glyph so it cannot read as a failure, and `evidence/doctor.txt:44` shows `!`. That design is already right; the only defect is the absent server-side manifest, which is why W5 T3 is a Backend task and not a doctor task. Evidence: [`evidence/doctor.txt`](evidence/doctor.txt).
 
-### F9 · P3 — The admin cannot raise runtime-integrity `mode` from the console
+### F9 · RETRACTED — the console already exposes runtime-integrity `mode`
 
-`runtimeIntegrity` appears in `Frontend/components/admin/ai-security-policy-section.tsx` only as validation/advisory keys (`:1251, :1289, :1700, :1795`). The default `observe` ships and stays — against "policy is set by the admin in our console, never hardcoded".
+**This finding was wrong, and the review caught it.** The draft searched `Frontend/components/admin/ai-security-policy-section.tsx` for `runtimeIntegrity`, found validation and advisory keys at `:1251, :1289, :1700, :1795`, and drew its conclusion from where the search stopped. `RuntimeIntegrityControls` is defined at **`:1837`**, carries a `mode` select bound to `v.mode` over `AI_RUNTIME_INTEGRITY_MODES` at **`:1892`** and an `assuranceFloor` select at **`:1923`**, and is mounted at **`:6574`** inside a live `PolicySection` titled *“Policy Integrity & Tamper Response”* whose key sits in the default-visible list at `:1289`. An admin can raise `observe → enforce` today.
+
+**What remains true:** the rollout ring state is surfaced nowhere in that file — no `rollout`, `cohort`, `SHADOW` or `CANARY` match anywhere in its 6,979 lines. So an admin can set a `mode` while F3b silently stops every intent from reaching an endpoint: the two facts that have to be read together live on different pages. That, and only that, is what W6 T5 now builds.
 
 ---
 
@@ -111,7 +113,7 @@ DeVoid has two enforcement tiers for Codex — a user-owned cooperative layer th
 | D5 | **Run the 0.150 dialect measurement yourself** (W3 gives you one command) and add the row if both artefacts hold. | W3 | §2.4 |
 | D6 | **Is `desktop-safe` acceptable as terminal** for desktop boxes, or must W4 recover R3/R4 (and maybe R1) at the machine tier? | W4 | Risk appetite vs. vendor brick |
 | D7 | **A disposable Windows VM.** Needed for W4's probes and W6's E2E - and also by **W1 and W2, whose own EXIT bars are both written against a fresh install on the VM**. The first draft listed only W4 and W6 here while running W1 and W2 earlier in the order, so a reader following this table would have started W1 believing it could close without the VM. | **W1, W2, W4, W6** | The plan forbids probes on the owner's box |
-| D8 | **Should runtime-integrity `mode` ship above `observe`**, and should the console expose it (F9)? | W6 T5 | Fleet-wide behaviour change |
+| D8 | **Should runtime-integrity `mode` ship above `observe`?** The second half of this question — *should the console expose it* — is already answered: it does, and has all along (F9, retracted). What is left is the posture call, plus whether the rollout ring belongs beside it. | W6 T5 | Fleet-wide behaviour change |
 
 ---
 
@@ -255,7 +257,7 @@ git -C ../Backend merge-base --is-ancestor 4cdeccd1 bc11446c && echo ok         
 
 - [ ] **T1 Gating fail-open is RED.** `internal/hooklatency/summary.go`: for **gating** checkpoints (`PRE_TOOL_USE`, `USER_PROMPT_SUBMIT`), when non-decisions with reason `daemon-error` / `daemon-unreachable*` exceed **25%** of invocations over ≥ 50 invocations **while the daemon answered `/health` in the window**, the verdict is `VerdictGatingFailOpen` (a control failure) and the row prints the reason histogram (`daemon-error 1571 · budget-expired 57 · decided 61`). Today's `VerdictNoDecisions` stays for the fresh-install case it was written for. Files: `summary.go:286-291`, `cmd/devoid/doctor*.go`, `cmd/devoid/ai.go:892`.
 - [ ] **T2 Doctor rows tell the truth about privilege.** `cmd/devoid/doctor_persistence.go`: when `/health` answered, `Daemon persistence` / `Daemon service` render `?` *"cannot verify unelevated"*, never `x daemon unreachable`.
-- [ ] **T3 The backend ships its release manifest.** `Backend/Dockerfile` copies a `release-manifest.json` generated at build from the deploy SHA (or sets `RELEASE_MANIFEST_PATH`); the `/health` release route stops 503-ing; doctor's provenance row goes green fleet-wide. Server defect since ≤ 2026-08-23 (`cmd/devoid/release_check.go:254-262`).
+- [ ] **T3 The backend ships its release manifest.** `Backend/Dockerfile` copies a `release-manifest.json` generated at build from the deploy SHA (or sets `RELEASE_MANIFEST_PATH`); the `/health` release route stops 503-ing; doctor's provenance row moves from `!` unverified to green fleet-wide. Server defect since ≤ 2026-08-23 (`cmd/devoid/release_check.go:254-262`). **Do not touch the doctor row itself** — it is `sb.unverified` at warning weight by deliberate design (`main.go:1275-1279`, `:1679`), which is correct. The only defect is the absent server-side manifest.
 - [ ] **T4 The per-user reconcile task's launches are observable and succeed.** On the VM: enable `Microsoft-Windows-TaskScheduler/Operational`, capture the `0x800710E0` cause (principal `Users` / `Group` / `Limited` is the suspect — a group principal with no interactive member at trigger time is refused), fix the trigger/principal in `internal/daemon/user_ai_wire_task.go`, and add *"scheduled reconcile: last result <code> at <time>"* to `ai status` so a refused task is visible without the event log.
 
 **DEFEAT:** T1 — feed the committed histogram from `evidence/` → RED `gating-fail-open`; feed a fresh-install rollup → `no-decisions` (not RED). T2 — mock a reachable daemon + unelevated → `?`. T4 — assert the principal/trigger shape in a contract test.
@@ -268,7 +270,7 @@ git -C ../Backend merge-base --is-ancestor 4cdeccd1 bc11446c && echo ok         
 - [ ] **T2 Fresh-install posture E2E on the VM** — the customer-imitation test the DoD demands: `msiexec /i … ENROLLMENT_MODE=deferred` → `doctor` → an **expected-rows table** (token readable; Codex machine row `ASSERTED` or `NOT_APPLICABLE`, never silent; `PRE_TOOL_USE` decides on 20 calls; gating row not RED) → enrol → same table + `MATCHED`. Run per release candidate; its transcript is the release's evidence.
 - [ ] **T3 The dialect drift leg** (W3 T3) — the only CI change; one appended step.
 - [ ] **T4 A written rule + release-note template.** In `.plans/` and the Installers `README`: any change to `knownHookTrustDialects`, `IsSystemInstall`, the machine-baseline delivery lanes, or `desktopVendorWithheld` requires (a) a live-proof entry in `liveproof/register.json` (append-only) and (b) a release note in `docs/notes/` in the existing shape — today's R7 lesson, generalised.
-- [ ] **T5 Policy belongs in the console (D8).** A runtime-integrity control in `ai-security-policy-section.tsx` exposing `mode` (`observe` → `enforce`), `assuranceFloor`, and the rollout ring state beside it; never a hardcoded flip.
+- [ ] **T5 Surface the rollout ring beside the controls that already exist (D8).** *Reduced after review:* `ai-security-policy-section.tsx` already exposes `mode` (`:1892`) and `assuranceFloor` (`:1923`) in a mounted, default-visible section (`:6574`), so this task builds neither of them. What it adds is the **rollout ring state**, read-only, beside the `mode` select — so nobody can set `enforce` while the org sits at `SHADOW/0` and nothing reaches an endpoint (F3b). Never a hardcoded flip. If D2 advances the ring, this row is how anyone sees that it moved.
 
 ---
 
