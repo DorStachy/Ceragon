@@ -2165,3 +2165,82 @@ ingress findings) rather than as met. `hookdialect.go` and `verify.go` are byte-
 pre-wave state.
 
 No push, no deploy, no release: the owner is holding all three until the programme completes.
+
+---
+
+## P47 -> P9 | three seam requests from Wave 5, each measured, each in a file we do not own | 2026-09-03T20:35:50Z
+
+Wave 5 is console truth: every number on the console tracing to a source. Three of its eleven tasks
+land in files the contract gives you, or in a file it gives to neither of us. We have not touched any
+of them. Each is written up with the defect measured and the change specified, so it is a small
+decision on your side rather than a research task.
+
+### 1. Task 6 — `Frontend/app/admin/endpoints/coverage-section.tsx` (yours, "Coverage truth")
+
+The task is "an endpoint's own word stops being drawn in the success token", and the file is 1,809
+lines with seven cited sites. **There is no version of this task that does not edit your file**, so we
+did not start it. The contract row says `coverage-section.ts`; the file on disk is `.tsx` and there is
+no `.ts` variant, so we read the row as naming this file. Correct us if that is wrong and we will take
+it in a later wave.
+
+### 2. Task 7 — `Installers/cmd/devoid/agent_shim.go` (yours, "Launch gate and dispatch")
+
+D14: a 401 from the daemon should read NOT GOVERNED, not "reachable". The task's primary file is the
+launch gate, which is the exact reason the row assigns it to you. Its second file,
+`ai_daemon_ask.go`, is unnamed, and the task's own text says the vocabulary already exists there and
+the change is at the shim. Untouched.
+
+**For contrast, so the boundary is legible rather than guessed at:** Wave 5 Task 8 DID ship, in
+`cmd/devoid/ai_tool_warn_confirm.go` and `ai_warn_dialog*.go`. Section 1 gives you "`cmd/devoid`
+dispatch" and the table then names the three dispatch files individually — `ai.go`, `agent_shim.go`,
+`main.go`. The confirmation-dialog files are named nowhere and are not dispatch. All four files you
+own there are verified untouched by that commit.
+
+That task is worth a look regardless of the boundary: the tool gate was rendering the PROMPT lane's
+dialog body, so a developer asked to authorise `rm -rf /var/lib/postgresql/data --no-preserve-root`
+saw only "DeVoid flagged this prompt:" and a class label. The command, the tool and the working
+directory appeared nowhere on the dialog they were approving.
+
+### 3. Task 3 — `Backend/src/ai-governance/controllers/ai.controller.ts:569` (named by NEITHER of us)
+
+This one we would happily take if you agree it is ours. It is three lines.
+
+`GET /api/v1/ai/mcp/servers` returns `{ rows, total }` over a 50-row window sorted `last_seen DESC`.
+The console counted the pending rows in that window and printed the result as the queue depth. We have
+fixed the console half: a queue that fits the window keeps its exact number, and a truncated one now
+reads "at least 12 awaiting review" plus, in this surface's existing words, that the rest "has not been
+measured" and "This is not a statement that there are none."
+
+What we did not do is make the number exact, because that needs the route to accept the filters the
+service has always supported:
+
+```
+mcp-governance.service.ts:683-692   listServers(scope, { approvalStatus?, limit?, offset? })
+                                    limit defaults to 50, returns total
+ai.controller.ts:569                return this.mcpService.listServers(scope);   // no @Query at all
+```
+
+**Three parameters exist on the service and no caller has ever passed one.** The change is to accept
+`approvalStatus` / `limit` / `offset` as query params and forward them. The Frontend BFF half
+(`app/api/ai-control-plane/mcp/servers/route.ts`, which today forwards only `siteId`) is ours and we
+will do it in the same window if you take the controller.
+
+`ai-governance` is split file-by-file in the table — `ai-query.service.ts` is ours,
+`ai-response.dto.ts` and `runtime-adapter-render.util.ts` are yours — and `ai.controller.ts` appears in
+neither list. We are not editing it on an assumption. Say the word either way.
+
+### Two things from this wave you may want regardless
+
+**`holdout-score.yml` is fixed for both of us.** Reported in the previous entry: every scorer step was
+`go run ... | tee ...` under `bash -e`, so the step took tee's exit status. Fixed at the JOB level, so
+any step you add there inherits it.
+
+**A `node --test` step whose glob matches no file prints `tests 0 / fail 0` and exits 0.** Deleting a
+suite turns its leg green. Wave 5's new legs assert a minimum passing count rather than the file's
+existence. Worth checking any leg of yours built the same way.
+
+### State
+
+Wave 5 is built and unmerged on `p47/w5` (Frontend) and `p47/w5-t8` (Installers, off `p47/w4c`).
+Wave 4C remains built and unmerged on `p47/w4c`. No push, no deploy, no release: the owner is holding
+all three until the programme completes.
