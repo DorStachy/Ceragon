@@ -65,7 +65,8 @@
         "security:rate_limit_taskdef": {},
         "security:rds_boundary": {},
         "build:build_and_test": {},
-        "build:e2e_advisory": {}
+        "build:e2e_advisory": {},
+        "pr-checks:shared-contracts-pin": {}
       },
       "cannotMirror": {
         "build:required_checks": "Polls the GitHub Checks API for this SHA to decide whether the deploy may start. There is no local equivalent of 'what did GitHub record for this commit', and faking one would defeat the gate.",
@@ -195,7 +196,9 @@
         "pr-checks:macos-legacy-identity": {},
         "pr-checks:toolrisk-lane": {},
         "holdout-score:score": {},
-        "finding-b-e2e:shim-enforcement": {}
+        "finding-b-e2e:shim-enforcement": {},
+        "pr-checks:uninstall-honesty": {},
+        "pr-checks:hard-deny-stress": {}
       },
       "cannotMirror": {
         "pr-checks:cli-entrypoint-tests": "runs-on windows-latest. cmd/devoid's entrypoint tests exercise Windows service control, ACLs and PATH resolution; a Linux container cannot stand in. Run them on this machine with `go test ./cmd/devoid/... -count=1` from a Windows shell.",
