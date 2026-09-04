@@ -21,6 +21,12 @@
 >    `pr-checks.yml`. A reformat by one team turns every later diff into a conflict.
 >
 
+> **Owner execution directive:** before taking a task, read
+> [`P47_EXECUTION_GUARDRAIL.md`](P47_EXECUTION_GUARDRAIL.md). It exists because the first
+> implementation run consumed almost the entire session on Wave 0A without completing the wider
+> programme. Its scope-control, progress-accounting, and escalation rules are mandatory.
+
+
 # M4.7A — Runtime AI Security Protection and Detection Engine: Implementation Plan (v2)
 
 **Supersedes:** `M47A_IMPLEMENTATION_PLAN.md` (v1, 2026-08-22, 17,538 lines), which its own
@@ -66,6 +72,8 @@ fetch and re-reads their own wave's citations first.** A wave file is a set of c
 
 ## The goal, stated as a claim this packet can actually make
 
+<!-- forbidden-claims:begin — this passage QUOTES the claim in order to refuse it. The fence is what lets the refutation name the sentence it refutes. -->
+
 v1's goal was *"all the rules working, all the detections, zero false positives, high quality
 detections, smart one, with severities right and smart and correct."* That is the right product
 ambition and it is not a claim any packet can certify. Restated:
@@ -89,6 +97,8 @@ defensible form, and the only one this plan will make:
 **Today there IS a known unresolved benign hard block** (Wave 0A). Until it is closed, the phrase is
 unavailable to us at any sample size.
 
+<!-- forbidden-claims:end -->
+
 ### Which risk lanes this packet can certify
 
 **None of the five.** That belongs here in the goal statement, not in a footnote.
@@ -104,6 +114,59 @@ unavailable to us at any sample size.
 **What CAN reach PASS**, as bounded engineering-assurance *dimensions* rather than risk certificates:
 scanner **execution** truth; tool-risk **policy authority and catalog totality**; **measurement-substrate
 integrity**; **console truth**. Each is a real deliverable. None is a risk lane. Say so to customers.
+
+### The forbidden-claims checklist
+
+This is the list a release note is diffed against. It is **prose here and data in the renderer**
+(`Installers/internal/certificate/claim_test.go`, Wave 8 Task 11), deliberately two artifacts,
+because a single list edited in one place drifts silently in the other. The only thing that keeps
+them equal is `TestForbiddenListMatchesThePlanChecklist`, which prints both counts rather than
+carrying either as a literal. **Neither side may grow alone. Today both hold 15 rows.**
+
+`ci/lib/claim-contract.mjs` is the guard. It greps this plan and any release note for the forbidden
+strings and fails naming the line — except inside the fenced block below, which exists so the list
+can quote the sentences it bans.
+
+Every row names its source. A row without one is not a rule, it is an opinion.
+
+<!-- forbidden-claims:begin -->
+
+**Forbidden outright — 8 rows, source material §7.**
+
+| # | The claim | Why it cannot be made | Source |
+|---|---|---|---|
+| 1 | "Zero false positives" | 1 benign hard block per 51 ordinary commands, un-relaxable; 15 of 52 benign prompts at interrupt tier; 2 of 23 sealed benign interrupts. | Wave 0A; `internal/promptrisk` corpus measurement |
+| 2 | "All detections are high quality" | 43 of 55 detector classes report `fnRate: 0` on **zero** attack cases. A rate over an empty denominator is not a measurement. | Wave 3 measurement substrate |
+| 3 | "Evasive attacks are covered" | Two named semantic residuals plus a pinned `rm -rf "$HOME"` evasion. Claimable instead: *the Bash shape and AST family, with the two semantic residuals named.* | Wave 0A twin tables |
+| 4 | "Prompt injection is high-assurance protected" | 75% sealed recall; `injection-system-exfil` was 0%; no adaptive evaluation; the rules were English-only. | Wave 4C; `internal/promptrisk` |
+| 5 | "All DLP classes are governed" | 30 of 81. | Wave 1 DLP catalog |
+| 6 | "A green scan proves vulnerable code was not introduced" | Execution truth is not detection truth. A scan that did not run and a scan that found nothing render identically today. | Wave 7A |
+| 7 | "Dangerous production actions are prevented" | 9 production-effect spellings produce no finding; the effect broker covered one overlay path before Wave 8. | Wave 4A/4B; Wave 8 Task 3 |
+| 8 | "M4.7A is complete" / "Risk 1, 2, 4 or 5 is 9+/10" | No risk lane reaches PASS from this packet. Every one is `NOT_READY`, and the table above names each blocker. | Source material §5.4; D17 |
+
+**Forbidden by the research — 7 rows.** These are not measurements of our product. They are findings
+about this class of product, and they bind us the same way.
+
+| # | The claim | Why it cannot be made | Source |
+|---|---|---|---|
+| 9 | A static-corpus prompt-injection result presented as a release claim | Adaptive attacks broke **all eight** defences studied, with attack success consistently over 50%. Second-generation reference-monitor defences have never been adaptively evaluated. Static results are **regression evidence** and are labelled as such in the manifest's `suite` field. | arXiv:2503.00061, Zhan et al. Do **not** cite the "twelve defences broken at over 90%" figure — the primary source does not support it. |
+| 10 | A single prompt-injection number, across surfaces | Same vendor, same disclosure: 0% success across 200 attempts in a constrained coding environment, versus **78.6% by the 200th attempt** in a GUI/browser environment. Surface dominates model. | Vendor safeguards disclosure |
+| 11 | Safeguards coverage **at install time** | The MSI does not wire the AI hook lane. A per-user scheduled task does, roughly one minute after install. Until it runs, the endpoint is installed and ungoverned. | Installer measurement; M4.6 ship-on gap |
+| 12 | A corpus is uncontaminated because it carries a canary | The BIG-bench canary GUID was reproducible on demand by GPT-4. The filter became the proof of contamination. | BIG-bench canary result |
+| 13 | The measured production false-positive rate as a certified quality label | Not until Wave 6 Task 9's second reviewer and adjudication record exist on the row. A single reviewer can set it, and `benign_expected` conflates "policy too strict" with "authorized action". | Wave 6 Task 9 |
+| 14 | The lexical or ML prompt classifier can be an enforcing tier | Published guard models operate around **1% FPR** against a product budget of **at most 0.1%** unnecessary visible interventions per 1,000 benign sessions and **at most 0.5%** confirmations per 1,000 benign opportunities. Axelsson's base-rate result for intrusion detection lands on the same order as the 100 ppm hard-block bound. This is arithmetic, not opinion. | D16; `internal/promptrisk/ENFORCEMENT_ELIGIBILITY.md` |
+| 15 | Third-party validation of the detection engine | None exists for AI runtime defence, and MITRE ATT&CK Evaluations lost Microsoft, SentinelOne and Palo Alto from its 2026 round. The AIUC-1 audit is the substitute and must be named as such — never as "independently validated detection". | Source material §7 |
+
+<!-- forbidden-claims:end -->
+
+**Certificate TTL: 90 days**, matching AIUC-1's quarterly re-test requirement. A manifest older than
+its TTL is expired, not stale-but-probably-fine, and it renders as `UNKNOWN` rather than as its last
+good value.
+
+**The sole numeric SLO authority** is
+`docs/superpowers/plans/2026-07-15-ai-security-detection-enforcement-master-plan.md:695-829`. Do not
+create a second table. Every budget quoted anywhere in this packet resolves there or it is not a
+budget.
 
 ---
 
@@ -1043,6 +1106,40 @@ was, and a PR body claiming otherwise re-commits the mis-statement Wave 1 closed
 ---
 
 # Wave 0A — Stop hard-blocking ordinary work
+
+## Post-implementation reconciliation (2026-08-29)
+
+**This block supersedes every conflicting Wave 0A statement below that describes the change as
+regex-only, reports `16 removals + 1 addition`, or classifies A10 `rm -rf ~/.` and A11
+`rm -rf ~/..` as attacks.** The historical task text remains for traceability, not as the
+implemented contract. The canonical truth is a **50-row matrix: 28 attack + 17 benign + 5
+invariant**, with **18 `destructive-rm` removals + 1 addition**. A10/A11 became benign rows B16/B17
+because conforming `rm` rejects final `.` and `..` operands; the sole addition is A4, direct
+unquoted `rm -rf ${HOME}`.
+
+The implementation narrows the flat POSIX home-target rule and adds **bounded, source-proven shell
+semantics**, not a general shell interpreter: lexical home cancellation; active `${HOME}`
+provenance and masking; recursive-`rm` option/terminator handling including `POSIXLY_CORRECT`;
+exact transparent wrappers and supported shell `-c` forms; selected structural reachability and
+statically invoked functions; ordered HOME/PATH/PWD/OLDPWD/IFS state; and left-to-right argv,
+substitution, redirection, here-string and heredoc execution checks. Explicit
+source/marker/provenance budgets and conservative silence preserve the malicious-floor
+zero-fabrication boundary whenever execution, lookup, expansion or shell state is not proved.
+
+The residual and release limits do **not** move: `rm -rf "$HOME"` remains unresolved; the six named
+credential-store tails remain unrelaxable pending Wave 4B Task 6; general `.docker`/`.config`,
+literal-prefixed glob/bracket coverage, quoted-literal-tilde provenance and broader shell
+interpretation remain deferred exactly as inventoried. This proves scanner classification only—not
+complete `rm` grammar, shell effect, zero false positives, policy delivery or fleet behavior. The
+class catalog/parity vector is unchanged, so no Backend deploy is required; an owner-authorized
+agent release is still required. The pre-fix live observation was **NOT EXERCISED**, no post-fix
+released-endpoint observation exists, and customer-impact closure is therefore **NOT PROVEN**.
+
+The authoritative implemented boundary, row accounting and residual ownership are in
+`Installers/.plans/m47a-20260822/v2-waves/W0A_COVERAGE_DELTA.md`; source-gate, deployment, release
+and live-observation evidence are in
+`Installers/.plans/m47a-20260822/v2-waves/W0A_RUN_LOG.md`. Where the historical tasks or exit
+criteria below conflict with those records, these reconciliation sources govern.
 
 **Depends on:** Wave −1 Task 1 (fetch + manifest). Nothing else.
 **Implements decisions:** — (new wave). It is Step 1 of the critical path in source material §8.
@@ -3705,12 +3802,16 @@ either has already landed when you get here, the floor you are rewriting is stil
 position is unchanged.
 
 **Files:**
-- `Installers/internal/daemon/ai_handlers.go:3789, 3909-3922`
+- `Installers/internal/localdecide/tool.go` (`decideToolRisk`, `DefaultToolDecision`, and the
+  self-defense floor; P9 PR #187 moved the authoritative bodies out of `daemon/ai_handlers.go`)
 - `Installers/internal/policyeval/policyeval.go:544-551` (rung 7 only — the ladder's other rungs are
   out of scope for this task)
 - `Installers/browser-extension/src/policyeval.js:317-319` (the JS twin of rung 7 — §8 rule 4)
 - `Installers/internal/proxy/ai_replay_promptrisk.go:265-272`
-- `Installers/internal/daemon/ai_fallback_grades_test.go` (create)
+- `Installers/internal/localdecide/ai_fallback_grades_test.go` (create)
+- `Installers/internal/localdecide/decision_golden_test.go` and
+  `Installers/internal/localdecide/testdata/decision-golden.json` (verification/regeneration protocol;
+  never regenerate from the changed tree)
 
 These are the **offline fallback** lanes and they may not be deleted: `decideTool:3745-3752` documents
 keeping the legacy lane deliberately, because an agent in the field can outlive its backend and rule 5
@@ -3734,18 +3835,39 @@ says the local rulebook must always reach a verdict.
       docblock is false and the replay lane selects a different set than the resolver it claims to
       mirror. Repoint it at the same grade predicate and keep the docblock true; do **not** relax the
       set it returns — the non-relaxation proof in step 1 covers this site too.
+- [ ] **Correct the self-defense floor's ordering without weakening its explicit floor.** Current
+      `internal/localdecide/tool.go` changes an *unspecified* HIGH `devoid-self-disable` or
+      `sensitive-write-devoid` finding from the severity fallback's `block` to `warn`, even though the
+      comment says the floor only raises. An empty disposition must join `unspecified` and flow through
+      the same non-weakening fallback as every other class; the floor applies only to an explicit
+      `allow` or `monitor`. The required matrix, for **both** classes, is: unspecified → fallback
+      (currently `block`); explicit allow → `warn`; explicit monitor → `warn`; explicit warn → `warn`;
+      explicit block → `block`. This is a correction to the existing self-defense exception, not a new
+      hardening rule and not permission to move any other branch.
+- [ ] Run P9 PR #188's
+      `TestExtractedCoreReproducesTheDaemonDecisionsExactly` after the change. The committed capture
+      currently exposes **20 empty-or-unrelated-policy rows** affected by the unspecified-floor bug.
+      Read every named row as the behavioral changelog. If regeneration is necessary, generate from a
+      pristine worktree at the commit immediately before this change, record matched/skipped and
+      row-count deltas in `.plans/PARALLEL_HANDSHAKE.md`, and never bless output generated from the
+      changed tree. `TestGoldenStillDiscriminates` must retain its ≥70% matched floor.
 
 **Defeat test:** `ai_fallback_grades_test.go::TestFallbackNeverRelaxes` — lower any class's
 `baseCapabilityImpact` below its current fallback verdict and it goes red with
 `class "x": fallback relaxed from block to warn`. `TestWeakEvidenceCannotBlock` — set a class to
 `evidenceStrength: weak, baseCapabilityImpact: critical` and assert the fallback is at most `warn`;
-reverting the guard yields `block`.
+reverting the guard yields `block`. Add
+`TestSelfDefenseFloorDoesNotRelaxUnspecifiedHighFindings`: table-drive both self-defense classes and
+all five disposition states above. Restore the current `disposition == ""` floor arm and the two
+unspecified rows go red (`got warn, want block`); remove the explicit allow/monitor floor and those
+rows go red (`got allow/monitor, want warn`).
 
 **Exit:** the §7 grep returns **0** enforcing severity switches (today **5**, all five in scope —
 the fifth, the replay site, is confirmed above to be a copy of rung 7 rather than an independent
 filter). **0 of 40** tool classes relax relative to the pre-change fallback. Rung 7 in
 `policyeval.go`, its JS twin at `policyeval.js:317-319` and `enforcingPromptFindings` all read the
-same grade predicate, and the §8 ladder table records rung 7's new input.
+same grade predicate, and the §8 ladder table records rung 7's new input. Both self-defense classes
+pass the five-state matrix, and the #188 golden reports its exact matched/skipped row counts.
 
 ---
 
@@ -11203,10 +11325,10 @@ outcome this wave's R3 `prerequisites` row records.
   close. Wave 4B Task 4 then binds `normalizedEffect` on the **tool lane** (its exit is a 9×9 matrix:
   9 diagonal releases, **72** refusals). Task 2 below adds the remaining segments and generalises the
   binding to every sink. **Do not rebuild Wave 4B Task 4 here.**
-- **O-17 — Task 5 (canary honesty) lands before Task 9 (live canary evidence).**
-  `Installers/internal/aicanary/exec.go:125` sets `WaitDelay = 5 * time.Second`, and a real deny was
-  reported as `canary-host-launch-failed` in **2 of 6** recorded runs. A canary that reports
-  enforcement successes as errors cannot be the evidence lane.
+- **O-17 — P9 W6 T1 (Task 5) is merged before Task 9 (live canary evidence).** Commit
+  `1bd9cecf`, merged by PR #183, supplies bounded per-call-site `ProcessSpec.IOGrace` while preserving
+  the shared five-second default. The engineering prerequisite is satisfied. The six real-host
+  repetitions remain **NOT EXERCISED** and owner-gated; Task 9 may not admit old or unauthorized runs.
 - **O-18 — Task 1 (sink inventory) before Task 3 (mediation) before Task 12 (defeat matrix).**
   `TestDirectAlternatePathToTheSameSinkFails` cannot know what "the same sink" is without the
   inventory.
@@ -11316,22 +11438,22 @@ different road (`Installers/internal/daemon/codex_failopen_attest.go:122` reaps 
 zero-count `vendorFailOpenNotMeasured` row) and lands in the endpoint's Events ledger. **Nothing
 anywhere converts either signal into a non-green certificate state**, because no certificate exists.
 
-### 4. The canary reports a real deny as a launch failure
+### 4. The canary engineering defect is fixed; live proof remains owner-gated
 
-`Installers/internal/aicanary/exec.go:125` sets `cmd.WaitDelay = 5 * time.Second`. The Codex turn
-holds the captured pipes longer than that after the child exits, so `cmd.Run()` returns
-`exec: WaitDelay expired before I/O complete`. That error is not an `*exec.ExitError` and `runCtx.Err()`
-is nil, so `finish` (`exec.go:144`) falls to its default branch and returns the error; the caller
-maps *any* non-nil probe error to `CanaryError` + `CanarySlugHostLaunchFailed`
-(`Installers/internal/codexmanaged/canary.go:351`, slug defined `:58`). Recorded in
-`Installers/internal/codexmanaged/testdata/liveproof/ledger.json`: two of six
-`TestLiveCanary_RealCodexHost` attempts returned `canary-host-launch-failed` on invocations where the
-client, in the same launch, printed `hook: UserPromptSubmit Blocked`. Re-measured on identical argv
-with a 90 s `WaitDelay`: `waitErr=nil`, exit 0, 11.3 s wall clock, full transcript captured including
-the `Blocked` line. See also `Installers/internal/codexmanaged/LIVE_PROOF_RUNBOOK.md:554-556`.
+The historical baseline was real: two of six recorded `TestLiveCanary_RealCodexHost` attempts
+returned `canary-host-launch-failed` even though the same transcript contained
+`hook: UserPromptSubmit Blocked`. P9 W6 T1 commit `1bd9cecf`, merged by PR #183 at
+`4d724396`, is now authoritative. It adds bounded `ProcessSpec.IOGrace`: the shared default remains
+five seconds, while only the Codex and Claude canary-host call sites receive 90 seconds. The context
+timeout remains the process-kill bound, and `exec.ErrWaitDelay` is not reclassified as success.
 
-**A live canary that reports enforcement successes as errors cannot be the evidence lane for a
-certificate.** Fix it before Task 9 runs.
+`TestRun_IOGraceDefaultsToFiveSecondsWhenUnset`,
+`TestRun_IOGraceIsBoundedBelowTheTimeout`,
+`TestRun_DefaultGraceNeverInvalidatesAShortTimeout`, and
+`TestRun_SlowPipeCloseAfterCleanExitIsNotALaunchFailure` pin the correction. The engineering
+prerequisite for Task 9 is therefore satisfied. The required six real-host repetitions are still
+**NOT EXERCISED / owner-gated**; the pre-fix two-of-six ledger is baseline evidence only and cannot
+prove the certificate lane.
 
 ### 5. Prior art you must reuse, not rebuild
 
@@ -11571,45 +11693,41 @@ through the generator produces `status: "FAIL"` for R1 and R5 and a `downgradeTr
 
 ---
 
-## Task 5: Stop the canary reporting a real deny as a launch failure
+## Task 5: Adopt P9 W6 T1's merged per-call-site I/O grace; retain the live-proof gate
 
-**Files:**
-`Installers/internal/aicanary/exec.go` (`:125`, `finish` at `:144`),
-`Installers/internal/aicanary/exec_test.go`,
-`Installers/internal/codexmanaged/canary.go` (`:341-352`; the slug constant is `:58`),
-`Installers/internal/codexmanaged/LIVE_PROOF_RUNBOOK.md:552-558`
+**Status update (2026-08-28): the engineering fix is already merged.** P9 W6 T1 commit
+`1bd9cecf`, merged by Installers PR #183 at `4d724396`, is authoritative for this defect.
 
-**Ordering (O-17): this task lands before Task 9.** Task 9 is the live-evidence lane, and until this
-lands the lane reports enforcement successes as errors — `2 of 6` recorded
-`TestLiveCanary_RealCodexHost` attempts returned `canary-host-launch-failed` on invocations where the
-client printed `hook: UserPromptSubmit Blocked` in the same launch. Evidence gathered before this
-task is not admissible into `proof.liveCanary`.
+**Authoritative files:**
+`Installers/internal/aicanary/exec.go`,
+`Installers/internal/aicanary/exec_iograce_test.go`,
+`Installers/internal/aicanary/launch_windows.go`,
+`Installers/internal/codexmanaged/{canary.go,canary_host.go}`,
+`Installers/internal/airuntimeintegrity/providers/claude/canary_host.go`
 
-- [ ] Failing test first: `TestWaitDelayExpiryIsNotALaunchFailure` — a stub runner returns
-      `fmt.Errorf("exec: WaitDelay expired before I/O complete")` alongside a populated `Stdout`
-      containing the deny marker, and asserts the outcome classifies as an **observation**, not
-      `CanaryError`. Expected failure text before the fix:
-      `outcome = ERROR / canary-host-launch-failed, want PROVEN`.
-- [ ] In `finish`, classify a `WaitDelay` expiry that occurred **after the child exited** as a
-      pipe-drain condition, not a launch failure: the process ran, `cmd.ProcessState` is non-nil, and
-      the captured output is what the canary is there to read. Return the outcome with a named
-      `PipeDrainTruncated` flag rather than an error.
-- [ ] Raise the probe's `WaitDelay` to **90 s** for the Codex host path only, matching the
-      re-measurement recorded in `Installers/internal/codexmanaged/testdata/liveproof/ledger.json`
-      (`waitErr=nil`, exit 0, 11.3 s wall clock, full transcript including the `Blocked` line). Do not
-      change the *context* timeout — the bound that kills a hung child stays where it is.
-- [ ] A truncated-pipe outcome may prove a **deny** (the marker was captured) but may never prove an
-      **allow**: if the deny marker is absent and the pipes were truncated, the answer is
-      `CanaryUnsupported`, not `CanaryNotProven`. Assert both directions.
-- [ ] Correct `LIVE_PROOF_RUNBOOK.md:554-556` to describe the shipped behaviour.
+**Ownership correction.** Do not implement this task's former `finish` /
+`PipeDrainTruncated` design and do not raise a shared `WaitDelay` constant. The merged fix adds
+`ProcessSpec.IOGrace`: callers that leave it unset retain the historical 5-second default; only the
+Codex and Claude canary-host call sites receive the 90-second grace. An explicitly set grace must be
+positive and strictly below the process timeout. The context timeout remains the kill bound.
 
-**Defeat test:** `TestWaitDelayExpiryIsNotALaunchFailure` — revert `finish`'s new arm and it goes RED
-with `outcome = ERROR / canary-host-launch-failed, want PROVEN`. Second:
-`TestTruncatedPipeNeverProvesAllow` — make the truncated-no-marker case return `CanaryNotProven` and
-it goes RED with `truncated capture reported an enforcement gap`.
+- [x] `TestRun_IOGraceDefaultsToFiveSecondsWhenUnset` pins every unaffected caller.
+- [x] `TestRun_IOGraceIsBoundedBelowTheTimeout` and
+      `TestRun_DefaultGraceNeverInvalidatesAShortTimeout` pin both bounds.
+- [x] `TestRun_SlowPipeCloseAfterCleanExitIsNotALaunchFailure` proves the real failure mode and the
+      per-call-site correction without reclassifying `exec.ErrWaitDelay` as success.
+- [ ] With fresh owner authorization, run `TestLiveCanary_RealCodexHost` **6 of 6** times on the
+      owner's box and record zero `canary-host-launch-failed` outcomes. This spends live Codex quota
+      and remains **NOT EXERCISED** until the owner explicitly powers it on.
 
-**Exit:** `TestLiveCanary_RealCodexHost` run **6 of 6** times on the owner's box returns zero
-`canary-host-launch-failed`. Compare against the recorded baseline of **2 of 6** failing.
+**Defeat evidence:** removing `IOGrace` from either canary host or restoring the hard-coded
+5-second `cmd.WaitDelay` makes `TestRun_SlowPipeCloseAfterCleanExitIsNotALaunchFailure` fail.
+Applying the explicit-grace bound to the resolved default makes
+`TestRun_DefaultGraceNeverInvalidatesAShortTimeout` fail.
+
+**Exit:** the engineering prerequisite for Task 9 is merged and package-tested. The live evidence
+criterion is still **NOT EXERCISED / owner-gated**; no receipt from the earlier 2-of-6 baseline may
+enter `proof.liveCanary`.
 
 ---
 
@@ -12283,9 +12401,12 @@ rather than a number, and the named external dependency is stated rather than en
 5. **Unmeasured is never zero.** `ungovernedInvocations.rate` is `null` on a zero denominator, and
    every metric block refuses a bound on an empty denominator. Defeat: `TestMissingMeasurementIsNotZero`
    → RED with `precision.lower95 = 0 for an empty denominator`.
-6. **Canary honesty.** `TestLiveCanary_RealCodexHost` returns **0 of 6** `canary-host-launch-failed`
-   against a recorded baseline of **2 of 6**. Defeat: `TestWaitDelayExpiryIsNotALaunchFailure`, revert
-   `finish`'s new arm → RED with `outcome = ERROR / canary-host-launch-failed, want PROVEN`.
+6. **Canary honesty.** The engineering correction is merged at P9 W6 T1 commit `1bd9cecf` / PR #183:
+   the unaffected default remains five seconds and only the Codex/Claude canary hosts receive bounded
+   90-second `IOGrace`. Defeat: remove that per-call-site grace or restore a hard-coded five-second
+   `cmd.WaitDelay` and `TestRun_SlowPipeCloseAfterCleanExitIsNotALaunchFailure` goes RED. The required
+   **0 of 6** `canary-host-launch-failed` real-host result remains **NOT EXERCISED** until fresh owner
+   authorization; the recorded pre-fix baseline remains **2 of 6**.
 7. **The manifest exists and expires.** One schema-v2 certificate per risk lane and per dimension;
    **all five risk lanes read `NOT_READY`**; a certificate past `expiresAt` reads `UNKNOWN`. TTL is
    **90 days**. Defeat: `TestExpiredCertificateReadsUnknown` → RED with
