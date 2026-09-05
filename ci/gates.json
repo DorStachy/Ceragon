@@ -28,14 +28,64 @@
   },
   "workspaceChecks": [
     {
-      "id": "toolrisk-vocab-parity",
+      "id": "detector-vocab-parity",
       "script": "ci/lib/vocab-parity.mjs",
-      "why": "The tool-risk detector vocabulary is one contract living as three hand-copied files in three repos. Each repo's own guard compares that repo against THAT REPO'S copy, so a class added in the agent and never copied leaves all three green while the class becomes ungovernable: the console cannot set a policy for a name the Backend tuple does not contain. Nothing inside a single repo's CI can see this; that is why it is here and not under 'mirrored'."
+      "why": "The tool-risk and DLP detector vocabularies are two contracts, each living as three hand-copied files in Installers, Backend and Frontend. Per-repo guards compare only against their local copy, so the workspace runner is the only gate that can prove both complete three-copy comparisons (2 vocabularies x 3 copies = 6 files)."
     },
     {
-      "id": "toolrisk-vocab-parity-selftest",
+      "id": "detector-vocab-parity-selftest",
       "script": "ci/lib/vocab-parity.test.mjs",
-      "why": "Mutation proof for the check above: fabricates divergent trios, including the historical interpreter-exec/fetch-then-exec/substitution-exfil incident, and asserts it goes red naming the class and the repos missing it -- plus that a missing checkout reports NOT CHECKED rather than passing. A drift check nobody has made go red has not been run."
+      "why": "Mutation proof for both schemas: fabricates tool-risk and DLP producer-only classes and asserts the checker goes red naming the class and missing repos, while absent checkouts, unreadable refs and invalid JSON report NOT CHECKED rather than passing."
+    },
+    {
+      "id": "workflow-header-truth",
+      "script": "ci/lib/workflow-header-truth.mjs",
+      "why": "Workflow headers are operational claims. This check compares present-tense trigger claims in the first 20 header comments with the real on: keys across all seven repositories, while preserving conditional future instructions as instructions rather than misclassifying them as current claims."
+    },
+    {
+      "id": "workflow-header-truth-selftest",
+      "script": "ci/lib/workflow-header-truth.test.mjs",
+      "why": "Defeat proof for workflow-header-truth: a stale PUSH TO MAIN claim over a manual-plus-nightly workflow must fail with the file and line, while the conditional WHEN T-M2 LANDS instruction must remain valid."
+    },
+    {
+      "id": "w-1-rebase-manifest",
+      "script": "ci/lib/rebase-manifest.mjs",
+      "why": "The plan's line-level claims are meaningful only against the seven fetched origin/main revisions recorded in its generated manifest. This check refuses a stale SHA, local HEAD, branch, or behind count rather than trusting a handed-down list."
+    },
+    {
+      "id": "w-1-rebase-manifest-selftest",
+      "script": "ci/lib/rebase-manifest.test.mjs",
+      "why": "Mutation proof for the rebase manifest: seven real temporary Git repositories are generated, one Installers SHA is hand-edited, and validation must fail with the recorded and actual origin/main values."
+    },
+    {
+      "id": "claim-contract-guard",
+      "script": "ci/lib/claim-contract-guard.mjs",
+      "why": "Pins the exact no-PASS statement and all 15 sourced forbidden claims."
+    },
+    {
+      "id": "claim-contract-guard-selftest",
+      "script": "ci/lib/claim-contract-guard.test.mjs",
+      "why": "Defeat proof that removing one forbidden claim makes the contract guard red."
+    },
+    {
+      "id": "standards-schema-declaration",
+      "script": "ci/lib/standards-schema-declaration.mjs",
+      "why": "Pins the required per-class standards columns, accepted editions, and ATLAS release."
+    },
+    {
+      "id": "standards-schema-declaration-selftest",
+      "script": "ci/lib/standards-schema-declaration.test.mjs",
+      "why": "Defeat proof for a missing standards column and blank ATLAS release."
+    },
+    {
+      "id": "plan-citation-resolver",
+      "script": "ci/lib/plan-citations.mjs",
+      "why": "Resolves qualified plan citations against each repository's origin/main and rejects past-EOF or unqualified source references."
+    },
+    {
+      "id": "plan-citation-resolver-selftest",
+      "script": "ci/lib/plan-citations.test.mjs",
+      "why": "Defeat proof that a citation beyond EOF is rejected with its exact source path and line count."
     },
     {
       "id": "claim-contract",
@@ -63,6 +113,7 @@
       "path": "Backend",
       "defaultImage": "node24",
       "volume": "devoidci-backend",
+      "localGateWorkflows": ["pr-checks"],
       "mirrored": {
         "pr-checks:typecheck": {},
         "pr-checks:lint": {},
@@ -71,6 +122,7 @@
         "pr-checks:alerts_integration": {},
         "pr-checks:migration_chain_from_empty": {},
         "pr-checks:full_test": {},
+        "pr-checks:shared-contracts-pin": {},
         "security:audit": {},
         "security:rate_limit_taskdef": {},
         "security:rds_boundary": {},
@@ -94,7 +146,7 @@
         "security:audit": {}
       },
       "cannotMirror": {
-        "vendored-upstream-drift:drift": "Compares the vendored engine against Installers@main over the network with a token. Cross-repo and scheduled, not a PR gate.",
+        "vendored-upstream-drift:drift": "Uses INSTALLERS_READ_TOKEN for two daily-and-dispatch checks: the vendored engine and both detector vocabularies, each against Installers@main. The vocabulary leg compares producer to Frontend only; Backend is invisible here. Frontend pr-checks is workflow_dispatch-only, so neither workflow gates a merge.",
         "deploy-frontend-ecs:required_checks": "Reads GitHub check runs for the SHA, same as Backend's.",
         "deploy-frontend-ecs:deploy": "OIDC role + ECR + ECS. Deploys stay on GitHub.",
         "render-harness:gate": "Needs three processes at once -- headless Chrome over CDP, next dev --webpack, and the fixture stub -- and takes about ten minutes for 33 shots. The CI image carries no browser, and adding Chromium to ci/images/node20.Dockerfile to run it on every PR is a cost decision nobody has taken. It is also the wrong shape for a PR gate: it produces EVIDENCE about how the console looks around absent data, against a wire state the author chose, and its own README says a green run proves nothing about whether a Backend ever produces that state. It is run deliberately, per wave, and banked -- see .plans/m47a-20260822/v2-waves/artifacts/w5/. The one part of it that IS cheap and deterministic runs per-PR through Frontend's own pretest instead: check:render-harness-markers, which pins the string the harness greps for to recognise a crashed page. Without that pin, renaming a log line in app/error.tsx silently stops the harness noticing that a page crashed at all."
@@ -194,6 +246,7 @@
       "path": "Installers",
       "defaultImage": "go124",
       "volume": "devoidci-installers",
+      "localGateWorkflows": ["pr-checks"],
       "mirrored": {
         "pr-checks:hot-path-audit-imports": {},
         "pr-checks:scanner-parity": {},
@@ -204,6 +257,7 @@
         "pr-checks:release-workflow-contract": {},
         "pr-checks:self-update-lane": {},
         "pr-checks:macos-legacy-identity": {},
+        "pr-checks:uninstall-honesty": {},
         "pr-checks:toolrisk-lane": {},
         "holdout-score:score": {},
         "finding-b-e2e:shim-enforcement": {},

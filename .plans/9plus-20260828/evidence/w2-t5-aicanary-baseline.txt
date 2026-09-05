@@ -1,0 +1,141 @@
+=== RUN   TestDecideLaunchContainment
+=== RUN   TestDecideLaunchContainment/admin-only_writable_runs_as-is
+=== RUN   TestDecideLaunchContainment/leaf_writable_by_the_target_user_de-elevates
+=== RUN   TestDecideLaunchContainment/ancestor_replaceable_by_the_target_user_de-elevates
+=== RUN   TestDecideLaunchContainment/leaf_and_ancestor_both_the_target_user_de-elevates
+=== RUN   TestDecideLaunchContainment/leaf_writable_by_a_foreign_non-admin_refuses
+=== RUN   TestDecideLaunchContainment/ancestor_replaceable_by_a_foreign_non-admin_refuses
+=== RUN   TestDecideLaunchContainment/target_user_on_the_leaf_does_not_excuse_a_foreign_ancestor
+=== RUN   TestDecideLaunchContainment/a_second_writer_alongside_the_target_user_refuses
+=== RUN   TestDecideLaunchContainment/world-writable_refuses_even_with_a_target_user
+=== RUN   TestDecideLaunchContainment/an_unnamed_writer_refuses
+=== RUN   TestDecideLaunchContainment/unreadable_dominates_a_clean_writer_set
+=== RUN   TestDecideLaunchContainment/unreadable_dominates_the_de-elevation_case
+=== RUN   TestDecideLaunchContainment/user-writable_with_no_session_refuses_with_its_own_reason
+=== RUN   TestDecideLaunchContainment/user-writable_with_an_unobtainable_token_keeps_that_reason
+=== RUN   TestDecideLaunchContainment/user-writable_on_a_platform_that_cannot_de-elevate_says_so
+=== RUN   TestDecideLaunchContainment/an_unexplained_missing_target_still_refuses
+=== RUN   TestDecideLaunchContainment/SID_comparison_is_case-insensitive
+=== RUN   TestDecideLaunchContainment/admin-only_writable_runs_as-is_even_with_no_session_at_all
+--- PASS: TestDecideLaunchContainment (0.00s)
+    --- PASS: TestDecideLaunchContainment/admin-only_writable_runs_as-is (0.00s)
+    --- PASS: TestDecideLaunchContainment/leaf_writable_by_the_target_user_de-elevates (0.00s)
+    --- PASS: TestDecideLaunchContainment/ancestor_replaceable_by_the_target_user_de-elevates (0.00s)
+    --- PASS: TestDecideLaunchContainment/leaf_and_ancestor_both_the_target_user_de-elevates (0.00s)
+    --- PASS: TestDecideLaunchContainment/leaf_writable_by_a_foreign_non-admin_refuses (0.00s)
+    --- PASS: TestDecideLaunchContainment/ancestor_replaceable_by_a_foreign_non-admin_refuses (0.00s)
+    --- PASS: TestDecideLaunchContainment/target_user_on_the_leaf_does_not_excuse_a_foreign_ancestor (0.00s)
+    --- PASS: TestDecideLaunchContainment/a_second_writer_alongside_the_target_user_refuses (0.00s)
+    --- PASS: TestDecideLaunchContainment/world-writable_refuses_even_with_a_target_user (0.00s)
+    --- PASS: TestDecideLaunchContainment/an_unnamed_writer_refuses (0.00s)
+    --- PASS: TestDecideLaunchContainment/unreadable_dominates_a_clean_writer_set (0.00s)
+    --- PASS: TestDecideLaunchContainment/unreadable_dominates_the_de-elevation_case (0.00s)
+    --- PASS: TestDecideLaunchContainment/user-writable_with_no_session_refuses_with_its_own_reason (0.00s)
+    --- PASS: TestDecideLaunchContainment/user-writable_with_an_unobtainable_token_keeps_that_reason (0.00s)
+    --- PASS: TestDecideLaunchContainment/user-writable_on_a_platform_that_cannot_de-elevate_says_so (0.00s)
+    --- PASS: TestDecideLaunchContainment/an_unexplained_missing_target_still_refuses (0.00s)
+    --- PASS: TestDecideLaunchContainment/SID_comparison_is_case-insensitive (0.00s)
+    --- PASS: TestDecideLaunchContainment/admin-only_writable_runs_as-is_even_with_no_session_at_all (0.00s)
+=== RUN   TestVerifyExecutableTrustDrivesTheDecisionWhileElevated
+=== RUN   TestVerifyExecutableTrustDrivesTheDecisionWhileElevated/user-writable_de-elevates_to_that_user
+=== RUN   TestVerifyExecutableTrustDrivesTheDecisionWhileElevated/foreign_writer_refuses_with_its_own_reason
+=== RUN   TestVerifyExecutableTrustDrivesTheDecisionWhileElevated/no_session_refuses_and_never_runs_as_the_elevated_token
+=== RUN   TestVerifyExecutableTrustDrivesTheDecisionWhileElevated/admin-only_still_runs_as-is
+--- PASS: TestVerifyExecutableTrustDrivesTheDecisionWhileElevated (0.02s)
+    --- PASS: TestVerifyExecutableTrustDrivesTheDecisionWhileElevated/user-writable_de-elevates_to_that_user (0.00s)
+    --- PASS: TestVerifyExecutableTrustDrivesTheDecisionWhileElevated/foreign_writer_refuses_with_its_own_reason (0.00s)
+    --- PASS: TestVerifyExecutableTrustDrivesTheDecisionWhileElevated/no_session_refuses_and_never_runs_as_the_elevated_token (0.00s)
+    --- PASS: TestVerifyExecutableTrustDrivesTheDecisionWhileElevated/admin-only_still_runs_as-is (0.00s)
+=== RUN   TestRunNeverExecutesAThingItRefused
+--- PASS: TestRunNeverExecutesAThingItRefused (0.26s)
+=== RUN   TestPlatformSeamsAreNeverAssignedInProduction
+--- PASS: TestPlatformSeamsAreNeverAssignedInProduction (0.02s)
+=== RUN   TestReasonCodesAreClosedDistinctAndTransportable
+--- PASS: TestReasonCodesAreClosedDistinctAndTransportable (0.00s)
+=== RUN   TestAicanaryHelperProcess
+--- PASS: TestAicanaryHelperProcess (0.00s)
+=== RUN   TestRun_IOGraceDefaultsToFiveSecondsWhenUnset
+--- PASS: TestRun_IOGraceDefaultsToFiveSecondsWhenUnset (0.00s)
+=== RUN   TestRun_IOGraceIsBoundedBelowTheTimeout
+=== RUN   TestRun_IOGraceIsBoundedBelowTheTimeout/equal_to_the_timeout_is_rejected
+=== RUN   TestRun_IOGraceIsBoundedBelowTheTimeout/greater_than_the_timeout_is_rejected
+=== RUN   TestRun_IOGraceIsBoundedBelowTheTimeout/negative_is_rejected_rather_than_treated_as_unset
+--- PASS: TestRun_IOGraceIsBoundedBelowTheTimeout (0.00s)
+    --- PASS: TestRun_IOGraceIsBoundedBelowTheTimeout/equal_to_the_timeout_is_rejected (0.00s)
+    --- PASS: TestRun_IOGraceIsBoundedBelowTheTimeout/greater_than_the_timeout_is_rejected (0.00s)
+    --- PASS: TestRun_IOGraceIsBoundedBelowTheTimeout/negative_is_rejected_rather_than_treated_as_unset (0.00s)
+=== RUN   TestRun_DefaultGraceNeverInvalidatesAShortTimeout
+--- PASS: TestRun_DefaultGraceNeverInvalidatesAShortTimeout (0.00s)
+=== RUN   TestRun_SlowPipeCloseAfterCleanExitIsNotALaunchFailure
+=== RUN   TestRun_SlowPipeCloseAfterCleanExitIsNotALaunchFailure/raised_grace:_a_clean_exit_is_a_clean_observation
+=== PAUSE TestRun_SlowPipeCloseAfterCleanExitIsNotALaunchFailure/raised_grace:_a_clean_exit_is_a_clean_observation
+=== RUN   TestRun_SlowPipeCloseAfterCleanExitIsNotALaunchFailure/default_grace:_the_same_launch_is_still_reported_as_a_failure
+=== PAUSE TestRun_SlowPipeCloseAfterCleanExitIsNotALaunchFailure/default_grace:_the_same_launch_is_still_reported_as_a_failure
+=== CONT  TestRun_SlowPipeCloseAfterCleanExitIsNotALaunchFailure/raised_grace:_a_clean_exit_is_a_clean_observation
+=== CONT  TestRun_SlowPipeCloseAfterCleanExitIsNotALaunchFailure/default_grace:_the_same_launch_is_still_reported_as_a_failure
+--- PASS: TestRun_SlowPipeCloseAfterCleanExitIsNotALaunchFailure (0.00s)
+    --- PASS: TestRun_SlowPipeCloseAfterCleanExitIsNotALaunchFailure/default_grace:_the_same_launch_is_still_reported_as_a_failure (6.42s)
+    --- PASS: TestRun_SlowPipeCloseAfterCleanExitIsNotALaunchFailure/raised_grace:_a_clean_exit_is_a_clean_observation (9.52s)
+=== RUN   TestRunRefusesBeforeItLaunchesAnything
+--- PASS: TestRunRefusesBeforeItLaunchesAnything (0.00s)
+=== RUN   TestGateIsWiredIntoRun
+--- PASS: TestGateIsWiredIntoRun (0.01s)
+=== RUN   TestElevationDecidesTheOutcome
+--- PASS: TestElevationDecidesTheOutcome (0.04s)
+=== RUN   TestGateHasNoOptOut
+--- PASS: TestGateHasNoOptOut (0.00s)
+=== RUN   TestSystemPathsAreTrusted
+--- PASS: TestSystemPathsAreTrusted (0.02s)
+=== RUN   TestUserWritablePathIsRefused
+--- PASS: TestUserWritablePathIsRefused (0.02s)
+=== RUN   TestMissingPathIsRefused
+--- PASS: TestMissingPathIsRefused (0.02s)
+=== RUN   TestTrustedWriterSetIsExactlyThreePrincipals
+--- PASS: TestTrustedWriterSetIsExactlyThreePrincipals (0.00s)
+=== RUN   TestResolveTargetUserAnswersClosedly
+    launch_windows_test.go:37: resolveTargetUser on this host: id="" reason="canary-host-user-token-unavailable"
+--- PASS: TestResolveTargetUserAnswersClosedly (0.01s)
+=== RUN   TestUserEnvironmentBlockIsTheUsersOwnEnvironment
+--- PASS: TestUserEnvironmentBlockIsTheUsersOwnEnvironment (0.01s)
+=== RUN   TestDecodeEnvBlockStopsAtTheDoubleNul
+--- PASS: TestDecodeEnvBlockStopsAtTheDoubleNul (0.00s)
+=== RUN   TestEncodeEnvBlockDropsUnrepresentableEntries
+--- PASS: TestEncodeEnvBlockDropsUnrepresentableEntries (0.00s)
+=== RUN   TestPrompt_CarriesTheFixedTokenAndIsRecognized
+--- PASS: TestPrompt_CarriesTheFixedTokenAndIsRecognized (0.00s)
+=== RUN   TestPrompt_CorrelationIsBoundedAndOptional
+--- PASS: TestPrompt_CorrelationIsBoundedAndOptional (0.00s)
+=== RUN   TestRun_RefusesAnUnboundedProbe
+--- PASS: TestRun_RefusesAnUnboundedProbe (0.00s)
+=== RUN   TestRun_KillsAHostThatOutlivesItsBound
+--- PASS: TestRun_KillsAHostThatOutlivesItsBound (0.57s)
+=== RUN   TestRun_NonZeroExitIsAnObservationNotAnError
+--- PASS: TestRun_NonZeroExitIsAnObservationNotAnError (0.20s)
+=== RUN   TestMergeEnv_OverrideReplacesTheInheritedValue
+--- PASS: TestMergeEnv_OverrideReplacesTheInheritedValue (0.00s)
+=== RUN   TestBoundedBuffer_CapsCapture
+--- PASS: TestBoundedBuffer_CapsCapture (0.00s)
+=== RUN   TestPluginCanary_ClaudeNpmPostinstall_NeverExecuted
+--- PASS: TestPluginCanary_ClaudeNpmPostinstall_NeverExecuted (0.51s)
+=== RUN   TestPluginCanary_CommandSourceMcp_NeverLaunched
+--- PASS: TestPluginCanary_CommandSourceMcp_NeverLaunched (0.35s)
+=== RUN   TestPluginCanary_GitArchivePluginActivation_NeverActivated
+--- PASS: TestPluginCanary_GitArchivePluginActivation_NeverActivated (0.30s)
+=== RUN   TestPluginCanary_CodexPluginLifecycleActivation_NeverExecuted
+--- PASS: TestPluginCanary_CodexPluginLifecycleActivation_NeverExecuted (0.47s)
+=== RUN   TestPluginCanary_SkillGateResolveDoesNotExecute
+--- PASS: TestPluginCanary_SkillGateResolveDoesNotExecute (0.52s)
+=== RUN   TestPluginGateDefeat_ClaudeNpmSource_LifecycleNeverRuns
+--- PASS: TestPluginGateDefeat_ClaudeNpmSource_LifecycleNeverRuns (0.68s)
+=== RUN   TestPluginGateDefeat_ClaudeCommandSource_CommandNeverRuns
+--- PASS: TestPluginGateDefeat_ClaudeCommandSource_CommandNeverRuns (0.59s)
+=== RUN   TestPluginGateDefeat_GitSourceActivation_NeverActivates
+--- PASS: TestPluginGateDefeat_GitSourceActivation_NeverActivates (1.20s)
+=== RUN   TestPluginGateDefeat_CodexPlugin_NeitherLifecycleNorActivation
+--- PASS: TestPluginGateDefeat_CodexPlugin_NeitherLifecycleNorActivation (1.15s)
+=== RUN   TestPluginGateDefeat_UnsetPostureIsByteIdenticalToNoGate
+--- PASS: TestPluginGateDefeat_UnsetPostureIsByteIdenticalToNoGate (0.03s)
+=== RUN   TestPluginGateDefeat_NearMissIsNotRecognized
+--- PASS: TestPluginGateDefeat_NearMissIsNotRecognized (0.00s)
+PASS
+ok  	github.com/codefense/cli-wrapper/internal/aicanary	18.583s

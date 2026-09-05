@@ -168,7 +168,13 @@ function canonicalize(value: unknown, seen: WeakSet<object>): string {
   if (Array.isArray(value)) {
     if (seen.has(value)) throw new Error('canonicalizeJcs: cycle detected');
     seen.add(value);
-    const parts = value.map((v) => canonicalize(v, seen));
+    const parts: string[] = [];
+    for (let index = 0; index < value.length; index++) {
+      if (!Object.prototype.hasOwnProperty.call(value, index)) {
+        throw new Error('canonicalizeJcs: undefined is not JSON-representable');
+      }
+      parts.push(canonicalize(value[index], seen));
+    }
     seen.delete(value);
     return '[' + parts.join(',') + ']';
   }
@@ -211,6 +217,13 @@ function compareCodeUnits(a: string, b: string): number {
   return a.length - b.length;
 }
 
+function isUnicodeNoncharacter(codePoint: number): boolean {
+  return (
+    (codePoint >= 0xfdd0 && codePoint <= 0xfdef) ||
+    (codePoint & 0xffff) >= 0xfffe
+  );
+}
+
 function canonicalizeString(s: string): string {
   // RFC 8785 §3.2.2.2: serialize per RFC 8259 §7 minimally — escape
   // backslash, double-quote, and U+0000..U+001F. Use the short escape forms
@@ -232,6 +245,12 @@ function canonicalizeString(s: string): string {
           `canonicalizeJcs: lone high surrogate at index ${i}; RFC 8785 requires valid Unicode`,
         );
       }
+      const codePoint = 0x10000 + (c - 0xd800) * 0x400 + (next - 0xdc00);
+      if (isUnicodeNoncharacter(codePoint)) {
+        throw new Error(
+          `canonicalizeJcs: Unicode noncharacter U+${codePoint.toString(16).toUpperCase()} is not permitted by I-JSON`,
+        );
+      }
       out += s.charAt(i) + s.charAt(i + 1);
       i++;
       continue;
@@ -239,6 +258,11 @@ function canonicalizeString(s: string): string {
     if (c >= 0xdc00 && c <= 0xdfff) {
       throw new Error(
         `canonicalizeJcs: lone low surrogate at index ${i}; RFC 8785 requires valid Unicode`,
+      );
+    }
+    if (isUnicodeNoncharacter(c)) {
+      throw new Error(
+        `canonicalizeJcs: Unicode noncharacter U+${c.toString(16).toUpperCase()} is not permitted by I-JSON`,
       );
     }
     if (c === 0x22) {

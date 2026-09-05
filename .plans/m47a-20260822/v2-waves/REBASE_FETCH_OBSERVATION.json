@@ -1,25 +1,25 @@
 {
-  "fetchedAt": "2026-09-02",
+  "fetchedAt": "2026-09-05",
   "repos": {
     "Backend": {
-      "before": "eb5e2ef870e0274301733c24ed8ad287853aaf0b",
-      "after": "eb5e2ef870e0274301733c24ed8ad287853aaf0b"
+      "before": "8d4c3b2c569c42601ded25449727ecb1f6f8c88e",
+      "after": "8d4c3b2c569c42601ded25449727ecb1f6f8c88e"
     },
     "Frontend": {
-      "before": "3e6b739ba15c30d5b67818b8d360cb5f66519014",
-      "after": "3e6b739ba15c30d5b67818b8d360cb5f66519014"
+      "before": "7689011e10f2ea7a3ec4a426465ad3a46a325135",
+      "after": "7689011e10f2ea7a3ec4a426465ad3a46a325135"
     },
     "Installers": {
-      "before": "48c3d2eb36a73c53aec17fbbfe03ae667fffcd18",
-      "after": "48c3d2eb36a73c53aec17fbbfe03ae667fffcd18"
+      "before": "521e511a01c774fcb40bb58907b99e7fc0a86cf6",
+      "after": "521e511a01c774fcb40bb58907b99e7fc0a86cf6"
     },
     "Ceragon-Intelligence": {
-      "before": "ce28c62b8f3cb4cc228be8ae096b4204ceeaaeb5",
-      "after": "ce28c62b8f3cb4cc228be8ae096b4204ceeaaeb5"
+      "before": "b7e9f27c7d030d99a45a277fd40727967799f29c",
+      "after": "b7e9f27c7d030d99a45a277fd40727967799f29c"
     },
     "Static-Worker": {
-      "before": "bc96695c941a6a6328fcc8ad9c2959089acbba37",
-      "after": "bc96695c941a6a6328fcc8ad9c2959089acbba37"
+      "before": "137f34f770e2c5324d0b4cde61a5fa214111dc3a",
+      "after": "137f34f770e2c5324d0b4cde61a5fa214111dc3a"
     },
     "Sandbox-Worker": {
       "before": "496073fe3887e1605610798dbed9852824a8b047",

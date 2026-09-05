@@ -181,10 +181,8 @@ validates it.
 
 | check | what one repo cannot see |
 |---|---|
-| `toolrisk-vocab-parity` | The tool-risk detector vocabulary is one contract living as three hand-copied files: `Installers/parity-vectors/`, `Backend/packages/shared-contracts/`, `Frontend/types/vendored/`. Each repo's guard compares that repo against **that repo's own copy**, so a class added in the agent and never copied leaves all three green. |
-| `toolrisk-vocab-parity-selftest` | The mutation proof for the check above. |
-| `claim-contract` | Fifteen sentences overstate what this programme can prove. The list lives in the plan's goal statement and, by design, a second time as data in Wave 8 Task 11's Go renderer -- two artifacts so neither can be edited silently. No single repo can compare them, and no repo's CI reads the plan at all. It also scans any release note passed to it. |
-| `claim-contract-selftest` | The mutation proof for the check above. It is also the reason the guard is correct: its sixth case found that deleting one fence end marker merges two fences and exempts everything between them, which the guard had been passing. |
+| `detector-vocab-parity` | Tool-risk and DLP are two producer-owned vocabularies, each copied into Installers, Backend, and Frontend. This is the only six-file, three-repository comparison; Frontend's scheduled check sees only producer + Frontend. |
+| `detector-vocab-parity-selftest` | Mutation proof for both schemas, including fabricated producer-only classes and fail-closed missing-source cases. |
 
 ### Why the per-repo guards cannot cover it
 

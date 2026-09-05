@@ -1,15 +1,19 @@
 #!/usr/bin/env node
 /**
- * CROSS-REPO DRIFT CHECK for the tool-risk detector vocabulary.
+ * CROSS-REPO DRIFT CHECK for the tool-risk and DLP detector vocabularies.
  *
  * ── What this exists to catch ────────────────────────────────────────────────
  *
- * The list of "risky things an AI agent might do" is one vocabulary living as
- * three hand-copied files in three separate git repositories:
+ * Each governed detector vocabulary lives as three hand-copied files in three
+ * separate git repositories:
  *
  *   producer  Installers/parity-vectors/toolrisk-classes.v1.json
  *   consumer  Backend/packages/shared-contracts/toolrisk-classes.v1.json
  *   consumer  Frontend/types/vendored/toolrisk-classes.v1.json
+ *
+ *   producer  Installers/parity-vectors/dlp-classes.v1.json
+ *   consumer  Backend/packages/shared-contracts/dlp-classes.v1.json
+ *   consumer  Frontend/types/vendored/dlp-classes.v1.json
  *
  * A new high-severity class added in the agent and never copied across starts
  * interrupting developers fleet-wide with NO CONSOLE CONTROL TO TURN IT OFF: an
@@ -78,12 +82,15 @@
  *   TOOLRISK_VOCAB_INSTALLERS=<spec>
  *   TOOLRISK_VOCAB_BACKEND=<spec>
  *   TOOLRISK_VOCAB_FRONTEND=<spec>
+ *   DLP_VOCAB_INSTALLERS=<spec>
+ *   DLP_VOCAB_BACKEND=<spec>
+ *   DLP_VOCAB_FRONTEND=<spec>
  * A bare ref must be written `@<ref>` (e.g. `@HEAD`) so it cannot be confused
  * with a relative path.
  *
  * Exit status:
- *   0  PASS         all three compared, and they agree
- *   1  DRIFT        all three compared, and they do not agree
+ *   0  PASS         all six files compared, and each three-copy vocabulary agrees
+ *   1  DRIFT        all six files compared, and at least one vocabulary disagrees
  *   2  NOT CHECKED  the comparison could not be made
  *   3  usage error
  */
@@ -97,7 +104,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const CI_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 /**
- * THE THREE COPIES.
+ * THE TWO VOCABULARIES AND THEIR THREE COPIES EACH.
  *
  * These paths are the one thing that cannot be derived: there is no registry
  * anywhere in the workspace that records where the vocabulary was copied to.
@@ -106,8 +113,24 @@ const CI_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..');
  * here. `role` is informational: it lets the report say "the producer has it and
  * the consumers do not", which is the direction that hurts.
  */
+export const VOCABULARIES = Object.freeze({
+  toolrisk: Object.freeze({
+    label: 'tool-risk',
+    expectedFormat: 'ceragon.ai-security.toolrisk-class-catalog',
+    minFormatVersion: 2,
+    shape: 'tiers',
+  }),
+  dlp: Object.freeze({
+    label: 'DLP',
+    expectedFormat: 'ceragon.ai-security.dlp-class-catalog',
+    minFormatVersion: 1,
+    shape: 'catalog',
+  }),
+});
+
 export const COPIES = [
   {
+    vocabulary: 'toolrisk',
     key: 'Installers',
     role: 'producer',
     repoDir: 'Installers',
@@ -116,6 +139,7 @@ export const COPIES = [
     regenerate: 'TOOLRISK_CLASSES_UPDATE=1 go test ./internal/toolrisk/',
   },
   {
+    vocabulary: 'toolrisk',
     key: 'Backend',
     role: 'consumer',
     repoDir: 'Backend',
@@ -124,6 +148,7 @@ export const COPIES = [
     regenerate: 'copy the producer file here, then update AI_TOOL_RISK_*_CLASSES',
   },
   {
+    vocabulary: 'toolrisk',
     key: 'Frontend',
     role: 'consumer',
     repoDir: 'Frontend',
@@ -131,12 +156,34 @@ export const COPIES = [
     env: 'TOOLRISK_VOCAB_FRONTEND',
     regenerate: 'copy the producer file here, then update AI_TOOL_RISK_CLASSES + AI_TOOL_RISK_CLASS_META',
   },
+  {
+    vocabulary: 'dlp',
+    key: 'Installers',
+    role: 'producer',
+    repoDir: 'Installers',
+    filePath: 'parity-vectors/dlp-classes.v1.json',
+    env: 'DLP_VOCAB_INSTALLERS',
+    regenerate: 'DLP_CLASSES_UPDATE=1 go test ./internal/dlp/',
+  },
+  {
+    vocabulary: 'dlp',
+    key: 'Backend',
+    role: 'consumer',
+    repoDir: 'Backend',
+    filePath: 'packages/shared-contracts/dlp-classes.v1.json',
+    env: 'DLP_VOCAB_BACKEND',
+    regenerate: 'copy the producer file here, then update AI_SECURITY_DLP_CLASSES + metadata',
+  },
+  {
+    vocabulary: 'dlp',
+    key: 'Frontend',
+    role: 'consumer',
+    repoDir: 'Frontend',
+    filePath: 'types/vendored/dlp-classes.v1.json',
+    env: 'DLP_VOCAB_FRONTEND',
+    regenerate: 'copy the producer file here, then update AI_DLP_CLASSES + AI_DLP_CLASS_META',
+  },
 ];
-
-/** The schema tag, not part of the vocabulary. A copy that is not this document is not comparable. */
-const EXPECTED_FORMAT = 'ceragon.ai-security.toolrisk-class-catalog';
-/** formatVersion 2 added the `wire` block. Older documents lack fields this compares. */
-const MIN_FORMAT_VERSION = 2;
 
 const E = String.fromCharCode(27);
 const useColour = process.stdout.isTTY && !process.env.NO_COLOR;
@@ -175,6 +222,19 @@ export function canonicalCatalogDigest(tiers) {
   return `sha256:${createHash('sha256').update(sb, 'utf8').digest('hex')}`;
 }
 
+/** Reimplementation of Go's `canonicalDlpCatalogDigest` (class_catalog_test.go). */
+export function canonicalDlpCatalogDigest(catalog) {
+  let body = '';
+  for (const row of [...catalog].sort((a, b) => a.class.localeCompare(b.class))) {
+    body +=
+      `${row.class}\n` +
+      `  family=${row.family}\n` +
+      `  confidence=${row.confidence}\n` +
+      `  defaultAction=${row.defaultAction}\n`;
+  }
+  return `sha256:${createHash('sha256').update(body, 'utf8').digest('hex')}`;
+}
+
 /** Parse `path`, `@ref`, or `path@ref`. */
 function parseSourceSpec(spec) {
   const at = spec.lastIndexOf('@');
@@ -209,6 +269,7 @@ function isGitRepo(dir) {
  */
 function resolveCopy(copy, opts) {
   const out = {
+    vocabulary: copy.vocabulary,
     key: copy.key,
     role: copy.role,
     filePath: copy.filePath,
@@ -306,46 +367,85 @@ function interpret(copy) {
   if (doc === null || typeof doc !== 'object' || Array.isArray(doc)) {
     return { problem: `${copy.sourceLabel}: expected a JSON object` };
   }
-  if (doc.format !== EXPECTED_FORMAT) {
+  const definition = VOCABULARIES[copy.vocabulary];
+  if (!definition) return { problem: `${copy.sourceLabel}: unknown vocabulary '${copy.vocabulary}'` };
+  if (doc.format !== definition.expectedFormat) {
     return {
-      problem: `${copy.sourceLabel}: format is ${JSON.stringify(doc.format)}, expected ${JSON.stringify(EXPECTED_FORMAT)}`,
+      problem: `${copy.sourceLabel}: format is ${JSON.stringify(doc.format)}, expected ${JSON.stringify(definition.expectedFormat)}`,
     };
   }
-  if (!Number.isInteger(doc.formatVersion) || doc.formatVersion < MIN_FORMAT_VERSION) {
+  if (!Number.isInteger(doc.formatVersion) || doc.formatVersion < definition.minFormatVersion) {
     return {
-      problem: `${copy.sourceLabel}: formatVersion is ${JSON.stringify(doc.formatVersion)}, expected an integer >= ${MIN_FORMAT_VERSION}`,
+      problem: `${copy.sourceLabel}: formatVersion is ${JSON.stringify(doc.formatVersion)}, expected an integer >= ${definition.minFormatVersion}`,
     };
   }
   if (!Array.isArray(doc.classes) || doc.classes.some((x) => typeof x !== 'string')) {
     return { problem: `${copy.sourceLabel}: 'classes' is not an array of strings` };
   }
-  if (doc.tiers === null || typeof doc.tiers !== 'object' || Array.isArray(doc.tiers)) {
-    return { problem: `${copy.sourceLabel}: 'tiers' is not an object` };
-  }
-  for (const [tier, names] of Object.entries(doc.tiers)) {
-    if (!Array.isArray(names) || names.some((x) => typeof x !== 'string')) {
-      return { problem: `${copy.sourceLabel}: tier '${tier}' is not an array of strings` };
-    }
-  }
-
-  const tierOf = new Map();
+  const descriptionOf = new Map();
   const duplicated = [];
-  for (const [tier, names] of Object.entries(doc.tiers)) {
-    for (const cls of names) {
-      if (tierOf.has(cls) && tierOf.get(cls) !== tier) duplicated.push(cls);
-      tierOf.set(cls, tier);
+
+  let computedDigest;
+  let descriptionName;
+  if (definition.shape === 'tiers') {
+    if (doc.tiers === null || typeof doc.tiers !== 'object' || Array.isArray(doc.tiers)) {
+      return { problem: `${copy.sourceLabel}: 'tiers' is not an object` };
     }
+    for (const [tier, names] of Object.entries(doc.tiers)) {
+      if (!Array.isArray(names) || names.some((x) => typeof x !== 'string')) {
+        return { problem: `${copy.sourceLabel}: tier '${tier}' is not an array of strings` };
+      }
+      for (const cls of names) {
+        if (descriptionOf.has(cls)) duplicated.push(cls);
+        descriptionOf.set(cls, tier);
+      }
+    }
+    computedDigest = canonicalCatalogDigest(doc.tiers);
+    descriptionName = 'tier';
+  } else {
+    if (!Array.isArray(doc.catalog)) {
+      return { problem: `${copy.sourceLabel}: 'catalog' is not an array` };
+    }
+    for (const [index, row] of doc.catalog.entries()) {
+      if (
+        row === null ||
+        typeof row !== 'object' ||
+        Array.isArray(row) ||
+        typeof row.class !== 'string' ||
+        typeof row.family !== 'string' ||
+        !Number.isInteger(row.confidence) ||
+        typeof row.defaultAction !== 'string'
+      ) {
+        return {
+          problem:
+            `${copy.sourceLabel}: catalog row ${index} must have string class/family/defaultAction ` +
+            'and integer confidence',
+        };
+      }
+      if (descriptionOf.has(row.class)) duplicated.push(row.class);
+      descriptionOf.set(
+        row.class,
+        JSON.stringify({
+          family: row.family,
+          confidence: row.confidence,
+          defaultAction: row.defaultAction,
+        }),
+      );
+    }
+    computedDigest = canonicalDlpCatalogDigest(doc.catalog);
+    descriptionName = 'catalog row';
   }
 
   return {
     text,
     doc,
     classes: new Set(doc.classes),
-    tierOf,
+    descriptionOf,
+    descriptionName,
     duplicated,
     classCount: doc.classCount,
     recordedDigest: doc.sha256,
-    computedDigest: canonicalCatalogDigest(doc.tiers),
+    computedDigest,
     wire: doc.wire,
   };
 }
@@ -354,20 +454,24 @@ function interpret(copy) {
 function selfConsistencyProblems(copy, view) {
   const out = [];
   const listed = [...view.classes].sort();
-  const grouped = [...view.tierOf.keys()].sort();
+  const described = [...view.descriptionOf.keys()].sort();
   if (view.doc.classes.length !== view.classes.size) {
     out.push(`${copy.key}: 'classes' contains duplicate entries`);
   }
   if (view.duplicated.length) {
-    out.push(`${copy.key}: ${view.duplicated.sort().join(', ')} appear(s) in more than one tier`);
+    out.push(
+      `${copy.key}: ${view.duplicated.sort().join(', ')} appear(s) in more than one ${view.descriptionName}`,
+    );
   }
-  const onlyInClasses = listed.filter((x) => !view.tierOf.has(x));
-  const onlyInTiers = grouped.filter((x) => !view.classes.has(x));
+  const onlyInClasses = listed.filter((x) => !view.descriptionOf.has(x));
+  const onlyInDescriptions = described.filter((x) => !view.classes.has(x));
   if (onlyInClasses.length) {
-    out.push(`${copy.key}: in 'classes' but in no tier: ${onlyInClasses.join(', ')}`);
+    out.push(`${copy.key}: in 'classes' but in no ${view.descriptionName}: ${onlyInClasses.join(', ')}`);
   }
-  if (onlyInTiers.length) {
-    out.push(`${copy.key}: in a tier but not in 'classes': ${onlyInTiers.join(', ')}`);
+  if (onlyInDescriptions.length) {
+    out.push(
+      `${copy.key}: in a ${view.descriptionName} but not in 'classes': ${onlyInDescriptions.join(', ')}`,
+    );
   }
   if (view.classCount !== view.classes.size) {
     out.push(`${copy.key}: classCount says ${view.classCount}, 'classes' holds ${view.classes.size}`);
@@ -401,7 +505,7 @@ function firstDifference(a, b, leftName, rightName) {
  * THE CROSS COMPARISON. Every check below reads two or three different repos.
  * `resolved` is the output of resolveCopy for each entry in COPIES.
  */
-export function compare(resolved) {
+function compareVocabulary(resolved) {
   const blocked = resolved.filter((r) => r.problem);
   if (blocked.length) {
     return {
@@ -452,20 +556,26 @@ export function compare(resolved) {
     );
   }
 
-  // 2. SEVERITY. A class every repo knows, filed under a different tier in one of
-  //    them, means the console offers a control whose default contradicts what
-  //    the endpoint enforces.
+  // 2. PRODUCER ATTRIBUTES. A class every repo knows must carry the same tier or
+  //    catalog metadata in each copy.
   for (const cls of [...union].sort()) {
-    const tiers = new Map();
+    const descriptions = new Map();
     for (const r of resolved) {
-      const t = views.get(r.key).tierOf.get(cls);
-      if (t === undefined) continue;
-      if (!tiers.has(t)) tiers.set(t, []);
-      tiers.get(t).push(r.key);
+      const description = views.get(r.key).descriptionOf.get(cls);
+      if (description === undefined) continue;
+      if (!descriptions.has(description)) descriptions.set(description, []);
+      descriptions.get(description).push(r.key);
     }
-    if (tiers.size > 1) {
-      const parts = [...tiers.entries()].sort().map(([t, keys]) => `${keys.join('+')}=${t}`);
-      drift.push(`class '${cls}' has different severity tiers across repos: ${parts.join(', ')}`);
+    if (descriptions.size > 1) {
+      const parts = [...descriptions.entries()]
+        .sort()
+        .map(([description, keys]) => `${keys.join('+')}=${description}`);
+      const descriptionName = views.values().next().value.descriptionName;
+      drift.push(
+        `class '${cls}' has different ${
+          descriptionName === 'tier' ? 'severity tiers' : 'catalog metadata'
+        } across repos: ${parts.join(', ')}`,
+      );
     }
   }
 
@@ -508,6 +618,44 @@ export function compare(resolved) {
   return { status: drift.length ? 'DRIFT' : 'PASS', reasons: [], drift, views };
 }
 
+/** Compare each vocabulary only with copies carrying that vocabulary's exact schema tag. */
+export function compare(resolved) {
+  const byVocabulary = new Map();
+  for (const vocabulary of Object.keys(VOCABULARIES)) {
+    byVocabulary.set(
+      vocabulary,
+      compareVocabulary(resolved.filter((copy) => copy.vocabulary === vocabulary)),
+    );
+  }
+
+  const notChecked = [...byVocabulary.entries()].filter(([, result]) => result.status === 'NOT_CHECKED');
+  if (notChecked.length) {
+    return {
+      status: 'NOT_CHECKED',
+      reasons: notChecked.flatMap(([vocabulary, result]) =>
+        result.reasons.map((reason) => `[${vocabulary}] ${reason}`),
+      ),
+      drift: [],
+      byVocabulary,
+    };
+  }
+
+  const drift = [...byVocabulary.entries()].flatMap(([vocabulary, result]) =>
+    result.drift.map((item) => `[${vocabulary}] ${item}`),
+  );
+  const views = new Map();
+  for (const [vocabulary, result] of byVocabulary) {
+    for (const [repo, view] of result.views) views.set(`${vocabulary}:${repo}`, view);
+  }
+  return {
+    status: drift.length ? 'DRIFT' : 'PASS',
+    reasons: [],
+    drift,
+    views,
+    byVocabulary,
+  };
+}
+
 export function check(opts = {}) {
   const options = { root: opts.root || resolve(CI_DIR, '..'), ref: opts.ref || null };
   const resolved = COPIES.map((copy) => resolveCopy(copy, options));
@@ -516,49 +664,50 @@ export function check(opts = {}) {
 }
 
 function report(result, log) {
-  log(`\n${bold('tool-risk vocabulary -- cross-repo parity')}\n`);
+  log(`\n${bold('detector vocabularies -- cross-repo parity')}\n`);
   for (const r of result.resolved) {
     const where = r.problem ? red('UNAVAILABLE') : dim(r.sourceLabel);
-    log(`  ${r.key.padEnd(11)} ${dim(`(${r.role})`)} ${where}\n`);
-    log(`  ${' '.repeat(11)} ${dim(r.filePath)}\n`);
-    for (const n of r.notes) log(`  ${' '.repeat(11)} ${yellow(n)}\n`);
-    if (r.problem) log(`  ${' '.repeat(11)} ${red(r.problem)}\n`);
+    const identity = `${r.vocabulary}/${r.key}`;
+    log(`  ${identity.padEnd(24)} ${dim(`(${r.role})`)} ${where}\n`);
+    log(`  ${' '.repeat(24)} ${dim(r.filePath)}\n`);
+    for (const n of r.notes) log(`  ${' '.repeat(24)} ${yellow(n)}\n`);
+    if (r.problem) log(`  ${' '.repeat(24)} ${red(r.problem)}\n`);
   }
   log('\n');
 
   if (result.status === 'NOT_CHECKED') {
-    log(`${red('NOT CHECKED')} -- the three copies could not be compared.\n`);
+    log(`${red('NOT CHECKED')} -- all six files could not be compared.\n`);
     for (const reason of result.reasons) log(`  ${red('!')} ${reason}\n`);
     log(
       dim(
-        '\n  This is NOT a pass. The whole point of this check is comparing the three\n' +
-          '  repositories to each other; with a copy missing there is nothing to compare.\n' +
-          '  Point it at the checkouts with --root, --ref, or TOOLRISK_VOCAB_<REPO>.\n',
+        '\n  This is NOT a pass. Each vocabulary must be compared across all three\n' +
+          '  repositories; with a copy missing there is nothing to compare.\n' +
+          '  Point it at the checkouts with --root, --ref, or <VOCAB>_VOCAB_<REPO>.\n',
       ),
     );
     return;
   }
 
   if (result.status === 'DRIFT') {
-    log(`${red('DRIFT')} -- the detector vocabulary is not the same in all three repos.\n\n`);
+    log(`${red('DRIFT')} -- at least one detector vocabulary differs across its three repos.\n\n`);
     for (const d of result.drift) log(`  ${red('x')} ${d}\n`);
-    const producer = result.resolved.find((r) => r.role === 'producer');
-    log(
-      '\n' +
-        dim('  Fix: regenerate the producer vector, then copy it to both consumers.\n') +
-        dim(`    ${producer.key}: ${producer.regenerate}\n`),
-    );
-    for (const r of result.resolved.filter((x) => x.role === 'consumer')) {
-      log(dim(`    ${r.key}: ${r.regenerate}\n`));
+    log('\n' + dim('  Fix: regenerate each drifting producer vector, then copy it to both consumers.\n'));
+    for (const vocabulary of Object.keys(VOCABULARIES)) {
+      const copies = result.resolved.filter((copy) => copy.vocabulary === vocabulary);
+      const producer = copies.find((copy) => copy.role === 'producer');
+      log(dim(`    ${vocabulary}/${producer.key}: ${producer.regenerate}\n`));
+      for (const copy of copies.filter((item) => item.role === 'consumer')) {
+        log(dim(`    ${vocabulary}/${copy.key}: ${copy.regenerate}\n`));
+      }
     }
     return;
   }
 
-  const anyView = result.views.values().next().value;
-  log(
-    `${green('PASS')} -- all three repos carry the same ${anyView.classes.size} classes, ` +
-      `the same tiers, and the same wire key path.\n`,
-  );
+  for (const [vocabulary, vocabularyResult] of result.byVocabulary) {
+    const view = vocabularyResult.views.values().next().value;
+    log(`  ${VOCABULARIES[vocabulary].label}: ${view.classes.size} classes across 3 identical copies\n`);
+  }
+  log(`${green('PASS')} -- 2 vocabularies x 3 copies = 6 files agree exactly.\n`);
 }
 
 const EXIT = { PASS: 0, DRIFT: 1, NOT_CHECKED: 2 };
@@ -591,6 +740,7 @@ function main(argv) {
           reasons: result.reasons,
           drift: result.drift,
           sources: result.resolved.map((r) => ({
+            vocabulary: r.vocabulary,
             repo: r.key,
             role: r.role,
             file: r.filePath,

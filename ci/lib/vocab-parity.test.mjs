@@ -24,7 +24,12 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { COPIES, canonicalCatalogDigest, check } from './vocab-parity.mjs';
+import {
+  COPIES,
+  canonicalCatalogDigest,
+  canonicalDlpCatalogDigest,
+  check,
+} from './vocab-parity.mjs';
 
 const CI_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SCRIPT = join(CI_DIR, 'lib', 'vocab-parity.mjs');
@@ -58,15 +63,22 @@ function assert(cond, message) {
 // ── the real document, read the same way the checker reads it ────────────────
 
 const live = check();
-if (!live.resolved[0].bytes) {
-  process.stderr.write(
-    `${red('CANNOT RUN')} -- the real Installers vector could not be read ` +
-      `(${live.resolved[0].problem}).\nThis suite derives its fixtures from it and refuses to ` +
-      'run against a hand-typed substitute.\n',
+function producerBytes(vocabulary) {
+  const producer = live.resolved.find(
+    (copy) => copy.vocabulary === vocabulary && copy.role === 'producer',
   );
-  process.exit(1);
+  if (!producer?.bytes) {
+    process.stderr.write(
+      `${red('CANNOT RUN')} -- the real ${vocabulary} Installers vector could not be read ` +
+        `(${producer?.problem || 'producer copy was not registered'}).\n` +
+        'This suite derives its fixtures from it and refuses to run against a hand-typed substitute.\n',
+    );
+    process.exit(1);
+  }
+  return producer.bytes;
 }
-const BASE = JSON.parse(live.resolved[0].bytes.toString('utf8'));
+const BASE = JSON.parse(producerBytes('toolrisk').toString('utf8'));
+const DLP_BASE = JSON.parse(producerBytes('dlp').toString('utf8'));
 
 // ── fixture helpers ──────────────────────────────────────────────────────────
 
@@ -94,6 +106,19 @@ function addClass(doc, cls, tier) {
   return reseal(doc);
 }
 
+function resealDlp(doc) {
+  doc.catalog = [...doc.catalog].sort((a, b) => a.class.localeCompare(b.class));
+  doc.classes = doc.catalog.map((row) => row.class);
+  doc.classCount = doc.classes.length;
+  doc.sha256 = canonicalDlpCatalogDigest(doc.catalog);
+  return doc;
+}
+
+function addDlpClass(doc, row) {
+  doc.catalog.push(row);
+  return resealDlp(doc);
+}
+
 function removeClasses(doc, names) {
   const drop = new Set(names);
   for (const tier of Object.keys(doc.tiers)) {
@@ -109,26 +134,39 @@ const serialize = (doc) => `${JSON.stringify(doc, null, 2)}\n`;
  * to `null` (repo directory exists but has no file) or `undefined` (repo
  * directory does not exist at all).
  */
-function layout(docs, opts = {}) {
+function layout(docs, opts = {}, dlpDocs = null) {
   const root = mkdtempSync(join(tmpdir(), 'vocab-parity-'));
-  for (const copy of COPIES) {
-    if (!(copy.key in docs)) continue;
-    const value = docs[copy.key];
-    const repoDir = join(root, copy.repoDir);
+  const repoKeys = [...new Set(COPIES.map((copy) => copy.key))];
+  for (const key of repoKeys) {
+    if (!(key in docs)) continue;
+    const copies = COPIES.filter((copy) => copy.key === key);
+    const repoDir = join(root, copies[0].repoDir);
     mkdirSync(repoDir, { recursive: true });
     if (opts.git) {
       execFileSync('git', ['-C', repoDir, 'init', '-q'], { stdio: 'ignore' });
       execFileSync('git', ['-C', repoDir, 'config', 'user.email', 'ci@local'], { stdio: 'ignore' });
       execFileSync('git', ['-C', repoDir, 'config', 'user.name', 'ci'], { stdio: 'ignore' });
     }
-    if (value === null) continue;
-    const dest = join(repoDir, copy.filePath);
-    mkdirSync(dirname(dest), { recursive: true });
-    writeFileSync(dest, typeof value === 'string' ? value : serialize(value));
+    const written = [];
+    for (const copy of copies) {
+      const value =
+        copy.vocabulary === 'toolrisk'
+          ? docs[key]
+          : dlpDocs
+            ? dlpDocs[key]
+            : docs[key] === null
+              ? null
+              : DLP_BASE;
+      if (value === null) continue;
+      const dest = join(repoDir, copy.filePath);
+      mkdirSync(dirname(dest), { recursive: true });
+      writeFileSync(dest, typeof value === 'string' ? value : serialize(value));
+      written.push(dest);
+    }
     if (opts.git) {
       execFileSync('git', ['-C', repoDir, 'add', '-A'], { stdio: 'ignore' });
       execFileSync('git', ['-C', repoDir, 'commit', '-qm', 'fixture'], { stdio: 'ignore' });
-      if (opts.commitThenDelete) rmSync(dest);
+      if (opts.commitThenDelete) for (const dest of written) rmSync(dest);
     }
   }
   return root;
@@ -165,6 +203,15 @@ function trio(docs, opts) {
   return root;
 }
 
+function dlpTrio(docs, opts) {
+  const toolriskDocs = Object.fromEntries(
+    Object.keys(docs).map((key) => [key, docs[key] === null ? null : BASE]),
+  );
+  const root = layout(toolriskDocs, opts, docs);
+  temps.push(root);
+  return root;
+}
+
 // ── the cases ────────────────────────────────────────────────────────────────
 
 process.stdout.write('\nvocab-parity mutation proof\n\n');
@@ -190,6 +237,23 @@ testCase('class added in the AGENT only -> DRIFT naming the class and both consu
     /NO CONSOLE CONTROL EXISTS/.test(r.out),
     `producer-only drift must say what the customer loses:\n${r.out}`,
   );
+});
+
+testCase('DLP class added in the AGENT only -> DRIFT naming the class and both consumers', () => {
+  const ghost = 'acme-token';
+  assert(!DLP_BASE.classes.includes(ghost), 'fixture invalid: the real DLP vector already has this class');
+  const producer = addDlpClass(clone(DLP_BASE), {
+    class: ghost,
+    family: 'credential',
+    confidence: 91,
+    defaultAction: 'warn',
+  });
+  const r = runAllowingFailure(
+    dlpTrio({ Installers: producer, Backend: DLP_BASE, Frontend: DLP_BASE }),
+  );
+  assert(r.code === 1, `expected exit 1 (DRIFT), got ${r.code}\n${r.out}`);
+  assert(r.out.includes(ghost), `output must name '${ghost}':\n${r.out}`);
+  assert(/MISSING from Backend \+ Frontend/.test(r.out), `output must name the repos missing it:\n${r.out}`);
 });
 
 testCase('THE HISTORICAL CASE: interpreter-exec + fetch-then-exec + substitution-exfil absent from both consumers -> DRIFT naming all three', () => {
@@ -424,7 +488,7 @@ testCase('--json reports the same verdict and names every source', () => {
   assert(r.code === 1, `expected exit 1, got ${r.code}\n${r.out}`);
   const parsed = JSON.parse(r.out);
   assert(parsed.status === 'DRIFT', `expected DRIFT, got ${parsed.status}`);
-  assert(parsed.sources.length === 3, `expected 3 sources, got ${parsed.sources.length}`);
+  assert(parsed.sources.length === 6, `expected 6 sources, got ${parsed.sources.length}`);
   assert(
     parsed.drift.some((d) => d.includes('zz-json-shape')),
     `the machine-readable form must name the class too:\n${r.out}`,
@@ -439,6 +503,15 @@ testCase("canonicalCatalogDigest reproduces the Go producer's recorded value", (
     computed === BASE.sha256,
     `the JS reimplementation of canonicalCatalogDigest has diverged from Go\n` +
       `  recorded by the producer: ${BASE.sha256}\n  computed here:            ${computed}`,
+  );
+});
+
+testCase("canonicalDlpCatalogDigest reproduces the DLP Go producer's recorded value", () => {
+  const computed = canonicalDlpCatalogDigest(DLP_BASE.catalog);
+  assert(
+    computed === DLP_BASE.sha256,
+    `the JS reimplementation of canonicalDlpCatalogDigest has diverged from Go\n` +
+      `  recorded by the producer: ${DLP_BASE.sha256}\n  computed here:            ${computed}`,
   );
 });
 
@@ -464,21 +537,25 @@ testCase('the checker reaches a verdict on the real three repos (not NOT_CHECKED
   );
 });
 
-testCase('the three real copies are byte-identical after CRLF normalisation', () => {
+testCase('each vocabulary\'s three real copies are byte-identical after CRLF normalisation', () => {
   const r = live;
   assert(r.status !== 'NOT_CHECKED', `cannot verify: ${r.reasons.join('; ')}`);
-  const digests = r.resolved.map((x) => ({
-    key: x.key,
-    sha: createHash('sha256')
-      .update(x.bytes.toString('utf8').replace(/\r\n/g, '\n'), 'utf8')
-      .digest('hex'),
-  }));
-  const distinct = new Set(digests.map((d) => d.sha));
-  assert(
-    distinct.size === 1,
-    `the three copies differ:\n${digests.map((d) => `  ${d.key} ${d.sha}`).join('\n')}`,
-  );
-  process.stdout.write(`       ${dim(`sha256 ${[...distinct][0]}`)}\n`);
+  for (const vocabulary of ['toolrisk', 'dlp']) {
+    const digests = r.resolved
+      .filter((x) => x.vocabulary === vocabulary)
+      .map((x) => ({
+        key: x.key,
+        sha: createHash('sha256')
+          .update(x.bytes.toString('utf8').replace(/\r\n/g, '\n'), 'utf8')
+          .digest('hex'),
+      }));
+    const distinct = new Set(digests.map((d) => d.sha));
+    assert(
+      distinct.size === 1,
+      `${vocabulary} copies differ:\n${digests.map((d) => `  ${d.key} ${d.sha}`).join('\n')}`,
+    );
+    process.stdout.write(`       ${dim(`${vocabulary} sha256 ${[...distinct][0]}`)}\n`);
+  }
 });
 
 // ── teardown + verdict ───────────────────────────────────────────────────────

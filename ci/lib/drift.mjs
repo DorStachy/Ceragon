@@ -10,22 +10,23 @@
  * before -- a control whose path is dead reports nothing, which reads
  * identically to reporting green.
  *
- * So: every job on origin/main that a `push` or `pull_request` can trigger must
- * appear in gates.json as either mirrored or explicitly cannot-mirror-because.
- * Anything else fails this check. Deploy-only and scheduled jobs are exempt --
- * they are not gates and never block a merge.
+ * So: every job on origin/main that a `push` or `pull_request` can trigger, and
+ * every job in a workflow explicitly named by `localGateWorkflows`, must appear
+ * in gates.json as either mirrored or explicitly cannot-mirror-because.
+ * Anything else fails this check. Deploy-only and scheduled jobs remain exempt
+ * unless the manifest deliberately declares their workflow as a local gate.
  *
  *   node ci/lib/drift.mjs            check every repo
  *   node ci/lib/drift.mjs Backend    check one
  *   node ci/lib/drift.mjs --cost     also print what still runs on GitHub's dime
  */
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import { parse as parseYaml } from 'yaml';
 import { expandMatrix } from './workflow.mjs';
-import { listWorkflowsOnMain } from './wfsource.mjs';
+import { listWorkflowPaths, resolveWorkflowText } from './wfsource.mjs';
 
 const CI_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const ROOT = resolve(CI_DIR, '..');
@@ -116,7 +117,7 @@ function checkRepo(repoKey, wantCost) {
   const cost = [];
   const seen = new Set();
 
-  const files = listWorkflowsOnMain(repoPath);
+  const files = listWorkflowPaths(repoPath);
   if (!files.length) {
     problems.push({ level: 'error', msg: `no workflows readable on origin/main -- run: git -C ${repo.path} fetch origin` });
     return { problems, cost };
@@ -124,8 +125,9 @@ function checkRepo(repoKey, wantCost) {
 
   for (const rel of files) {
     const wfName = rel.replace(/^.*\//, '').replace(/\.ya?ml$/, '');
-    const text = git(repoPath, ['show', `origin/main:${rel}`]);
-    if (text === null) continue;
+    const source = resolveWorkflowText(repoPath, rel);
+    if (!source) continue;
+    const text = source.text;
     let wf;
     try {
       wf = parseYaml(text);
@@ -134,6 +136,7 @@ function checkRepo(repoKey, wantCost) {
       continue;
     }
     const gateTriggered = isGateTrigger(wf.on);
+    const localGateWorkflow = (repo.localGateWorkflows || []).includes(wfName);
 
     for (const [jobId, job] of Object.entries(wf.jobs || {})) {
       const id = `${wfName}:${jobId}`;
@@ -189,6 +192,19 @@ function checkRepo(repoKey, wantCost) {
   return { problems, cost };
 }
 
+function checkWorkspaceDeclarations() {
+  const registered = new Set((MANIFEST.workspaceChecks || []).map((check) => check.id));
+  const missing = [];
+  for (const name of readdirSync(dirname(fileURLToPath(import.meta.url)))) {
+    if (!name.endsWith('.mjs')) continue;
+    const text = readFileSync(join(dirname(fileURLToPath(import.meta.url)), name), 'utf8');
+    for (const match of text.matchAll(/@workspace-check\s+([^\s]+)/g)) {
+      if (!registered.has(match[1])) missing.push(match[1]);
+    }
+  }
+  return [...new Set(missing)].sort();
+}
+
 function main() {
   const args = process.argv.slice(2);
   const wantCost = args.includes('--cost');
@@ -197,6 +213,17 @@ function main() {
 
   let errors = 0;
   const allCost = [];
+
+  const missingWorkspaceChecks = checkWorkspaceDeclarations();
+  if (missingWorkspaceChecks.length) {
+    process.stdout.write(`${RED}DRIFT${RESET} ${BOLD}workspaceChecks${RESET}\n`);
+    for (const id of missingWorkspaceChecks) {
+      errors += 1;
+      process.stdout.write(
+        `        declared workspace check "${id}" is not registered in ci/gates.json.\n`,
+      );
+    }
+  }
 
   for (const key of repoKeys) {
     const { problems, cost } = checkRepo(key, wantCost);

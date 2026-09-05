@@ -1,0 +1,29 @@
+{
+  "format": "ceragon.ai-security.contract-spine-source",
+  "formatVersion": 3,
+  "packageVersion": "0.7.0",
+  "generatorVersion": "1.0.0",
+  "runtimeActivatable": false,
+  "signedRuntimePolicyBundle": false,
+  "v2WriterEligible": false,
+  "requiredIntegrationGate": "P1-GATE",
+  "sources": {
+    "wireSchema": "schemas/ai-security-v2-wire-v1.schema.json",
+    "hmacCatalog": "fixtures/ai-security-hmac-domain-catalog.v1.json",
+    "detectorSchema": "schemas/ai-security-detector-catalog-v2.schema.json",
+    "detectorCatalog": "fixtures/ai-security-detector-catalog.v2.json",
+    "neutralSchema": "schemas/ai-security-neutral-evaluation-v2.schema.json",
+    "neutralFixture": "fixtures/ai-security-neutral-evaluation.v2.json",
+    "neutralAdversarialPlan": "fixtures/ai-security-neutral-scorer-adversarial.v1.json"
+  },
+  "tooling": {
+    "contractSpineGenerator": "scripts/generate-ai-security-contract-spine-v3.cjs",
+    "contractSpineTests": "scripts/test-ai-security-contract-spine-v3.cjs",
+    "neutralContractGenerator": "scripts/generate-ai-security-neutral-contract-v2.cjs",
+    "neutralContractLibrary": "scripts/lib/ai-security-neutral-contract-v2.cjs",
+    "neutralScorerLibrary": "scripts/lib/ai-security-neutral-scorer.cjs",
+    "neutralScorerCli": "scripts/score-ai-security-neutral-evaluation.cjs",
+    "neutralScorerTests": "scripts/test-ai-security-neutral-scorer.cjs",
+    "neutralTypeProjection": "src/ai-security-neutral-evaluation-contract.ts"
+  }
+}

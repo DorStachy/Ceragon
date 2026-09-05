@@ -283,9 +283,20 @@ D11 deletes the **tool-lane** amplifier. `promptrisk.deriveCombos` (`promptrisk.
 `ingressrisk.deriveCombos` (`ingressrisk.go:334`) are different animals: three **named pairs** in prompt
 (`combo(...)` at `:864`, `:872`, `:881` → `injection-override-exfil`, `jailbreak-persona-unrestricted`,
 `injection-override-credexfil`) and one in ingress (`ingress-secret-exfil-combo`, gated on
-`ClassSensitivePathRead && ClassExfilInstruction` at `:344-350`). All four are malicious-floor members at
-minimum `block` (`Backend/src/ai-security-policy/ai-malicious-floor.ts:184-187`). **They are the
-precedent Wave 4B's replacement is modelled on. Do not delete them.**
+`ClassSensitivePathRead && ClassExfilInstruction` at `:344-350`). The identifier
+`ingress-secret-exfil-combo` is shared across policy lanes, but the malicious-floor entry is
+lane-qualified to `promptRisk`: it protects `promptRisk:ingress-secret-exfil-combo`, **not** the
+ingress lane. Consequently `ingress.enabled=false` remains a live whole-lane bypass even after Wave 1
+guards `dlp.enabled` and `promptRisk.enabled`; never report the 37-member floor as ingress enforcement.
+The three prompt combos and the ingress-produced combo remain the precedent Wave 4B's replacement is
+modelled on. **Do not delete the detectors or their derived classes.**
+
+- [ ] **Close the ingress master-switch bypass before claiming this lane ready.** Put the ingress
+  section under an ingress-lane enable guard at the shared Backend write boundary, serve legacy
+  disabled rows at the safe posture without rewriting storage, and add a real HTTP/live-Postgres
+  defeat proving a newly submitted `ingress.enabled=false` is refused while an unrelated edit to a
+  legacy disabled row is not bricked. Until this lands, the ingress enforcement/high-assurance row is
+  `NOT_READY` regardless of detector recall.
 
 ### TRAP 11 — none of these gates runs on a pull request
 
@@ -1083,32 +1094,37 @@ request today**; `LOCAL` means `node ci/lib/run.mjs Installers` against the mirr
     `workflow_dispatch`-only `go test ./...`. **The job and its `ci/gates.json` mirror entry are owned by
     Wave −1 Task 7**; this wave appends exactly two package paths to the list that task created, which
     also brings `holdout_seal_test.go` — the seal itself — under a **mirrored local leg** for the first
-    time. It does **not** bring it under a merge-triggered job; that is criterion 13.
+    time. It does **not** bring it under a merge-triggered job; that is criterion 14.
     Defeat: delete `./internal/ingressrisk/...` from the list and re-run `node ci/lib/run.mjs
     Installers`; the ingress tests must disappear from the output. Lane: LOCAL.
+12. **A newly submitted `ingress.enabled=false` is refused at the shared Backend write boundary, and
+    a legacy disabled row is served at the safe posture without rewriting storage or blocking an
+    unrelated correction.** Verified through real HTTP + PostgreSQL, not a service mock. Defeat:
+    remove the ingress section from the enable guard; the disable request changes from `422` to `200`
+    and persists. Until this criterion passes, ingress enforcement is `NOT_READY`.
 
 ### Criteria this wave cannot measure, and what they need
 
-12. **Prompt-lane recall ≥ 90% for any enforcing class — `UNKNOWN`.** Needs **29** zero-miss attack cases
+13. **Prompt-lane recall ≥ 90% for any enforcing class — `UNKNOWN`.** Needs **29** zero-miss attack cases
     per class; there is **1**. Certificate contribution: `metrics.recall.lower95` stays `null` on the
     prompt lane, `status: UNKNOWN`. Blocked on Task 8's corpus growth, which is bounded by authoring
     effort, not by a decision.
-13. **Any of the above running on a merge — `BLOCKED, external`.** `pr-checks.yml` and
+14. **Any of the above running on a merge — `BLOCKED, external`.** `pr-checks.yml` and
     `holdout-score.yml` both lost their `push`/`pull_request` triggers as an owner cost decision, and
     `holdout-score.yml:6` still contradicts itself in its own header. GitHub Actions were unblocked
     2026-08-27, so the constraint is **budget, not availability**. **Named external dependency: an owner
     billing decision.** Until then every criterion above is a local or nightly measurement and must be
     reported as such — never as "CI is green".
-14. **Adaptive ASR on any surface — `BLOCKED, external`.** **Named external dependencies:** (a)
+15. **Adaptive ASR on any surface — `BLOCKED, external`.** **Named external dependencies:** (a)
     contracted adversarial red-team time, multiple attacker models plus human expert attempts; (b) a
     named independent evaluation owner who is not a detector author — currently **UNKNOWN whether one
     exists**. Certificate contribution: `metrics.adaptiveAsr` `null`, R5 `NOT_READY`.
-15. **Safeguards-on measurement of the `codex` surface on the owner's hardware — `BLOCKED, external`.**
+16. **Safeguards-on measurement of the `codex` surface on the owner's hardware — `BLOCKED, external`.**
     **Named external dependency: a vendor artifact — a `0.149.x` Codex binary whose acceptance of our
     hook-trust format can be observed.** Widening the dialect pin is forbidden; the engineering available
     is `verify.go:608-637`, which this wave ships. Whether 0.149 is acceptable is a vendor decision,
     state **UNKNOWN**.
-16. **Benign replay at n ≥ 299 per class — `BLOCKED, external.`** Wave 3B Suite 3. It cannot be
+17. **Benign replay at n ≥ 299 per class — `BLOCKED, external.`** Wave 3B Suite 3. It cannot be
     synthesised; it requires locally-consented replay of real sanctioned developer workflows, and
     near-duplicate mutations do not count. **Named external dependency: a data-collection programme.**
     Certificate contribution: `metrics.falsePositiveRate.upper95` on the prompt lane cannot go below

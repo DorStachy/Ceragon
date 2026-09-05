@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @workspace-check w-1-rebase-manifest
 /**
  * THE REBASE MANIFEST — generator and staleness gate. (M4.7A Wave −1 Task 1.)
  *
@@ -56,7 +57,7 @@
  */
 
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -324,7 +325,7 @@ const yellow = (s) => (colour ? `${E}[33m${s}${E}[0m` : s);
 
 function main(argv) {
   const args = argv.slice(2);
-  const rootIdx = args.indexOf('--root');
+  const rootIdx = args.indexOf('--root') >= 0 ? args.indexOf('--root') : args.indexOf('--workspace-root');
   const root = rootIdx >= 0 ? resolve(args[rootIdx + 1]) : WORKSPACE;
   const manIdx = args.indexOf('--manifest');
   const manifestPath = manIdx >= 0 ? resolve(args[manIdx + 1]) : join(root, MANIFEST_RELPATH);
@@ -333,7 +334,8 @@ function main(argv) {
   const noFetch = args.includes('--no-fetch');
 
   let observation = null;
-  const obsPath = join(root, OBSERVATION_RELPATH);
+  const obsIdx = args.indexOf('--fetch-observation');
+  const obsPath = obsIdx >= 0 ? resolve(args[obsIdx + 1]) : join(root, OBSERVATION_RELPATH);
 
   if (!noFetch) {
     const repos = fetchAll(root);
@@ -342,7 +344,10 @@ function main(argv) {
     // mode the fetch still runs — the point is to compare against the truth,
     // not against whatever was last cached.
     observation = { fetchedAt: new Date().toISOString().slice(0, 10), repos };
-    if (wantsWrite) writeFileSync(obsPath, `${JSON.stringify(observation, null, 2)}\n`);
+    if (wantsWrite) {
+      mkdirSync(dirname(obsPath), { recursive: true });
+      writeFileSync(obsPath, `${JSON.stringify(observation, null, 2)}\n`);
+    }
   }
   if (!observation && existsSync(obsPath)) {
     try {
@@ -397,7 +402,7 @@ function main(argv) {
         `${result.reasons.map((r) => `  ${r}`).join('\n')}\n\n`,
     );
   } else {
-    process.stdout.write(
+    process.stderr.write(
       `\n${red('STALE')} — the manifest does not describe the repositories\n` +
         `${result.reasons.map((r) => `  ${r}`).join('\n')}\n\n` +
         `Regenerate with: node ci/lib/rebase-manifest.mjs --write\n\n`,

@@ -1,0 +1,595 @@
+{
+  "format": "ceragon.ai-security.obligation-contract",
+  "formatVersion": 1,
+  "protocolVersion": "2",
+  "productionV2WriterEnabled": false,
+  "orderedTuples": {
+    "obligationKinds": [
+      "AUDIT",
+      "NOTIFY",
+      "SANITIZE",
+      "RESTRICT_CAPABILITY",
+      "REQUIRE_CONFIRMATION",
+      "REQUIRE_DELEGATED_APPROVAL",
+      "DENY",
+      "QUARANTINE"
+    ],
+    "obligationStates": [
+      "REQUIRED",
+      "SATISFIED",
+      "UNSATISFIED",
+      "UNSUPPORTED",
+      "SUPERSEDED",
+      "FAILED"
+    ],
+    "primaryStates": [
+      "SCANNING",
+      "CONTINUED_SAFELY",
+      "SANITIZED_AND_CONTINUED",
+      "CONTINUED_WITH_RESTRICTION",
+      "NEEDS_CONFIRMATION",
+      "APPROVAL_REQUESTED",
+      "BLOCKED_BEFORE_EFFECT",
+      "PROTECTION_DEGRADED"
+    ],
+    "inspectionStatuses": [
+      "COMPLETE",
+      "PARTIAL",
+      "UNSUPPORTED",
+      "BUDGET_EXCEEDED",
+      "PARSER_FAILED",
+      "ENCRYPTED",
+      "TIMED_OUT",
+      "NOT_APPLICABLE"
+    ]
+  },
+  "obligationUnionCases": [
+    {
+      "obligationId": "rule.audit:audit:0",
+      "kind": "AUDIT",
+      "sourceRuleId": "rule.audit",
+      "sourceScope": {
+        "type": "org",
+        "id": "org-fixture"
+      },
+      "grantable": false,
+      "hardFloor": true,
+      "reasonCode": "fixture.audit",
+      "parameters": {
+        "eventClass": "ai.security.enforcement",
+        "retentionClass": "security.standard"
+      },
+      "parametersDigest": "sha256:030cf13d217ba2ed3640e1be6d729ebfe1f4ce15332daf9ae2434c97296ed704"
+    },
+    {
+      "obligationId": "rule.notify:notify:0",
+      "kind": "NOTIFY",
+      "sourceRuleId": "rule.notify",
+      "sourceScope": {
+        "type": "site",
+        "id": "site-fixture"
+      },
+      "grantable": true,
+      "hardFloor": false,
+      "reasonCode": "fixture.notify",
+      "parameters": {
+        "copyKey": "ai.security.notice.policy",
+        "audience": "USER"
+      },
+      "parametersDigest": "sha256:fe1af0d91a4fb7ce874e19e2c2b2993ca9c83206026c62dc37af7f20417f4956"
+    },
+    {
+      "obligationId": "rule.sanitize:sanitize:0",
+      "kind": "SANITIZE",
+      "sourceRuleId": "rule.sanitize",
+      "sourceScope": {
+        "type": "team",
+        "id": "team-fixture"
+      },
+      "grantable": true,
+      "hardFloor": false,
+      "reasonCode": "fixture.sanitize",
+      "parameters": {
+        "transformIds": [
+          "secret.mask.minimum-unit"
+        ],
+        "targetFieldPathHmacs": [
+          "hmac-sha256:v1:field-path:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        "requireParse": true,
+        "requireRescan": true,
+        "requireStatePreservation": true
+      },
+      "parametersDigest": "sha256:72ee4da3a58b3d5a235f7efa8f5f2702f623a7abd1f30236d1487a9a09a0c9c8"
+    },
+    {
+      "obligationId": "rule.restrict-capability:restrict_capability:0",
+      "kind": "RESTRICT_CAPABILITY",
+      "sourceRuleId": "rule.restrict-capability",
+      "sourceScope": {
+        "type": "team",
+        "id": "team-fixture"
+      },
+      "grantable": true,
+      "hardFloor": false,
+      "reasonCode": "fixture.restrict-capability",
+      "parameters": {
+        "capabilities": [
+          "network.egress"
+        ],
+        "resourceRefs": [],
+        "destinationRefs": []
+      },
+      "parametersDigest": "sha256:9a9b9f8954f5e8695fa5cab42b4f5fc2017b8db0e162dc0b698e82c0f67823bd"
+    },
+    {
+      "obligationId": "rule.require-confirmation:require_confirmation:0",
+      "kind": "REQUIRE_CONFIRMATION",
+      "sourceRuleId": "rule.require-confirmation",
+      "sourceScope": {
+        "type": "site",
+        "id": "site-fixture"
+      },
+      "grantable": true,
+      "hardFloor": false,
+      "reasonCode": "fixture.require-confirmation",
+      "parameters": {
+        "confirmationClass": "sensitive-destination",
+        "trustedSurface": "BROWSER_EXTENSION",
+        "ttlSeconds": 300
+      },
+      "parametersDigest": "sha256:c2ca69064af5989813017ed9d366dafc6f4ff940d7d9643254a3c34071c885b1"
+    },
+    {
+      "obligationId": "rule.require-delegated-approval:require_delegated_approval:0",
+      "kind": "REQUIRE_DELEGATED_APPROVAL",
+      "sourceRuleId": "rule.require-delegated-approval",
+      "sourceScope": {
+        "type": "org",
+        "id": "org-fixture"
+      },
+      "grantable": true,
+      "hardFloor": false,
+      "reasonCode": "fixture.require-delegated-approval",
+      "parameters": {
+        "approvalClass": "privileged-effect",
+        "reviewerRoles": [
+          "security-admin"
+        ],
+        "ttlSeconds": 300,
+        "maxUses": 1
+      },
+      "parametersDigest": "sha256:54f984597ce56e3461e68cb75e13f31033eb34559b107c4a176650528f128463"
+    },
+    {
+      "obligationId": "rule.deny:deny:0",
+      "kind": "DENY",
+      "sourceRuleId": "rule.deny",
+      "sourceScope": {
+        "type": "org",
+        "id": "org-fixture"
+      },
+      "grantable": false,
+      "hardFloor": true,
+      "reasonCode": "fixture.deny",
+      "parameters": {
+        "invariantId": "forbidden-destination",
+        "copyKey": "ai.security.block.forbidden-destination",
+        "nonGrantable": true
+      },
+      "parametersDigest": "sha256:0220347ed53a8a88ba6a81b147aa46b7bdce3b571b7d71b34b253d80941b9e45"
+    },
+    {
+      "obligationId": "rule.quarantine:quarantine:0",
+      "kind": "QUARANTINE",
+      "sourceRuleId": "rule.quarantine",
+      "sourceScope": {
+        "type": "site",
+        "id": "site-fixture"
+      },
+      "grantable": false,
+      "hardFloor": true,
+      "reasonCode": "fixture.quarantine",
+      "parameters": {
+        "until": "INSPECTION_COMPLETE",
+        "ttlSeconds": 900
+      },
+      "parametersDigest": "sha256:1e1372fb855c3339974e6e1873832304a446ab39827d4a3b4fa39fc62afe7b9a"
+    }
+  ],
+  "combiner": {
+    "phaseOrder": [
+      "HARD_FLOORS",
+      "AUDIT_NOTIFY_RESTRICTION_UNION",
+      "TRANSFORM_ACCUMULATION",
+      "CONFIRMATION_APPROVAL_PRESERVATION",
+      "NON_GRANTABLE_DENY"
+    ],
+    "scopeOrder": [
+      "org",
+      "site",
+      "team"
+    ],
+    "transformOrder": [
+      "SCOPE_ORDER",
+      "SOURCE_RULE_ID_ASCII",
+      "SOURCE_ORDINAL"
+    ],
+    "hardFloorsFirst": true,
+    "lowerScopeMayRemove": false,
+    "grantDischargesOnlyListedGrantableIds": true,
+    "nonGrantableHardFloorClasses": [
+      "IDENTITY",
+      "AUDIENCE",
+      "TENANT_ISOLATION",
+      "TAMPER",
+      "TRUST_SIGNATURE",
+      "FORBIDDEN_DESTINATION",
+      "POLICY_HARD_FLOOR"
+    ],
+    "incompatibleTransforms": {
+      "retainAll": true,
+      "resultState": "UNSUPPORTED",
+      "resolution": "FAILURE_ORACLE",
+      "mayDrop": false
+    },
+    "denySupersession": {
+      "onlyImpossibleEffects": true,
+      "auditAndNotifyStillExecute": true,
+      "recordSupersessionEdges": true
+    }
+  },
+  "combinerCases": [
+    {
+      "id": "monotonic-scope-union",
+      "inputObligationIds": [
+        "rule.audit:audit:0",
+        "rule.notify:notify:0",
+        "rule.restrict-capability:restrict_capability:0"
+      ],
+      "grantObligationIds": [],
+      "expectedOrderedObligationIds": [
+        "rule.audit:audit:0",
+        "rule.notify:notify:0",
+        "rule.restrict-capability:restrict_capability:0"
+      ],
+      "expectedUnsatisfiedObligationIds": [],
+      "supersessionEdges": [],
+      "actionResolution": "CONTINUE"
+    },
+    {
+      "id": "grant-listed-only",
+      "inputObligationIds": [
+        "rule.require-confirmation:require_confirmation:0"
+      ],
+      "grantObligationIds": [
+        "rule.require-confirmation:require_confirmation:0"
+      ],
+      "expectedOrderedObligationIds": [
+        "rule.require-confirmation:require_confirmation:0"
+      ],
+      "expectedUnsatisfiedObligationIds": [],
+      "supersessionEdges": [],
+      "actionResolution": "CONTINUE"
+    },
+    {
+      "id": "incompatible-transform-pair",
+      "inputObligationIds": [
+        "rule.sanitize:sanitize:0",
+        "rule.sanitize-extra:sanitize:0"
+      ],
+      "grantObligationIds": [],
+      "expectedOrderedObligationIds": [
+        "rule.sanitize:sanitize:0",
+        "rule.sanitize-extra:sanitize:0"
+      ],
+      "expectedUnsatisfiedObligationIds": [
+        "rule.sanitize:sanitize:0",
+        "rule.sanitize-extra:sanitize:0"
+      ],
+      "supersessionEdges": [],
+      "actionResolution": "FAILURE_ORACLE"
+    },
+    {
+      "id": "deny-selective-supersession",
+      "inputObligationIds": [
+        "rule.audit:audit:0",
+        "rule.notify:notify:0",
+        "rule.sanitize:sanitize:0",
+        "rule.restrict-capability:restrict_capability:0",
+        "rule.deny:deny:0"
+      ],
+      "grantObligationIds": [],
+      "expectedOrderedObligationIds": [
+        "rule.audit:audit:0",
+        "rule.deny:deny:0",
+        "rule.notify:notify:0",
+        "rule.sanitize:sanitize:0",
+        "rule.restrict-capability:restrict_capability:0"
+      ],
+      "expectedUnsatisfiedObligationIds": [],
+      "supersessionEdges": [
+        {
+          "obligationId": "rule.sanitize:sanitize:0",
+          "supersededByObligationId": "rule.deny:deny:0"
+        },
+        {
+          "obligationId": "rule.restrict-capability:restrict_capability:0",
+          "supersededByObligationId": "rule.deny:deny:0"
+        }
+      ],
+      "actionResolution": "DENY"
+    }
+  ],
+  "v2ToV1DownConversion": [
+    {
+      "terminalRequirement": "NON_GRANTABLE_DENY",
+      "v1Decision": "BLOCK",
+      "requiredBehavior": "CERTIFIED_DENY_BEFORE_EFFECT",
+      "mayProceedBeforeRequirement": false,
+      "trustedSurfaceRequired": false,
+      "onUnsupported": "FAILURE_ORACLE"
+    },
+    {
+      "terminalRequirement": "QUARANTINE_OR_DELEGATED_APPROVAL",
+      "v1Decision": "HOLD",
+      "requiredBehavior": "HOLD_UNTIL_ORACLE_RESOLUTION",
+      "mayProceedBeforeRequirement": false,
+      "trustedSurfaceRequired": false,
+      "onUnsupported": "FAILURE_ORACLE"
+    },
+    {
+      "terminalRequirement": "LOCAL_CONFIRMATION",
+      "v1Decision": "PROMPT",
+      "requiredBehavior": "TRUSTED_CONFIRMATION_ONLY",
+      "mayProceedBeforeRequirement": false,
+      "trustedSurfaceRequired": true,
+      "onUnsupported": "FAILURE_ORACLE"
+    },
+    {
+      "terminalRequirement": "SATISFIABLE_SANITIZE",
+      "v1Decision": "ALLOW",
+      "requiredBehavior": "TRANSFORM_PARSE_RESCAN_BEFORE_ALLOW",
+      "mayProceedBeforeRequirement": false,
+      "trustedSurfaceRequired": false,
+      "onUnsupported": "FAILURE_ORACLE"
+    },
+    {
+      "terminalRequirement": "SATISFIABLE_RESTRICTION",
+      "v1Decision": "ALLOW",
+      "requiredBehavior": "RESTRICTION_PROOF_BEFORE_ALLOW",
+      "mayProceedBeforeRequirement": false,
+      "trustedSurfaceRequired": false,
+      "onUnsupported": "FAILURE_ORACLE"
+    },
+    {
+      "terminalRequirement": "AUDIT_NOTIFY_ONLY",
+      "v1Decision": "ALLOW",
+      "requiredBehavior": "AUDIT_NOTIFY_WITHOUT_EFFECT_CLAIM",
+      "mayProceedBeforeRequirement": true,
+      "trustedSurfaceRequired": false,
+      "onUnsupported": "FAILURE_ORACLE"
+    },
+    {
+      "terminalRequirement": "INSPECTION_OR_EFFECT_INCOMPLETE",
+      "v1Decision": "INCONCLUSIVE",
+      "requiredBehavior": "FAILURE_ORACLE_BEFORE_RANKING",
+      "mayProceedBeforeRequirement": false,
+      "trustedSurfaceRequired": false,
+      "onUnsupported": "FAILURE_ORACLE"
+    },
+    {
+      "terminalRequirement": "POLICY_AWAITING_AUTHORITY",
+      "v1Decision": "PENDING",
+      "requiredBehavior": "HOLD_PENDING_AUTHORITY",
+      "mayProceedBeforeRequirement": false,
+      "trustedSurfaceRequired": false,
+      "onUnsupported": "FAILURE_ORACLE"
+    }
+  ],
+  "legacyWarnByCheckpoint": [
+    {
+      "surface": "RUNTIME_ADAPTER",
+      "checkpoint": "PRE_PROMPT",
+      "semantic": "NOTIFY_ONLY",
+      "v1Decision": "ALLOW",
+      "requestedEffect": "audit-only",
+      "trustedSurface": null,
+      "onUnsupported": "FAILURE_ORACLE"
+    },
+    {
+      "surface": "RUNTIME_ADAPTER",
+      "checkpoint": "PRE_TOOL",
+      "semantic": "UNSUPPORTED",
+      "v1Decision": "INCONCLUSIVE",
+      "requestedEffect": null,
+      "trustedSurface": null,
+      "onUnsupported": "FAILURE_ORACLE"
+    },
+    {
+      "surface": "RUNTIME_ADAPTER",
+      "checkpoint": "POST_TOOL",
+      "semantic": "NOTIFY_ONLY",
+      "v1Decision": "ALLOW",
+      "requestedEffect": "audit-only",
+      "trustedSurface": null,
+      "onUnsupported": "FAILURE_ORACLE"
+    },
+    {
+      "surface": "LOCAL_PROXY",
+      "checkpoint": "PRE_UPSTREAM_DISPATCH",
+      "semantic": "HOLD",
+      "v1Decision": "HOLD",
+      "requestedEffect": "stop-continuation",
+      "trustedSurface": null,
+      "onUnsupported": "FAILURE_ORACLE"
+    },
+    {
+      "surface": "LOCAL_PROXY",
+      "checkpoint": "POST_UPSTREAM_RESPONSE",
+      "semantic": "NOTIFY_ONLY",
+      "v1Decision": "ALLOW",
+      "requestedEffect": "audit-only",
+      "trustedSurface": null,
+      "onUnsupported": "FAILURE_ORACLE"
+    },
+    {
+      "surface": "BROWSER_COMPOSER",
+      "checkpoint": "PRE_SUBMIT",
+      "semantic": "CONFIRM",
+      "v1Decision": "PROMPT",
+      "requestedEffect": "deny-prompt",
+      "trustedSurface": "BROWSER_EXTENSION",
+      "onUnsupported": "FAILURE_ORACLE"
+    },
+    {
+      "surface": "BROWSER_COMPOSER",
+      "checkpoint": "POST_SUBMIT",
+      "semantic": "NOTIFY_ONLY",
+      "v1Decision": "ALLOW",
+      "requestedEffect": "audit-only",
+      "trustedSurface": null,
+      "onUnsupported": "FAILURE_ORACLE"
+    },
+    {
+      "surface": "BROWSER_UPLOAD",
+      "checkpoint": "PRE_UPLOAD_DISPATCH",
+      "semantic": "CONFIRM",
+      "v1Decision": "PROMPT",
+      "requestedEffect": "stop-continuation",
+      "trustedSurface": "BROWSER_EXTENSION",
+      "onUnsupported": "FAILURE_ORACLE"
+    },
+    {
+      "surface": "BROWSER_UPLOAD",
+      "checkpoint": "POST_UPLOAD_DISPATCH",
+      "semantic": "NOTIFY_ONLY",
+      "v1Decision": "ALLOW",
+      "requestedEffect": "audit-only",
+      "trustedSurface": null,
+      "onUnsupported": "FAILURE_ORACLE"
+    }
+  ],
+  "unsupportedMatrix": [
+    {
+      "id": "unsupported.audit",
+      "obligationKind": "AUDIT",
+      "trigger": "NO_CERTIFIED_AUDIT_SINK",
+      "resultState": "UNSUPPORTED",
+      "includeInUnsatisfiedIds": true,
+      "mayDrop": false,
+      "mayRankAllow": false,
+      "resolution": "FAILURE_ORACLE"
+    },
+    {
+      "id": "unsupported.notify",
+      "obligationKind": "NOTIFY",
+      "trigger": "NO_CERTIFIED_NOTIFICATION_SINK",
+      "resultState": "UNSUPPORTED",
+      "includeInUnsatisfiedIds": true,
+      "mayDrop": false,
+      "mayRankAllow": false,
+      "resolution": "FAILURE_ORACLE"
+    },
+    {
+      "id": "unsupported.sanitize",
+      "obligationKind": "SANITIZE",
+      "trigger": "TRANSFORM_OR_PROOF_PLAN_UNAVAILABLE",
+      "resultState": "UNSUPPORTED",
+      "includeInUnsatisfiedIds": true,
+      "mayDrop": false,
+      "mayRankAllow": false,
+      "resolution": "FAILURE_ORACLE"
+    },
+    {
+      "id": "unsupported.restrict-capability",
+      "obligationKind": "RESTRICT_CAPABILITY",
+      "trigger": "RESTRICTION_HANDLER_OR_PROOF_PLAN_UNAVAILABLE",
+      "resultState": "UNSUPPORTED",
+      "includeInUnsatisfiedIds": true,
+      "mayDrop": false,
+      "mayRankAllow": false,
+      "resolution": "FAILURE_ORACLE"
+    },
+    {
+      "id": "unsupported.require-confirmation",
+      "obligationKind": "REQUIRE_CONFIRMATION",
+      "trigger": "TRUSTED_CONFIRMATION_SURFACE_UNAVAILABLE",
+      "resultState": "UNSUPPORTED",
+      "includeInUnsatisfiedIds": true,
+      "mayDrop": false,
+      "mayRankAllow": false,
+      "resolution": "FAILURE_ORACLE"
+    },
+    {
+      "id": "unsupported.require-delegated-approval",
+      "obligationKind": "REQUIRE_DELEGATED_APPROVAL",
+      "trigger": "DELEGATED_APPROVAL_AUTHORITY_UNAVAILABLE",
+      "resultState": "UNSUPPORTED",
+      "includeInUnsatisfiedIds": true,
+      "mayDrop": false,
+      "mayRankAllow": false,
+      "resolution": "FAILURE_ORACLE"
+    },
+    {
+      "id": "unsupported.deny",
+      "obligationKind": "DENY",
+      "trigger": "DENY_EFFECT_UNAVAILABLE",
+      "resultState": "UNSUPPORTED",
+      "includeInUnsatisfiedIds": true,
+      "mayDrop": false,
+      "mayRankAllow": false,
+      "resolution": "FAILURE_ORACLE"
+    },
+    {
+      "id": "unsupported.quarantine",
+      "obligationKind": "QUARANTINE",
+      "trigger": "QUARANTINE_OR_ZERO_RELEASE_UNAVAILABLE",
+      "resultState": "UNSUPPORTED",
+      "includeInUnsatisfiedIds": true,
+      "mayDrop": false,
+      "mayRankAllow": false,
+      "resolution": "FAILURE_ORACLE"
+    },
+    {
+      "id": "unsupported.transform-composition-conflict",
+      "obligationKind": null,
+      "trigger": "TRANSFORM_COMPOSITION_CONFLICT",
+      "resultState": "UNSUPPORTED",
+      "includeInUnsatisfiedIds": true,
+      "mayDrop": false,
+      "mayRankAllow": false,
+      "resolution": "FAILURE_ORACLE"
+    },
+    {
+      "id": "unsupported.unknown-v2-token",
+      "obligationKind": null,
+      "trigger": "UNKNOWN_V2_TOKEN",
+      "resultState": "UNSUPPORTED",
+      "includeInUnsatisfiedIds": true,
+      "mayDrop": false,
+      "mayRankAllow": false,
+      "resolution": "FAILURE_ORACLE"
+    },
+    {
+      "id": "unsupported.codex-pre-tool-warn-hold",
+      "obligationKind": null,
+      "trigger": "CODEX_PRE_TOOL_WARN_OR_HOLD_UNSUPPORTED",
+      "resultState": "UNSUPPORTED",
+      "includeInUnsatisfiedIds": true,
+      "mayDrop": false,
+      "mayRankAllow": false,
+      "resolution": "FAILURE_ORACLE"
+    },
+    {
+      "id": "unsupported.post-checkpoint-retroactive-prevention",
+      "obligationKind": null,
+      "trigger": "POST_CHECKPOINT_RETROACTIVE_PREVENTION_CLAIM",
+      "resultState": "UNSUPPORTED",
+      "includeInUnsatisfiedIds": true,
+      "mayDrop": false,
+      "mayRankAllow": false,
+      "resolution": "FAILURE_ORACLE"
+    }
+  ]
+}
