@@ -16,11 +16,16 @@
  * Exit 0 = every case behaved as stated. Exit 1 = at least one did not.
  */
 
+import { spawnSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { PLAN, RENDERER, check } from './claim-contract.mjs';
+
+/** The CLI under test, driven as a subprocess so the EXIT CODE is asserted. */
+const SCRIPT = resolve(dirname(fileURLToPath(import.meta.url)), 'claim-contract.mjs');
 
 let failures = 0;
 let cases = 0;
@@ -239,6 +244,62 @@ console.log('\ncase 8: a release note has no specification text and no exemption
   rmSync(dir, { recursive: true, force: true });
 }
 
+
+// ── CASE 9 — THE EXIT CODES, WHICH IS WHERE THIS GUARD ONCE LIED ────────────
+//
+// `check()` returning ok is not the same as the command exiting 0, and the gap
+// between them was a real defect: with the renderer absent the guard printed
+// "the counts are NOT equal" and then exited 0, so any CI leg wired to the bare
+// command went green on an equality that had never run once.
+//
+// These cases drive the CLI as a subprocess, because the exit code IS the
+// interface a CI leg consumes. Asserting `result.ok` here would test the thing
+// that was already right and miss the thing that was wrong.
+console.log('\ncase 9: the command exits 2 when the equality cannot be measured');
+{
+  const { dir, planPath, rendererPath } = withPlan((text) => text);
+
+  const run = (args, env) => {
+    const r = spawnSync(process.execPath, [SCRIPT, ...args], {
+      encoding: 'utf8',
+      env: { ...process.env, ...env },
+    });
+    return { code: r.status, out: `${r.stdout}${r.stderr}` };
+  };
+
+  // The real repository state today: the renderer lives on unmerged branches.
+  const absent = run([]);
+  assert(absent.code === 2, `an absent renderer exits 2, not 0 (saw ${absent.code})`);
+  assert(
+    absent.out.includes('NOT MEASURED'),
+    'and the verdict line says NOT MEASURED rather than PASS'
+  );
+  assert(!/claim-contract: PASS/.test(absent.out), 'PASS is never printed for an unmeasured equality');
+
+  // A forbidden claim is a different failure and must not be confused with it.
+  const notePath = join(dir, 'RELEASE_NOTES.md');
+  writeFileSync(notePath, '# 7.11.0\n\nM4.7A is complete.\n', 'utf8');
+  const violation = run([notePath]);
+  assert(violation.code === 1, `a forbidden claim exits 1, not 2 (saw ${violation.code})`);
+  assert(
+    violation.out.includes('m4.7a is complete'),
+    'and the release note IS scanned — the CLI used to pass no documents at all'
+  );
+
+  // The honest half of the pair: a clean note alongside an absent renderer is
+  // still 2, because the note being clean says nothing about the equality.
+  const cleanNote = join(dir, 'CLEAN_NOTES.md');
+  writeFileSync(cleanNote, '# 7.11.0\n\nScanner execution truth is now reported.\n', 'utf8');
+  const cleanButUnmeasured = run([cleanNote]);
+  assert(
+    cleanButUnmeasured.code === 2,
+    `a clean note with no renderer is still NOT MEASURED (saw ${cleanButUnmeasured.code})`
+  );
+
+  rmSync(dir, { recursive: true, force: true });
+  void planPath;
+  void rendererPath;
+}
 console.log(`\n${cases - failures} of ${cases} assertions held`);
 if (failures > 0) {
   console.log('claim-contract.test: FAIL');

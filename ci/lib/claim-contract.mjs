@@ -288,13 +288,49 @@ export function check(opts = {}) {
     failed = true;
   }
 
-  out.push(failed ? 'claim-contract: FAIL' : 'claim-contract: PASS');
+  // "PASS" is reserved for a measured, equal pair. An absent renderer is
+  // reported as its own thing so no reader has to infer it from a exit code.
+  const verdict = failed
+    ? 'claim-contract: FAIL'
+    : rendererCount === null
+      ? 'claim-contract: NOT MEASURED (no renderer)'
+      : 'claim-contract: PASS';
+  out.push(verdict);
   return { ok: !failed, lines: out, planRows: planRows.size, rendererCount };
 }
 
+/**
+ * EXIT CODES, and the reason there are three.
+ *
+ *   0  the two counts were measured and they agree
+ *   1  a forbidden claim was found, or the counts disagree
+ *   2  the equality could not be measured -- the renderer is absent
+ *
+ * 2 exists because this guard once exited 0 while printing "the counts are NOT
+ * equal". Any leg wired to the bare command went green on an equality that had
+ * never run, which is the exact defect the guard is for. Failing outright would
+ * have been the other mistake: a gate red for weeks is a gate people learn to
+ * skip. So an unmeasured equality is non-zero AND distinguishable.
+ */
+export const EXIT_OK = 0;
+export const EXIT_VIOLATION = 1;
+export const EXIT_NOT_MEASURED = 2;
+
 const invokedDirectly = process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (invokedDirectly) {
-  const result = check({ requireRenderer: process.argv.includes('--require-renderer') });
+  // Every positional argument is a document to scan IN FULL, alongside the
+  // plan. A release note has no specification text and no reason to quote a
+  // banned sentence, so nothing in it is exempt.
+  const extra = process.argv.slice(2).filter((a) => !a.startsWith('--')).map((a) => resolve(a));
+  const result = check({ documents: [PLAN, ...extra] });
   console.log(result.lines.join('\n'));
-  process.exit(result.ok ? 0 : 1);
+  if (!result.ok) process.exit(EXIT_VIOLATION);
+  if (result.rendererCount === null) {
+    console.log(
+      'claim-contract: the renderer is ABSENT, so the equality was NOT MEASURED. ' +
+        'Exit 2 — not a violation, and not a pass.'
+    );
+    process.exit(EXIT_NOT_MEASURED);
+  }
+  process.exit(EXIT_OK);
 }
