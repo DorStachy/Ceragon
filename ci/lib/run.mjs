@@ -333,6 +333,13 @@ async function runGate(gate, flags, log) {
       '-v', `${MANIFEST.caches.go}:/gocache`,
       '-w', WORKDIR,
     ];
+    // A container jest leg defaults to every core the VM exposes and can starve the
+    // host: on 2026-09-05 the Frontend jest leg wedged the Docker daemon for 20+ min
+    // and the host shell with it. Node's os.availableParallelism() honours the
+    // affinity mask, so --cpuset-cpus is what actually caps jest's default worker
+    // count; --cpus (a CFS quota) does not. Both knobs are off unless set.
+    if (process.env.DEVOIDCI_CPUSET) runArgs.push(`--cpuset-cpus=${process.env.DEVOIDCI_CPUSET}`);
+    if (process.env.DEVOIDCI_MEMORY) runArgs.push(`--memory=${process.env.DEVOIDCI_MEMORY}`);
     if (gate.cfg.dockerSocket || repo.dockerSocket) {
       runArgs.push('-v', '/var/run/docker.sock:/var/run/docker.sock');
     }
