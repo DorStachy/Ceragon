@@ -853,7 +853,7 @@ vocabulary to 81, and this wave asserts no DLP class count at all (Task 3).
       explicit `"n/a"` **with a reason** rather than an empty value, so an unmapped class is a visible
       decision and not a blank.
 - [ ] Declare **`system.standardsMapping.atlasRelease`** as a required pinned release string, so a
-      technique renumbering is a visible diff rather than silent drift. **v2026.07** is current;
+      technique renumbering is a visible diff rather than silent drift. **2026.08** is current (measured 2026-09-04 against mitre-atlas/atlas-data; the "v2026.07" this line first named was already one edition stale when written — Installers/internal/certificate/standards.go records the diff);
       v2026.05 added a `platform` field that includes `Agentic`.
 - [ ] Name the editions in the schema's documentation so the populating wave cannot pick a stale one:
       **OWASP Top 10 for LLM Applications 2026** (shipped 2026-08-03; it renumbered 8 of 10, and
@@ -10814,7 +10814,7 @@ untouched `origin/main` first).
       `TestEveryClassCarriesStandardsIds`; Wave −1 owns only the column declaration in the manifest
       schema. This task consumes both. The ids this lane answers to are OWASP **LLM:2026** (not
       `:2025` — the 2026 edition renumbered 8 of 10 and moved Excessive Agency from LLM06 to LLM03),
-      OWASP **ASI 2026**, ATLAS release `v2026.07`, and AIUC-1 **A008** (secrets in generated
+      OWASP **ASI 2026**, ATLAS release `2026.08`, and AIUC-1 **A008** (secrets in generated
       code/logs/storage) and **B006.3** (scanning configuration artifacts for prompt-injection risk).
       If Wave 8's mapping and this row disagree on any id, **Wave 8's generated file wins** and this
       row is regenerated — two hand-maintained standards tables is the drift D-12 exists to stop.
@@ -11807,7 +11807,7 @@ quietly ignored:
     "standardsMapping": {
       "owaspLlm2026": [],
       "owaspAsi2026": [],
-      "atlasRelease": "v2026.07",
+      "atlasRelease": "2026.08",
       "atlasTechniques": [],
       "aiuc1Controls": []
     }
@@ -11922,7 +11922,7 @@ hits. `git grep -in "AML\.T[0-9]"` = **0** hits. Nothing maps to anything today.
       generated DLP registry and fails on any class with an empty mapping. Expected failure text:
       `class "chmod-broad-777" has no atlasTechniques and no owaspAsi2026 id`. Starting state: RED on
       **40 tool-risk classes plus 81 DLP producer classes**.
-- [ ] Pin an ATLAS release. **v2026.07** is current; v2026.05 added a `platform` field including
+- [ ] Pin an ATLAS release. **2026.08** is current (measured 2026-09-04; v2026.07 was stale when this line was written); v2026.05 added a `platform` field including
       `Agentic`. Record the release id in `system.standardsMapping.atlasRelease` so a technique
       renumbering is a visible diff, not silent drift.
 - [ ] Use **OWASP Top 10 for LLM Applications 2026** ids (shipped 2026-08-03; it renumbered 8 of 10,
@@ -12416,7 +12416,7 @@ rather than a number, and the named external dependency is stated rather than en
    add a seventh Tier A class → RED with `Tier A has K=7, bound is 6`.
 9. **Standards mapping.** **121 of 121** catalogued classes (40 tool-risk + 81 DLP) carry ≥ 1 ATLAS
    technique id and ≥ 1 OWASP LLM:2026-or-ASI id; the four named AIUC-1 controls (A008, B010.3,
-   B006.3, B006.1) each map to ≥ 1 class; `atlasRelease` is pinned to `v2026.07`. Defeat:
+   B006.3, B006.1) each map to ≥ 1 class; `atlasRelease` is pinned to `2026.08`. Defeat:
    `TestEveryClassCarriesStandardsIds` → RED naming the unmapped class. **Wave −1 Task 6 owns the
    column declaration only; the generated mapping and this test are this wave's.** The 81-class
    denominator exists only after **Wave 1** widens the governed DLP vocabulary from 30 to 81 — before
