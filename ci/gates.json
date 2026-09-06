@@ -48,6 +48,16 @@
       "why": "Mutation proof for the check above: 35 assertions over a real plan mutated on disk, including the discriminating pair that an absent renderer and a renderer encoding 15 produce different verdicts, and the case that found a real hole -- deleting ONE fence end marker merges two fences, silently exempting everything between them, and the guard passed until this case existed."
     },
     {
+      "id": "plan-citations",
+      "script": "ci/lib/plan-citations.mjs",
+      "why": "The M4.7A plan argues from evidence: over a thousand of its sentences point at a file and a line. Two failures of that are silent and both were present. A BARE BASENAME -- `main.ts:429`, `constants.ts:150-165`, `server.go:365` -- names four different files in this workspace, so the claim cannot be checked by a reader or by a script while looking like the most precise evidence there is; 744 citations were in that state. A LINE NUMBER THAT DRIFTED is worse, because it still resolves: the plan's own text said `internal/dlp/dlp.go` was 1510 lines and put `func Redact` at :1479, and on origin/main today the file is 1572 lines and Redact is at :1541. This check requires a repo qualifier on every `path:line` and resolves each one against that repo's origin/main, asserting the line exists. It cannot check that the line SAYS what the plan claims -- that is a reading, not a measurement -- and it prints what it did not look at rather than leaving a green run to imply coverage it does not have."
+    },
+    {
+      "id": "plan-citations-selftest",
+      "script": "ci/lib/plan-citations.test.mjs",
+      "why": "Mutation proof for the check above: 53 assertions over documents written on disk and resolved against the real checkouts, including both halves of the plan's named defeat test (an unqualified basename is a different failure from a line past EOF), the boundary case that citing the last line of a file is not past its end, and a missing checkout reporting NOT MEASURED rather than passing. It hard-codes no line count: the expected file length is measured from origin/main at run time, because the plan's own version of this defeat test pinned 1510 lines and the file has since grown to 1572 -- which would have made the specified defeat test pass, in the task whose whole subject is line numbers that drift."
+    },
+    {
       "id": "vendored-engine-parity",
       "script": "ci/lib/vendored-engine-parity.mjs",
       "why": "The console's AI Security policy playground evaluates admin-typed prompts through a VERBATIM COPY of the endpoint's browser engine. Frontend's vendored-digest.test.ts compares that copy against a manifest sitting beside it -- both halves in the same repo -- so it is structurally incapable of seeing the copy and the manifest agreeing with each other while the Installers source has moved, which is exactly when the console starts demonstrating behaviour the endpoint does not have. The GitHub-side answer, vendored-upstream-drift.yml, is dispatch plus a daily cron and needs a cross-repo token; its per-PR trigger is an owner cost decision owned by Wave -1. Both checkouts are already on disk here, so this asks the question with no token, no network, and nothing a GitHub setting can switch off."
