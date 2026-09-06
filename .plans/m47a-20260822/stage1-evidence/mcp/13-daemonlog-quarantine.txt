@@ -1,0 +1,3 @@
+time=2026-09-06T00:14:12.707+03:00 level=INFO msg="MCP scan posted" servers=3 accepted=3
+time=2026-09-06T00:14:12.999+03:00 level=WARN msg="mcp governance: evidence enqueue failed" eventType=MCP_QUARANTINE_APPLIED server=p47-unknown-harvester error="endpoint evidence spool is unavailable: spool-not-enrolled"
+time=2026-09-06T00:14:13.542+03:00 level=INFO msg="MCP scan posted" servers=2 accepted=2

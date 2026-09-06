@@ -1,0 +1,110 @@
+--- FAIL: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked (0.01s)
+    --- FAIL: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/sc-delete-bare (0.00s)
+        zz_p47_selfdefence_test.go:68: "sc delete devoid" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/sc-delete-exe-quoted (0.00s)
+        zz_p47_selfdefence_test.go:68: "sc.exe delete \"Devoid Daemon\"" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/sc-delete-daemon-service (0.00s)
+        zz_p47_selfdefence_test.go:68: "sc delete devoid-daemon" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/sc-delete-remote (0.00s)
+        zz_p47_selfdefence_test.go:68: "sc \\\\HOST delete devoid" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/sc-delete-mixed-case (0.00s)
+        zz_p47_selfdefence_test.go:68: "SC DELETE DEVOID" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/remove-service-named (0.00s)
+        zz_p47_selfdefence_test.go:68: "Remove-Service -Name devoid" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/remove-service-positional (0.00s)
+        zz_p47_selfdefence_test.go:68: "Remove-Service devoid-daemon" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/schtasks-delete (0.00s)
+        zz_p47_selfdefence_test.go:68: "schtasks /Delete /TN \"Devoid Daemon\" /F" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/schtasks-end (0.00s)
+        zz_p47_selfdefence_test.go:68: "schtasks /End /TN \"Devoid Daemon\"" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/schtasks-legacy-brand (0.00s)
+        zz_p47_selfdefence_test.go:68: "schtasks /Delete /TN \"Cera Daemon\" /F" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/unregister-scheduledtask (0.00s)
+        zz_p47_selfdefence_test.go:68: "Unregister-ScheduledTask -TaskName \"Devoid Daemon\" -Confirm:$false" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/disable-scheduledtask (0.00s)
+        zz_p47_selfdefence_test.go:68: "Disable-ScheduledTask -TaskName \"Devoid Daemon\"" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+--- FAIL: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked (0.01s)
+    --- FAIL: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/del-program-files-exe (0.00s)
+        zz_p47_selfdefence_test.go:68: "del /f /q \"C:\\Program Files\\Devoid\\devoid.exe\"" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/del-daemon-exe (0.00s)
+        zz_p47_selfdefence_test.go:68: "del C:\\ProgramData\\Devoid\\devoid-daemon.exe" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/erase-evidence-writer (0.00s)
+        zz_p47_selfdefence_test.go:68: "erase C:\\ProgramData\\Devoid\\devoid-evidence-writer.exe" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/del-env-program-files (0.00s)
+        zz_p47_selfdefence_test.go:68: "del \"%ProgramFiles%\\Devoid\\devoid.exe\"" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rd-install-dir (0.00s)
+        zz_p47_selfdefence_test.go:68: "rd /s /q \"C:\\Program Files\\Devoid\"" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rmdir-programdata (0.00s)
+        zz_p47_selfdefence_test.go:68: "rmdir /s /q C:\\ProgramData\\Devoid" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/remove-item-programdata (0.00s)
+        zz_p47_selfdefence_test.go:68: "Remove-Item -Recurse -Force C:\\ProgramData\\Devoid" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/ri-alias-programdata (0.00s)
+        zz_p47_selfdefence_test.go:68: "ri C:\\ProgramData\\devoid -Recurse -Force" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/remove-item-localappdata (0.00s)
+        zz_p47_selfdefence_test.go:68: "Remove-Item -Recurse -Force \"$env:LOCALAPPDATA\\Devoid\"" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/remove-item-user-dot-dir (0.00s)
+        zz_p47_selfdefence_test.go:68: "Remove-Item -Recurse -Force C:\\Users\\Owner\\.devoid" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rm-tilde-dot-devoid (0.00s)
+        zz_p47_selfdefence_test.go:68: "rm -rf ~/.devoid" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rm-home-dot-devoid (0.00s)
+        zz_p47_selfdefence_test.go:68: "rm -rf $HOME/.devoid" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rm-quoted-home-dot-devoid (0.00s)
+        zz_p47_selfdefence_test.go:68: "rm -rf \"$HOME/.devoid\"" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rm-braced-home-dot-devoid (0.00s)
+        zz_p47_selfdefence_test.go:68: "rm -rf ${HOME}/.devoid" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rm-opt-install (0.00s)
+        zz_p47_selfdefence_test.go:68: "rm -rf /opt/devoid" produced destructive-rm:high, want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rm-usr-local-bin (0.00s)
+        zz_p47_selfdefence_test.go:68: "rm -rf /usr/local/bin/devoid" produced destructive-rm:high, want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rm-var-lib (0.00s)
+        zz_p47_selfdefence_test.go:68: "rm -rf /var/lib/devoid" produced destructive-rm:high, want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/sudo-rm-opt-install (0.00s)
+        zz_p47_selfdefence_test.go:68: "sudo rm -rf /opt/devoid" produced destructive-rm:high,privilege-escalation:medium, want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/chained-after-separator (0.00s)
+        zz_p47_selfdefence_test.go:68: "cd /tmp && rm -rf ~/.devoid" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/mixed-case (0.00s)
+        zz_p47_selfdefence_test.go:68: "RM -RF ~/.DEVOID" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+--- FAIL: TestP47SelfDisable_ProductDisableVerbsAreBlocked (0.00s)
+    --- FAIL: TestP47SelfDisable_ProductDisableVerbsAreBlocked/daemon-stop (0.00s)
+        zz_p47_selfdefence_test.go:68: "devoid daemon stop" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_ProductDisableVerbsAreBlocked/daemon-stop-exe (0.00s)
+        zz_p47_selfdefence_test.go:68: "devoid.exe daemon stop" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_ProductDisableVerbsAreBlocked/daemon-stop-sudo (0.00s)
+        zz_p47_selfdefence_test.go:68: "sudo devoid daemon stop" produced privilege-escalation:medium, want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_ProductDisableVerbsAreBlocked/daemon-stop-abs-path (0.00s)
+        zz_p47_selfdefence_test.go:68: "/usr/local/bin/devoid daemon stop" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_ProductDisableVerbsAreBlocked/daemon-stop-after-separator (0.00s)
+        zz_p47_selfdefence_test.go:68: "cd /tmp; devoid daemon stop" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_ProductDisableVerbsAreBlocked/daemon-stop-nested-shell (0.00s)
+        zz_p47_selfdefence_test.go:68: "sh -c 'devoid daemon stop'" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_ProductDisableVerbsAreBlocked/setup-remove-daemon (0.00s)
+        zz_p47_selfdefence_test.go:68: "devoid setup remove-daemon" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_ProductDisableVerbsAreBlocked/setup-cleanup (0.00s)
+        zz_p47_selfdefence_test.go:68: "devoid setup cleanup" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_ProductDisableVerbsAreBlocked/setup-unpatch-profile (0.00s)
+        zz_p47_selfdefence_test.go:68: "devoid setup unpatch-profile" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+    --- FAIL: TestP47SelfDisable_ProductDisableVerbsAreBlocked/mixed-case (0.00s)
+        zz_p47_selfdefence_test.go:68: "DEVOID DAEMON STOP" produced (none), want devoid-self-disable. Disabling the agent must not be reachable through a spelling the class happens not to name.
+--- FAIL: TestP47QuotedHomeRoot_IsDestructive (0.00s)
+    --- FAIL: TestP47QuotedHomeRoot_IsDestructive/dquoted-home (0.00s)
+        zz_p47_selfdefence_test.go:261: "rm -rf \"$HOME\"" produced (none), want destructive-rm. Double quotes suppress word splitting and pathname expansion; they do not suppress parameter expansion, so this deletes exactly what the bare spelling deletes.
+    --- FAIL: TestP47QuotedHomeRoot_IsDestructive/dquoted-home-trailing-slash (0.00s)
+        zz_p47_selfdefence_test.go:261: "rm -rf \"$HOME/\"" produced (none), want destructive-rm. Double quotes suppress word splitting and pathname expansion; they do not suppress parameter expansion, so this deletes exactly what the bare spelling deletes.
+    --- FAIL: TestP47QuotedHomeRoot_IsDestructive/dquoted-braced-home (0.00s)
+        zz_p47_selfdefence_test.go:261: "rm -rf \"${HOME}\"" produced (none), want destructive-rm. Double quotes suppress word splitting and pathname expansion; they do not suppress parameter expansion, so this deletes exactly what the bare spelling deletes.
+    --- FAIL: TestP47QuotedHomeRoot_IsDestructive/dquoted-braced-home-trailing-slash (0.00s)
+        zz_p47_selfdefence_test.go:261: "rm -rf \"${HOME}/\"" produced (none), want destructive-rm. Double quotes suppress word splitting and pathname expansion; they do not suppress parameter expansion, so this deletes exactly what the bare spelling deletes.
+    --- FAIL: TestP47QuotedHomeRoot_IsDestructive/dquoted-home-credential-store (0.00s)
+        zz_p47_selfdefence_test.go:261: "rm -rf \"$HOME/.ssh\"" produced (none), want destructive-rm. Double quotes suppress word splitting and pathname expansion; they do not suppress parameter expansion, so this deletes exactly what the bare spelling deletes.
+    --- FAIL: TestP47QuotedHomeRoot_IsDestructive/dquoted-home-aws-credentials (0.00s)
+        zz_p47_selfdefence_test.go:261: "rm -rf \"$HOME/.aws/credentials\"" produced (none), want destructive-rm. Double quotes suppress word splitting and pathname expansion; they do not suppress parameter expansion, so this deletes exactly what the bare spelling deletes.
+    --- FAIL: TestP47QuotedHomeRoot_IsDestructive/unquoted-glob-outside-quotes (0.00s)
+        zz_p47_selfdefence_test.go:261: "rm -rf \"$HOME\"/*" produced (none), want destructive-rm. Double quotes suppress word splitting and pathname expansion; they do not suppress parameter expansion, so this deletes exactly what the bare spelling deletes.
+    --- FAIL: TestP47QuotedHomeRoot_IsDestructive/separate-flags (0.00s)
+        zz_p47_selfdefence_test.go:261: "rm -r -f \"$HOME\"" produced (none), want destructive-rm. Double quotes suppress word splitting and pathname expansion; they do not suppress parameter expansion, so this deletes exactly what the bare spelling deletes.
+    --- FAIL: TestP47QuotedHomeRoot_IsDestructive/long-flag (0.00s)
+        zz_p47_selfdefence_test.go:261: "rm --recursive --force \"$HOME\"" produced (none), want destructive-rm. Double quotes suppress word splitting and pathname expansion; they do not suppress parameter expansion, so this deletes exactly what the bare spelling deletes.
+FAIL
+FAIL	github.com/codefense/cli-wrapper/internal/toolrisk	3.542s
+FAIL
+exit=1

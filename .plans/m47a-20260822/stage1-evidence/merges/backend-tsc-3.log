@@ -1,0 +1,39 @@
+
+<--- Last few GCs --->
+
+[14160:000001D420451000]    93931 ms: Scavenge (during sweeping) 410.6 (477.7) -> 394.6 (503.9) MB, pooled: 0.0 MB, 321.85 / 4.69 ms (average mu = 0.999, current mu = 1.000) allocation failure; 
+[14160:000001D420451000]    96721 ms: Scavenge (during sweeping) 437.8 (504.3) -> 419.9 (525.8) MB, pooled: 0.0 MB, 48.35 / 0.11 ms (average mu = 0.999, current mu = 1.000) allocation failure; 
+
+FATAL ERROR: Zone Allocation failed - process out of memory
+----- Native stack trace -----
+
+ 1: 00007FF7D3B1B106 node::OnFatalError+1318
+ 2: 00007FF7D46B9C67 v8::Function::NewInstance+423
+ 3: 00007FF7D4078303 v8::SnapshotCreator::GetIsolate+57619
+ 4: 00007FF7D50E49FC v8::base::DiyFp::Multiply+425884
+ 5: 00007FF7D54D0F27 v8::base::DiyFp::Multiply+4539591
+ 6: 00007FF7D54D05EB v8::base::DiyFp::Multiply+4537227
+ 7: 00007FF7D54D0656 v8::base::DiyFp::Multiply+4537334
+ 8: 00007FF7D54E8726 v8::base::DiyFp::Multiply+4635846
+ 9: 00007FF7D54FEFE5 v8::base::DiyFp::Multiply+4728197
+10: 00007FF7D5520C3B v8::base::DiyFp::Multiply+4866523
+11: 00007FF7D54CE24E v8::base::DiyFp::Multiply+4528110
+12: 00007FF7D54CA61C v8::base::DiyFp::Multiply+4512700
+13: 00007FF7D54C61C7 v8::base::DiyFp::Multiply+4495207
+14: 00007FF7D54C5D39 v8::base::DiyFp::Multiply+4494041
+15: 00007FF7D54C57F4 v8::base::DiyFp::Multiply+4492692
+16: 00007FF7D54C4BDF v8::base::DiyFp::Multiply+4489599
+17: 00007FF7D54C485E v8::base::DiyFp::Multiply+4488702
+18: 00007FF7D50E1533 v8::base::DiyFp::Multiply+412371
+19: 00007FF7D50D832F v8::base::DiyFp::Multiply+374991
+20: 00007FF7D50D775A v8::base::DiyFp::Multiply+371962
+21: 00007FF7D46474BF v8::internal::ThreadIsolation::LookupJumpTableAllocations+232575
+22: 00007FF7D4608753 v8::internal::OptimizingCompileTaskExecutor::RunCompilationJob+371
+23: 00007FF7D4609CFE v8::internal::OptimizingCompileInputQueue::Prioritize+974
+24: 00007FF7D4EB6B3F v8::base::SysInfo::AddressSpaceEnd+3199
+25: 00007FF7D3A69D2E v8::base::VirtualAddressSubspace::ActiveMemoryProtectionKey+33598
+26: 00007FF7D47108B6 uv_thread_detach+150
+27: 00007FF7D5ABB363 v8::base::DiyFp::Multiply+10742019
+28: 00007FFEBC3CCCB7 BaseThreadInitThunk+23
+29: 00007FFEBDC0AD6C RtlUserThreadStart+44
+tsc_rc=134

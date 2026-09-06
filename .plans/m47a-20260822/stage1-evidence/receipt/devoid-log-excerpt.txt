@@ -1,0 +1,57 @@
+# devoid.log excerpt (local time +03:00) — the restart overlap
+7:time=2026-09-05T22:03:24.068+03:00 level=INFO msg="Daemon starting" addr=127.0.0.1:19390 scheme=http version=dev pid=7772
+39:time=2026-09-05T22:05:43.164+03:00 level=INFO msg="Daemon graceful shutdown requested through authenticated loopback API"
+40:time=2026-09-05T22:05:43.164+03:00 level=INFO msg="Self-update: release channel check loop stopped"
+44:time=2026-09-05T22:06:15.850+03:00 level=INFO msg="Daemon starting" addr=127.0.0.1:19390 scheme=http version=7.10.99 pid=15588
+75:time=2026-09-05T22:06:33.898+03:00 level=INFO msg="endpoint inventory sweep recorded" user=owner items=1834 rootsWalked=14 unreadableRoots=0 coverageState=complete agentVersion=dev
+77:time=2026-09-05T22:07:05.209+03:00 level=INFO msg="Endpoint inventory posted" items=1834 findings=0 chunks=10
+78:time=2026-09-05T22:07:05.209+03:00 level=INFO msg="endpoint inventory posted" user=owner items=1834 findings=0
+79:time=2026-09-05T22:07:05.209+03:00 level=WARN msg="AI inventory sweep coverage UNKNOWN — stopped waiting before the walk returned" reasons=inventory-walk-truncated causes=sweep-abandoned-before-return
+81:time=2026-09-05T22:07:05.308+03:00 level=INFO msg="MCP scan posted" servers=3 accepted=3
+82:time=2026-09-05T22:07:05.332+03:00 level=INFO msg="Daemon stopped"
+140:time=2026-09-05T22:38:12.454+03:00 level=WARN msg="endpoint evidence spool unavailable" reason=agent-not-enrolled-or-spool-unavailable
+143:time=2026-09-05T22:38:12.511+03:00 level=INFO msg="Daemon starting" addr=127.0.0.1:19390 scheme=http version=7.10.99 pid=10316
+781:time=2026-09-05T23:57:54.979+03:00 level=INFO msg="Daemon starting" addr=127.0.0.1:19390 scheme=http version=7.10.99 pid=16476
+
+# first and last 'spool unavailable' warnings
+140:time=2026-09-05T22:38:12.454+03:00 level=WARN msg="endpoint evidence spool unavailable" reason=agent-not-enrolled-or-spool-unavailable
+1127:time=2026-09-06T00:08:31.999+03:00 level=WARN msg="endpoint evidence spool unavailable" reason=agent-not-enrolled-or-spool-unavailable
+count: 401
+
+# evidence that was dropped because the spool would not open
+174:time=2026-09-05T22:38:13.269+03:00 level=WARN msg="mcp governance: evidence enqueue failed" eventType=MCP_SERVER_BLOCKED server=nanobanana error="endpoint evidence spool is unavailable: spool-not-enrolled"
+177:time=2026-09-05T22:38:23.925+03:00 level=WARN msg="daemon AI: session lifecycle evidence enqueue failed" eventType=SESSION_STARTED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+198:time=2026-09-05T22:38:25.146+03:00 level=WARN msg="daemon AI: ingress evidence enqueue failed" eventType=INGRESS_MONITORED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+201:time=2026-09-05T22:38:25.588+03:00 level=WARN msg="daemon AI: ingress evidence enqueue failed" eventType=CONTEXT_TAINTED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+206:time=2026-09-05T22:38:25.846+03:00 level=WARN msg="daemon AI: session lifecycle evidence enqueue failed" eventType=SESSION_ENDED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+805:time=2026-09-05T23:57:55.665+03:00 level=WARN msg="mcp governance: evidence enqueue failed" eventType=MCP_SERVER_BLOCKED server=nanobanana error="endpoint evidence spool is unavailable: spool-not-enrolled"
+849:time=2026-09-06T00:04:53.368+03:00 level=WARN msg="daemon AI: session lifecycle evidence enqueue failed" eventType=SESSION_STARTED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+870:time=2026-09-06T00:04:54.900+03:00 level=WARN msg="daemon AI: ingress evidence enqueue failed" eventType=INGRESS_MONITORED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+873:time=2026-09-06T00:04:55.135+03:00 level=WARN msg="daemon AI: ingress evidence enqueue failed" eventType=INGRESS_MONITORED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+878:time=2026-09-06T00:04:55.987+03:00 level=WARN msg="daemon AI: ingress evidence enqueue failed" eventType=CONTEXT_TAINTED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+883:time=2026-09-06T00:04:56.257+03:00 level=WARN msg="daemon AI: session lifecycle evidence enqueue failed" eventType=SESSION_ENDED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+889:time=2026-09-06T00:05:25.674+03:00 level=WARN msg="daemon AI: session lifecycle evidence enqueue failed" eventType=SESSION_STARTED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+893:time=2026-09-06T00:05:25.971+03:00 level=WARN msg="daemon AI: session lifecycle evidence enqueue failed" eventType=SESSION_ENDED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+896:time=2026-09-06T00:05:26.201+03:00 level=WARN msg="daemon AI: session lifecycle evidence enqueue failed" eventType=SESSION_STARTED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+900:time=2026-09-06T00:05:26.466+03:00 level=WARN msg="daemon AI: session lifecycle evidence enqueue failed" eventType=SESSION_ENDED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+903:time=2026-09-06T00:05:26.692+03:00 level=WARN msg="daemon AI: session lifecycle evidence enqueue failed" eventType=SESSION_STARTED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+907:time=2026-09-06T00:05:26.956+03:00 level=WARN msg="daemon AI: session lifecycle evidence enqueue failed" eventType=SESSION_ENDED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+910:time=2026-09-06T00:05:27.183+03:00 level=WARN msg="daemon AI: session lifecycle evidence enqueue failed" eventType=SESSION_STARTED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+914:time=2026-09-06T00:05:27.449+03:00 level=WARN msg="daemon AI: session lifecycle evidence enqueue failed" eventType=SESSION_ENDED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+917:time=2026-09-06T00:05:51.611+03:00 level=WARN msg="daemon AI: session lifecycle evidence enqueue failed" eventType=SESSION_STARTED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+920:time=2026-09-06T00:05:51.881+03:00 level=WARN msg="daemon AI: session lifecycle evidence enqueue failed" eventType=SESSION_STARTED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+960:time=2026-09-06T00:05:54.485+03:00 level=WARN msg="daemon AI: ingress evidence enqueue failed" eventType=INGRESS_MONITORED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+962:time=2026-09-06T00:05:54.715+03:00 level=WARN msg="daemon AI: ingress evidence enqueue failed" eventType=INGRESS_MONITORED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+964:time=2026-09-06T00:05:54.948+03:00 level=WARN msg="daemon AI: ingress evidence enqueue failed" eventType=INGRESS_MONITORED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+970:time=2026-09-06T00:05:55.794+03:00 level=WARN msg="daemon AI: ingress evidence enqueue failed" eventType=CONTEXT_TAINTED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+972:time=2026-09-06T00:05:56.020+03:00 level=WARN msg="daemon AI: ingress evidence enqueue failed" eventType=INGRESS_MONITORED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+975:time=2026-09-06T00:05:56.456+03:00 level=WARN msg="daemon AI: ingress evidence enqueue failed" eventType=CONTEXT_TAINTED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+980:time=2026-09-06T00:05:56.729+03:00 level=WARN msg="daemon AI: session lifecycle evidence enqueue failed" eventType=SESSION_ENDED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+985:time=2026-09-06T00:05:56.978+03:00 level=WARN msg="daemon AI: session lifecycle evidence enqueue failed" eventType=SESSION_ENDED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+998:time=2026-09-06T00:07:45.949+03:00 level=WARN msg="mcp governance: evidence enqueue failed" eventType=MCP_SERVER_BLOCKED server=p47-unknown-harvester error="endpoint evidence spool is unavailable: spool-not-enrolled"
+1006:time=2026-09-06T00:07:53.212+03:00 level=WARN msg="daemon AI: session lifecycle evidence enqueue failed" eventType=SESSION_STARTED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+1111:time=2026-09-06T00:08:30.350+03:00 level=WARN msg="daemon AI: ingress evidence enqueue failed" eventType=INGRESS_MONITORED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+1117:time=2026-09-06T00:08:30.743+03:00 level=WARN msg="daemon AI: ingress evidence enqueue failed" eventType=INGRESS_MONITORED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+1119:time=2026-09-06T00:08:30.974+03:00 level=WARN msg="daemon AI: ingress evidence enqueue failed" eventType=INGRESS_REDACTED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+1122:time=2026-09-06T00:08:31.418+03:00 level=WARN msg="daemon AI: ingress evidence enqueue failed" eventType=CONTEXT_TAINTED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+1128:time=2026-09-06T00:08:32.000+03:00 level=WARN msg="daemon AI permission: evidence enqueue failed" eventType=TOOL_CALL_BLOCKED error="endpoint evidence spool is unavailable: spool-not-enrolled"

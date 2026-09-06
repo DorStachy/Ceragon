@@ -1,0 +1,432 @@
+--- FAIL: TestDirectEgressWitnessRecordsOffRouteEgressWhenEnabled (0.58s)
+    ai_direct_egress_witness_test.go:133: the observation did not reach the ledger
+    testing.go:1369: TempDir RemoveAll cleanup: unlinkat C:\Users\Owner\AppData\Local\Temp\TestDirectEgressWitnessRecordsOffRouteEgressWhenEnabled2210331866\001\network-enforcement\policy.json: Insufficient system resources exist to complete the requested service.
+--- FAIL: TestEndTrackedAISessions_BoundedFanOutCompletesInTimeBox (5.28s)
+    ai_session_track_test.go:136: ended 763 sessions, want all 1024 within the box (elapsed 5.002612s)
+    testing.go:1369: TempDir RemoveAll cleanup: unlinkat C:\Users\Owner\AppData\Local\Temp\TestEndTrackedAISessions_BoundedFanOutCompletesInTimeBox3606354342\001\evidence-spool\550e8400-e29b-41d4-a716-446655440000: The directory is not empty.
+time=2026-09-06T01:10:29.847+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=5a3cd096-ba2d-42c4-bef8-26b1e928328f error="backend status 404"
+time=2026-09-06T01:10:30.989+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=b9f07f30-5191-461d-a2c0-7a9ce43676e0 error="backend status 404"
+time=2026-09-06T01:10:31.239+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=599b1784-6bb9-4d27-ab7c-061d832410de error="backend status 404"
+time=2026-09-06T01:10:32.924+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=45s retryAfterFromServer=true backingOffFor=45s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T01:10:32.937+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode="(absent — not from the app throttler)" retryAfter=0s retryAfterFromServer=false backingOffFor=5s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T01:10:32.952+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=30s retryAfterFromServer=true backingOffFor=30s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T01:10:32.954+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=30s retryAfterFromServer=true backingOffFor=36s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T01:10:33.088+03:00 level=WARN msg="AI tool-check post failed" toolName=Bash localDecision=block localFindings=2 error="backend status 429: ThrottlerException: Too Many Requests"
+time=2026-09-06T01:10:33.088+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=30s retryAfterFromServer=true backingOffFor=31s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T01:10:33.088+03:00 level=WARN msg="daemon AI tool-decision: control plane THROTTLED this report; using local decision" toolName=Bash decision=block backendReconciliation=unavailable
+time=2026-09-06T01:10:33.207+03:00 level=WARN msg="AI tool-check post failed" toolName=Read localDecision=allow localFindings=0 error="backend status 429: ThrottlerException: Too Many Requests"
+time=2026-09-06T01:10:33.207+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=30s retryAfterFromServer=true backingOffFor=30s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T01:10:33.207+03:00 level=WARN msg="daemon AI tool-decision: control plane THROTTLED this report; using local decision" toolName=Read decision=allow backendReconciliation=unavailable
+time=2026-09-06T01:10:33.478+03:00 level=WARN msg="AI tool-check post failed" toolName=Bash localDecision=block localFindings=2 error="backend status 429: ThrottlerException: Too Many Requests"
+time=2026-09-06T01:10:33.479+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=1m0s retryAfterFromServer=true backingOffFor=1m4s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T01:10:33.479+03:00 level=WARN msg="daemon AI tool-decision: control plane THROTTLED this report; using local decision" toolName=Bash decision=block backendReconciliation=unavailable
+time=2026-09-06T01:10:33.562+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=30s retryAfterFromServer=true backingOffFor=32s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T01:10:33.690+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=30s retryAfterFromServer=true backingOffFor=35s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T01:10:33.784+03:00 level=WARN msg="AI tool-check post failed" toolName=Read localDecision=allow localFindings=0 error="backend status 429: ThrottlerException: Too Many Requests"
+time=2026-09-06T01:10:33.784+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=1m30s retryAfterFromServer=true backingOffFor=1m43s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T01:10:33.784+03:00 level=WARN msg="daemon AI tool-decision: control plane THROTTLED this report; using local decision" toolName=Read decision=allow backendReconciliation=unavailable
+time=2026-09-06T01:10:35.756+03:00 level=WARN msg="AI policy fetch failed" error="http: dial tcp 127.0.0.1:49798: connectex: No connection could be made because the target machine actively refused it."
+time=2026-09-06T01:10:35.949+03:00 level=WARN msg="AI tool-check post failed" toolName=Bash localDecision=block localFindings=2 error="http: dial tcp 127.0.0.1:49798: connectex: No connection could be made because the target machine actively refused it."
+time=2026-09-06T01:10:35.959+03:00 level=WARN msg="daemon AI tool-decision: backend report failed; using local decision" toolName=Bash decision=block error="http: dial tcp 127.0.0.1:49798: connectex: No connection could be made because the target machine actively refused it." backendReconciliation=unavailable
+time=2026-09-06T01:10:37.136+03:00 level=WARN msg="tool-hold approval: the effect of this action could not be determined; the hold stands" reason=effect-inspection-incomplete requestId=22222222-2222-4222-8222-222222222222
+time=2026-09-06T01:10:39.016+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=c9361323-482a-40d0-a085-d0b8738fa71a error="backend status 503: no reviewer available for this org"
+time=2026-09-06T01:10:39.080+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=1c416c8d-ce44-4e57-8028-b503556d72ca error="backend status 503: no reviewer available for this org"
+time=2026-09-06T01:10:49.591+03:00 level=WARN msg="tool-hold approval: the stored record's resolved effect does not match this invocation; the hold stands" reason=normalized-effect-mismatch requestId=22222222-2222-4222-8222-222222222222
+time=2026-09-06T01:10:51.988+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=dfb49f8a-3bad-40a4-9f32-514cd42f2277 error="backend status 404"
+time=2026-09-06T01:10:53.798+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=29b89955-bd1e-4cdd-a3f1-122dad5b3705 error="backend status 404"
+time=2026-09-06T01:10:53.905+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=564baf8d-2a87-4a52-b37a-29ed677621f4 error="backend status 404"
+time=2026-09-06T01:10:54.425+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=afe3b231-5ffe-4d93-afd9-5433f3babb77 error="backend status 404"
+time=2026-09-06T01:10:57.734+03:00 level=ERROR msg="AI policy trust convergence refused: this daemon process may not write the machine-scoped endpoint signing key" posture=V1_DEGRADED issue=unprivileged-converge-actor
+time=2026-09-06T01:10:57.736+03:00 level=ERROR msg="AI policy trust convergence refused: this daemon process may not write the machine-scoped endpoint signing key" posture=V1_DEGRADED issue=unprivileged-converge-actor
+time=2026-09-06T01:10:57.786+03:00 level=ERROR msg="AI policy trust refresh did not converge; endpoint remains truthful V1/degraded" error="AI trust endpoint returned HTTP 409 (errorCode=AI_TRUST_ANCHOR_KEY_SUBSTITUTION)" posture=V1_DEGRADED firstBootstrap=true
+time=2026-09-06T01:10:57.867+03:00 level=ERROR msg="AI policy trust refresh did not converge; endpoint remains truthful V1/degraded" error="ack endpoint unreachable" posture=V1_DEGRADED firstBootstrap=false
+time=2026-09-06T01:10:57.895+03:00 level=ERROR msg="AI policy trust refresh did not converge; endpoint remains truthful V1/degraded" error="empty result" posture=V1_DEGRADED firstBootstrap=false
+time=2026-09-06T01:11:13.304+03:00 level=WARN msg="DEVOID_SKIP_AI_HOOKS HONORED — this endpoint is cooperative, so the local opt-out applies and DeVoid AI controls are NOT being reconciled. Recorded as a local disablement." surface=daemon-reconcile control=SIGNED_POLICY reason=LOCAL_OPTOUT_ATTEMPT allowed=true
+time=2026-09-06T01:11:14.450+03:00 level=WARN msg="non-interactive profile coverage not recorded: the per-user map is reserved for reporting users beyond this point" profile=dormant32 budget=32
+time=2026-09-06T01:11:14.470+03:00 level=WARN msg="non-interactive profile coverage not recorded: the per-user map is reserved for reporting users beyond this point" profile=dormant33 budget=32
+time=2026-09-06T01:11:14.486+03:00 level=WARN msg="non-interactive profile coverage not recorded: the per-user map is reserved for reporting users beyond this point" profile=dormant34 budget=32
+time=2026-09-06T01:11:14.492+03:00 level=WARN msg="non-interactive profile coverage not recorded: the per-user map is reserved for reporting users beyond this point" profile=dormant35 budget=32
+time=2026-09-06T01:11:14.605+03:00 level=WARN msg="endpoint inventory: profile stamp refused, path exceeds the bound" bytes=4105 max=4096
+time=2026-09-06T01:11:14.837+03:00 level=ERROR msg="Daemon cannot start: loopback port already in use" addr=127.0.0.1:53050 port=53050 hint="another process is holding this port (e.g. a stale devoid daemon, or a WSL/Docker port forward); stop that process or set DEVOID_DAEMON_PORT to a free port"
+time=2026-09-06T01:11:15.838+03:00 level=WARN msg="codex vendor hook fail-open observed since the last heartbeat" discarded=1 delivered=9 unobservedTier=hook-never-spawned detail="vendor hook fail-open: 1 invocation(s) were spawned and delivered no decision — those actions ran ungoverned (over 9 delivered decision(s)) · NOT MEASURED by this observer: hook-never-spawned (an invocation the client never spawned leaves no spawn-side trace)"
+time=2026-09-06T01:11:15.916+03:00 level=WARN msg="codex vendor hook fail-open is NOT MEASURED while hooks are running on this endpoint" reason=vendor-fail-open-not-measured delivered=31 detail="vendor hook fail-open: NOT MEASURED (no hook invocation has ever been observed on this endpoint) — no count is available from this endpoint; this is not a zero · 1 user profile(s) NOT MEASURED: their invocations are outside every count above · NOT MEASURED by this observer: hook-never-spawned (an invocation the client never spawned leaves no spawn-side trace)"
+time=2026-09-06T01:11:16.007+03:00 level=WARN msg="codex vendor hook fail-open observed since the last heartbeat" discarded=1 delivered=2 unobservedTier=hook-never-spawned detail="vendor hook fail-open: 1 invocation(s) were spawned and delivered no decision — those actions ran ungoverned (over 2 delivered decision(s)) · NOT MEASURED by this observer: hook-never-spawned (an invocation the client never spawned leaves no spawn-side trace)"
+time=2026-09-06T01:11:16.048+03:00 level=WARN msg="codex vendor hook fail-open is NOT MEASURED while hooks are running on this endpoint" reason=vendor-fail-open-not-measured delivered=100 detail="vendor hook fail-open: NOT MEASURED (no hook invocation has ever been observed on this endpoint) — no count is available from this endpoint; this is not a zero · 1 user profile(s) NOT MEASURED: their invocations are outside every count above · NOT MEASURED by this observer: hook-never-spawned (an invocation the client never spawned leaves no spawn-side trace)"
+time=2026-09-06T01:11:16.529+03:00 level=WARN msg="codex machine baseline: hook commands were migrated but the machine-owner DACL did NOT land — the baseline that pins allow_managed_hooks_only is left with the ACL it inherited from %ProgramData%, which grants BUILTIN\\Users write. Re-run 'devoid ai codex-machine install' from an elevated shell" repaired_commands=5
+time=2026-09-06T01:11:16.533+03:00 level=WARN msg="Self-update: release channel check loop NOT started — this endpoint will not update itself" autoUpdate=true credentialsValid=false runningVersion=test-cx3
+time=2026-09-06T01:11:17.662+03:00 level=WARN msg="AI prompt-check post failed" decision=allow findings=0 error="http: unsupported protocol scheme \"\""
+time=2026-09-06T01:11:17.662+03:00 level=WARN msg="daemon AI prompt-check: backend report failed; using local decision" decision=allow error="http: unsupported protocol scheme \"\"" backendReconciliation=unavailable
+time=2026-09-06T01:11:17.747+03:00 level=WARN msg="AI tool-check post failed" toolName=unnamed-tool localDecision=allow localFindings=0 error="http: unsupported protocol scheme \"\""
+time=2026-09-06T01:11:17.747+03:00 level=WARN msg="daemon AI tool-decision: backend report failed; using local decision" toolName="" decision=allow error="http: unsupported protocol scheme \"\"" backendReconciliation=unavailable
+time=2026-09-06T01:11:18.189+03:00 level=ERROR msg="daemon: machine capability-token hardening failed; mutating IPC is locked" error="injected ACL failure" path=C:\Users\Owner\AppData\Local\Temp\TestLoadOrCreateDaemonTokenLocksClosedWhenExistingMachineTokenCa1567722326\001\machine\daemon-token
+time=2026-09-06T01:11:18.196+03:00 level=ERROR msg="daemon: machine capability-token hardening failed after creation; mutating IPC is locked" error="injected ACL failure" path=C:\Users\Owner\AppData\Local\Temp\TestLoadOrCreateDaemonTokenRemovesFreshMachineTokenWhenHardening2356877343\001\machine\daemon-token
+time=2026-09-06T01:11:18.324+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:11:18.324+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.324+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.324+03:00 level=ERROR msg="Agent deregistered self-uninstall TRIGGERED: the backend has consistently reported this agent as removed from the DeVoid console; removing the agent from this machine via the privileged detached uninstall path" consecutive=3 requiredConsecutive=3 streakElapsed=10m0s requiredSpan=10m0s
+time=2026-09-06T01:11:18.328+03:00 level=WARN msg="Agent deregistered self-uninstall: already launched; waiting for the detached uninstall child to stop this daemon" consecutive=4 streakElapsed=11m0s
+time=2026-09-06T01:11:18.328+03:00 level=WARN msg="Agent deregistered self-uninstall: already launched; waiting for the detached uninstall child to stop this daemon" consecutive=5 streakElapsed=12m0s
+time=2026-09-06T01:11:18.345+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:11:18.346+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.346+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=1m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=9m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.346+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=3 requiredConsecutive=3 streakElapsed=2m0s requiredSpan=10m0s heartbeatsRemaining=0 timeRemaining=8m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.346+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=4 requiredConsecutive=3 streakElapsed=3m0s requiredSpan=10m0s heartbeatsRemaining=0 timeRemaining=7m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.346+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=5 requiredConsecutive=3 streakElapsed=4m0s requiredSpan=10m0s heartbeatsRemaining=0 timeRemaining=6m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.346+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=6 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=0 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.346+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=7 requiredConsecutive=3 streakElapsed=6m0s requiredSpan=10m0s heartbeatsRemaining=0 timeRemaining=4m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.346+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=8 requiredConsecutive=3 streakElapsed=7m0s requiredSpan=10m0s heartbeatsRemaining=0 timeRemaining=3m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.346+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=9 requiredConsecutive=3 streakElapsed=8m0s requiredSpan=10m0s heartbeatsRemaining=0 timeRemaining=2m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.346+03:00 level=ERROR msg="Agent deregistered self-uninstall TRIGGERED: the backend has consistently reported this agent as removed from the DeVoid console; removing the agent from this machine via the privileged detached uninstall path" consecutive=10 requiredConsecutive=3 streakElapsed=10m0s requiredSpan=10m0s
+time=2026-09-06T01:11:18.362+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:11:18.362+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.362+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.362+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.362+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.378+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:11:18.379+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:11:18.380+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.380+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.380+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.399+03:00 level=WARN msg="Heartbeat returned non-OK status" status=500 body="{\"message\":\"boom\"}"
+time=2026-09-06T01:11:18.401+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:11:18.401+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.401+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.401+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.419+03:00 level=WARN msg="Heartbeat returned non-OK status" status=503 body=""
+time=2026-09-06T01:11:18.423+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:11:18.423+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.423+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.423+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.442+03:00 level=ERROR msg="Heartbeat HTTP request failed" error="Post \"http://127.0.0.1:53077/api/v1/key-heartbeat\": dial tcp 127.0.0.1:53077: connectex: No connection could be made because the target machine actively refused it."
+time=2026-09-06T01:11:18.443+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:11:18.443+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.443+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.443+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.463+03:00 level=WARN msg="Heartbeat returned non-OK status" status=410 body="{\"error\":\"Gone\",\"message\":\"This agent has been removed from the DeVoid console. The agent should uninstall itself.\"}"
+time=2026-09-06T01:11:18.465+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:11:18.466+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.466+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.466+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.481+03:00 level=WARN msg="Heartbeat returned non-OK status" status=410 body=<html>410</html>
+time=2026-09-06T01:11:18.483+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:11:18.484+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.484+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.484+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.500+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"errorCode\":\"AGENT_DEREGISTERED\",\"message\":\"x\"}"
+time=2026-09-06T01:11:18.502+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:11:18.503+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.503+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.503+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.522+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:11:18.522+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=2 streakElapsed=0s requiredSpan=20ms heartbeatsRemaining=1 timeRemaining=0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:18.547+03:00 level=ERROR msg="Agent deregistered self-uninstall TRIGGERED: the backend has consistently reported this agent as removed from the DeVoid console; removing the agent from this machine via the privileged detached uninstall path" consecutive=2 requiredConsecutive=2 streakElapsed=0s requiredSpan=20ms
+time=2026-09-06T01:11:22.368+03:00 level=WARN msg="endpoint is not reporting runtime integrity; the backend will read it as unknown" reason="integrity store not open"
+time=2026-09-06T01:11:22.372+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:11:22.372+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:22.512+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:11:22.512+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:11:22.664+03:00 level=WARN msg="Endpoint inventory post failed" items=1 postedSoFar=0 chunks=1 error="backend status 404"
+time=2026-09-06T01:11:22.799+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:11:22.799+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+panic: test timed out after 10m0s
+	running tests:
+		TestSendHeartbeat_DeregisteredEndToEnd (4s)
+
+goroutine 7319 [running]:
+testing.(*M).startAlarm.func1()
+	C:/Program Files/Go/src/testing/testing.go:2682 +0x345
+created by time.goFunc
+	C:/Program Files/Go/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc000504700, {0x7ff78ceb4cc7?, 0x7ffebc3c26f0?}, 0x7ff78d003e08)
+	C:/Program Files/Go/src/testing/testing.go:2005 +0x469
+testing.runTests.func1(0xc000504700)
+	C:/Program Files/Go/src/testing/testing.go:2477 +0x37
+testing.tRunner(0xc000504700, 0xc0007afb90)
+	C:/Program Files/Go/src/testing/testing.go:1934 +0xc3
+testing.runTests(0xc000726078, {0x7ff78d7c5d40, 0x5d7, 0x5d7}, {0x7ff78c2aa799?, 0xc0000021c0?, 0x7ff78d7d1de0?})
+	C:/Program Files/Go/src/testing/testing.go:2475 +0x4b4
+testing.(*M).Run(0xc0001780a0)
+	C:/Program Files/Go/src/testing/testing.go:2337 +0x63a
+github.com/codefense/cli-wrapper/internal/daemon.TestMain(0xc0001780a0)
+	C:/cwt/p47-fix-exfil/internal/daemon/testmain_test.go:74 +0x345
+main.main()
+	_testmain.go:3035 +0xa5
+
+goroutine 7293 [IO wait]:
+internal/poll.runtime_pollWait(0x16d80140a00, 0x72)
+	C:/Program Files/Go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xdd0?, 0x7ff78c23ca26?, 0x0)
+	C:/Program Files/Go/src/internal/poll/fd_poll_runtime.go:84 +0x27
+internal/poll.waitIO(0x0?)
+	C:/Program Files/Go/src/internal/poll/fd_windows.go:187 +0x65
+internal/poll.execIO(0xc0015c6f20, 0xc000987bd0)
+	C:/Program Files/Go/src/internal/poll/fd_windows.go:240 +0x13a
+internal/poll.(*FD).acceptOne(0xc0015c6f08, 0xe30, {0xc00164eb40?, 0xc000987c30?, 0x7ff78c2f8025?}, 0xc000987c64?)
+	C:/Program Files/Go/src/internal/poll/fd_windows.go:1059 +0x65
+internal/poll.(*FD).Accept(0xc0015c6f08, 0xc000987db0)
+	C:/Program Files/Go/src/internal/poll/fd_windows.go:1093 +0x1b6
+net.(*netFD).accept(0xc0015c6f08)
+	C:/Program Files/Go/src/net/fd_windows.go:202 +0x4b
+net.(*TCPListener).accept(0xc0015c8000)
+	C:/Program Files/Go/src/net/tcpsock_posix.go:159 +0x1b
+net.(*TCPListener).Accept(0xc0015c8000)
+	C:/Program Files/Go/src/net/tcpsock.go:380 +0x30
+net/http.(*Server).Serve(0xc0015a0900, {0x7ff78d172e80, 0xc0015c8000})
+	C:/Program Files/Go/src/net/http/server.go:3463 +0x30c
+net/http/httptest.(*Server).goServe.func1()
+	C:/Program Files/Go/src/net/http/httptest/server.go:311 +0x55
+created by net/http/httptest.(*Server).goServe in goroutine 7292
+	C:/Program Files/Go/src/net/http/httptest/server.go:309 +0x65
+
+goroutine 7292 [syscall]:
+syscall.SyscallN(0xc00170cea0?, {0xc00170ceb0?, 0x7ff78c23ca26?, 0xea0?})
+	C:/Program Files/Go/src/runtime/syscall_windows.go:500 +0x1e
+golang.org/x/sys/windows.CreateToolhelp32Snapshot(0x2, 0x0)
+	C:/Users/Owner/go/pkg/mod/golang.org/x/sys@v0.38.0/windows/zsyscall_windows.go:1944 +0x6a
+github.com/codefense/cli-wrapper/internal/system.listProcesses()
+	C:/cwt/p47-fix-exfil/internal/system/process_windows.go:12 +0x5e
+github.com/codefense/cli-wrapper/internal/system.ListProcesses(...)
+	C:/cwt/p47-fix-exfil/internal/system/process.go:118
+github.com/codefense/cli-wrapper/internal/airuntimeinventory.DefaultProcesses({0x7ff78d174018?, 0xc0020c9320?})
+	C:/cwt/p47-fix-exfil/internal/airuntimeinventory/sources.go:352 +0x58
+github.com/codefense/cli-wrapper/internal/airuntimeinventory.call0[...](...)
+	C:/cwt/p47-fix-exfil/internal/airuntimeinventory/inventory.go:244
+github.com/codefense/cli-wrapper/internal/airuntimeinventory.(*Inventory).Enumerate(0xc001a6c600, {0x7ff78d173de8, 0x7ff78d81cac0})
+	C:/cwt/p47-fix-exfil/internal/airuntimeinventory/inventory.go:127 +0xe4
+github.com/codefense/cli-wrapper/internal/daemon.(*Server).enumerateRuntimeInstances(0xc00114d908, {0x7ff78d173de8, 0x7ff78d81cac0})
+	C:/cwt/p47-fix-exfil/internal/daemon/runtime_inventory.go:152 +0x85
+github.com/codefense/cli-wrapper/internal/daemon.(*Server).runtimeAdaptersAttestationWithTruncation(0xc00114d908)
+	C:/cwt/p47-fix-exfil/internal/daemon/controls_attest.go:129 +0xe5
+github.com/codefense/cli-wrapper/internal/daemon.(*Server).controlsAttestationJSON(0xc00114d908)
+	C:/cwt/p47-fix-exfil/internal/daemon/controls_attest.go:44 +0x2a
+github.com/codefense/cli-wrapper/internal/daemon.(*Server).heartbeatContext(...)
+	C:/cwt/p47-fix-exfil/internal/daemon/server.go:1711
+github.com/codefense/cli-wrapper/internal/daemon.(*Server).sendHeartbeat(0xc00114d908)
+	C:/cwt/p47-fix-exfil/internal/daemon/server.go:1743 +0x15d
+github.com/codefense/cli-wrapper/internal/daemon.TestSendHeartbeat_DeregisteredEndToEnd(0xc0011e0e00)
+	C:/cwt/p47-fix-exfil/internal/daemon/deregistered_selfheal_test.go:506 +0x86d
+testing.tRunner(0xc0011e0e00, 0x7ff78d003e08)
+	C:/Program Files/Go/src/testing/testing.go:1934 +0xc3
+created by testing.(*T).Run in goroutine 1
+	C:/Program Files/Go/src/testing/testing.go:1997 +0x44b
+
+goroutine 7291 [sleep]:
+time.Sleep(0x77359400)
+	C:/Program Files/Go/src/runtime/time.go:363 +0x167
+github.com/codefense/cli-wrapper/internal/daemon.(*Server).watchUninstallChild(0xc000ffea08, 0x0, 0x352c)
+	C:/cwt/p47-fix-exfil/internal/daemon/uninstall.go:347 +0xa6
+created by github.com/codefense/cli-wrapper/internal/daemon.(*Server).handleUninstallCommand in goroutine 7299
+	C:/cwt/p47-fix-exfil/internal/daemon/uninstall.go:156 +0x674
+
+goroutine 6918 [sleep]:
+time.Sleep(0x14f46b0400)
+	C:/Program Files/Go/src/runtime/time.go:363 +0x167
+github.com/codefense/cli-wrapper/internal/daemon.(*Server).startAiContextTask.func1()
+	C:/cwt/p47-fix-exfil/internal/daemon/aicontext_task.go:338 +0x26
+created by github.com/codefense/cli-wrapper/internal/daemon.(*Server).startAiContextTask in goroutine 6904
+	C:/cwt/p47-fix-exfil/internal/daemon/aicontext_task.go:337 +0x59
+
+goroutine 7294 [IO wait]:
+internal/poll.runtime_pollWait(0x16dfe4a6c00, 0x72)
+	C:/Program Files/Go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc24?, 0x7ff78c23ca26?, 0x0)
+	C:/Program Files/Go/src/internal/poll/fd_poll_runtime.go:84 +0x27
+internal/poll.waitIO(0x7ff78c23b7c5?)
+	C:/Program Files/Go/src/internal/poll/fd_windows.go:187 +0x65
+internal/poll.execIO(0xc0019d6520, 0x7ff78d005c78)
+	C:/Program Files/Go/src/internal/poll/fd_windows.go:240 +0x13a
+internal/poll.(*FD).Read(0xc0019d6508, {0xc001732000, 0x1000, 0x1000})
+	C:/Program Files/Go/src/internal/poll/fd_windows.go:533 +0x1ee
+net.(*netFD).Read(0xc0019d6508, {0xc001732000?, 0x0?, 0x0?})
+	C:/Program Files/Go/src/net/fd_posix.go:68 +0x25
+net.(*conn).Read(0xc0007103b0, {0xc001732000?, 0x7ff78c234f65?, 0xc000e44080?})
+	C:/Program Files/Go/src/net/net.go:196 +0x45
+net/http.(*persistConn).Read(0xc001983d40, {0xc001732000?, 0x7ff78c593a65?, 0x7ff78d16ce80?})
+	C:/Program Files/Go/src/net/http/transport.go:2125 +0x47
+bufio.(*Reader).fill(0xc0015d3020)
+	C:/Program Files/Go/src/bufio/bufio.go:113 +0x103
+bufio.(*Reader).Peek(0xc0015d3020, 0x1)
+	C:/Program Files/Go/src/bufio/bufio.go:152 +0x53
+net/http.(*persistConn).readLoop(0xc001983d40)
+	C:/Program Files/Go/src/net/http/transport.go:2278 +0x172
+created by net/http.(*Transport).dialConn in goroutine 7316
+	C:/Program Files/Go/src/net/http/transport.go:1947 +0x174f
+
+goroutine 7317 [IO wait]:
+internal/poll.runtime_pollWait(0x16d80140800, 0x72)
+	C:/Program Files/Go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0x42c?, 0x7ff78c23ca26?, 0x0)
+	C:/Program Files/Go/src/internal/poll/fd_poll_runtime.go:84 +0x27
+internal/poll.waitIO(0xc0006ab9b0?)
+	C:/Program Files/Go/src/internal/poll/fd_windows.go:187 +0x65
+internal/poll.execIO(0xc0019d67a0, 0x7ff78d005c78)
+	C:/Program Files/Go/src/internal/poll/fd_windows.go:240 +0x13a
+internal/poll.(*FD).Read(0xc0019d6788, {0xc00125c000, 0x1000, 0x1000})
+	C:/Program Files/Go/src/internal/poll/fd_windows.go:533 +0x1ee
+net.(*netFD).Read(0xc0019d6788, {0xc00125c000?, 0x0?, 0xc0006abac8?})
+	C:/Program Files/Go/src/net/fd_posix.go:68 +0x25
+net.(*conn).Read(0xc0005a5340, {0xc00125c000?, 0xc0019bfe00?, 0x0?})
+	C:/Program Files/Go/src/net/net.go:196 +0x45
+net/http.(*connReader).Read(0xc000638dc0, {0xc00125c000, 0x1000, 0x1000})
+	C:/Program Files/Go/src/net/http/server.go:812 +0x154
+bufio.(*Reader).fill(0xc0011ce2a0)
+	C:/Program Files/Go/src/bufio/bufio.go:113 +0x103
+bufio.(*Reader).Peek(0xc0011ce2a0, 0x4)
+	C:/Program Files/Go/src/bufio/bufio.go:152 +0x53
+net/http.(*conn).serve(0xc001628c60, {0x7ff78d174018, 0xc0016de060})
+	C:/Program Files/Go/src/net/http/server.go:2145 +0x7c5
+created by net/http.(*Server).Serve in goroutine 7293
+	C:/Program Files/Go/src/net/http/server.go:3493 +0x485
+
+goroutine 7295 [select]:
+net/http.(*persistConn).writeLoop(0xc001983d40)
+	C:/Program Files/Go/src/net/http/transport.go:2600 +0xe7
+created by net/http.(*Transport).dialConn in goroutine 7316
+	C:/Program Files/Go/src/net/http/transport.go:1948 +0x17a5
+
+goroutine 7094 [sleep]:
+time.Sleep(0x77359400)
+	C:/Program Files/Go/src/runtime/time.go:363 +0x167
+github.com/codefense/cli-wrapper/internal/daemon.(*Server).watchUninstallChild(0xc00114cf08, 0x0, 0x352c)
+	C:/cwt/p47-fix-exfil/internal/daemon/uninstall.go:347 +0xa6
+created by github.com/codefense/cli-wrapper/internal/daemon.(*Server).handleUninstallCommand in goroutine 7164
+	C:/cwt/p47-fix-exfil/internal/daemon/uninstall.go:156 +0x674
+
+goroutine 7171 [sleep]:
+time.Sleep(0x77359400)
+	C:/Program Files/Go/src/runtime/time.go:363 +0x167
+github.com/codefense/cli-wrapper/internal/daemon.(*Server).watchUninstallChild(0xc0011c9908, 0x0, 0x352c)
+	C:/cwt/p47-fix-exfil/internal/daemon/uninstall.go:347 +0xa6
+created by github.com/codefense/cli-wrapper/internal/daemon.(*Server).handleUninstallCommand in goroutine 7095
+	C:/cwt/p47-fix-exfil/internal/daemon/uninstall.go:156 +0x674
+
+goroutine 6993 [sleep]:
+time.Sleep(0x14f46b0400)
+	C:/Program Files/Go/src/runtime/time.go:363 +0x167
+github.com/codefense/cli-wrapper/internal/daemon.(*Server).startAiContextTask.func1()
+	C:/cwt/p47-fix-exfil/internal/daemon/aicontext_task.go:338 +0x26
+created by github.com/codefense/cli-wrapper/internal/daemon.(*Server).startAiContextTask in goroutine 6992
+	C:/cwt/p47-fix-exfil/internal/daemon/aicontext_task.go:337 +0x59
+FAIL	github.com/codefense/cli-wrapper/internal/daemon	602.017s
+--- FAIL: TestDiscoveryFindsTheNpmLayouts (0.92s)
+    --- FAIL: TestDiscoveryFindsTheNpmLayouts/posix-lib-node_modules (0.19s)
+        testing.go:1369: TempDir RemoveAll cleanup: unlinkat C:\Users\Owner\AppData\Local\Temp\TestDiscoveryFindsTheNpmLayoutsposix-lib-node_modules1619661611\001\lib\node_modules\@openai\codex\bin\codex.js: Not enough memory resources are available to process this command.
+FAIL
+FAIL	github.com/codefense/cli-wrapper/internal/codexmanaged	528.775s
+--- FAIL: TestSpawnCleanerViaWMI_EscapesJobAndRuns (16.01s)
+    detach_windows_test.go:101: WMI-spawned cleaner did not create the marker "C:\\Users\\Owner\\AppData\\Local\\Temp\\TestSpawnCleanerViaWMI_EscapesJobAndRuns3635258115\\001\\wmi-marker.txt" within the deadline
+--- FAIL: TestDeriveCustomInstallRootByMarkerRequiresInstalledArtifact (0.68s)
+    testing.go:1369: TempDir RemoveAll cleanup: unlinkat C:\Users\Owner\AppData\Local\Temp\TestDeriveCustomInstallRootByMarkerRequiresInstalledArtifact2046750157\001\devoid\bin\devoid.exe: Not enough memory resources are available to process this command.
+FAIL
+FAIL	github.com/codefense/cli-wrapper/internal/uninstall	137.897s
+time=2026-09-06T01:01:51.828+03:00 level=DEBUG msg="Sending heartbeat" endpoint=http://127.0.0.1:56921/api/v1/key-heartbeat
+time=2026-09-06T01:01:52.383+03:00 level=DEBUG msg="Heartbeat payload" bytes=368 bypassEvents=1 hasControls=false
+time=2026-09-06T01:01:52.402+03:00 level=DEBUG msg="Heartbeat sent successfully"
+--- FAIL: TestSSEPendingSandboxFallsBackToCorrelationStatusAfterHeartbeat (6.38s)
+    sse_client_test.go:221: CheckPackagesSSE took 6.3605959s; pending_sandbox fallback did not resolve promptly
+FAIL
+FAIL	github.com/codefense/cli-wrapper/internal/core/backend	80.394s
+ok  	github.com/codefense/cli-wrapper/internal/core/config	31.611s
+ok  	github.com/codefense/cli-wrapper/internal/core/enforce	3.885s
+ok  	github.com/codefense/cli-wrapper/internal/evidencespool	13.583s
+ok  	github.com/codefense/cli-wrapper/internal/proxy	25.962s
+ok  	github.com/codefense/cli-wrapper/internal/mcpgov	6.874s
+[devoid] removed '--bare' — this endpoint is managed, so the DeVoid hooks stay active for this session.
+[devoid] warning: backend returned a different AI session identity
+[devoid] warning: backend returned a different AI session identity
+panic: test timed out after 10m0s
+	running tests:
+		TestHooksStatusCodex_NamedHome_ReadsTheConfinedInstallsOwnTrustAnchor (19s)
+
+goroutine 855 [running]:
+testing.(*M).startAlarm.func1()
+	C:/Program Files/Go/src/testing/testing.go:2682 +0x345
+created by time.goFunc
+	C:/Program Files/Go/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc00048c700, {0x7ff657b16dba?, 0x7ffebc3c26f0?}, 0x7ff657c32440)
+	C:/Program Files/Go/src/testing/testing.go:2005 +0x469
+testing.runTests.func1(0xc00048c700)
+	C:/Program Files/Go/src/testing/testing.go:2477 +0x37
+testing.tRunner(0xc00048c700, 0xc000757bc8)
+	C:/Program Files/Go/src/testing/testing.go:1934 +0xc3
+testing.runTests(0xc0003840a8, {0x7ff6584a9de0, 0x629, 0x629}, {0xc00002a1e2?, 0x42?, 0x7ff6584b6a00?})
+	C:/Program Files/Go/src/testing/testing.go:2475 +0x4b4
+testing.(*M).Run(0xc0006be820)
+	C:/Program Files/Go/src/testing/testing.go:2337 +0x63a
+github.com/codefense/cli-wrapper/cmd/devoid.TestMain(0xc0006be820)
+	C:/cwt/p47-fix-exfil/cmd/devoid/testmain_test.go:71 +0x19c
+main.main()
+	_testmain.go:3199 +0xa5
+
+goroutine 854 [syscall]:
+syscall.Syscall6(0xc000a02fc0?, 0xc000c01d68?, 0x7ff656dc8070?, 0x7ff656dea20e?, 0x1?, 0x0?, 0x0?, 0x20b?)
+	C:/Program Files/Go/src/runtime/syscall_windows.go:463 +0x38
+syscall.readFile(0x5b4, {0xc000a0f000?, 0x1000, 0x2?}, 0x2?, 0x1?)
+	C:/Program Files/Go/src/syscall/zsyscall_windows.go:1030 +0x8b
+syscall.ReadFile(...)
+	C:/Program Files/Go/src/syscall/syscall_windows.go:482
+internal/poll.(*FD).Read.func1(0xc00048cc40?)
+	C:/Program Files/Go/src/internal/poll/fd_windows.go:518 +0x4d
+internal/poll.execIO(0xc0009daf20, 0x7ff657c35b40)
+	C:/Program Files/Go/src/internal/poll/fd_windows.go:233 +0xa7
+internal/poll.(*FD).Read(0xc0009daf08, {0xc000a0f000, 0x1000, 0x1000})
+	C:/Program Files/Go/src/internal/poll/fd_windows.go:517 +0x288
+os.(*File).read(...)
+	C:/Program Files/Go/src/os/file_posix.go:29
+os.(*File).Read(0xc000182220, {0xc000a0f000?, 0xc0009c0e00?, 0x0?})
+	C:/Program Files/Go/src/os/file.go:144 +0x4f
+github.com/codefense/cli-wrapper/cmd/devoid.captureStdoutForTest.func1()
+	C:/cwt/p47-fix-exfil/cmd/devoid/ai_wire_user_task_test.go:222 +0x73
+created by github.com/codefense/cli-wrapper/cmd/devoid.captureStdoutForTest in goroutine 871
+	C:/cwt/p47-fix-exfil/cmd/devoid/ai_wire_user_task_test.go:218 +0x127
+
+goroutine 871 [runnable]:
+syscall.Syscall(0x7ff656d89c0b?, 0x7ff658507160?, 0x7ff656df3da0?, 0x0?, 0xc000000000?)
+	C:/Program Files/Go/src/runtime/syscall_windows.go:457 +0x29
+syscall.findFirstFile1(0xc00003c048?, 0x273ffcb0688?)
+	C:/Program Files/Go/src/syscall/zsyscall_windows.go:616 +0x5a
+syscall.FindFirstFile(0xc0004f4000?, 0xc00003c2c4)
+	C:/Program Files/Go/src/syscall/syscall_windows.go:1239 +0x5d
+path/filepath.normBase({0xc0004f4000?, 0xc000460000?})
+	C:/Program Files/Go/src/path/filepath/symlink_windows.go:34 +0x7d
+path/filepath.toNorm({0xc000460000, 0x66}, 0x7ff657c35c10)
+	C:/Program Files/Go/src/path/filepath/symlink_windows.go:83 +0x16c
+path/filepath.evalSymlinks({0xc000b3f2c0?, 0x7c?})
+	C:/Program Files/Go/src/path/filepath/symlink_windows.go:113 +0x29
+path/filepath.EvalSymlinks(...)
+	C:/Program Files/Go/src/path/filepath/path.go:148
+github.com/codefense/cli-wrapper/cmd/devoid.dirsEqual({0xc000b3f2c0, 0x66}, {0xc0002fa2d0, 0x1f})
+	C:/cwt/p47-fix-exfil/cmd/devoid/git_egress_shim.go:210 +0x2c
+github.com/codefense/cli-wrapper/cmd/devoid.isKnownManagedShimDir({0xc000b3f2c0, 0x66}, {0xc0007e43c0?, 0x0?})
+	C:/cwt/p47-fix-exfil/cmd/devoid/main.go:5982 +0x353
+github.com/codefense/cli-wrapper/cmd/devoid.findRealToolInPath({0x7ff657a72123, 0x2})
+	C:/cwt/p47-fix-exfil/cmd/devoid/main.go:5838 +0x214
+github.com/codefense/cli-wrapper/internal/security.BuildManifest({{0xc00068aa80, 0x77}, {0xc003a01c00, 0x85}, {0xc003a01d00, 0x82}, {0xc003a01e00, 0x8a}, {0xc003a01f00, 0x8c}, ...}, ...)
+	C:/cwt/p47-fix-exfil/internal/security/manifest.go:176 +0x5d1
+github.com/codefense/cli-wrapper/internal/security.LoadOrBootstrapManifest({{0xc00068aa80, 0x77}, {0xc003a01c00, 0x85}, {0xc003a01d00, 0x82}, {0xc003a01e00, 0x8a}, {0xc003a01f00, 0x8c}, ...}, ...)
+	C:/cwt/p47-fix-exfil/internal/security/manifest.go:111 +0x288
+github.com/codefense/cli-wrapper/cmd/devoid.resolveRealAgentBinary({0x7ff657a73ba8, 0x5})
+	C:/cwt/p47-fix-exfil/cmd/devoid/agent_shim.go:460 +0x118
+github.com/codefense/cli-wrapper/cmd/devoid.codexVerifyInputScoped({0xc0004fc310, _}, {_, _}, _)
+	C:/cwt/p47-fix-exfil/cmd/devoid/ai_codex_hooks.go:202 +0x2d9
+github.com/codefense/cli-wrapper/cmd/devoid.codexVerifyControlsGoverned({_, _}, {_, _}, _)
+	C:/cwt/p47-fix-exfil/cmd/devoid/ai_codex_hooks.go:231 +0xd4
+github.com/codefense/cli-wrapper/cmd/devoid.reportCodexHooksStatus({0xc00002cf50, 0x6f})
+	C:/cwt/p47-fix-exfil/cmd/devoid/ai_codex_hooks.go:488 +0xa5
+github.com/codefense/cli-wrapper/cmd/devoid.TestHooksStatusCodex_NamedHome_ReadsTheConfinedInstallsOwnTrustAnchor.func1()
+	C:/cwt/p47-fix-exfil/cmd/devoid/ai_codex_uninstall_scope_test.go:226 +0x1b
+github.com/codefense/cli-wrapper/cmd/devoid.captureStdoutForTest(0xc000d67a40, 0xc00003df38)
+	C:/cwt/p47-fix-exfil/cmd/devoid/ai_wire_user_task_test.go:232 +0x134
+github.com/codefense/cli-wrapper/cmd/devoid.TestHooksStatusCodex_NamedHome_ReadsTheConfinedInstallsOwnTrustAnchor(0xc000d67a40)
+	C:/cwt/p47-fix-exfil/cmd/devoid/ai_codex_uninstall_scope_test.go:226 +0x114
+testing.tRunner(0xc000d67a40, 0x7ff657c32440)
+	C:/Program Files/Go/src/testing/testing.go:1934 +0xc3
+created by testing.(*T).Run in goroutine 1
+	C:/Program Files/Go/src/testing/testing.go:1997 +0x44b
+FAIL	github.com/codefense/cli-wrapper/cmd/devoid	605.761s
+FAIL
+test_rc=1

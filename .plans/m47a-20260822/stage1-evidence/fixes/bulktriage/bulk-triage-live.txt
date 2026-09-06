@@ -1,0 +1,52 @@
+== P47 bulk-triage path proof — 2026-09-06T07:12:55Z ==
+
+1. logged in as demo@cera.io directly against the backend (no console).
+
+2. target group key (from GET /api/v1/ai/detections, the console's own read model):
+   k:private-key|private-key|9cc7bb95-78ec-4bcd-9c08-15de21a1c625
+   members: 26e6a145-d4b8-4105-8e8f-41078dc1b29c 0dd37a26-9f3c-4fa3-8c37-9c5364a6ea93 ff29f0b8-23d4-473a-9365-0af3914ccddd
+
+3. triage rows for those members BEFORE anything (psql):
+   26e6a145-d4b8-4105-8e8f-41078dc1b29c -> new
+   0dd37a26-9f3c-4fa3-8c37-9c5364a6ea93 -> new
+   ff29f0b8-23d4-473a-9365-0af3914ccddd -> new
+
+4. pre-set ONE member to 'investigating' through the SINGLE-event route, so
+   the bulk action has a member it cannot change (the 'unchanged' outcome):
+   POST http://127.0.0.1:2353/api/v1/ai/events/26e6a145-d4b8-4105-8e8f-41078dc1b29c/triage
+   member 26e6a145-d4b8-4105-8e8f-41078dc1b29c
+   -> HTTP 201
+
+5. THE OLD PATH the Frontend used to send — same body, same token:
+   POST http://127.0.0.1:2353/api/v1/ai/events/triage/bulk
+   -> {"statusCode":404,"timestamp":"2026-09-06T07:12:58.931Z","path":"/api/v1/ai/events/triage/bulk","message":"Cannot POST /api/v1/ai/events/triage/bulk","errorCode":"NOT_FOUND_EXCEPTION","requestId":"02448817-3a97-4461-a1c5-3a017e0f6f37"} __HTTP__404 
+
+6. THE CORRECTED PATH (lib/api/endpoints.ts EVENT_TRIAGE_BULK) — same body:
+   POST http://127.0.0.1:2353/api/v1/ai/events/bulk-triage
+   -> {"selected":3,"applied":2,"unchanged":1,"failed":0,"failures":[]} __HTTP__201 
+   expected selected=3 applied=2 unchanged=1 failed=0 — the pre-set member
+   is refused as a no-op and reported as the THIRD outcome, not a success.
+
+6b. negative control — the SAME action again on the corrected path. Every
+    member is now in the target state, so nothing should move:
+    -> {"selected":3,"applied":0,"unchanged":3,"failed":0,"failures":[]} __HTTP__201 
+
+7. negative control on the same corrected path — resolve with NO note, which
+   the service refuses per member (expect failed == selected):
+   -> {"selected":3,"applied":0,"unchanged":0,"failed":3,"failures":[{"eventId":"26e6a145-d4b8-4105-8e8f-41078dc1b29c","reason":"a resolution note is required to resolve an event"},{"eventId":"0dd37a26-9f3c-4fa3-8c37-9c5364a6ea93","reason":"a resolution note is required to resolve an event"},{"eventId":"ff29f0b8-23d4-473a-9365-0af3914ccddd","reason":"a resolution note is required to resolve an event"}]} __HTTP__201 
+
+8. triage rows AFTER the bulk action (psql):
+   26e6a145-d4b8-4105-8e8f-41078dc1b29c -> investigating
+   0dd37a26-9f3c-4fa3-8c37-9c5364a6ea93 -> investigating
+   ff29f0b8-23d4-473a-9365-0af3914ccddd -> investigating
+
+9. RESTORE — every member back to 'new' through the SINGLE-event route:
+   POST /api/v1/ai/events/26e6a145-d4b8-4105-8e8f-41078dc1b29c/triage {status:new} -> HTTP 201 ; now new
+   POST /api/v1/ai/events/0dd37a26-9f3c-4fa3-8c37-9c5364a6ea93/triage {status:new} -> HTTP 201 ; now new
+   POST /api/v1/ai/events/ff29f0b8-23d4-473a-9365-0af3914ccddd/triage {status:new} -> HTTP 201 ; now new
+
+NOTE: triage is a SIDECAR and append-only. The status is restored; the
+ai_event_triage rows and their ai_event_triage_transitions ledger entries
+remain by design (nothing deletes). ai_events itself was never written.
+
+written to /c/Users/Owner/Documents/Ceragon/.plans/m47a-20260822/stage1-evidence/fixes/bulktriage/bulk-triage-live.txt

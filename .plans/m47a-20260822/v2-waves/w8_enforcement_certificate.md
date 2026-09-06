@@ -43,10 +43,10 @@ outcome this wave's R3 `prerequisites` row records.
   close. Wave 4B Task 4 then binds `normalizedEffect` on the **tool lane** (its exit is a 9×9 matrix:
   9 diagonal releases, **72** refusals). Task 2 below adds the remaining segments and generalises the
   binding to every sink. **Do not rebuild Wave 4B Task 4 here.**
-- **O-17 — Task 5 (canary honesty) lands before Task 9 (live canary evidence).**
-  `Installers/internal/aicanary/exec.go:125` sets `WaitDelay = 5 * time.Second`, and a real deny was
-  reported as `canary-host-launch-failed` in **2 of 6** recorded runs. A canary that reports
-  enforcement successes as errors cannot be the evidence lane.
+- **O-17 — P9 W6 T1 (Task 5) is merged before Task 9 (live canary evidence).** Commit
+  `1bd9cecf`, merged by PR #183, supplies bounded per-call-site `ProcessSpec.IOGrace` while preserving
+  the shared five-second default. The engineering prerequisite is satisfied. The six real-host
+  repetitions remain **NOT EXERCISED** and owner-gated; Task 9 may not admit old or unauthorized runs.
 - **O-18 — Task 1 (sink inventory) before Task 3 (mediation) before Task 12 (defeat matrix).**
   `TestDirectAlternatePathToTheSameSinkFails` cannot know what "the same sink" is without the
   inventory.
@@ -156,22 +156,22 @@ different road (`Installers/internal/daemon/codex_failopen_attest.go:122` reaps 
 zero-count `vendorFailOpenNotMeasured` row) and lands in the endpoint's Events ledger. **Nothing
 anywhere converts either signal into a non-green certificate state**, because no certificate exists.
 
-### 4. The canary reports a real deny as a launch failure
+### 4. The canary engineering defect is fixed; live proof remains owner-gated
 
-`Installers/internal/aicanary/exec.go:125` sets `cmd.WaitDelay = 5 * time.Second`. The Codex turn
-holds the captured pipes longer than that after the child exits, so `cmd.Run()` returns
-`exec: WaitDelay expired before I/O complete`. That error is not an `*exec.ExitError` and `runCtx.Err()`
-is nil, so `finish` (`exec.go:144`) falls to its default branch and returns the error; the caller
-maps *any* non-nil probe error to `CanaryError` + `CanarySlugHostLaunchFailed`
-(`Installers/internal/codexmanaged/canary.go:351`, slug defined `:58`). Recorded in
-`Installers/internal/codexmanaged/testdata/liveproof/ledger.json`: two of six
-`TestLiveCanary_RealCodexHost` attempts returned `canary-host-launch-failed` on invocations where the
-client, in the same launch, printed `hook: UserPromptSubmit Blocked`. Re-measured on identical argv
-with a 90 s `WaitDelay`: `waitErr=nil`, exit 0, 11.3 s wall clock, full transcript captured including
-the `Blocked` line. See also `Installers/internal/codexmanaged/LIVE_PROOF_RUNBOOK.md:554-556`.
+The historical baseline was real: two of six recorded `TestLiveCanary_RealCodexHost` attempts
+returned `canary-host-launch-failed` even though the same transcript contained
+`hook: UserPromptSubmit Blocked`. P9 W6 T1 commit `1bd9cecf`, merged by PR #183 at
+`4d724396`, is now authoritative. It adds bounded `ProcessSpec.IOGrace`: the shared default remains
+five seconds, while only the Codex and Claude canary-host call sites receive 90 seconds. The context
+timeout remains the process-kill bound, and `exec.ErrWaitDelay` is not reclassified as success.
 
-**A live canary that reports enforcement successes as errors cannot be the evidence lane for a
-certificate.** Fix it before Task 9 runs.
+`TestRun_IOGraceDefaultsToFiveSecondsWhenUnset`,
+`TestRun_IOGraceIsBoundedBelowTheTimeout`,
+`TestRun_DefaultGraceNeverInvalidatesAShortTimeout`, and
+`TestRun_SlowPipeCloseAfterCleanExitIsNotALaunchFailure` pin the correction. The engineering
+prerequisite for Task 9 is therefore satisfied. The required six real-host repetitions are still
+**NOT EXERCISED / owner-gated**; the pre-fix two-of-six ledger is baseline evidence only and cannot
+prove the certificate lane.
 
 ### 5. Prior art you must reuse, not rebuild
 
@@ -411,45 +411,41 @@ through the generator produces `status: "FAIL"` for R1 and R5 and a `downgradeTr
 
 ---
 
-## Task 5: Stop the canary reporting a real deny as a launch failure
+## Task 5: Adopt P9 W6 T1's merged per-call-site I/O grace; retain the live-proof gate
 
-**Files:**
-`Installers/internal/aicanary/exec.go` (`:125`, `finish` at `:144`),
-`Installers/internal/aicanary/exec_test.go`,
-`Installers/internal/codexmanaged/canary.go` (`:341-352`; the slug constant is `:58`),
-`Installers/internal/codexmanaged/LIVE_PROOF_RUNBOOK.md:552-558`
+**Status update (2026-08-28): the engineering fix is already merged.** P9 W6 T1 commit
+`1bd9cecf`, merged by Installers PR #183 at `4d724396`, is authoritative for this defect.
 
-**Ordering (O-17): this task lands before Task 9.** Task 9 is the live-evidence lane, and until this
-lands the lane reports enforcement successes as errors — `2 of 6` recorded
-`TestLiveCanary_RealCodexHost` attempts returned `canary-host-launch-failed` on invocations where the
-client printed `hook: UserPromptSubmit Blocked` in the same launch. Evidence gathered before this
-task is not admissible into `proof.liveCanary`.
+**Authoritative files:**
+`Installers/internal/aicanary/exec.go`,
+`Installers/internal/aicanary/exec_iograce_test.go`,
+`Installers/internal/aicanary/launch_windows.go`,
+`Installers/internal/codexmanaged/{canary.go,canary_host.go}`,
+`Installers/internal/airuntimeintegrity/providers/claude/canary_host.go`
 
-- [ ] Failing test first: `TestWaitDelayExpiryIsNotALaunchFailure` — a stub runner returns
-      `fmt.Errorf("exec: WaitDelay expired before I/O complete")` alongside a populated `Stdout`
-      containing the deny marker, and asserts the outcome classifies as an **observation**, not
-      `CanaryError`. Expected failure text before the fix:
-      `outcome = ERROR / canary-host-launch-failed, want PROVEN`.
-- [ ] In `finish`, classify a `WaitDelay` expiry that occurred **after the child exited** as a
-      pipe-drain condition, not a launch failure: the process ran, `cmd.ProcessState` is non-nil, and
-      the captured output is what the canary is there to read. Return the outcome with a named
-      `PipeDrainTruncated` flag rather than an error.
-- [ ] Raise the probe's `WaitDelay` to **90 s** for the Codex host path only, matching the
-      re-measurement recorded in `Installers/internal/codexmanaged/testdata/liveproof/ledger.json`
-      (`waitErr=nil`, exit 0, 11.3 s wall clock, full transcript including the `Blocked` line). Do not
-      change the *context* timeout — the bound that kills a hung child stays where it is.
-- [ ] A truncated-pipe outcome may prove a **deny** (the marker was captured) but may never prove an
-      **allow**: if the deny marker is absent and the pipes were truncated, the answer is
-      `CanaryUnsupported`, not `CanaryNotProven`. Assert both directions.
-- [ ] Correct `LIVE_PROOF_RUNBOOK.md:554-556` to describe the shipped behaviour.
+**Ownership correction.** Do not implement this task's former `finish` /
+`PipeDrainTruncated` design and do not raise a shared `WaitDelay` constant. The merged fix adds
+`ProcessSpec.IOGrace`: callers that leave it unset retain the historical 5-second default; only the
+Codex and Claude canary-host call sites receive the 90-second grace. An explicitly set grace must be
+positive and strictly below the process timeout. The context timeout remains the kill bound.
 
-**Defeat test:** `TestWaitDelayExpiryIsNotALaunchFailure` — revert `finish`'s new arm and it goes RED
-with `outcome = ERROR / canary-host-launch-failed, want PROVEN`. Second:
-`TestTruncatedPipeNeverProvesAllow` — make the truncated-no-marker case return `CanaryNotProven` and
-it goes RED with `truncated capture reported an enforcement gap`.
+- [x] `TestRun_IOGraceDefaultsToFiveSecondsWhenUnset` pins every unaffected caller.
+- [x] `TestRun_IOGraceIsBoundedBelowTheTimeout` and
+      `TestRun_DefaultGraceNeverInvalidatesAShortTimeout` pin both bounds.
+- [x] `TestRun_SlowPipeCloseAfterCleanExitIsNotALaunchFailure` proves the real failure mode and the
+      per-call-site correction without reclassifying `exec.ErrWaitDelay` as success.
+- [ ] With fresh owner authorization, run `TestLiveCanary_RealCodexHost` **6 of 6** times on the
+      owner's box and record zero `canary-host-launch-failed` outcomes. This spends live Codex quota
+      and remains **NOT EXERCISED** until the owner explicitly powers it on.
 
-**Exit:** `TestLiveCanary_RealCodexHost` run **6 of 6** times on the owner's box returns zero
-`canary-host-launch-failed`. Compare against the recorded baseline of **2 of 6** failing.
+**Defeat evidence:** removing `IOGrace` from either canary host or restoring the hard-coded
+5-second `cmd.WaitDelay` makes `TestRun_SlowPipeCloseAfterCleanExitIsNotALaunchFailure` fail.
+Applying the explicit-grace bound to the resolved default makes
+`TestRun_DefaultGraceNeverInvalidatesAShortTimeout` fail.
+
+**Exit:** the engineering prerequisite for Task 9 is merged and package-tested. The live evidence
+criterion is still **NOT EXERCISED / owner-gated**; no receipt from the earlier 2-of-6 baseline may
+enter `proof.liveCanary`.
 
 ---
 
@@ -1123,9 +1119,12 @@ rather than a number, and the named external dependency is stated rather than en
 5. **Unmeasured is never zero.** `ungovernedInvocations.rate` is `null` on a zero denominator, and
    every metric block refuses a bound on an empty denominator. Defeat: `TestMissingMeasurementIsNotZero`
    → RED with `precision.lower95 = 0 for an empty denominator`.
-6. **Canary honesty.** `TestLiveCanary_RealCodexHost` returns **0 of 6** `canary-host-launch-failed`
-   against a recorded baseline of **2 of 6**. Defeat: `TestWaitDelayExpiryIsNotALaunchFailure`, revert
-   `finish`'s new arm → RED with `outcome = ERROR / canary-host-launch-failed, want PROVEN`.
+6. **Canary honesty.** The engineering correction is merged at P9 W6 T1 commit `1bd9cecf` / PR #183:
+   the unaffected default remains five seconds and only the Codex/Claude canary hosts receive bounded
+   90-second `IOGrace`. Defeat: remove that per-call-site grace or restore a hard-coded five-second
+   `cmd.WaitDelay` and `TestRun_SlowPipeCloseAfterCleanExitIsNotALaunchFailure` goes RED. The required
+   **0 of 6** `canary-host-launch-failed` real-host result remains **NOT EXERCISED** until fresh owner
+   authorization; the recorded pre-fix baseline remains **2 of 6**.
 7. **The manifest exists and expires.** One schema-v2 certificate per risk lane and per dimension;
    **all five risk lanes read `NOT_READY`**; a certificate past `expiresAt` reads `UNKNOWN`. TTL is
    **90 days**. Defeat: `TestExpiredCertificateReadsUnknown` → RED with

@@ -1,0 +1,62 @@
+=== analysis ===
+-[ RECORD 1 ]--------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+id                   | 9e2fe1d6-edf5-4364-a59d-d84b420e6a1b
+packageName          | lodash
+packageVersion       | 4.17.4
+verdict              | BLOCK
+riskScore            | 70
+reason               | Critical vulnerability: GHSA-jf85-cpcp-j695 (CRITICAL) - Prototype Pollution in lodash
+status               | COMPLETED
+triggeredPolicyRules | [{"action": "BLOCK", "reason": "Critical vulnerability: GHSA-jf85-cpcp-j695 (CRITICAL) - Prototype Pollution in lodash", "ruleKey": "CRITICAL_CVE", "ruleName": "Critical CVE", "severity": "CRITICAL"}, {"action": "WARN", "reason": "CRITICAL transitive vulnerability GHSA-jf85-cpcp-j695 in lodash@4.17.4", "ruleKey": "CRITICAL_TRANSITIVE_CVE", "ruleName": "Critical Transitive CVE", "severity": "CRITICAL", "enforcementType": "enforcing"}, {"action": "WARN", "reason": "High vulnerability: GHSA-35jh-r3h4-6jhm (HIGH) - Command Injection in lodash", "ruleKey": "HIGH_CVE", "ruleName": "High CVE", "severity": "HIGH", "enforcementType": "enforcing"}, {"action": "WARN", "reason": "HIGH transitive vulnerability GHSA-35jh-r3h4-6jhm in lodash@4.17.4", "ruleKey": "HIGH_TRANSITIVE_CVE", "ruleName": "High Transitive CVE", "severity": "HIGH", "enforcementType": "enforcing"}, {"action": "MONITOR", "reason": "Medium vulnerability: GHSA-29mw-wpgm-hmr9 (MEDIUM) - Regular Expression Denial of Service (ReDoS) in lodash", "ruleKey": "MEDIUM_CVE", "ruleName": "Medium CVE", "severity": "MEDIUM", "enforcementType": "observational"}]
+createdAt            | 2026-09-05 21:11:33.518586+00
+-[ RECORD 2 ]--------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+id                   | 821e4cb5-0ae9-4527-9bb7-f4eb594dcfeb
+packageName          | left-pad
+packageVersion       | 1.3.0
+verdict              | ALLOW
+riskScore            | 0
+reason               | Risk score 0 is in your policy's ALLOW band (0-39) for INSTALL
+status               | COMPLETED
+triggeredPolicyRules | [{"action": "MONITOR", "reason": "Package is deprecated", "ruleKey": "DEPRECATED", "ruleName": "Deprecated Package", "severity": "LOW", "enforcementType": "observational"}, {"action": "MONITOR", "reason": "Package is unmaintained (no updates in 2+ years)", "ruleKey": "UNMAINTAINED", "ruleName": "Unmaintained Package", "severity": "LOW", "enforcementType": "observational"}]
+createdAt            | 2026-09-05 21:10:00.715071+00
+
+=== fetch_jobs ===
+-[ RECORD 1 ]-------------------------------------
+id          | 5aa65700-ef34-49b2-9a37-80c03144645d
+name        | lodash
+version     | 4.17.4
+status      | COMPLETE
+priority    | 1
+createdAt   | 2026-09-05 21:11:33.537141+00
+processedAt | 2026-09-05 21:11:55.555+00
+-[ RECORD 2 ]-------------------------------------
+id          | c6bc9065-f28e-4df1-99e1-870f1a2d3241
+name        | left-pad
+version     | 1.3.0
+status      | COMPLETE
+priority    | 1
+createdAt   | 2026-09-05 21:10:00.740361+00
+processedAt | 2026-09-05 21:10:08.948+00
+
+=== global_artifact_cache ===
+-[ RECORD 1 ]----+------------------------------
+name             | lodash
+version          | 4.17.4
+riskScore        | 0
+vulnScanStatus   | COMPLETE
+staticScanStatus | COMPLETE
+blockReason      | vulnerability
+primaryReason    | 
+decisionSource   | FRESH_ANALYSIS
+createdAt        | 2026-09-05 21:11:55.883385+00
+-[ RECORD 2 ]----+------------------------------
+name             | left-pad
+version          | 1.3.0
+riskScore        | 0
+vulnScanStatus   | COMPLETE
+staticScanStatus | COMPLETE
+blockReason      | 
+primaryReason    | 
+decisionSource   | FRESH_ANALYSIS
+createdAt        | 2026-09-05 21:10:09.408471+00
+

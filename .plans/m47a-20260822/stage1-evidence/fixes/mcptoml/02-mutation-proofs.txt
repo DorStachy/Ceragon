@@ -1,0 +1,58 @@
+=== MUTATION 1: mcpwatch/watcher.go isMCPConfig rejects .toml ===
+157:	return mcpsources.IsRegisteredConfig(path) && filepath.Ext(path) != ".toml"
+--- FAIL: TestWatcher_DetectsWrittenCodexTOML (5.10s)
+    watcher_test.go:233: GovernanceScan was not invoked for a written Codex config.toml — a Codex MCP server is invisible to the real-time path
+--- FAIL: TestIsMCPConfig_CodexTOML (0.01s)
+    watcher_test.go:262: isMCPConfig(".codex\\config.toml") = false, want true
+    watcher_test.go:262: isMCPConfig(".codex\\managed_config.toml") = false, want true
+FAIL
+FAIL	github.com/codefense/cli-wrapper/internal/mcpwatch	5.758s
+FAIL
+[restored watcher.go]
+
+=== MUTATION 2: mcpsources WatchTargets drops the PARENT dir of file sources ===
+func WatchTargets(e Env) []string {
+	var out []string
+	seen := map[string]bool{}
+	add := func(p string) {
+		if p == "" {
+			return
+		}
+		c := filepath.Clean(p)
+		if seen[strings.ToLower(c)] {
+			return
+		}
+		seen[strings.ToLower(c)] = true
+		out = append(out, c)
+	}
+	for _, s := range Registry {
+		if !s.Watch {
+			continue
+		}
+		for _, p := range s.PathsFor(e) {
+			if s.Kind == KindFile {
+				continue
+			}
+			add(p)
+		}
+	}
+	return out
+}
+--- FAIL: TestWatchTargets_CoverCodexHome (0.00s)
+    watcher_test.go:284: WatchTargets does not include $CODEX_HOME (C:\Users\Owner\AppData\Local\Temp\TestWatchTargets_CoverCodexHome1359317574\001\custom-codex); got [C:\Users\Owner\AppData\Local\Temp\TestWatchTargets_CoverCodexHome1359317574\001\AppData\Roaming\Claude C:\Users\Owner\AppData\Local\Temp\TestWatchTargets_CoverCodexHome1359317574\001\.cursor C:\Users\Owner\AppData\Local\Temp\TestWatchTargets_CoverCodexHome1359317574\001\.windsurf C:\Users\Owner\AppData\Local\Temp\TestWatchTargets_CoverCodexHome1359317574\001\.codeium\windsurf C:\Users\Owner\AppData\Local\Temp\TestWatchTargets_CoverCodexHome1359317574\001\.gemini C:\Users\Owner\AppData\Local\Temp\TestWatchTargets_CoverCodexHome1359317574\001\.claude C:\Users\Owner\AppData\Local\Temp\TestWatchTargets_CoverCodexHome1359317574\001\AppData\Roaming\Code\User C:\Users\Owner\AppData\Local\Temp\TestWatchTargets_CoverCodexHome1359317574\001\AppData\Roaming\Code - Insiders\User C:\Users\Owner\AppData\Local\Temp\TestWatchTargets_CoverCodexHome1359317574\001\AppData\Roaming\VSCodium\User C:\Users\Owner\AppData\Local\Temp\TestWatchTargets_CoverCodexHome1359317574\001\AppData\Roaming\Cursor\User C:\Users\Owner\AppData\Local\Temp\TestWatchTargets_CoverCodexHome1359317574\001\AppData\Roaming\Windsurf\User]
+FAIL
+FAIL	github.com/codefense/cli-wrapper/internal/mcpwatch	0.844s
+FAIL
+[restored mcpsources.go]
+
+=== MUTATION 3 (honest-scope measurement): delete the isAllowedConfigFile call from discoverRegisteredFile ===
+func discoverRegisteredFile(path string) []backend.McpScanServer {
+	raw, _, ok := mcpsources.DiscoverInFile(path)
+	if !ok || len(raw) == 0 {
+		return nil
+	}
+	out := make([]backend.McpScanServer, 0, len(raw))
+	for _, r := range raw {
+		out = append(out, projectServer(r))
+ok  	github.com/codefense/cli-wrapper/internal/mcpgov	5.147s
+[restored mcpgov.go]

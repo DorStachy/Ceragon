@@ -1,0 +1,11 @@
+15:time=2026-09-06T00:10:16.310+03:00 level=WARN msg="AI proxy: TEST upstream override in effect" upstream=http://127.0.0.1:19399
+45:time=2026-09-06T00:11:58.517+03:00 level=INFO msg="AI proxy: block; holding request" provider=anthropic reasons="[aws-access-key:block aws-credential-pair:block]"
+46:time=2026-09-06T00:11:58.552+03:00 level=INFO msg=ai_proxy_decision verdict=block provider=anthropic agentType=claude-code findings=aws-access-key:block,aws-credential-pair:block reasons=aws-access-key:block,aws-credential-pair:block maskedSpans="aws-access-key,aws-credential-pair x2"
+47:time=2026-09-06T00:11:58.976+03:00 level=INFO msg="AI proxy: redact; rewriting outbound body" provider=anthropic reasons=[stripe-live:redact]
+48:time=2026-09-06T00:11:59.022+03:00 level=INFO msg=ai_proxy_decision verdict=redact provider=anthropic agentType=claude-code findings=stripe-live:redact reasons=stripe-live:redact maskedSpans="stripe-live x1"
+49:time=2026-09-06T00:11:59.442+03:00 level=INFO msg="AI proxy: redact; rewriting outbound body" provider=anthropic reasons=[slack-token:redact]
+50:time=2026-09-06T00:11:59.481+03:00 level=INFO msg=ai_proxy_decision verdict=redact provider=anthropic agentType=claude-code findings=slack-token:redact reasons=slack-token:redact maskedSpans="slack-token x1"
+51:time=2026-09-06T00:11:59.928+03:00 level=INFO msg="AI proxy: block; holding request" provider=anthropic reasons=[private-key:block]
+52:time=2026-09-06T00:11:59.966+03:00 level=INFO msg=ai_proxy_decision verdict=block provider=anthropic agentType=claude-code findings=private-key:block reasons=private-key:block maskedSpans="private-key x1"
+53:time=2026-09-06T00:12:00.396+03:00 level=INFO msg="AI proxy: block; holding request" provider=anthropic reasons="[injection-override-exfil:block injection-instruction-override:monitor injection-system-exfil:monitor]"
+54:time=2026-09-06T00:12:00.436+03:00 level=INFO msg=ai_proxy_decision verdict=block provider=anthropic agentType=claude-code findings=injection-override-exfil:block,injection-instruction-override:monitor,injection-system-exfil:monitor reasons=injection-override-exfil:block,injection-instruction-override:monitor,injection-system-exfil:monitor maskedSpans=""

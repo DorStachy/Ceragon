@@ -1,0 +1,15 @@
+logged in as demo@cera.io (admin), token len 507
+backend policy revision=1  dlp.actions["stripe-live"]=redact
+daemon /v1/ai/policy stripe-live=redact
+codex file hashes BEFORE: {"config.toml":"518c1d283632e4eb6260e52ec265615cab44dcbbda4d2ca825366f2829ca2afb","managed_config.toml":"62ed0880d69e11a413c897b5a1919e63c855ee863b40f88e6fe6a2a3c3b875bc","requirements.toml":"87042f68a51d5e96e285905f778db635d0478df3efa08076e722cc32d86031b7"}
+PUT stripe-live=block -> http 200 revision=2
+daemon did NOT pick up the change within 150s
+codex file hashes AFTER : {"config.toml":"0eeeea02e339175810ba6de6d2ad5d272563381a1edb8308f5b819349469e56a","managed_config.toml":"62ed0880d69e11a413c897b5a1919e63c855ee863b40f88e6fe6a2a3c3b875bc","requirements.toml":"87042f68a51d5e96e285905f778db635d0478df3efa08076e722cc32d86031b7"}
+CHANGED FILES: config.toml
+RESTORE PUT -> http 200 revision=3
+daemon back to the original after ~5s
+daemon /v1/ai/policy before === after restore (ignoring updatedAt/updatedBy): true
+backend policy after restore: revision=3 stripe-live=redact
+backend config object identical to the original: true
+
+-> C:/Users/Owner/Documents/Ceragon/.plans/m47a-20260822/stage1-evidence/codex/config-lane/policy-cycle.log

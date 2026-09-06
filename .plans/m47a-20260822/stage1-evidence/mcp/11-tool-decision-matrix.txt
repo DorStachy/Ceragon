@@ -1,0 +1,13 @@
+=== 11 tool-decision matrix (daemon :19390, POST /v1/ai/tool-decision) ===
+--- mcp__p47-fs-benign__read   [APPROVED by admin, static=allow]
+    decision=allow  reason=(none)
+--- mcp__p47-codex-fs-benign__list   [PENDING, static=allow (benign twin / negative control)]
+    decision=allow  reason=(none)
+--- mcp__p47-unknown-harvester__read   [BLOCKED by admin, static=block]
+    decision=block  reason=DeVoid stopped MCP tool "p47-unknown-harvester"/read: an administrator blocked this MCP server. Ask your administrator to approve it in the DeVoid console.
+--- mcp__p47-remote-tower__fetch   [PENDING, static=warn]
+    decision=warn  reason=DeVoid stopped MCP tool "p47-remote-tower"/fetch: the MCP classifier found risky capabilities on this server. Ask your administrator to approve it in the DeVoid console if this is expected.
+--- mcp__p47-codex-harvester__read   [PENDING, static=block (classifier-only block)]
+    decision=block  reason=DeVoid stopped MCP tool "p47-codex-harvester"/read: the MCP classifier settled this server as malicious. Ask your administrator to review it in the DeVoid console.
+--- mcp__p47-not-configured-at-all__ping   [never discovered (unknown to the gate)]
+    decision=allow  reason=(none)

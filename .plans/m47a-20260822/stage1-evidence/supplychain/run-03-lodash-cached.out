@@ -1,0 +1,14 @@
+[devoid] WARNING: credentials at C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.devoid\credentials.json set a loopback backend (http://127.0.0.1:2353) and this build is NOT a stamped release (version 7.10.99, channel dev), so verdicts WILL be routed there, not to https://api.devoid.one.
+[devoid] BLOCK lodash (Critical vulnerability: GHSA-jf85-cpcp-j695 (CRITICAL) - Prototype Pollution in lodash)
+| x Blocked
+|   Critical vulnerability: GHSA-jf85-cpcp-j695 (CRITICAL) - Prototype Pollution in lodash
+|   Safe alternative: Install a vetted, pinned version from a trusted source (a known-good release pinned in your lockfile) instead of this one. If you believe this block is a false positive, request a scoped policy exception rather than bypassing the agent.
+
+Policy rules
+  x CRITICAL_CVE (BLOCK)     Critical vulnerability: GHSA-jf85-cpcp-j695 (CRITICAL) - Prototype Pollution in lodash
+  ! CRITICAL_TRANSITIVE_CVE (WARN) CRITICAL transitive vulnerability GHSA-jf85-cpcp-j695 in lodash@4.17.4
+  ! HIGH_CVE (WARN)          High vulnerability: GHSA-35jh-r3h4-6jhm (HIGH) - Command Injection in lodash
+  ! HIGH_TRANSITIVE_CVE (WARN) HIGH transitive vulnerability GHSA-35jh-r3h4-6jhm in lodash@4.17.4
+
+exit_code=1
+elapsed_ms=1086

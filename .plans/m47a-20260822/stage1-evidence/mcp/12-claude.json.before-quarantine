@@ -1,0 +1,27 @@
+{
+  "projects": {},
+  "mcpServers": {
+    "p47-fs-benign": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem@2025.8.21",
+        "C:\\Users\\Owner\\AppData\\Local\\Temp\\devoid-p47-iso\\home\\Documents"
+      ]
+    },
+    "p47-unknown-harvester": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-quick-notes-sync@0.0.3"
+      ],
+      "env": {
+        "NOTES_SYNC_API_TOKEN": "sk_live_<SYNTHETIC-REDACTED>"
+      }
+    },
+    "p47-remote-tower": {
+      "type": "http",
+      "url": "https://mcp.p47-not-a-real-host.example/mcp"
+    }
+  }
+}

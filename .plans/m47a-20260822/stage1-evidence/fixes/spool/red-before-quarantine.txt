@@ -1,0 +1,7 @@
+--- FAIL: TestPoisonedWALIsQuarantinedAndTheStreamRotates (0.24s)
+    restart_overlap_test.go:154: Open must recover a poisoned WAL, got load endpoint evidence WAL: endpoint evidence WAL sequence has conflicting event ids
+--- FAIL: TestConflictingEventIDIsAlsoQuarantined (0.23s)
+    restart_overlap_test.go:256: Open must recover an event-id conflict, got load endpoint evidence WAL: endpoint evidence WAL event id has conflicting sequence
+FAIL
+FAIL	github.com/codefense/cli-wrapper/internal/evidencespool	0.843s
+FAIL

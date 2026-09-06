@@ -1,0 +1,6 @@
+### T9-C  a LABELER trying to settle their own dispute (Robin, the 2nd labeler) — must be REFUSED
+POST /api/v1/ai/events/4409d330-8978-4ae2-9162-a8cc55805076/triage {"classification":"benign_expected"} as reviewer2 -> {"statusCode":400,"timestamp":"2026-09-05T21:15:18.451Z","path":"/api/v1/ai/events/4409d330-8978-4ae2-9162-a8cc55805076/triage","message":["classification must be one of the following values: not_set, reviewed_unknown, true_positive, policy_too_strict, authorized_action, false_positive, incorrect_explanation, duplicate"],"errorCode":"BAD_REQUEST_EXCEPTION","requestId":"0b75b850-7374-4ea8-84c5-1842f6e0dfaa"} [HTTP 400]
+
+### T9-D  a THIRD, distinct actor (Casey) settling the dispute -> AGREED
+POST as adjudicator3 {"classification":"false_positive"} -> {"eventId":"4409d330-8978-4ae2-9162-a8cc55805076","status":"new","classification":"false_positive","resolutionReason":null,"assigneeId":null,"hidden":false,"secondsToTriaged":null,"secondsToResolved":null,"updatedAt":"2026-09-05T21:15:18.528Z","adjudicationStatus":"AGREED","secondLabelerId":"b65f9f1f-1e3c-4236-b67e-7d381fbf3822","secondLabelerRole":"SECURITY_REVIEWER","disputedClassification":null,"adjudicatorId":"4d387164-5cda-48a3-a138-ef4956b1ead1","adjudicatedAt":"2026-09-05T21:15:18.589Z"} [HTTP 201]
+

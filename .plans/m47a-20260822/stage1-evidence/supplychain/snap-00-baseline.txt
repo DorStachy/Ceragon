@@ -1,0 +1,15 @@
+=== BASELINE  2026-09-05T21:08:49Z ===
+--- SQS ---
+cera-fetch_jobs-local  visible/inflight = 0	0
+cera-fetch_jobs_exec_now-local  visible/inflight = 0	0
+cera-sandbox_jobs-local  visible/inflight = 0	0
+cera-sandbox_jobs_exec_now-local  visible/inflight = 0	0
+cera-fetch_jobs-local-dlq  visible/inflight = 0	0
+--- DynamoDB ceragon-local-artifact-cache ---
+0
+--- Postgres ---
+analysis=0
+fetch_jobs=0
+sandbox_jobs=0
+global_artifact_cache=0
+tenant_decisions=0

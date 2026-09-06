@@ -1,0 +1,3391 @@
+build_sc_rc=0
+FAIL src/lambda/router-handler.artifact-class.spec.ts (5.96 s)
+  ● router handles non-package artifact classes › routes an mcp server to artifact-fetch, not metadata-only
+
+
+
+
+
+  ● router handles non-package artifact classes › routes an editor extension to artifact-fetch
+
+
+
+
+
+  ● router handles non-package artifact classes › routes an agent skill pinned to an OCI digest to artifact-fetch
+
+
+
+
+
+  ● router handles non-package artifact classes › NEVER silently drops an unknown class — it throws
+
+
+
+
+
+  ● router handles non-package artifact classes › skips a candidate-only sighting WITH a stated reason rather than dropping it
+
+
+
+
+
+  ● router handles non-package artifact classes › skips a non-package artifact whose only route is a bare registry pointer
+
+
+
+
+
+  ● router handles non-package artifact classes › derives the class from ecosystem and ignores the wire-supplied artifactClass
+
+
+
+
+
+  ● router preserves existing package behaviour exactly › still routes a complete registry package to artifact-fetch
+
+
+
+
+
+  ● router preserves existing package behaviour exactly › still skips a yanked package — now with a stated reason
+
+
+
+
+
+  ● router preserves existing package behaviour exactly › still skips a package missing registry coordinates — now with a stated reason
+
+
+
+
+
+  ● handler routes non-package observations end to end › enqueues an artifact-source-fetch message carrying the pinned sourceRef
+
+
+
+
+
+  ● handler routes non-package observations end to end › reports an unknown ecosystem as a batch item failure so it reaches the DLQ
+
+
+
+
+
+  ● handler routes non-package observations end to end › does not divert a non-package artifact to metadata-only under the value gate
+
+
+
+
+
+FAIL src/lambda/result-aggregator-handler.sandbox-gate.spec.ts
+  ● result-aggregator — fail-closed sandbox reconciliation gate (wiring) › an INCONCLUSIVE Windows detonation with no static base writes NO verdict + NO cache row (fail-closed skip)
+
+
+
+
+
+  ● result-aggregator — fail-closed sandbox reconciliation gate (wiring) › a MALICIOUS untrusted Windows detonation with no static base still WRITES a verdict (never suppressed → BLOCK)
+
+
+
+
+
+  ● result-aggregator — fail-closed sandbox reconciliation gate (wiring) › an INCONCLUSIVE detonation fused over a SUSPICIOUS static base writes a verdict that never downgrades
+
+
+
+
+
+FAIL src/runtime/intel-result-writer.sandbox-gate.spec.ts (6.327 s)
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES the stale-job payload that caused the incident (no cache row, no verdict)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › still writes the S3 forensics snapshot for a REFUSED detonation (audit trail survives)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › does NOT let a forensics S3 failure block the cache write (S3 is not a prerequisite)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › returns normally on refusal so the caller still acks the SQS message (no DLQ loop)
+
+    expect(received).resolves.toBeUndefined()
+
+    Received promise rejected instead of resolved
+    Rejected to value: {"diagnosticCodes": [2307], "diagnosticText": "[96msrc/runtime/intel-result-writer.ts[0m:[93m35[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.·
+    [7m35[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    ", "name": "TSError"}
+
+    [0m [90m 169 |[39m
+     [90m 170 |[39m   it([32m'returns normally on refusal so the caller still acks the SQS message (no DLQ loop)'[39m[33m,[39m [36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 171 |[39m     [36mawait[39m expect(
+     [90m     |[39m           [31m[1m^[22m[39m
+     [90m 172 |[39m       run({ riskScore[33m:[39m [35m0[39m[33m,[39m sandboxQuality[33m:[39m [32m'skipped'[39m[33m,[39m sandboxOutcome[33m:[39m [32m'inconclusive'[39m })[33m,[39m
+     [90m 173 |[39m     )[33m.[39mresolves[33m.[39mtoBeUndefined()[33m;[39m
+     [90m 174 |[39m   })[33m;[39m[0m
+
+      at expect (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/expect/build/index.js:113:15)
+      at Object.<anonymous> (src/runtime/intel-result-writer.sandbox-gate.spec.ts:171:11)
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES an ALLOW-band inconclusive detonation with sandboxQuality=skipped and no static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES an ALLOW-band inconclusive detonation with sandboxQuality=failed and no static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES an ALLOW-band inconclusive detonation with sandboxQuality=degraded and no static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES an ALLOW-band inconclusive detonation with sandboxQuality=strace_only and no static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES when the fresh static row carries NO riskScore (fusion did not actually run)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES when the existing static row is STALE-SCHEMA (no fresh base to fuse against)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES the synthetic OS coverage-gap result (os-sandbox-route shape)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES a full_telemetry run whose coverage was NOT met
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › WRITES an untrusted detonation that is NOT in the ALLOW band (fail-closed leans to BLOCK)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › WRITES at the ALLOW-band boundary (score 40 is not ALLOW band)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › WRITES a trustworthy full_telemetry detonation with no static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › WRITES an inconclusive detonation that WAS fused against a fresh static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static result, even at riskScore 0 with no prior entry
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static npm result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static pypi result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static cargo result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static go result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static mcp result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static agent-skill result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static plugin result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static editor-extension result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+FAIL src/lambda/dispatcher-handler.spec.ts
+  ● lambda dispatcher handler › dispatches static analysis messages to the static worker queue
+
+
+
+
+
+  ● lambda dispatcher handler › dispatches dynamic analysis messages to the dynamic worker queue
+
+
+
+
+
+  ● lambda dispatcher handler › routes a windows-classified dynamic job to the Windows queue when configured
+
+
+
+
+
+  ● lambda dispatcher handler › SAFETY: a windows-classified job stays on Linux when the Windows queue is NOT configured
+
+
+
+
+
+  ● lambda dispatcher handler › routes an "either"-classified job to the Linux queue even when Windows is configured
+
+
+
+
+
+  ● lambda dispatcher handler › a message with no osTarget falls back to a thin classify (→ Linux) and never throws
+
+
+
+
+
+FAIL src/lambda/dispatcher-handler.mac-gap.spec.ts
+  ● dispatcher — fail-closed macOS coverage gap › mac + a result-write queue + no Mac sandbox → emits a synthetic coverage-gap result (NOT a Linux detonation)
+
+
+
+
+
+  ● dispatcher — fail-closed macOS coverage gap › mac + NO result-write queue → DROPPED fail-closed (NEVER routed to Linux), acked
+
+
+
+
+
+  ● dispatcher — fail-closed macOS coverage gap › regression: a linux/either dynamic message still routes to the Linux queue
+
+
+
+
+
+  ● dispatcher — fail-closed macOS coverage gap › regression: windows + a Windows queue still routes to the Windows queue
+
+
+
+
+
+PASS src/workers/source-adapters/git-source.binary-fidelity.spec.ts
+FAIL src/lambda/result-aggregator-handler.spec.ts (7.195 s)
+  ● lambda result-aggregator-handler › processes a valid IntelWorkerResult and writes cache + verdict
+
+
+
+
+
+  ● lambda result-aggregator-handler › classifies riskScore >= 70 as MALICIOUS
+
+
+
+
+
+  ● lambda result-aggregator-handler › escalates to dynamic queue when escalateToDynamic is true
+
+
+
+
+
+  ● lambda result-aggregator-handler › reports batch item failure on processing error
+
+
+
+
+
+  ● lambda result-aggregator-handler › writes release baseline for clean static verdicts (score <= 39)
+
+
+
+
+
+  ● lambda result-aggregator-handler › does not write baseline for high-risk verdicts
+
+
+
+
+
+  ● lambda result-aggregator-handler › policyFactsCoverage emit (C7 v10 read-floor interlock) › stamps the cache LATEST row with policyFactsCoverage (terminal-ok static producer)
+
+
+
+
+
+  ● lambda result-aggregator-handler › policyFactsCoverage emit (C7 v10 read-floor interlock) › makes the Intel-written row a FRESH warm hit under the v10 read floor (BACKEND_POLICY_FACTS_READ_V10 on)
+
+
+
+
+
+  ● lambda result-aggregator-handler › policyFactsCoverage emit (C7 v10 read-floor interlock) › propagates policyFacts onto the cache row when the static result carries them
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/lambda/result-aggregator-handler.spec.ts'
+
+    [0m [90m 378 |[39m       mockS3Send[33m.[39mmockResolvedValue({})[33m;[39m
+     [90m 379 |[39m
+    [31m[1m>[22m[39m[90m 380 |[39m       [36mconst[39m { [33mPOLICY_FACT_SCHEMA_VERSION[39m } [33m=[39m require([32m'@ceragon/shared-contracts'[39m)[33m;[39m
+     [90m     |[39m                                              [31m[1m^[22m[39m
+     [90m 381 |[39m       [36mconst[39m fact [33m=[39m {
+     [90m 382 |[39m         schemaVersion[33m:[39m [33mPOLICY_FACT_SCHEMA_VERSION[39m[33m,[39m
+     [90m 383 |[39m         factId[33m:[39m [32m'fact-1'[39m[33m,[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/lambda/result-aggregator-handler.spec.ts:380:46)
+
+  ● lambda result-aggregator-handler › oversized-verdict S3 spill › spills signalSummary to S3 + slims the verdict item when the item exceeds the threshold
+
+
+
+
+
+  ● lambda result-aggregator-handler › oversized-verdict S3 spill › writes a normal-size verdict inline — no spill, no signal-summary S3 write
+
+
+
+
+
+  ● lambda result-aggregator-handler › oversized-verdict S3 spill › surfaces an error (batchItemFailure) when the S3 spill offload fails — never writes an oversized item
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (a) first delivery with a dedup id is processed and writes the verdict
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (b) a redelivery whose prior delivery COMPLETED is SKIPPED — no second verdict/cache write
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (c) a message WITHOUT a dedup id is processed (legacy producer back-compat)
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (d) a DDB error on the dedup pre-check FAILS the record (not silently processed or skipped)
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (e) two DIFFERENT dedup ids both process (distinct logical results)
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (f) a crash mid-processing leaves NO marker, so the redelivery RE-PROCESSES (no permanent drop)
+
+
+
+
+
+  ● lambda result-aggregator-handler › verdict-aware raw-artifact S3 tagging › tags the raw artifact object with the correct key + verdict tag value on a terminal verdict
+
+
+
+
+
+  ● lambda result-aggregator-handler › verdict-aware raw-artifact S3 tagging › maps BLOCK -> block
+
+
+
+
+
+  ● lambda result-aggregator-handler › verdict-aware raw-artifact S3 tagging › maps PROMPT -> prompt
+
+
+
+
+
+  ● lambda result-aggregator-handler › verdict-aware raw-artifact S3 tagging › maps ALLOW -> allow
+
+
+
+
+
+  ● lambda result-aggregator-handler › verdict-aware raw-artifact S3 tagging › swallows a tagging failure — the verdict write still completes (best-effort)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › flag OFF => zero fan-out sends
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › sandbox result => zero fan-out sends
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › empty/absent transitiveInstallSet => zero fan-out sends
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › ARTIFACT_FETCH_QUEUE_URL unset => zero fan-out sends (short-circuit)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › flag ON + 3 cold registry nodes => 3 sends with correct child shape
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › passes the node integrity through as upstreamDigest when present
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › parentDepth >= MAX_DEPTH => zero sends (leaf)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › parentDepth = MAX_DEPTH - 1 => children at childDepth = MAX_DEPTH
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › duplicate node listed twice => exactly one send (dedup Set)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › node equal to root => skipped
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › scope=dev / specifierKind!=registry / resolved=false => skipped
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › 300 nodes with MAX_CHILDREN=250 => exactly 250 sends
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › skips falsy / missing name|version|ecosystem nodes
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › node already cached fresh at the CURRENT schema version (coverage + future expiry) => skipped (no send)
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/lambda/result-aggregator-handler.spec.ts'
+
+    [0m [90m 1145 |[39m   it([32m'node already cached fresh at the CURRENT schema version (coverage + future expiry) => skipped (no send)'[39m[33m,[39m [36masync[39m () [33m=>[39m {
+     [90m 1146 |[39m     [36mconst[39m nowSec [33m=[39m [33mMath[39m[33m.[39mfloor([33mDate[39m[33m.[39mnow() [33m/[39m [35m1000[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 1147 |[39m     [36mconst[39m { [33mSCANNER_CACHE_SCHEMA_VERSION[39m } [33m=[39m require([32m'@ceragon/shared-contracts'[39m)[33m;[39m
+     [90m      |[39m                                              [31m[1m^[22m[39m
+     [90m 1148 |[39m     installFanoutDynamoMock({
+     [90m 1149 |[39m       nvRow[33m:[39m {
+     [90m 1150 |[39m         cacheVersion[33m:[39m [33mSCANNER_CACHE_SCHEMA_VERSION[39m[33m,[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/lambda/result-aggregator-handler.spec.ts:1147:46)
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › node cached at v9 => NOT skipped (send)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › current-version row with NO policyFactsCoverage => NOT skipped (coverage interlock)
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/lambda/result-aggregator-handler.spec.ts'
+
+    [0m [90m 1167 |[39m     [90m// interlock — with a stale literal it would pass for the wrong reason[39m
+     [90m 1168 |[39m     [90m// (version-stale) after a schema bump.[39m
+    [31m[1m>[22m[39m[90m 1169 |[39m     [36mconst[39m { [33mSCANNER_CACHE_SCHEMA_VERSION[39m } [33m=[39m require([32m'@ceragon/shared-contracts'[39m)[33m;[39m
+     [90m      |[39m                                              [31m[1m^[22m[39m
+     [90m 1170 |[39m     installFanoutDynamoMock({ nvRow[33m:[39m { cacheVersion[33m:[39m [33mSCANNER_CACHE_SCHEMA_VERSION[39m } })[33m;[39m
+     [90m 1171 |[39m     [36mawait[39m run(makeResult({ transitiveInstallSet[33m:[39m [node([32m'uncovered-dep'[39m)] }))[33m;[39m
+     [90m 1172 |[39m     expect(fanoutSends())[33m.[39mtoHaveLength([35m1[39m)[33m;[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/lambda/result-aggregator-handler.spec.ts:1169:46)
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › NV# GetItem throws => NOT skipped (fail-open-to-enqueue)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › a fan-out throw does NOT fail the record (non-fatal)
+
+
+
+
+
+PASS src/followers/pypi-follower.spec.ts
+PASS src/advisory/advisory-verdict-refresher.test.ts
+PASS src/operations/runbooks.spec.ts
+PASS src/runtime/write-current-verdict.spec.ts
+PASS src/routing/__tests__/os-target-classifier.test.ts
+PASS src/advisory/bumblebee-threat-intel-client.spec.ts
+PASS src/operations/metrics.service.spec.ts
+PASS packages/shared-contracts/src/package-intelligence/queue-messages.spec.ts
+PASS src/lambda/os-sandbox-route.spec.ts
+PASS src/advisory/vuln-applicability.test.ts
+PASS src/pipeline/hotset/budget-manager.spec.ts
+FAIL src/lambda/result-aggregator-fanout.integration.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/lambda/result-aggregator-fanout.integration.spec.ts'
+
+    [0m [90m 46 |[39m   [33mPurgeQueueCommand[39m[33m,[39m
+     [90m 47 |[39m } [36mfrom[39m [32m'@aws-sdk/client-sqs'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 48 |[39m [36mimport[39m { [33mSCANNER_CACHE_SCHEMA_VERSION[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 49 |[39m [36mimport[39m { writeLineageMarker[33m,[39m readLineageDepth } [36mfrom[39m [32m'../contracts/intel-cache-precheck'[39m[33m;[39m
+     [90m 50 |[39m
+     [90m 51 |[39m [90m// ── Local engine endpoints (localhost ONLY) ──────────────────────────[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/lambda/result-aggregator-fanout.integration.spec.ts:48:1)
+
+FAIL src/runtime/intel-result-writer.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/runtime/intel-result-writer.spec.ts'
+
+    [0m [90m 13 |[39m [90m// duplicate the pure logic here to validate field parity with Backend.[39m
+     [90m 14 |[39m
+    [31m[1m>[22m[39m[90m 15 |[39m [36mimport[39m { [33mSCANNER_CACHE_SCHEMA_VERSION[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 16 |[39m
+     [90m 17 |[39m [36mconst[39m [33mCACHE_VERSION[39m [33m=[39m [33mSCANNER_CACHE_SCHEMA_VERSION[39m[33m;[39m [90m// Centralized; Phase 0 §2.15[39m
+     [90m 18 |[39m [36mconst[39m [33mTTL_HOURS[39m [33m=[39m [35m168[39m[33m;[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/runtime/intel-result-writer.spec.ts:15:1)
+
+{"level":30,"time":"2026-09-05T22:37:41.933Z","pid":11300,"hostname":"CND34521VN","name":"budget-manager","config":{"totalCapacity":200,"shares":{"interactive":50,"background-high":25,"background-normal":15,"reconciliation":10},"borrowFraction":0.5},"msg":"budget config updated"}
+{"level":40,"time":"2026-09-05T22:37:41.934Z","pid":11300,"hostname":"CND34521VN","name":"budget-manager","shares":{"interactive":60,"background-high":25,"background-normal":15,"reconciliation":10},"sum":110,"msg":"budget shares do not sum to 100 — rejecting update"}
+{"level":30,"time":"2026-09-05T22:37:41.934Z","pid":11300,"hostname":"CND34521VN","name":"budget-manager","config":{"totalCapacity":100,"shares":{"interactive":40,"background-high":30,"background-normal":20,"reconciliation":10},"borrowFraction":0.5},"msg":"budget config updated"}
+{"level":30,"time":"2026-09-05T22:37:41.935Z","pid":11300,"hostname":"CND34521VN","name":"budget-manager","config":{"totalCapacity":200,"shares":{"interactive":50,"background-high":25,"background-normal":15,"reconciliation":10},"borrowFraction":1},"msg":"budget config updated"}
+FAIL src/lookup/verdict-lookup.packaging-only-change.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/lookup/verdict-lookup.ts'
+
+    Require stack:
+      src/lookup/verdict-lookup.ts
+      src/lookup/verdict-lookup.packaging-only-change.spec.ts
+
+    [0m [90m 18 |[39m [36mimport[39m { [33mDynamoDBClient[39m[33m,[39m [33mGetItemCommand[39m } [36mfrom[39m [32m'@aws-sdk/client-dynamodb'[39m[33m;[39m
+     [90m 19 |[39m [36mimport[39m { marshall[33m,[39m unmarshall } [36mfrom[39m [32m'@aws-sdk/util-dynamodb'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 20 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 21 |[39m [36mimport[39m { [33mCURRENT_POINTER_SK[39m } [36mfrom[39m [32m'../runtime/write-current-verdict'[39m[33m;[39m
+     [90m 22 |[39m [36mimport[39m type {
+     [90m 23 |[39m   [33mEcosystem[39m[33m,[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/lookup/verdict-lookup.ts:20:1)
+      at Object.<anonymous> (src/lookup/verdict-lookup.packaging-only-change.spec.ts:23:1)
+
+PASS src/lambda/hotset-handler.spec.ts
+PASS src/advisory/cve-alert-publisher.spec.ts
+FAIL src/lookup/verdict-lookup.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/lookup/verdict-lookup.ts'
+
+    Require stack:
+      src/lookup/verdict-lookup.ts
+      src/lookup/verdict-lookup.spec.ts
+
+    [0m [90m 18 |[39m [36mimport[39m { [33mDynamoDBClient[39m[33m,[39m [33mGetItemCommand[39m } [36mfrom[39m [32m'@aws-sdk/client-dynamodb'[39m[33m;[39m
+     [90m 19 |[39m [36mimport[39m { marshall[33m,[39m unmarshall } [36mfrom[39m [32m'@aws-sdk/util-dynamodb'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 20 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 21 |[39m [36mimport[39m { [33mCURRENT_POINTER_SK[39m } [36mfrom[39m [32m'../runtime/write-current-verdict'[39m[33m;[39m
+     [90m 22 |[39m [36mimport[39m type {
+     [90m 23 |[39m   [33mEcosystem[39m[33m,[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/lookup/verdict-lookup.ts:20:1)
+      at Object.<anonymous> (src/lookup/verdict-lookup.spec.ts:7:1)
+
+{"level":30,"time":"2026-09-05T22:37:42.058Z","pid":11300,"hostname":"CND34521VN","name":"lambda-hotset","processed":1,"failed":0,"msg":"batch completed"}
+{"level":30,"time":"2026-09-05T22:37:42.067Z","pid":11300,"hostname":"CND34521VN","name":"lambda-hotset","hotsetKey":"npm#react","tier":"top-1000","downloads":250000,"msg":"popularity updated"}
+{"level":30,"time":"2026-09-05T22:37:42.068Z","pid":11300,"hostname":"CND34521VN","name":"lambda-hotset","processed":1,"failed":0,"msg":"batch completed"}
+PASS src/pipeline/escalation/escalation-scoring.spec.ts
+PASS src/followers/go-follower.spec.ts
+PASS src/lambda/deps-dev-dependents.spec.ts
+PASS src/operations/dashboards.spec.ts
+PASS src/lambda/hotset-seeder.spec.ts
+PASS src/followers/npm-follower.spec.ts
+PASS src/pipeline/hotset/context-builder-hotset.spec.ts
+PASS src/common/observation-emitter.spec.ts
+PASS src/runtime/intel-dynamic-adapter.spec.ts
+PASS src/operations/alarms.spec.ts
+PASS src/common/cursor-store.spec.ts
+FAIL src/contracts/intel-cache-precheck.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/intel-cache-precheck.ts'
+
+    Require stack:
+      src/contracts/intel-cache-precheck.ts
+      src/contracts/intel-cache-precheck.spec.ts
+
+    [0m [90m 28 |[39m } [36mfrom[39m [32m'@aws-sdk/client-dynamodb'[39m[33m;[39m
+     [90m 29 |[39m [36mimport[39m { marshall[33m,[39m unmarshall } [36mfrom[39m [32m'@aws-sdk/util-dynamodb'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 30 |[39m [36mimport[39m { [33mSCANNER_CACHE_SCHEMA_VERSION[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 31 |[39m [36mimport[39m type { [33mEnrichmentHints[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 32 |[39m [36mimport[39m { createLogger } [36mfrom[39m [32m'../common/logger'[39m[33m;[39m
+     [90m 33 |[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/intel-cache-precheck.ts:30:1)
+      at Object.<anonymous> (src/contracts/intel-cache-precheck.spec.ts:19:1)
+
+PASS packages/shared-contracts/src/package-intelligence/shared-contracts.spec.ts
+PASS src/pipeline/escalation/context-builder.spec.ts
+PASS src/pipeline/fetch/content-hash.path-collision.spec.ts
+PASS src/pipeline/fetch/integrity-threat-state.spec.ts
+{"level":40,"time":"2026-09-05T22:37:42.696Z","pid":9820,"hostname":"CND34521VN","name":"content-hash","fileCount":2,"hashedPaths":1,"collidingPaths":["lib/index.js"],"treeFingerprint":"cd22f563632dc0eb0c60902907ce87ef654a69d61a6cd679e03c2b0b67dee7fe","msg":"path collision — the fingerprint does not cover every extracted file"}
+{"level":40,"time":"2026-09-05T22:37:42.698Z","pid":9820,"hostname":"CND34521VN","name":"content-hash","fileCount":2,"hashedPaths":1,"collidingPaths":["lib/index.js"],"treeFingerprint":"cd22f563632dc0eb0c60902907ce87ef654a69d61a6cd679e03c2b0b67dee7fe","msg":"path collision — the fingerprint does not cover every extracted file"}
+{"level":40,"time":"2026-09-05T22:37:42.699Z","pid":9820,"hostname":"CND34521VN","name":"content-hash","fileCount":3,"hashedPaths":2,"collidingPaths":["a/b.js"],"treeFingerprint":"c5f7a6ff6b8c57a5818274e4c66495803d9bef4fdb9eee64963cfe4556bd0225","msg":"path collision — the fingerprint does not cover every extracted file"}
+{"level":40,"time":"2026-09-05T22:37:42.700Z","pid":9820,"hostname":"CND34521VN","name":"content-hash","fileCount":3,"hashedPaths":1,"collidingPaths":["x.js"],"treeFingerprint":"6b1654b8c959c8465a2f5b43e0c38c6cf0657a3512451cb34a67fc6bc1b74a9d","msg":"path collision — the fingerprint does not cover every extracted file"}
+{"level":30,"time":"2026-09-05T22:37:42.763Z","pid":11300,"hostname":"CND34521VN","name":"lambda-verdict-writer","sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","egPg":"1#1","verdict":"ALLOW","riskScore":15,"seq":1788647862762,"msg":"verdict-of-record written (single CURRENT pointer + per-generation row)"}
+{"level":40,"time":"2026-09-05T22:37:42.774Z","pid":11300,"hostname":"CND34521VN","name":"lambda-verdict-writer","messageType":"wrong-type.v1","msg":"unexpected verdict message type, skipping"}
+{"level":30,"time":"2026-09-05T22:37:42.786Z","pid":11300,"hostname":"CND34521VN","name":"lambda-verdict-writer","sha256":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","s3Key":"verdicts/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/1/1/snapshot.json","msg":"verdict snapshot written to S3"}
+{"level":50,"time":"2026-09-05T22:37:42.796Z","pid":11300,"hostname":"CND34521VN","name":"lambda-verdict-writer","error":"DDB write failed","sha256":"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc","msg":"verdict write failed"}
+PASS src/lambda/verdict-writer-handler.spec.ts
+PASS src/lambda/sandbox-verdict-reconciliation.spec.ts
+PASS src/pipeline/hotset/flood-throttle.spec.ts
+PASS src/runtime/write-current-verdict.integration.spec.ts
+{"level":30,"time":"2026-09-05T22:37:42.786Z","pid":11300,"hostname":"CND34521VN","name":"lambda-verdict-writer","sha256":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","egPg":"1#1","verdict":"BLOCK","riskScore":85,"seq":1788647862786,"msg":"verdict-of-record written (single CURRENT pointer + per-generation row)"}
+{"level":30,"time":"2026-09-05T22:37:42.870Z","pid":11300,"hostname":"CND34521VN","name":"flood-throttle","config":{"publisherBurstLimit":10,"scopeBurstLimit":100,"windowMs":3600000,"campaignClusterLimit":20,"campaignSimilarityThreshold":0.85},"msg":"throttle config updated"}
+PASS src/operations/slo.spec.ts
+PASS src/advisory/cache-nv-keys.test.ts
+PASS src/followers/adapters/backend-demand-source.spec.ts
+PASS src/routing/build-os-classifier-input.spec.ts
+PASS src/contracts/shared-contracts-parity.spec.ts
+PASS src/followers/cargo-follower.spec.ts
+FAIL src/followers/adapters/__tests__/skills-sh-installs.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/table-definitions.ts'
+
+    Require stack:
+      src/contracts/table-definitions.ts
+      src/common/cursor-store.ts
+      src/followers/mcp-registry-follower.ts
+      src/followers/adapters/discovery-clients.ts
+      src/followers/adapters/__tests__/skills-sh-installs.spec.ts
+
+    [0m [90m  9 |[39m
+     [90m 10 |[39m [90m// Re-export from shared for backward compatibility with existing Ingestion imports[39m
+    [31m[1m>[22m[39m[90m 11 |[39m [36mexport[39m { [33mTABLE_NAMES[39m[33m,[39m tablePrefix } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 12 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m [90m/** TTL attribute name used across all tables that support expiry */[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/table-definitions.ts:11:1)
+      at Object.<anonymous> (src/common/cursor-store.ts:11:1)
+      at Object.<anonymous> (src/followers/mcp-registry-follower.ts:84:1)
+      at Object.<anonymous> (src/followers/adapters/discovery-clients.ts:22:1)
+      at Object.<anonymous> (src/followers/adapters/__tests__/skills-sh-installs.spec.ts:1:1)
+
+FAIL src/followers/adapters/__tests__/mcp-registry-client.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/table-definitions.ts'
+
+    Require stack:
+      src/contracts/table-definitions.ts
+      src/common/cursor-store.ts
+      src/followers/mcp-registry-follower.ts
+      src/followers/adapters/discovery-clients.ts
+      src/followers/adapters/__tests__/mcp-registry-client.spec.ts
+
+    [0m [90m  9 |[39m
+     [90m 10 |[39m [90m// Re-export from shared for backward compatibility with existing Ingestion imports[39m
+    [31m[1m>[22m[39m[90m 11 |[39m [36mexport[39m { [33mTABLE_NAMES[39m[33m,[39m tablePrefix } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 12 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m [90m/** TTL attribute name used across all tables that support expiry */[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/table-definitions.ts:11:1)
+      at Object.<anonymous> (src/common/cursor-store.ts:11:1)
+      at Object.<anonymous> (src/followers/mcp-registry-follower.ts:84:1)
+      at Object.<anonymous> (src/followers/adapters/discovery-clients.ts:22:1)
+      at Object.<anonymous> (src/followers/adapters/__tests__/mcp-registry-client.spec.ts:18:1)
+
+FAIL src/followers/adapters/__tests__/glama-registry-client.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/table-definitions.ts'
+
+    Require stack:
+      src/contracts/table-definitions.ts
+      src/common/cursor-store.ts
+      src/followers/mcp-registry-follower.ts
+      src/followers/adapters/discovery-clients.ts
+      src/followers/adapters/__tests__/glama-registry-client.spec.ts
+
+    [0m [90m  9 |[39m
+     [90m 10 |[39m [90m// Re-export from shared for backward compatibility with existing Ingestion imports[39m
+    [31m[1m>[22m[39m[90m 11 |[39m [36mexport[39m { [33mTABLE_NAMES[39m[33m,[39m tablePrefix } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 12 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m [90m/** TTL attribute name used across all tables that support expiry */[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/table-definitions.ts:11:1)
+      at Object.<anonymous> (src/common/cursor-store.ts:11:1)
+      at Object.<anonymous> (src/followers/mcp-registry-follower.ts:84:1)
+      at Object.<anonymous> (src/followers/adapters/discovery-clients.ts:22:1)
+      at Object.<anonymous> (src/followers/adapters/__tests__/glama-registry-client.spec.ts:16:1)
+
+FAIL src/followers/adapters/__tests__/plugin-marketplace-client.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/table-definitions.ts'
+
+    Require stack:
+      src/contracts/table-definitions.ts
+      src/common/cursor-store.ts
+      src/followers/mcp-registry-follower.ts
+      src/followers/adapters/discovery-clients.ts
+      src/followers/adapters/__tests__/plugin-marketplace-client.spec.ts
+
+    [0m [90m  9 |[39m
+     [90m 10 |[39m [90m// Re-export from shared for backward compatibility with existing Ingestion imports[39m
+    [31m[1m>[22m[39m[90m 11 |[39m [36mexport[39m { [33mTABLE_NAMES[39m[33m,[39m tablePrefix } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 12 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m [90m/** TTL attribute name used across all tables that support expiry */[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/table-definitions.ts:11:1)
+      at Object.<anonymous> (src/common/cursor-store.ts:11:1)
+      at Object.<anonymous> (src/followers/mcp-registry-follower.ts:84:1)
+      at Object.<anonymous> (src/followers/adapters/discovery-clients.ts:22:1)
+      at Object.<anonymous> (src/followers/adapters/__tests__/plugin-marketplace-client.spec.ts:1:1)
+
+FAIL src/followers/adapters/__tests__/github-repo-clients.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/table-definitions.ts'
+
+    Require stack:
+      src/contracts/table-definitions.ts
+      src/common/cursor-store.ts
+      src/followers/mcp-registry-follower.ts
+      src/followers/adapters/discovery-clients.ts
+      src/followers/adapters/__tests__/github-repo-clients.spec.ts
+
+    [0m [90m  9 |[39m
+     [90m 10 |[39m [90m// Re-export from shared for backward compatibility with existing Ingestion imports[39m
+    [31m[1m>[22m[39m[90m 11 |[39m [36mexport[39m { [33mTABLE_NAMES[39m[33m,[39m tablePrefix } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 12 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m [90m/** TTL attribute name used across all tables that support expiry */[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/table-definitions.ts:11:1)
+      at Object.<anonymous> (src/common/cursor-store.ts:11:1)
+      at Object.<anonymous> (src/followers/mcp-registry-follower.ts:84:1)
+      at Object.<anonymous> (src/followers/adapters/discovery-clients.ts:22:1)
+      at Object.<anonymous> (src/followers/adapters/__tests__/github-repo-clients.spec.ts:16:1)
+
+FAIL src/followers/adapters/__tests__/clawhub-client.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/table-definitions.ts'
+
+    Require stack:
+      src/contracts/table-definitions.ts
+      src/common/cursor-store.ts
+      src/followers/mcp-registry-follower.ts
+      src/followers/adapters/discovery-clients.ts
+      src/followers/adapters/__tests__/clawhub-client.spec.ts
+
+    [0m [90m  9 |[39m
+     [90m 10 |[39m [90m// Re-export from shared for backward compatibility with existing Ingestion imports[39m
+    [31m[1m>[22m[39m[90m 11 |[39m [36mexport[39m { [33mTABLE_NAMES[39m[33m,[39m tablePrefix } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 12 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m [90m/** TTL attribute name used across all tables that support expiry */[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/table-definitions.ts:11:1)
+      at Object.<anonymous> (src/common/cursor-store.ts:11:1)
+      at Object.<anonymous> (src/followers/mcp-registry-follower.ts:84:1)
+      at Object.<anonymous> (src/followers/adapters/discovery-clients.ts:22:1)
+      at Object.<anonymous> (src/followers/adapters/__tests__/clawhub-client.spec.ts:10:1)
+
+FAIL src/followers/adapters/__tests__/discovery-clients.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/table-definitions.ts'
+
+    Require stack:
+      src/contracts/table-definitions.ts
+      src/common/cursor-store.ts
+      src/followers/mcp-registry-follower.ts
+      src/followers/adapters/discovery-clients.ts
+      src/followers/adapters/__tests__/discovery-clients.spec.ts
+
+    [0m [90m  9 |[39m
+     [90m 10 |[39m [90m// Re-export from shared for backward compatibility with existing Ingestion imports[39m
+    [31m[1m>[22m[39m[90m 11 |[39m [36mexport[39m { [33mTABLE_NAMES[39m[33m,[39m tablePrefix } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 12 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m [90m/** TTL attribute name used across all tables that support expiry */[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/table-definitions.ts:11:1)
+      at Object.<anonymous> (src/common/cursor-store.ts:11:1)
+      at Object.<anonymous> (src/followers/mcp-registry-follower.ts:84:1)
+      at Object.<anonymous> (src/followers/adapters/discovery-clients.ts:22:1)
+      at Object.<anonymous> (src/followers/adapters/__tests__/discovery-clients.spec.ts:11:1)
+
+FAIL src/followers/adapters/__tests__/github-stars-client.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/table-definitions.ts'
+
+    Require stack:
+      src/contracts/table-definitions.ts
+      src/common/cursor-store.ts
+      src/followers/mcp-registry-follower.ts
+      src/followers/adapters/discovery-clients.ts
+      src/followers/adapters/__tests__/github-stars-client.spec.ts
+
+    [0m [90m  9 |[39m
+     [90m 10 |[39m [90m// Re-export from shared for backward compatibility with existing Ingestion imports[39m
+    [31m[1m>[22m[39m[90m 11 |[39m [36mexport[39m { [33mTABLE_NAMES[39m[33m,[39m tablePrefix } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 12 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m [90m/** TTL attribute name used across all tables that support expiry */[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/table-definitions.ts:11:1)
+      at Object.<anonymous> (src/common/cursor-store.ts:11:1)
+      at Object.<anonymous> (src/followers/mcp-registry-follower.ts:84:1)
+      at Object.<anonymous> (src/followers/adapters/discovery-clients.ts:22:1)
+      at Object.<anonymous> (src/followers/adapters/__tests__/github-stars-client.spec.ts:6:1)
+
+FAIL src/workers/source-adapters/source-adapters.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/source-adapters/source-adapters.spec.ts[0m:[93m422[0m:[93m26[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m422[0m     }) as Extract<import('@ceragon/shared-contracts').ArtifactSourceRef, { kind: 'archive' }>;
+    [7m   [0m [91m                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/source-adapters/source-adapters.spec.ts[0m:[93m562[0m:[93m14[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m562[0m       import('@ceragon/shared-contracts').ArtifactSourceRef,
+    [7m   [0m [91m             ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/source-adapters/git-source.real-git.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/source-adapters/git-source.ts[0m:[93m10[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m10[0m import type { ArtifactSourceRef } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/source-adapters/git-source.content-identity.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/source-adapters/git-source.ts[0m:[93m10[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m10[0m import type { ArtifactSourceRef } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/source-adapters/git-source.blobless-strategy.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/source-adapters/git-source.ts[0m:[93m10[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m10[0m import type { ArtifactSourceRef } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/reconcile/rescan-planner.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/reconcile/reconciliation-runner.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/reconcile/gap-detector.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/reconcile/cursor-health-monitor.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/verdict/verdict-tagging.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+PASS src/routing/os-target-classifier.mac.spec.ts
+PASS packages/shared-contracts/src/package-intelligence/artifact-class.spec.ts
+FAIL src/pipeline/enrichment/publisher-profile.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/hotset/hotset-priority.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/hotset/customer-manifest-tracker.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/escalation/force-routing-policy.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/pipeline/escalation/force-routing-policy.ts[0m:[93m11[0m:[93m36[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m11[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/fetch/pipeline-fetch.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/pipeline/fetch/metadata-extractor.service.ts[0m:[93m9[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m9[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/escalation/escalation-router.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/sighting-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m45[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/vscode-marketplace-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m45[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/plugin-marketplace-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m45[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/mcp-registry-follower.hot-set.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m45[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/mcp-registry-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m45[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/discovery-observation.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m45[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/discovery-enablement.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-enablement.ts[0m:[93m37[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m37[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/github-repo-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m45[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/runtime/wave5-cache-digest-coalescing.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/runtime/wave5-cache-digest-coalescing.spec.ts[0m:[93m6[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m6[0m } from '@ceragon/shared-contracts';
+    [7m [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/clawhub-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m45[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/runtime/release-observation-router.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/runtime/release-observation-router.ts[0m:[93m9[0m:[93m36[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m9[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/runtime/release-observation-router.ts[0m:[93m10[0m:[93m49[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m10[0m import type { ArtifactSourceFetchMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/runtime/multi-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-enablement.ts[0m:[93m37[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m37[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/runtime/intel-static-adapter.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/runtime/analysis-dispatcher.spec.ts
+  ● analysis-dispatcher resolveDynamicRoute — OS routing parity › routes a windows-classified job to the Windows queue when configured
+
+
+
+
+
+  ● analysis-dispatcher resolveDynamicRoute — OS routing parity › SAFETY (inert-by-default): a windows job stays on Linux when the Windows queue is UNSET
+
+
+
+
+
+  ● analysis-dispatcher resolveDynamicRoute — OS routing parity › routes an 'either'-classified job to Linux even when Windows IS configured
+
+
+
+
+
+  ● analysis-dispatcher resolveDynamicRoute — OS routing parity › a message with no osTarget falls back to a thin classify (→ Linux) and never throws
+
+
+
+
+
+  ● analysis-dispatcher resolveDynamicRoute — OS routing parity › fail-closed macOS: a mac-native job with no Mac sandbox is a coverage-gap (never Linux)
+
+
+
+
+
+FAIL src/runtime/ai-artifact-follower.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/table-definitions.ts'
+
+    Require stack:
+      src/contracts/table-definitions.ts
+      src/common/cursor-store.ts
+      src/followers/mcp-registry-follower.ts
+      src/runtime/ai-artifact-follower.ts
+      src/runtime/ai-artifact-follower.spec.ts
+
+    [0m [90m  9 |[39m
+     [90m 10 |[39m [90m// Re-export from shared for backward compatibility with existing Ingestion imports[39m
+    [31m[1m>[22m[39m[90m 11 |[39m [36mexport[39m { [33mTABLE_NAMES[39m[33m,[39m tablePrefix } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 12 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m [90m/** TTL attribute name used across all tables that support expiry */[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/table-definitions.ts:11:1)
+      at Object.<anonymous> (src/common/cursor-store.ts:11:1)
+      at Object.<anonymous> (src/followers/mcp-registry-follower.ts:84:1)
+      at Object.<anonymous> (src/runtime/ai-artifact-follower.ts:26:1)
+      at Object.<anonymous> (src/runtime/ai-artifact-follower.spec.ts:15:1)
+
+FAIL src/workers/packaging-only-change.e2e.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/workers/packaging-only-change.e2e.spec.ts'
+
+    [0m [90m 79 |[39m [36mimport[39m { [33mSQSClient[39m } [36mfrom[39m [32m'@aws-sdk/client-sqs'[39m[33m;[39m
+     [90m 80 |[39m [36mimport[39m { marshall[33m,[39m unmarshall } [36mfrom[39m [32m'@aws-sdk/util-dynamodb'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 81 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 82 |[39m [36mimport[39m { [33mArtifactFetcher[39m } [36mfrom[39m [32m'./artifact-fetcher'[39m[33m;[39m
+     [90m 83 |[39m [36mimport[39m { fetchGitSource } [36mfrom[39m [32m'./source-adapters/git-source'[39m[33m;[39m
+     [90m 84 |[39m [36mimport[39m { sourceArtifactAliasKey } [36mfrom[39m [32m'../contracts/artifact-identity'[39m[33m;[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/workers/packaging-only-change.e2e.spec.ts:81:1)
+
+FAIL src/workers/artifact-fetcher.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m17[0m:[93m36[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m17[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m92[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/artifact-fetcher.packaging-only-change.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m17[0m:[93m36[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m17[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m92[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/artifact-fetcher.source-fetch.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m17[0m:[93m36[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m17[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m92[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/artifact-fetcher.corrupt-baseline-guard.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m17[0m:[93m36[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m17[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m92[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/popularity-gate.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/popularity-gate.ts[0m:[93m43[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m43[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/lambda/router-handler.spec.ts
+  ● lambda router handler › routes valid release observations to artifact fetch queue
+
+
+
+
+
+  ● lambda router handler › skips deleted observations without failing the batch
+
+
+
+
+
+  ● lambda router handler — threat-first value gate › admits a new, unpopular package WITH a lifecycle script to artifact-fetch (not metadata-only)
+
+
+
+
+
+  ● lambda router handler — threat-first value gate › still routes a cold, unpopular package with NO threat signal to metadata-only
+
+
+
+
+
+  ● lambda router handler — threat-first value gate › admits a mature package with an anomalous dist-tag re-point (distTagChanged)
+
+
+
+
+
+  ● lambda router handler — threat-first value gate › admits a mature package whose maintainer set changed (maintainerSetChanged)
+
+
+
+
+
+  ● lambda router handler — threat-first value gate › admits a mature package that adds a self-referential dependency (only +1 dep, bypasses the >5 clause)
+
+
+
+
+
+  ● lambda router handler — threat-first value gate › admits a mature package whose new version changed entry/shape (entryOrShapeChanged)
+
+
+
+
+
+  ● lambda router handler — transitive fan-in priority › admits a high-fan-in new version at LOW downloads to artifact-fetch when fan-in gating is enabled
+
+
+
+
+
+  ● lambda router handler — transitive fan-in priority › is CONFIGURABLE: with fan-in gating DISABLED, the same low-download package routes metadata-only
+
+
+
+
+
+  ● lambda router handler — transitive fan-in priority › is CONFIGURABLE: a fan-in BELOW the configured threshold routes metadata-only even when enabled
+
+
+
+
+
+FAIL src/pipeline/enrichment/provenance-checker.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/osv-client.querybatch.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/known-malware-index-writer.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/end-to-end.test.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/table-definitions.ts'
+
+    Require stack:
+      src/contracts/table-definitions.ts
+      src/common/cursor-store.ts
+      src/advisory/advisory-sync-runner.ts
+      src/advisory/end-to-end.test.ts
+
+    [0m [90m  9 |[39m
+     [90m 10 |[39m [90m// Re-export from shared for backward compatibility with existing Ingestion imports[39m
+    [31m[1m>[22m[39m[90m 11 |[39m [36mexport[39m { [33mTABLE_NAMES[39m[33m,[39m tablePrefix } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 12 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m [90m/** TTL attribute name used across all tables that support expiry */[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/table-definitions.ts:11:1)
+      at Object.<anonymous> (src/common/cursor-store.ts:11:1)
+      at Object.<anonymous> (src/advisory/advisory-sync-runner.ts:11:1)
+      at Object.<anonymous> (src/advisory/end-to-end.test.ts:22:1)
+
+FAIL src/advisory/advisory-sync.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-overlay-writer.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-overlay-writer.observability.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-impact-resolver.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-endpoint-verdict-writer.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-cursor-clamp.test.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/table-definitions.ts'
+
+    Require stack:
+      src/contracts/table-definitions.ts
+      src/common/cursor-store.ts
+      src/advisory/advisory-sync-runner.ts
+      src/advisory/advisory-cursor-clamp.test.ts
+
+    [0m [90m  9 |[39m
+     [90m 10 |[39m [90m// Re-export from shared for backward compatibility with existing Ingestion imports[39m
+    [31m[1m>[22m[39m[90m 11 |[39m [36mexport[39m { [33mTABLE_NAMES[39m[33m,[39m tablePrefix } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 12 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m [90m/** TTL attribute name used across all tables that support expiry */[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/table-definitions.ts:11:1)
+      at Object.<anonymous> (src/common/cursor-store.ts:11:1)
+      at Object.<anonymous> (src/advisory/advisory-sync-runner.ts:11:1)
+      at Object.<anonymous> (src/advisory/advisory-cursor-clamp.test.ts:16:1)
+
+FAIL src/advisory/advisory-ai-artifact-endpoint-coverage.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-cache-sweep.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/contracts/translate-dynamic-to-sandbox.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/discovery-enablement.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-enablement.ts[0m:[93m37[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m37[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/ecosystem-coverage.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/ecosystem-coverage.test.ts[0m:[93m30[0m:[93m54[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m30[0m import { ARTIFACT_ECOSYSTEMS, artifactClassOf } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/ecosystem-coverage.test.ts[0m:[93m31[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m31[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+Summary of all failing tests
+FAIL src/lambda/router-handler.artifact-class.spec.ts (5.96 s)
+  ● router handles non-package artifact classes › routes an mcp server to artifact-fetch, not metadata-only
+
+
+
+
+
+  ● router handles non-package artifact classes › routes an editor extension to artifact-fetch
+
+
+
+
+
+  ● router handles non-package artifact classes › routes an agent skill pinned to an OCI digest to artifact-fetch
+
+
+
+
+
+  ● router handles non-package artifact classes › NEVER silently drops an unknown class — it throws
+
+
+
+
+
+  ● router handles non-package artifact classes › skips a candidate-only sighting WITH a stated reason rather than dropping it
+
+
+
+
+
+  ● router handles non-package artifact classes › skips a non-package artifact whose only route is a bare registry pointer
+
+
+
+
+
+  ● router handles non-package artifact classes › derives the class from ecosystem and ignores the wire-supplied artifactClass
+
+
+
+
+
+  ● router preserves existing package behaviour exactly › still routes a complete registry package to artifact-fetch
+
+
+
+
+
+  ● router preserves existing package behaviour exactly › still skips a yanked package — now with a stated reason
+
+
+
+
+
+  ● router preserves existing package behaviour exactly › still skips a package missing registry coordinates — now with a stated reason
+
+
+
+
+
+  ● handler routes non-package observations end to end › enqueues an artifact-source-fetch message carrying the pinned sourceRef
+
+
+
+
+
+  ● handler routes non-package observations end to end › reports an unknown ecosystem as a batch item failure so it reaches the DLQ
+
+
+
+
+
+  ● handler routes non-package observations end to end › does not divert a non-package artifact to metadata-only under the value gate
+
+
+
+
+
+FAIL src/lambda/result-aggregator-handler.sandbox-gate.spec.ts
+  ● result-aggregator — fail-closed sandbox reconciliation gate (wiring) › an INCONCLUSIVE Windows detonation with no static base writes NO verdict + NO cache row (fail-closed skip)
+
+
+
+
+
+  ● result-aggregator — fail-closed sandbox reconciliation gate (wiring) › a MALICIOUS untrusted Windows detonation with no static base still WRITES a verdict (never suppressed → BLOCK)
+
+
+
+
+
+  ● result-aggregator — fail-closed sandbox reconciliation gate (wiring) › an INCONCLUSIVE detonation fused over a SUSPICIOUS static base writes a verdict that never downgrades
+
+
+
+
+
+FAIL src/runtime/intel-result-writer.sandbox-gate.spec.ts (6.327 s)
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES the stale-job payload that caused the incident (no cache row, no verdict)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › still writes the S3 forensics snapshot for a REFUSED detonation (audit trail survives)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › does NOT let a forensics S3 failure block the cache write (S3 is not a prerequisite)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › returns normally on refusal so the caller still acks the SQS message (no DLQ loop)
+
+    expect(received).resolves.toBeUndefined()
+
+    Received promise rejected instead of resolved
+    Rejected to value: {"diagnosticCodes": [2307], "diagnosticText": "[96msrc/runtime/intel-result-writer.ts[0m:[93m35[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.·
+    [7m35[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    ", "name": "TSError"}
+
+    [0m [90m 169 |[39m
+     [90m 170 |[39m   it([32m'returns normally on refusal so the caller still acks the SQS message (no DLQ loop)'[39m[33m,[39m [36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 171 |[39m     [36mawait[39m expect(
+     [90m     |[39m           [31m[1m^[22m[39m
+     [90m 172 |[39m       run({ riskScore[33m:[39m [35m0[39m[33m,[39m sandboxQuality[33m:[39m [32m'skipped'[39m[33m,[39m sandboxOutcome[33m:[39m [32m'inconclusive'[39m })[33m,[39m
+     [90m 173 |[39m     )[33m.[39mresolves[33m.[39mtoBeUndefined()[33m;[39m
+     [90m 174 |[39m   })[33m;[39m[0m
+
+      at expect (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/expect/build/index.js:113:15)
+      at Object.<anonymous> (src/runtime/intel-result-writer.sandbox-gate.spec.ts:171:11)
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES an ALLOW-band inconclusive detonation with sandboxQuality=skipped and no static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES an ALLOW-band inconclusive detonation with sandboxQuality=failed and no static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES an ALLOW-band inconclusive detonation with sandboxQuality=degraded and no static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES an ALLOW-band inconclusive detonation with sandboxQuality=strace_only and no static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES when the fresh static row carries NO riskScore (fusion did not actually run)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES when the existing static row is STALE-SCHEMA (no fresh base to fuse against)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES the synthetic OS coverage-gap result (os-sandbox-route shape)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES a full_telemetry run whose coverage was NOT met
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › WRITES an untrusted detonation that is NOT in the ALLOW band (fail-closed leans to BLOCK)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › WRITES at the ALLOW-band boundary (score 40 is not ALLOW band)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › WRITES a trustworthy full_telemetry detonation with no static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › WRITES an inconclusive detonation that WAS fused against a fresh static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static result, even at riskScore 0 with no prior entry
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static npm result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static pypi result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static cargo result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static go result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static mcp result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static agent-skill result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static plugin result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static editor-extension result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+FAIL src/lambda/dispatcher-handler.spec.ts
+  ● lambda dispatcher handler › dispatches static analysis messages to the static worker queue
+
+
+
+
+
+  ● lambda dispatcher handler › dispatches dynamic analysis messages to the dynamic worker queue
+
+
+
+
+
+  ● lambda dispatcher handler › routes a windows-classified dynamic job to the Windows queue when configured
+
+
+
+
+
+  ● lambda dispatcher handler › SAFETY: a windows-classified job stays on Linux when the Windows queue is NOT configured
+
+
+
+
+
+  ● lambda dispatcher handler › routes an "either"-classified job to the Linux queue even when Windows is configured
+
+
+
+
+
+  ● lambda dispatcher handler › a message with no osTarget falls back to a thin classify (→ Linux) and never throws
+
+
+
+
+
+FAIL src/lambda/dispatcher-handler.mac-gap.spec.ts
+  ● dispatcher — fail-closed macOS coverage gap › mac + a result-write queue + no Mac sandbox → emits a synthetic coverage-gap result (NOT a Linux detonation)
+
+
+
+
+
+  ● dispatcher — fail-closed macOS coverage gap › mac + NO result-write queue → DROPPED fail-closed (NEVER routed to Linux), acked
+
+
+
+
+
+  ● dispatcher — fail-closed macOS coverage gap › regression: a linux/either dynamic message still routes to the Linux queue
+
+
+
+
+
+  ● dispatcher — fail-closed macOS coverage gap › regression: windows + a Windows queue still routes to the Windows queue
+
+
+
+
+
+FAIL src/lambda/result-aggregator-handler.spec.ts (7.195 s)
+  ● lambda result-aggregator-handler › processes a valid IntelWorkerResult and writes cache + verdict
+
+
+
+
+
+  ● lambda result-aggregator-handler › classifies riskScore >= 70 as MALICIOUS
+
+
+
+
+
+  ● lambda result-aggregator-handler › escalates to dynamic queue when escalateToDynamic is true
+
+
+
+
+
+  ● lambda result-aggregator-handler › reports batch item failure on processing error
+
+
+
+
+
+  ● lambda result-aggregator-handler › writes release baseline for clean static verdicts (score <= 39)
+
+
+
+
+
+  ● lambda result-aggregator-handler › does not write baseline for high-risk verdicts
+
+
+
+
+
+  ● lambda result-aggregator-handler › policyFactsCoverage emit (C7 v10 read-floor interlock) › stamps the cache LATEST row with policyFactsCoverage (terminal-ok static producer)
+
+
+
+
+
+  ● lambda result-aggregator-handler › policyFactsCoverage emit (C7 v10 read-floor interlock) › makes the Intel-written row a FRESH warm hit under the v10 read floor (BACKEND_POLICY_FACTS_READ_V10 on)
+
+
+
+
+
+  ● lambda result-aggregator-handler › policyFactsCoverage emit (C7 v10 read-floor interlock) › propagates policyFacts onto the cache row when the static result carries them
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/lambda/result-aggregator-handler.spec.ts'
+
+    [0m [90m 378 |[39m       mockS3Send[33m.[39mmockResolvedValue({})[33m;[39m
+     [90m 379 |[39m
+    [31m[1m>[22m[39m[90m 380 |[39m       [36mconst[39m { [33mPOLICY_FACT_SCHEMA_VERSION[39m } [33m=[39m require([32m'@ceragon/shared-contracts'[39m)[33m;[39m
+     [90m     |[39m                                              [31m[1m^[22m[39m
+     [90m 381 |[39m       [36mconst[39m fact [33m=[39m {
+     [90m 382 |[39m         schemaVersion[33m:[39m [33mPOLICY_FACT_SCHEMA_VERSION[39m[33m,[39m
+     [90m 383 |[39m         factId[33m:[39m [32m'fact-1'[39m[33m,[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/lambda/result-aggregator-handler.spec.ts:380:46)
+
+  ● lambda result-aggregator-handler › oversized-verdict S3 spill › spills signalSummary to S3 + slims the verdict item when the item exceeds the threshold
+
+
+
+
+
+  ● lambda result-aggregator-handler › oversized-verdict S3 spill › writes a normal-size verdict inline — no spill, no signal-summary S3 write
+
+
+
+
+
+  ● lambda result-aggregator-handler › oversized-verdict S3 spill › surfaces an error (batchItemFailure) when the S3 spill offload fails — never writes an oversized item
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (a) first delivery with a dedup id is processed and writes the verdict
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (b) a redelivery whose prior delivery COMPLETED is SKIPPED — no second verdict/cache write
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (c) a message WITHOUT a dedup id is processed (legacy producer back-compat)
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (d) a DDB error on the dedup pre-check FAILS the record (not silently processed or skipped)
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (e) two DIFFERENT dedup ids both process (distinct logical results)
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (f) a crash mid-processing leaves NO marker, so the redelivery RE-PROCESSES (no permanent drop)
+
+
+
+
+
+  ● lambda result-aggregator-handler › verdict-aware raw-artifact S3 tagging › tags the raw artifact object with the correct key + verdict tag value on a terminal verdict
+
+
+
+
+
+  ● lambda result-aggregator-handler › verdict-aware raw-artifact S3 tagging › maps BLOCK -> block
+
+
+
+
+
+  ● lambda result-aggregator-handler › verdict-aware raw-artifact S3 tagging › maps PROMPT -> prompt
+
+
+
+
+
+  ● lambda result-aggregator-handler › verdict-aware raw-artifact S3 tagging › maps ALLOW -> allow
+
+
+
+
+
+  ● lambda result-aggregator-handler › verdict-aware raw-artifact S3 tagging › swallows a tagging failure — the verdict write still completes (best-effort)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › flag OFF => zero fan-out sends
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › sandbox result => zero fan-out sends
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › empty/absent transitiveInstallSet => zero fan-out sends
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › ARTIFACT_FETCH_QUEUE_URL unset => zero fan-out sends (short-circuit)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › flag ON + 3 cold registry nodes => 3 sends with correct child shape
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › passes the node integrity through as upstreamDigest when present
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › parentDepth >= MAX_DEPTH => zero sends (leaf)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › parentDepth = MAX_DEPTH - 1 => children at childDepth = MAX_DEPTH
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › duplicate node listed twice => exactly one send (dedup Set)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › node equal to root => skipped
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › scope=dev / specifierKind!=registry / resolved=false => skipped
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › 300 nodes with MAX_CHILDREN=250 => exactly 250 sends
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › skips falsy / missing name|version|ecosystem nodes
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › node already cached fresh at the CURRENT schema version (coverage + future expiry) => skipped (no send)
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/lambda/result-aggregator-handler.spec.ts'
+
+    [0m [90m 1145 |[39m   it([32m'node already cached fresh at the CURRENT schema version (coverage + future expiry) => skipped (no send)'[39m[33m,[39m [36masync[39m () [33m=>[39m {
+     [90m 1146 |[39m     [36mconst[39m nowSec [33m=[39m [33mMath[39m[33m.[39mfloor([33mDate[39m[33m.[39mnow() [33m/[39m [35m1000[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 1147 |[39m     [36mconst[39m { [33mSCANNER_CACHE_SCHEMA_VERSION[39m } [33m=[39m require([32m'@ceragon/shared-contracts'[39m)[33m;[39m
+     [90m      |[39m                                              [31m[1m^[22m[39m
+     [90m 1148 |[39m     installFanoutDynamoMock({
+     [90m 1149 |[39m       nvRow[33m:[39m {
+     [90m 1150 |[39m         cacheVersion[33m:[39m [33mSCANNER_CACHE_SCHEMA_VERSION[39m[33m,[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/lambda/result-aggregator-handler.spec.ts:1147:46)
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › node cached at v9 => NOT skipped (send)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › current-version row with NO policyFactsCoverage => NOT skipped (coverage interlock)
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/lambda/result-aggregator-handler.spec.ts'
+
+    [0m [90m 1167 |[39m     [90m// interlock — with a stale literal it would pass for the wrong reason[39m
+     [90m 1168 |[39m     [90m// (version-stale) after a schema bump.[39m
+    [31m[1m>[22m[39m[90m 1169 |[39m     [36mconst[39m { [33mSCANNER_CACHE_SCHEMA_VERSION[39m } [33m=[39m require([32m'@ceragon/shared-contracts'[39m)[33m;[39m
+     [90m      |[39m                                              [31m[1m^[22m[39m
+     [90m 1170 |[39m     installFanoutDynamoMock({ nvRow[33m:[39m { cacheVersion[33m:[39m [33mSCANNER_CACHE_SCHEMA_VERSION[39m } })[33m;[39m
+     [90m 1171 |[39m     [36mawait[39m run(makeResult({ transitiveInstallSet[33m:[39m [node([32m'uncovered-dep'[39m)] }))[33m;[39m
+     [90m 1172 |[39m     expect(fanoutSends())[33m.[39mtoHaveLength([35m1[39m)[33m;[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/lambda/result-aggregator-handler.spec.ts:1169:46)
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › NV# GetItem throws => NOT skipped (fail-open-to-enqueue)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › a fan-out throw does NOT fail the record (non-fatal)
+
+
+
+
+
+FAIL src/lambda/result-aggregator-fanout.integration.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/lambda/result-aggregator-fanout.integration.spec.ts'
+
+    [0m [90m 46 |[39m   [33mPurgeQueueCommand[39m[33m,[39m
+     [90m 47 |[39m } [36mfrom[39m [32m'@aws-sdk/client-sqs'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 48 |[39m [36mimport[39m { [33mSCANNER_CACHE_SCHEMA_VERSION[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 49 |[39m [36mimport[39m { writeLineageMarker[33m,[39m readLineageDepth } [36mfrom[39m [32m'../contracts/intel-cache-precheck'[39m[33m;[39m
+     [90m 50 |[39m
+     [90m 51 |[39m [90m// ── Local engine endpoints (localhost ONLY) ──────────────────────────[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/lambda/result-aggregator-fanout.integration.spec.ts:48:1)
+
+FAIL src/runtime/intel-result-writer.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/runtime/intel-result-writer.spec.ts'
+
+    [0m [90m 13 |[39m [90m// duplicate the pure logic here to validate field parity with Backend.[39m
+     [90m 14 |[39m
+    [31m[1m>[22m[39m[90m 15 |[39m [36mimport[39m { [33mSCANNER_CACHE_SCHEMA_VERSION[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 16 |[39m
+     [90m 17 |[39m [36mconst[39m [33mCACHE_VERSION[39m [33m=[39m [33mSCANNER_CACHE_SCHEMA_VERSION[39m[33m;[39m [90m// Centralized; Phase 0 §2.15[39m
+     [90m 18 |[39m [36mconst[39m [33mTTL_HOURS[39m [33m=[39m [35m168[39m[33m;[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/runtime/intel-result-writer.spec.ts:15:1)
+
+FAIL src/lookup/verdict-lookup.packaging-only-change.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/lookup/verdict-lookup.ts'
+
+    Require stack:
+      src/lookup/verdict-lookup.ts
+      src/lookup/verdict-lookup.packaging-only-change.spec.ts
+
+    [0m [90m 18 |[39m [36mimport[39m { [33mDynamoDBClient[39m[33m,[39m [33mGetItemCommand[39m } [36mfrom[39m [32m'@aws-sdk/client-dynamodb'[39m[33m;[39m
+     [90m 19 |[39m [36mimport[39m { marshall[33m,[39m unmarshall } [36mfrom[39m [32m'@aws-sdk/util-dynamodb'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 20 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 21 |[39m [36mimport[39m { [33mCURRENT_POINTER_SK[39m } [36mfrom[39m [32m'../runtime/write-current-verdict'[39m[33m;[39m
+     [90m 22 |[39m [36mimport[39m type {
+     [90m 23 |[39m   [33mEcosystem[39m[33m,[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/lookup/verdict-lookup.ts:20:1)
+      at Object.<anonymous> (src/lookup/verdict-lookup.packaging-only-change.spec.ts:23:1)
+
+FAIL src/lookup/verdict-lookup.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/lookup/verdict-lookup.ts'
+
+    Require stack:
+      src/lookup/verdict-lookup.ts
+      src/lookup/verdict-lookup.spec.ts
+
+    [0m [90m 18 |[39m [36mimport[39m { [33mDynamoDBClient[39m[33m,[39m [33mGetItemCommand[39m } [36mfrom[39m [32m'@aws-sdk/client-dynamodb'[39m[33m;[39m
+     [90m 19 |[39m [36mimport[39m { marshall[33m,[39m unmarshall } [36mfrom[39m [32m'@aws-sdk/util-dynamodb'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 20 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 21 |[39m [36mimport[39m { [33mCURRENT_POINTER_SK[39m } [36mfrom[39m [32m'../runtime/write-current-verdict'[39m[33m;[39m
+     [90m 22 |[39m [36mimport[39m type {
+     [90m 23 |[39m   [33mEcosystem[39m[33m,[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/lookup/verdict-lookup.ts:20:1)
+      at Object.<anonymous> (src/lookup/verdict-lookup.spec.ts:7:1)
+
+FAIL src/contracts/intel-cache-precheck.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/intel-cache-precheck.ts'
+
+    Require stack:
+      src/contracts/intel-cache-precheck.ts
+      src/contracts/intel-cache-precheck.spec.ts
+
+    [0m [90m 28 |[39m } [36mfrom[39m [32m'@aws-sdk/client-dynamodb'[39m[33m;[39m
+     [90m 29 |[39m [36mimport[39m { marshall[33m,[39m unmarshall } [36mfrom[39m [32m'@aws-sdk/util-dynamodb'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 30 |[39m [36mimport[39m { [33mSCANNER_CACHE_SCHEMA_VERSION[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 31 |[39m [36mimport[39m type { [33mEnrichmentHints[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 32 |[39m [36mimport[39m { createLogger } [36mfrom[39m [32m'../common/logger'[39m[33m;[39m
+     [90m 33 |[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/intel-cache-precheck.ts:30:1)
+      at Object.<anonymous> (src/contracts/intel-cache-precheck.spec.ts:19:1)
+
+FAIL src/followers/adapters/__tests__/skills-sh-installs.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/table-definitions.ts'
+
+    Require stack:
+      src/contracts/table-definitions.ts
+      src/common/cursor-store.ts
+      src/followers/mcp-registry-follower.ts
+      src/followers/adapters/discovery-clients.ts
+      src/followers/adapters/__tests__/skills-sh-installs.spec.ts
+
+    [0m [90m  9 |[39m
+     [90m 10 |[39m [90m// Re-export from shared for backward compatibility with existing Ingestion imports[39m
+    [31m[1m>[22m[39m[90m 11 |[39m [36mexport[39m { [33mTABLE_NAMES[39m[33m,[39m tablePrefix } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 12 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m [90m/** TTL attribute name used across all tables that support expiry */[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/table-definitions.ts:11:1)
+      at Object.<anonymous> (src/common/cursor-store.ts:11:1)
+      at Object.<anonymous> (src/followers/mcp-registry-follower.ts:84:1)
+      at Object.<anonymous> (src/followers/adapters/discovery-clients.ts:22:1)
+      at Object.<anonymous> (src/followers/adapters/__tests__/skills-sh-installs.spec.ts:1:1)
+
+FAIL src/followers/adapters/__tests__/mcp-registry-client.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/table-definitions.ts'
+
+    Require stack:
+      src/contracts/table-definitions.ts
+      src/common/cursor-store.ts
+      src/followers/mcp-registry-follower.ts
+      src/followers/adapters/discovery-clients.ts
+      src/followers/adapters/__tests__/mcp-registry-client.spec.ts
+
+    [0m [90m  9 |[39m
+     [90m 10 |[39m [90m// Re-export from shared for backward compatibility with existing Ingestion imports[39m
+    [31m[1m>[22m[39m[90m 11 |[39m [36mexport[39m { [33mTABLE_NAMES[39m[33m,[39m tablePrefix } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 12 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m [90m/** TTL attribute name used across all tables that support expiry */[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/table-definitions.ts:11:1)
+      at Object.<anonymous> (src/common/cursor-store.ts:11:1)
+      at Object.<anonymous> (src/followers/mcp-registry-follower.ts:84:1)
+      at Object.<anonymous> (src/followers/adapters/discovery-clients.ts:22:1)
+      at Object.<anonymous> (src/followers/adapters/__tests__/mcp-registry-client.spec.ts:18:1)
+
+FAIL src/followers/adapters/__tests__/glama-registry-client.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/table-definitions.ts'
+
+    Require stack:
+      src/contracts/table-definitions.ts
+      src/common/cursor-store.ts
+      src/followers/mcp-registry-follower.ts
+      src/followers/adapters/discovery-clients.ts
+      src/followers/adapters/__tests__/glama-registry-client.spec.ts
+
+    [0m [90m  9 |[39m
+     [90m 10 |[39m [90m// Re-export from shared for backward compatibility with existing Ingestion imports[39m
+    [31m[1m>[22m[39m[90m 11 |[39m [36mexport[39m { [33mTABLE_NAMES[39m[33m,[39m tablePrefix } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 12 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m [90m/** TTL attribute name used across all tables that support expiry */[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/table-definitions.ts:11:1)
+      at Object.<anonymous> (src/common/cursor-store.ts:11:1)
+      at Object.<anonymous> (src/followers/mcp-registry-follower.ts:84:1)
+      at Object.<anonymous> (src/followers/adapters/discovery-clients.ts:22:1)
+      at Object.<anonymous> (src/followers/adapters/__tests__/glama-registry-client.spec.ts:16:1)
+
+FAIL src/followers/adapters/__tests__/plugin-marketplace-client.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/table-definitions.ts'
+
+    Require stack:
+      src/contracts/table-definitions.ts
+      src/common/cursor-store.ts
+      src/followers/mcp-registry-follower.ts
+      src/followers/adapters/discovery-clients.ts
+      src/followers/adapters/__tests__/plugin-marketplace-client.spec.ts
+
+    [0m [90m  9 |[39m
+     [90m 10 |[39m [90m// Re-export from shared for backward compatibility with existing Ingestion imports[39m
+    [31m[1m>[22m[39m[90m 11 |[39m [36mexport[39m { [33mTABLE_NAMES[39m[33m,[39m tablePrefix } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 12 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m [90m/** TTL attribute name used across all tables that support expiry */[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/table-definitions.ts:11:1)
+      at Object.<anonymous> (src/common/cursor-store.ts:11:1)
+      at Object.<anonymous> (src/followers/mcp-registry-follower.ts:84:1)
+      at Object.<anonymous> (src/followers/adapters/discovery-clients.ts:22:1)
+      at Object.<anonymous> (src/followers/adapters/__tests__/plugin-marketplace-client.spec.ts:1:1)
+
+FAIL src/followers/adapters/__tests__/github-repo-clients.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/table-definitions.ts'
+
+    Require stack:
+      src/contracts/table-definitions.ts
+      src/common/cursor-store.ts
+      src/followers/mcp-registry-follower.ts
+      src/followers/adapters/discovery-clients.ts
+      src/followers/adapters/__tests__/github-repo-clients.spec.ts
+
+    [0m [90m  9 |[39m
+     [90m 10 |[39m [90m// Re-export from shared for backward compatibility with existing Ingestion imports[39m
+    [31m[1m>[22m[39m[90m 11 |[39m [36mexport[39m { [33mTABLE_NAMES[39m[33m,[39m tablePrefix } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 12 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m [90m/** TTL attribute name used across all tables that support expiry */[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/table-definitions.ts:11:1)
+      at Object.<anonymous> (src/common/cursor-store.ts:11:1)
+      at Object.<anonymous> (src/followers/mcp-registry-follower.ts:84:1)
+      at Object.<anonymous> (src/followers/adapters/discovery-clients.ts:22:1)
+      at Object.<anonymous> (src/followers/adapters/__tests__/github-repo-clients.spec.ts:16:1)
+
+FAIL src/followers/adapters/__tests__/clawhub-client.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/table-definitions.ts'
+
+    Require stack:
+      src/contracts/table-definitions.ts
+      src/common/cursor-store.ts
+      src/followers/mcp-registry-follower.ts
+      src/followers/adapters/discovery-clients.ts
+      src/followers/adapters/__tests__/clawhub-client.spec.ts
+
+    [0m [90m  9 |[39m
+     [90m 10 |[39m [90m// Re-export from shared for backward compatibility with existing Ingestion imports[39m
+    [31m[1m>[22m[39m[90m 11 |[39m [36mexport[39m { [33mTABLE_NAMES[39m[33m,[39m tablePrefix } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 12 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m [90m/** TTL attribute name used across all tables that support expiry */[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/table-definitions.ts:11:1)
+      at Object.<anonymous> (src/common/cursor-store.ts:11:1)
+      at Object.<anonymous> (src/followers/mcp-registry-follower.ts:84:1)
+      at Object.<anonymous> (src/followers/adapters/discovery-clients.ts:22:1)
+      at Object.<anonymous> (src/followers/adapters/__tests__/clawhub-client.spec.ts:10:1)
+
+FAIL src/followers/adapters/__tests__/discovery-clients.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/table-definitions.ts'
+
+    Require stack:
+      src/contracts/table-definitions.ts
+      src/common/cursor-store.ts
+      src/followers/mcp-registry-follower.ts
+      src/followers/adapters/discovery-clients.ts
+      src/followers/adapters/__tests__/discovery-clients.spec.ts
+
+    [0m [90m  9 |[39m
+     [90m 10 |[39m [90m// Re-export from shared for backward compatibility with existing Ingestion imports[39m
+    [31m[1m>[22m[39m[90m 11 |[39m [36mexport[39m { [33mTABLE_NAMES[39m[33m,[39m tablePrefix } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 12 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m [90m/** TTL attribute name used across all tables that support expiry */[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/table-definitions.ts:11:1)
+      at Object.<anonymous> (src/common/cursor-store.ts:11:1)
+      at Object.<anonymous> (src/followers/mcp-registry-follower.ts:84:1)
+      at Object.<anonymous> (src/followers/adapters/discovery-clients.ts:22:1)
+      at Object.<anonymous> (src/followers/adapters/__tests__/discovery-clients.spec.ts:11:1)
+
+FAIL src/followers/adapters/__tests__/github-stars-client.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/table-definitions.ts'
+
+    Require stack:
+      src/contracts/table-definitions.ts
+      src/common/cursor-store.ts
+      src/followers/mcp-registry-follower.ts
+      src/followers/adapters/discovery-clients.ts
+      src/followers/adapters/__tests__/github-stars-client.spec.ts
+
+    [0m [90m  9 |[39m
+     [90m 10 |[39m [90m// Re-export from shared for backward compatibility with existing Ingestion imports[39m
+    [31m[1m>[22m[39m[90m 11 |[39m [36mexport[39m { [33mTABLE_NAMES[39m[33m,[39m tablePrefix } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 12 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m [90m/** TTL attribute name used across all tables that support expiry */[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/table-definitions.ts:11:1)
+      at Object.<anonymous> (src/common/cursor-store.ts:11:1)
+      at Object.<anonymous> (src/followers/mcp-registry-follower.ts:84:1)
+      at Object.<anonymous> (src/followers/adapters/discovery-clients.ts:22:1)
+      at Object.<anonymous> (src/followers/adapters/__tests__/github-stars-client.spec.ts:6:1)
+
+FAIL src/workers/source-adapters/source-adapters.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/source-adapters/source-adapters.spec.ts[0m:[93m422[0m:[93m26[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m422[0m     }) as Extract<import('@ceragon/shared-contracts').ArtifactSourceRef, { kind: 'archive' }>;
+    [7m   [0m [91m                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/source-adapters/source-adapters.spec.ts[0m:[93m562[0m:[93m14[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m562[0m       import('@ceragon/shared-contracts').ArtifactSourceRef,
+    [7m   [0m [91m             ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/source-adapters/git-source.real-git.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/source-adapters/git-source.ts[0m:[93m10[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m10[0m import type { ArtifactSourceRef } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/source-adapters/git-source.content-identity.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/source-adapters/git-source.ts[0m:[93m10[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m10[0m import type { ArtifactSourceRef } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/source-adapters/git-source.blobless-strategy.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/source-adapters/git-source.ts[0m:[93m10[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m10[0m import type { ArtifactSourceRef } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/reconcile/rescan-planner.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/reconcile/reconciliation-runner.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/reconcile/gap-detector.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/reconcile/cursor-health-monitor.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/verdict/verdict-tagging.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/enrichment/publisher-profile.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/hotset/hotset-priority.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/hotset/customer-manifest-tracker.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/escalation/force-routing-policy.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/pipeline/escalation/force-routing-policy.ts[0m:[93m11[0m:[93m36[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m11[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/fetch/pipeline-fetch.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/pipeline/fetch/metadata-extractor.service.ts[0m:[93m9[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m9[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/escalation/escalation-router.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/sighting-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m45[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/vscode-marketplace-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m45[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/plugin-marketplace-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m45[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/mcp-registry-follower.hot-set.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m45[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/mcp-registry-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m45[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/discovery-observation.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m45[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/discovery-enablement.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-enablement.ts[0m:[93m37[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m37[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/github-repo-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m45[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/runtime/wave5-cache-digest-coalescing.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/runtime/wave5-cache-digest-coalescing.spec.ts[0m:[93m6[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m6[0m } from '@ceragon/shared-contracts';
+    [7m [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/clawhub-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m45[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/runtime/release-observation-router.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/runtime/release-observation-router.ts[0m:[93m9[0m:[93m36[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m9[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/runtime/release-observation-router.ts[0m:[93m10[0m:[93m49[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m10[0m import type { ArtifactSourceFetchMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/runtime/multi-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-enablement.ts[0m:[93m37[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m37[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/runtime/intel-static-adapter.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/runtime/analysis-dispatcher.spec.ts
+  ● analysis-dispatcher resolveDynamicRoute — OS routing parity › routes a windows-classified job to the Windows queue when configured
+
+
+
+
+
+  ● analysis-dispatcher resolveDynamicRoute — OS routing parity › SAFETY (inert-by-default): a windows job stays on Linux when the Windows queue is UNSET
+
+
+
+
+
+  ● analysis-dispatcher resolveDynamicRoute — OS routing parity › routes an 'either'-classified job to Linux even when Windows IS configured
+
+
+
+
+
+  ● analysis-dispatcher resolveDynamicRoute — OS routing parity › a message with no osTarget falls back to a thin classify (→ Linux) and never throws
+
+
+
+
+
+  ● analysis-dispatcher resolveDynamicRoute — OS routing parity › fail-closed macOS: a mac-native job with no Mac sandbox is a coverage-gap (never Linux)
+
+
+
+
+
+FAIL src/runtime/ai-artifact-follower.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/table-definitions.ts'
+
+    Require stack:
+      src/contracts/table-definitions.ts
+      src/common/cursor-store.ts
+      src/followers/mcp-registry-follower.ts
+      src/runtime/ai-artifact-follower.ts
+      src/runtime/ai-artifact-follower.spec.ts
+
+    [0m [90m  9 |[39m
+     [90m 10 |[39m [90m// Re-export from shared for backward compatibility with existing Ingestion imports[39m
+    [31m[1m>[22m[39m[90m 11 |[39m [36mexport[39m { [33mTABLE_NAMES[39m[33m,[39m tablePrefix } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 12 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m [90m/** TTL attribute name used across all tables that support expiry */[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/table-definitions.ts:11:1)
+      at Object.<anonymous> (src/common/cursor-store.ts:11:1)
+      at Object.<anonymous> (src/followers/mcp-registry-follower.ts:84:1)
+      at Object.<anonymous> (src/runtime/ai-artifact-follower.ts:26:1)
+      at Object.<anonymous> (src/runtime/ai-artifact-follower.spec.ts:15:1)
+
+FAIL src/workers/packaging-only-change.e2e.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/workers/packaging-only-change.e2e.spec.ts'
+
+    [0m [90m 79 |[39m [36mimport[39m { [33mSQSClient[39m } [36mfrom[39m [32m'@aws-sdk/client-sqs'[39m[33m;[39m
+     [90m 80 |[39m [36mimport[39m { marshall[33m,[39m unmarshall } [36mfrom[39m [32m'@aws-sdk/util-dynamodb'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 81 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 82 |[39m [36mimport[39m { [33mArtifactFetcher[39m } [36mfrom[39m [32m'./artifact-fetcher'[39m[33m;[39m
+     [90m 83 |[39m [36mimport[39m { fetchGitSource } [36mfrom[39m [32m'./source-adapters/git-source'[39m[33m;[39m
+     [90m 84 |[39m [36mimport[39m { sourceArtifactAliasKey } [36mfrom[39m [32m'../contracts/artifact-identity'[39m[33m;[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/workers/packaging-only-change.e2e.spec.ts:81:1)
+
+FAIL src/workers/artifact-fetcher.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m17[0m:[93m36[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m17[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m92[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/artifact-fetcher.packaging-only-change.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m17[0m:[93m36[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m17[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m92[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/artifact-fetcher.source-fetch.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m17[0m:[93m36[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m17[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m92[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/artifact-fetcher.corrupt-baseline-guard.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m17[0m:[93m36[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m17[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m92[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/popularity-gate.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/popularity-gate.ts[0m:[93m43[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m43[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/lambda/router-handler.spec.ts
+  ● lambda router handler › routes valid release observations to artifact fetch queue
+
+
+
+
+
+  ● lambda router handler › skips deleted observations without failing the batch
+
+
+
+
+
+  ● lambda router handler — threat-first value gate › admits a new, unpopular package WITH a lifecycle script to artifact-fetch (not metadata-only)
+
+
+
+
+
+  ● lambda router handler — threat-first value gate › still routes a cold, unpopular package with NO threat signal to metadata-only
+
+
+
+
+
+  ● lambda router handler — threat-first value gate › admits a mature package with an anomalous dist-tag re-point (distTagChanged)
+
+
+
+
+
+  ● lambda router handler — threat-first value gate › admits a mature package whose maintainer set changed (maintainerSetChanged)
+
+
+
+
+
+  ● lambda router handler — threat-first value gate › admits a mature package that adds a self-referential dependency (only +1 dep, bypasses the >5 clause)
+
+
+
+
+
+  ● lambda router handler — threat-first value gate › admits a mature package whose new version changed entry/shape (entryOrShapeChanged)
+
+
+
+
+
+  ● lambda router handler — transitive fan-in priority › admits a high-fan-in new version at LOW downloads to artifact-fetch when fan-in gating is enabled
+
+
+
+
+
+  ● lambda router handler — transitive fan-in priority › is CONFIGURABLE: with fan-in gating DISABLED, the same low-download package routes metadata-only
+
+
+
+
+
+  ● lambda router handler — transitive fan-in priority › is CONFIGURABLE: a fan-in BELOW the configured threshold routes metadata-only even when enabled
+
+
+
+
+
+FAIL src/pipeline/enrichment/provenance-checker.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/osv-client.querybatch.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/known-malware-index-writer.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/end-to-end.test.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/table-definitions.ts'
+
+    Require stack:
+      src/contracts/table-definitions.ts
+      src/common/cursor-store.ts
+      src/advisory/advisory-sync-runner.ts
+      src/advisory/end-to-end.test.ts
+
+    [0m [90m  9 |[39m
+     [90m 10 |[39m [90m// Re-export from shared for backward compatibility with existing Ingestion imports[39m
+    [31m[1m>[22m[39m[90m 11 |[39m [36mexport[39m { [33mTABLE_NAMES[39m[33m,[39m tablePrefix } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 12 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m [90m/** TTL attribute name used across all tables that support expiry */[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/table-definitions.ts:11:1)
+      at Object.<anonymous> (src/common/cursor-store.ts:11:1)
+      at Object.<anonymous> (src/advisory/advisory-sync-runner.ts:11:1)
+      at Object.<anonymous> (src/advisory/end-to-end.test.ts:22:1)
+
+FAIL src/advisory/advisory-sync.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-overlay-writer.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-overlay-writer.observability.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-impact-resolver.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-endpoint-verdict-writer.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-cursor-clamp.test.ts
+  ● Test suite failed to run
+
+    Cannot find module '@ceragon/shared-contracts' from 'src/contracts/table-definitions.ts'
+
+    Require stack:
+      src/contracts/table-definitions.ts
+      src/common/cursor-store.ts
+      src/advisory/advisory-sync-runner.ts
+      src/advisory/advisory-cursor-clamp.test.ts
+
+    [0m [90m  9 |[39m
+     [90m 10 |[39m [90m// Re-export from shared for backward compatibility with existing Ingestion imports[39m
+    [31m[1m>[22m[39m[90m 11 |[39m [36mexport[39m { [33mTABLE_NAMES[39m[33m,[39m tablePrefix } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 12 |[39m [36mimport[39m { [33mTABLE_NAMES[39m } [36mfrom[39m [32m'@ceragon/shared-contracts'[39m[33m;[39m
+     [90m 13 |[39m
+     [90m 14 |[39m [90m/** TTL attribute name used across all tables that support expiry */[39m[0m
+
+      at Resolver._throwModNotFoundError (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/contracts/table-definitions.ts:11:1)
+      at Object.<anonymous> (src/common/cursor-store.ts:11:1)
+      at Object.<anonymous> (src/advisory/advisory-sync-runner.ts:11:1)
+      at Object.<anonymous> (src/advisory/advisory-cursor-clamp.test.ts:16:1)
+
+FAIL src/advisory/advisory-ai-artifact-endpoint-coverage.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-cache-sweep.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m37[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/contracts/translate-dynamic-to-sandbox.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m39[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m39[0m } from '@ceragon/shared-contracts';
+    [7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m42[0m:[93m112[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m42[0m export { TABLE_NAMES, tablePrefix, S3_BUCKETS, rawArtifactKey, extractedMetadataKey, verdictSnapshotKey } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m46[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m46[0m import type { Ecosystem, AnalysisDynamicMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/discovery-enablement.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-enablement.ts[0m:[93m37[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m37[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/ecosystem-coverage.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/ecosystem-coverage.test.ts[0m:[93m30[0m:[93m54[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m30[0m import { ARTIFACT_ECOSYSTEMS, artifactClassOf } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/ecosystem-coverage.test.ts[0m:[93m31[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module '@ceragon/shared-contracts' or its corresponding type declarations.
+
+    [7m31[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+Test Suites: 71 failed, 41 passed, 112 total
+Tests:       108 failed, 515 passed, 623 total
+Snapshots:   0 total
+Time:        27.632 s, estimated 108 s
+Ran all test suites.
+jest_rc=1

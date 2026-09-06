@@ -1,0 +1,148 @@
+- dialog [ref=f3e1503]:
+  - generic [ref=f3e1504]:
+    - generic [ref=f3e1505]:
+      - generic [ref=f3e1512]:
+        - generic [ref=f3e1513]:
+          - generic [ref=f3e1514]: HIGH
+          - generic [ref=f3e1515]: prompt-blocked
+        - heading "Prompt blocked in a call to OpenAI" [level=2] [ref=f3e1516]
+        - generic [ref=f3e1517]:
+          - generic [ref=f3e1518]:
+            - generic [ref=f3e1519]:
+              - generic [aria-hidden] [ref=f3e1520]: ×
+              - generic [ref=f3e1521]: "1"
+            - text: detections
+          - generic [aria-hidden] [ref=f3e1522]: ·
+          - generic [ref=f3e1523]: first 1 min ago
+          - generic [aria-hidden] [ref=f3e1524]: ·
+          - generic "9/6/2026, 12:05:54 AM" [ref=f3e1525]: most recent 1 min ago
+      - button "Close detail" [active] [ref=f3e1526]
+    - paragraph [ref=f3e1530]: stage-1 AB codex
+    - paragraph [ref=f3e1531]:
+      - generic [ref=f3e1532]: Codex (CLI)
+      - generic [ref=f3e1533]: CND34521VN · codex · 1 min ago
+    - generic [ref=f3e1534]:
+      - button "Summary" [pressed] [ref=f3e1535]
+      - button "Agent activity" [ref=f3e1536]
+  - generic [ref=f3e1538]:
+    - generic [ref=f3e1539]:
+      - text: What happened
+      - paragraph [ref=f3e1540]: Prompt blocked by policy · no finding class was recorded · provider openai · outcome blocked.
+      - generic [ref=f3e1541]:
+        - generic [ref=f3e1542]: Blocked
+        - generic [ref=f3e1548]: Nothing ran and nothing left the machine. The agent received an error and carried on.
+    - generic [ref=f3e1549]:
+      - text: Evidence
+      - generic [ref=f3e1550]:
+        - term [ref=f3e1551]: Detector
+        - definition [ref=f3e1552]:
+          - generic [ref=f3e1553]: prompt-blocked
+        - term [ref=f3e1554]: Chain
+        - definition [ref=f3e1555]:
+          - generic "Event 88 in this session, in order" [ref=f3e1556]: "#88"
+          - generic "No tool-call linkage was stored for this event, so the console can state where it sits in the session's order and nothing more. Order is not causation." [ref=f3e1557]: order only
+        - term [ref=f3e1558]: Tool-input hash
+        - definition [ref=f3e1559]: "-"
+        - term [ref=f3e1560]: Decided by
+        - definition [ref=f3e1561]:
+          - 'generic "A decision was stored for this event, but nothing records which component took it: no enforcement receipt is attached." [ref=f3e1562]': BLOCK
+    - generic [ref=f3e1563]:
+      - heading "Prompt evidence" [level=3] [ref=f3e1564]
+      - region "Prompt evidence" [ref=f3e1565]:
+        - button "Prompt evidence Endpoint predates prompt capture · This decision predates endpoint evidence custody" [ref=f3e1567]:
+          - generic [ref=f3e1569]: Prompt evidence
+          - generic [ref=f3e1570]: Endpoint predates prompt capture
+          - generic [ref=f3e1571]: · This decision predates endpoint evidence custody
+          - generic [aria-hidden] [ref=f3e1572]: +
+    - generic [ref=f3e1573]:
+      - heading "Prompt" [level=3] [ref=f3e1574]
+      - generic [ref=f3e1576]:
+        - text: "No prompt text was stored for this event, so there is nothing to reveal. The governed record for this event reads: endpoint predates prompt capture, this decision predates endpoint evidence custody."
+        - link "AI Security policy → Prompt evidence" [ref=f3e1577] [cursor=pointer]:
+          - /url: /admin/policies/ai-security
+        - text: controls what is captured.
+      - generic [ref=f3e1578]: "The governed prompt record is not shown above: the Prompt evidence panel reads Endpoint predates prompt capture. There is nothing here for you to view, so no access is recorded against your account."
+    - generic [ref=f3e1579]:
+      - text: Affected assets
+      - generic [ref=f3e1580]:
+        - generic [ref=f3e1581]:
+          - generic [ref=f3e1584]: host
+          - generic [ref=f3e1585]: CND34521VN
+        - generic "9cc7bb95-78ec-4bcd-9c08-15de21a1c625" [ref=f3e1586]:
+          - generic [ref=f3e1589]: endpoint
+          - generic [ref=f3e1590]: 9cc7bb95-…21a1c625
+        - generic [ref=f3e1591]:
+          - generic [ref=f3e1594]: app
+          - generic [ref=f3e1595]: Codex (CLI)
+        - generic [ref=f3e1596]:
+          - generic [ref=f3e1599]: provider
+          - generic [ref=f3e1600]: OpenAI
+    - generic [ref=f3e1601]:
+      - generic [ref=f3e1602]:
+        - generic [ref=f3e1603]: When it fired
+        - generic [ref=f3e1604]: 1 in 24h
+      - generic [ref=f3e1605]:
+        - 'img "24-hour firing pattern for prompt-blocked: 1 detections, peak 1 per hour, most recent 1 min ago." [ref=f3e1606]':
+          - generic [ref=f3e1610]: peak 1/h
+        - generic [ref=f3e1611]: "Nothing before 0 hours ago, then 1 occurrence in the last 24 hours, and it is accelerating: 1 of them in the last 6 hours."
+      - generic [ref=f3e1612]:
+        - paragraph [ref=f3e1613]: All 1 occurrences shown.
+        - generic [ref=f3e1614]: abaaac2…a79fec
+        - paragraph [ref=f3e1616]:
+          - generic [ref=f3e1617]: Per-occurrence time and outcome are not returned for group members, only their ids. Open the session to read the sequence.
+    - generic [ref=f3e1618]:
+      - heading "Why high" [level=3] [ref=f3e1619]
+      - paragraph [ref=f3e1620]: base low · outcome-floor-block-high · from stored severityBasis, never recomputed
+    - generic [ref=f3e1621]:
+      - heading "More like this" [level=3] [ref=f3e1622]
+      - generic [ref=f3e1623]:
+        - generic [ref=f3e1624]:
+          - generic [ref=f3e1625]:
+            - generic [ref=f3e1626]: Finding class
+            - generic "prompt-blocked" [ref=f3e1627]
+          - paragraph [ref=f3e1628]:
+            - generic [ref=f3e1629]: This name comes from the event type. The list does not filter on event types, so there is nothing to open here.
+        - generic [ref=f3e1631]:
+          - generic [ref=f3e1632]: Endpoint
+          - generic "9cc7bb95-78ec-4bcd-9c08-15de21a1c625" [ref=f3e1633]: 9cc7bb95-78ec-…-15de21a1c625
+          - link "View all detections on endpoint 9cc7bb95-78ec-4bcd-9c08-15de21a1c625" [ref=f3e1634] [cursor=pointer]:
+            - /url: /coding-ai/detections?endpointId=9cc7bb95-78ec-4bcd-9c08-15de21a1c625
+            - text: View all
+        - generic [ref=f3e1636]:
+          - generic [ref=f3e1637]: Machine
+          - generic "CND34521VN" [ref=f3e1638]
+          - link "Open the machine CND34521VN" [ref=f3e1639] [cursor=pointer]:
+            - /url: /endpoints/CND34521VN
+            - text: Open
+    - group [ref=f3e1640]:
+      - generic "Technical details" [ref=f3e1641] [cursor=pointer]
+    - 'link "Open exact event #88 in session →" [ref=f3e1643] [cursor=pointer]':
+      - /url: /coding-ai/sessions/bb3141b9-80cb-4833-bc08-ed7b4e09d498?event=88
+  - generic [ref=f3e1644]:
+    - generic [ref=f3e1645]:
+      - generic [ref=f3e1646]:
+        - text: Status
+        - generic [ref=f3e1647]:
+          - button "new" [ref=f3e1648] [cursor=pointer]
+          - button "investigating" [ref=f3e1649] [cursor=pointer]
+          - button "resolved" [ref=f3e1650] [cursor=pointer]
+      - generic [ref=f3e1651]:
+        - text: Analyst call
+        - generic [ref=f3e1652]:
+          - button "No analyst call yet" [ref=f3e1653] [cursor=pointer]: "-"
+          - button "TP" [ref=f3e1654] [cursor=pointer]
+          - button "Benign" [ref=f3e1655] [cursor=pointer]
+          - button "FP" [ref=f3e1656] [cursor=pointer]
+    - generic [ref=f3e1657]:
+      - button "Resolve…" [ref=f3e1658]
+      - button "Hide row" [ref=f3e1659]
+    - generic [ref=f3e1660]:
+      - text: Assignee
+      - button "Unassigned" [ref=f3e1663]
+    - generic [ref=f3e1668]:
+      - text: Note
+      - generic [ref=f3e1669]:
+        - textbox "Add a note to this detection" [ref=f3e1671]:
+          - /placeholder: What you found, for the next person
+        - button "Add note" [disabled] [ref=f3e1672]
+      - paragraph [ref=f3e1673]: The note joins the activity log below. It does not change the status.

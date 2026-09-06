@@ -1,0 +1,14 @@
+PASS app/admin/endpoints/__tests__/f40-guard-column-and-footnote.test.tsx (17.308 s)
+  F40-C render — the guard-health column is headed, on every fleet
+    √ heads the guard-health cell with its own column header, and keeps the header row and the body row aligned (298 ms)
+  F40-C render — the panel says, in its own voice, what guard health can mean
+    √ states the guard rule in the words the rows themselves use: endpoint-reported, never inferred, absence never a pass (107 ms)
+    √ keeps saying it on a fleet nobody has measured, where the screen shows no pass at all (71 ms)
+    √ states it in the empty-fleet branch too, where there is no row to say it for (88 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       4 passed, 4 total
+Snapshots:   0 total
+Time:        39.534 s
+Ran all test suites matching /app\\admin\\endpoints\\__tests__\\f40-guard-column-and-footnote.test.tsx/i.
+jest_rc=0

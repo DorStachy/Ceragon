@@ -1,0 +1,52 @@
+[
+  {
+    "id": "A",
+    "label": "0.144-shaped payload + REAL marker",
+    "marker": "90e34e695df1ca9cbb709771a3056f51",
+    "exit": 0,
+    "ms": 241,
+    "blocks": false,
+    "stdout": "",
+    "stderr": "[devoid] WARNING: credentials at C:\\Users\\Owner\\AppData\\Local\\Temp\\devoid-p47-iso\\home\\.devoid\\credentials.json set a loopback backend (http://127.0.0.1:2353) and this build is NOT a stamped release (version 7.10.99, channel dev), so verdicts WILL be routed there, not to https://api.devoid.one.\n[devoid] WARNING: credentials at C:\\Users\\Owner\\AppData\\Local\\Temp\\devoid-p47-iso\\home\\.devoid\\credentials.json set a loopback backend (http://127.0.0.1:2353) and this build is NOT a stamped release (vers"
+  },
+  {
+    "id": "B",
+    "label": "0.134-shaped payload + REAL marker",
+    "marker": "90e34e695df1ca9cbb709771a3056f51",
+    "exit": 0,
+    "ms": 229,
+    "blocks": false,
+    "stdout": "",
+    "stderr": "[devoid] WARNING: credentials at C:\\Users\\Owner\\AppData\\Local\\Temp\\devoid-p47-iso\\home\\.devoid\\credentials.json set a loopback backend (http://127.0.0.1:2353) and this build is NOT a stamped release (version 7.10.99, channel dev), so verdicts WILL be routed there, not to https://api.devoid.one.\n[devoid] WARNING: credentials at C:\\Users\\Owner\\AppData\\Local\\Temp\\devoid-p47-iso\\home\\.devoid\\credentials.json set a loopback backend (http://127.0.0.1:2353) and this build is NOT a stamped release (vers"
+  },
+  {
+    "id": "C",
+    "label": "0.134-shaped payload + WRONG marker (legacy firewall)",
+    "marker": "deadbeefdeadbeefdeadbeefdeadbeef",
+    "exit": 0,
+    "ms": 111,
+    "blocks": true,
+    "stdout": "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"DeVoid could not read this tool call for scanning: the payload was not a recognized Codex hook payload — action held\"}}",
+    "stderr": "[devoid] ai hook: normalize: airuntime: unknown hook payload dialect\n[devoid] ai hook: closed-world fail-closed deny for PRE_TOOL_USE (normalize)\n[devoid] ai hook: adapter=codex event=PRE_TOOL_USE outcome=normalize-oracle-deny dur=27ms\n"
+  },
+  {
+    "id": "D",
+    "label": "0.134-shaped payload + NO marker (legacy firewall)",
+    "marker": null,
+    "exit": 0,
+    "ms": 117,
+    "blocks": true,
+    "stdout": "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"DeVoid could not read this tool call for scanning: the payload was not a recognized Codex hook payload — action held\"}}",
+    "stderr": "[devoid] ai hook: normalize: airuntime: unknown hook payload dialect\n[devoid] ai hook: closed-world fail-closed deny for PRE_TOOL_USE (normalize)\n[devoid] ai hook: adapter=codex event=PRE_TOOL_USE outcome=normalize-oracle-deny dur=20ms\n"
+  },
+  {
+    "id": "E",
+    "label": "0.144-shaped payload + NO marker (legacy firewall, shape passes)",
+    "marker": null,
+    "exit": 0,
+    "ms": 224,
+    "blocks": false,
+    "stdout": "",
+    "stderr": "[devoid] WARNING: credentials at C:\\Users\\Owner\\AppData\\Local\\Temp\\devoid-p47-iso\\home\\.devoid\\credentials.json set a loopback backend (http://127.0.0.1:2353) and this build is NOT a stamped release (version 7.10.99, channel dev), so verdicts WILL be routed there, not to https://api.devoid.one.\n[devoid] WARNING: credentials at C:\\Users\\Owner\\AppData\\Local\\Temp\\devoid-p47-iso\\home\\.devoid\\credentials.json set a loopback backend (http://127.0.0.1:2353) and this build is NOT a stamped release (vers"
+  }
+]

@@ -1,0 +1,76 @@
+[2s] 0 baseline: receipts=4 applied_revision=NULL applied_digest=NULL evidence_health=healthy/healthy/-
+[2s] 1 graceful stop of pid 16476
+[devoid] WARNING: credentials at C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.devoid\credentials.json set a loopback backend (http://127.0.0.1:2353) and this build is NOT a stamped release (version 7.10.99, channel dev), so verdicts WILL be routed there, not to https://api.devoid.one.
+Daemon (pid 16476) accepted graceful shutdown
+[7s]    old daemon logged Daemon stopped
+[10s] 2 quarantine poisoned WAL + reset activation floor (both kept for audit)
+[10s]    WAL -> endpoint-evidence.wal.poisoned-20260906-004629
+[11s]    aitrust/ -> aitrust.pre-recovery-20260906-004629
+[11s] 3 start daemon once
+time=2026-09-05T23:57:54.979+03:00 level=INFO msg="Daemon starting" addr=127.0.0.1:19390 scheme=http version=7.10.99 pid=16476
+time=2026-09-05T23:57:55.482+03:00 level=WARN msg="signed AI policy refresh after trust convergence refused" error="signed policy activation refused (chain-discontinuity): V2 policy bundle does not chain from the endpoint's last activated b
+time=2026-09-06T00:27:55.619+03:00 level=WARN msg="signed AI policy refresh after trust convergence refused" error="signed policy activation refused (chain-discontinuity): V2 policy bundle does not chain from the endpoint's last activated b
+time=2026-09-06T00:46:40.349+03:00 level=INFO msg="Daemon starting" addr=127.0.0.1:19390 scheme=http version=7.10.99 pid=5228
+time=2026-09-06T00:46:40.418+03:00 level=WARN msg="AI policy: contained endpoint attempting genesis recovery fetch" reason="no activation floor on disk" constraint="only a signed genesis bundle from the pinned root can activate"
+time=2026-09-06T00:46:40.624+03:00 level=INFO msg="AI policy: signed authority activated" revision=41 digest=sha256:63911863c1125f86a5a92a17a51d585eb739b1e0d4852d0ba1cc5bb1cd85ccc4 phase=ENFORCE applicationReceipt=true
+[16s]    spool dir: endpoint-evidence.wal endpoint-evidence.wal.poisoned-20260906-004629 
+[16s]    receipts dir files: 1  prompt-content files: 0
+[16s] 4 wait for the receipt to land in the backend
+[18s]    receipts=5 applied_revision=41 applied_digest=sha256:63911863c11 evidence_health=degraded/healthy/unexpected-stream-rotation
+1|1|sha256:e060969964bd104|CLAUDE|NULL|2026-09-05 21:10:16.624+00
+2|26|sha256:ac60c619810b77b|CLAUDE|26be89d9-e3af-4a23-8803-52261a956772|2026-09-05 21:17:51.405+00
+3|48|sha256:d3c06c637492c17|CLAUDE|786c4e26-7a36-4b20-95eb-2aebe6471f06|2026-09-05 21:21:18.437+00
+4|51|sha256:1744b39bc222a1f|CLAUDE|be2afab5-c265-4f79-8427-e38e28ab0aa8|2026-09-05 21:22:59.98+00
+41|1|sha256:63911863c1125f8|CODEX|NULL|2026-09-05 21:46:40.571+00
+time=2026-09-06T00:32:13.514+03:00 level=INFO msg="Packed local directory as tarball" dir=C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.codex\skills\.system\review-agent archive=C:\Users\Owner\AppData\Local\Temp
+time=2026-09-06T00:32:13.600+03:00 level=INFO msg="Packed local directory as tarball" dir=C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.codex\skills\.system\skill-creator archive=C:\Users\Owner\AppData\Local\Tem
+time=2026-09-06T00:32:13.682+03:00 level=INFO msg="Packed local directory as tarball" dir=C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.codex\skills\.system\skill-installer archive=C:\Users\Owner\AppData\Local\T
+time=2026-09-06T00:46:40.624+03:00 level=INFO msg="AI policy: signed authority activated" revision=41 digest=sha256:63911863c1125f86a5a92a17a51d585eb739b1e0d4852d0ba1cc5bb1cd85ccc4 phase=ENFORCE applicationReceipt=true
+[19s] 5 probes after recovery
+prompt-check http 200 decision="block" reasons=["aws-access-key:block","aws-credential-pair:block"]
+benign http 200 decision="allow"
+   GET /v1/ai/policy http=200
+[19s] 6 console policy change (slack-token -> block): the next revision must CHAIN
+[19s]    login http=403
+[eval]:1
+const fs=require("fs");const p=require(process.argv[1]);const c=JSON.parse(JSON.stringify(p.config||p));c.dlp=c.dlp||{};c.dlp.actions=c.dlp.actions||{};c.dlp.actions["slack-token"]="block";delete c.updatedAt;delete c.updatedBy;fs.writeFileSync(process.argv[2],JSON.stringify(c));const o=JSON.parse(JSON.stringify(p.config||p));delete o.updatedAt;delete o.updatedBy;fs.writeFileSync(process.argv[3],JSON.stringify(o));console.log("   original slack-token =",(p.config||p).dlp.actions["slack-token"])
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ^
+
+TypeError: Cannot read properties of undefined (reading 'actions')
+    at [eval]:1:476
+    at runScriptInThisContext (node:internal/vm:219:10)
+    at node:internal/process/execution:451:12
+    at [eval]-wrapper:6:24
+    at runScriptInContext (node:internal/process/execution:449:60)
+    at evalFunction (node:internal/process/execution:283:30)
+    at evalTypeScript (node:internal/process/execution:295:3)
+    at node:internal/main/eval_string:71:3
+
+Node.js v25.2.1
+[20s]    PUT#1 http=403 {"code":"CSRF_BLOCKED","error":"Cross-origin state-changing request rejected. This endpoint only accepts requests from t
+time=2026-09-06T00:27:55.619+03:00 level=WARN msg="signed AI policy refresh after trust convergence refused" error="signed policy activation refused (chain-discontinuity): V2 policy bundle does not chain from the endpoint's last activated b
+time=2026-09-06T00:46:40.624+03:00 level=INFO msg="AI policy: signed authority activated" revision=41 digest=sha256:63911863c1125f86a5a92a17a51d585eb739b1e0d4852d0ba1cc5bb1cd85ccc4 phase=ENFORCE applicationReceipt=true
+time=2026-09-06T00:49:34.749+03:00 level=INFO msg="AI policy: signed authority activated" revision=42 digest=sha256:edc19f6c7e7328374d7e50643790e7a85e6748406fe0c89a5a5f14b6784e4242 phase=ENFORCE applicationReceipt=true
+[199s]    receipts=6 applied_revision=42 applied_digest=sha256:edc19f6c7e7 evidence_health=degraded/healthy/unexpected-stream-rotation
+   daemon serves slack-token = block | aws-access-key = block
+[200s] 7 restore original policy: third revision, receipt chain
+[200s]    PUT#2 http=403
+[293s]    receipts=7 applied_revision=43 applied_digest=sha256:fc9201e41d2 evidence_health=degraded/healthy/unexpected-stream-rotation
+1|1|sha256:e060969964bd104|NULL|2026-09-05 21:10:16.624+00
+2|26|sha256:ac60c619810b77b|26be89d9|2026-09-05 21:17:51.405+00
+3|48|sha256:d3c06c637492c17|786c4e26|2026-09-05 21:21:18.437+00
+4|51|sha256:1744b39bc222a1f|be2afab5|2026-09-05 21:22:59.98+00
+41|1|sha256:63911863c1125f8|NULL|2026-09-05 21:46:40.571+00
+42|6|sha256:edc19f6c7e73283|30908bd1|2026-09-05 21:49:34.271+00
+43|7|sha256:fc9201e41d2ca09|39b265b9|2026-09-05 21:51:15.701+00
+   daemon serves slack-token = redact | aws-access-key = block
+[294s] 8 canary rollup + issued-bundle chain
+   canary-rollup http=200
+{"everRun":false,"challengesIssued":16,"challengesConsumed":0,"endpointsChallenged":2,"endpointsWithProof":0,"lastCanaryAt":null,"outcomes":[]}
+43|sha256:edc19f6|sha256:fc9201e|ENFORCE|2026-09-05 21:51:15.607842+00
+42|sha256:6391186|sha256:edc19f6|ENFORCE|2026-09-05 21:49:32.969797+00
+41|NULL|sha256:6391186|ENFORCE|2026-09-05 21:31:31.485694+00
+40|NULL|sha256:6f7ba06|ENFORCE|2026-09-05 21:27:55.563301+00
+39|NULL|sha256:24da5d9|ENFORCE|2026-09-05 21:19:52.394429+00
+38|NULL|sha256:1b31fb6|ENFORCE|2026-09-05 20:33:57.317149+00
+[296s] done: receipts=7 applied_revision=43 applied_digest=sha256:fc9201e41d2 evidence_health=degraded/healthy/unexpected-stream-rotation

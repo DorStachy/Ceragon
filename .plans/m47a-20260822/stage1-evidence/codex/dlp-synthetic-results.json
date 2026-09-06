@@ -1,0 +1,128 @@
+{
+  "sessions": {
+    "claude-code": "ce3da863-404c-4252-9727-c33e98ae0860",
+    "codex": "ccf57c5f-42d1-4e13-9668-1deaefa425f2"
+  },
+  "rows": [
+    {
+      "name": "SYNTHETIC secret egress: AWS key pair",
+      "expect": "aws-access-key=block + aws-credential-pair=block per the org policy",
+      "claude-code": {
+        "decision": "block",
+        "findings": "aws-access-keyx1,aws-credential-pairx1",
+        "serverEnforced": false,
+        "redacted": true,
+        "reason": ""
+      },
+      "codex": {
+        "decision": "block",
+        "findings": "aws-access-keyx1,aws-credential-pairx1",
+        "serverEnforced": false,
+        "redacted": true,
+        "reason": ""
+      },
+      "shim": {
+        "exit": 0,
+        "blocks": true,
+        "stdout": "{\"decision\":\"block\",\"reason\":\"DeVoid blocked this prompt (aws-access-key:block, aws-credential-pair:block). Edit the prompt and resend.\"}"
+      },
+      "diverge": false
+    },
+    {
+      "name": "SYNTHETIC secret egress: AWS access key alone",
+      "expect": "aws-access-key=block per the org policy",
+      "claude-code": {
+        "decision": "block",
+        "findings": "aws-access-keyx1",
+        "serverEnforced": false,
+        "redacted": true,
+        "reason": ""
+      },
+      "codex": {
+        "decision": "block",
+        "findings": "aws-access-keyx1",
+        "serverEnforced": false,
+        "redacted": true,
+        "reason": ""
+      },
+      "shim": {
+        "exit": 0,
+        "blocks": true,
+        "stdout": "{\"decision\":\"block\",\"reason\":\"DeVoid blocked this prompt (aws-access-key:block). Edit the prompt and resend.\"}"
+      },
+      "diverge": false
+    },
+    {
+      "name": "SYNTHETIC secret egress: freshly generated RSA private key",
+      "expect": "malicious-floor private-key class: never allowed",
+      "claude-code": {
+        "decision": "block",
+        "findings": "private-keyx1",
+        "serverEnforced": false,
+        "redacted": true,
+        "reason": ""
+      },
+      "codex": {
+        "decision": "block",
+        "findings": "private-keyx1",
+        "serverEnforced": false,
+        "redacted": true,
+        "reason": ""
+      },
+      "shim": {
+        "exit": 0,
+        "blocks": true,
+        "stdout": "{\"decision\":\"block\",\"reason\":\"DeVoid blocked this prompt (private-key:block). Edit the prompt and resend.\"}"
+      },
+      "diverge": false
+    },
+    {
+      "name": "benign twin: an AKIA-shaped word that is not a key",
+      "expect": "allow - negative control",
+      "claude-code": {
+        "decision": "allow",
+        "findings": "",
+        "serverEnforced": false,
+        "redacted": false,
+        "reason": ""
+      },
+      "codex": {
+        "decision": "allow",
+        "findings": "",
+        "serverEnforced": false,
+        "redacted": false,
+        "reason": ""
+      },
+      "shim": {
+        "exit": 0,
+        "blocks": false,
+        "stdout": ""
+      },
+      "diverge": false
+    },
+    {
+      "name": "benign twin: prose about credentials with no secret",
+      "expect": "allow - negative control",
+      "claude-code": {
+        "decision": "allow",
+        "findings": "",
+        "serverEnforced": false,
+        "redacted": false,
+        "reason": ""
+      },
+      "codex": {
+        "decision": "allow",
+        "findings": "",
+        "serverEnforced": false,
+        "redacted": false,
+        "reason": ""
+      },
+      "shim": {
+        "exit": 0,
+        "blocks": false,
+        "stdout": ""
+      },
+      "diverge": false
+    }
+  ]
+}

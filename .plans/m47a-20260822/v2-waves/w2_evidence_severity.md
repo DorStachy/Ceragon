@@ -1075,12 +1075,16 @@ either has already landed when you get here, the floor you are rewriting is stil
 position is unchanged.
 
 **Files:**
-- `Installers/internal/daemon/ai_handlers.go:3789, 3909-3922`
+- `Installers/internal/localdecide/tool.go` (`decideToolRisk`, `DefaultToolDecision`, and the
+  self-defense floor; P9 PR #187 moved the authoritative bodies out of `daemon/ai_handlers.go`)
 - `Installers/internal/policyeval/policyeval.go:544-551` (rung 7 only — the ladder's other rungs are
   out of scope for this task)
 - `Installers/browser-extension/src/policyeval.js:317-319` (the JS twin of rung 7 — §8 rule 4)
 - `Installers/internal/proxy/ai_replay_promptrisk.go:265-272`
-- `Installers/internal/daemon/ai_fallback_grades_test.go` (create)
+- `Installers/internal/localdecide/ai_fallback_grades_test.go` (create)
+- `Installers/internal/localdecide/decision_golden_test.go` and
+  `Installers/internal/localdecide/testdata/decision-golden.json` (verification/regeneration protocol;
+  never regenerate from the changed tree)
 
 These are the **offline fallback** lanes and they may not be deleted: `decideTool:3745-3752` documents
 keeping the legacy lane deliberately, because an agent in the field can outlive its backend and rule 5
@@ -1104,18 +1108,39 @@ says the local rulebook must always reach a verdict.
       docblock is false and the replay lane selects a different set than the resolver it claims to
       mirror. Repoint it at the same grade predicate and keep the docblock true; do **not** relax the
       set it returns — the non-relaxation proof in step 1 covers this site too.
+- [ ] **Correct the self-defense floor's ordering without weakening its explicit floor.** Current
+      `internal/localdecide/tool.go` changes an *unspecified* HIGH `devoid-self-disable` or
+      `sensitive-write-devoid` finding from the severity fallback's `block` to `warn`, even though the
+      comment says the floor only raises. An empty disposition must join `unspecified` and flow through
+      the same non-weakening fallback as every other class; the floor applies only to an explicit
+      `allow` or `monitor`. The required matrix, for **both** classes, is: unspecified → fallback
+      (currently `block`); explicit allow → `warn`; explicit monitor → `warn`; explicit warn → `warn`;
+      explicit block → `block`. This is a correction to the existing self-defense exception, not a new
+      hardening rule and not permission to move any other branch.
+- [ ] Run P9 PR #188's
+      `TestExtractedCoreReproducesTheDaemonDecisionsExactly` after the change. The committed capture
+      currently exposes **20 empty-or-unrelated-policy rows** affected by the unspecified-floor bug.
+      Read every named row as the behavioral changelog. If regeneration is necessary, generate from a
+      pristine worktree at the commit immediately before this change, record matched/skipped and
+      row-count deltas in `.plans/PARALLEL_HANDSHAKE.md`, and never bless output generated from the
+      changed tree. `TestGoldenStillDiscriminates` must retain its ≥70% matched floor.
 
 **Defeat test:** `ai_fallback_grades_test.go::TestFallbackNeverRelaxes` — lower any class's
 `baseCapabilityImpact` below its current fallback verdict and it goes red with
 `class "x": fallback relaxed from block to warn`. `TestWeakEvidenceCannotBlock` — set a class to
 `evidenceStrength: weak, baseCapabilityImpact: critical` and assert the fallback is at most `warn`;
-reverting the guard yields `block`.
+reverting the guard yields `block`. Add
+`TestSelfDefenseFloorDoesNotRelaxUnspecifiedHighFindings`: table-drive both self-defense classes and
+all five disposition states above. Restore the current `disposition == ""` floor arm and the two
+unspecified rows go red (`got warn, want block`); remove the explicit allow/monitor floor and those
+rows go red (`got allow/monitor, want warn`).
 
 **Exit:** the §7 grep returns **0** enforcing severity switches (today **5**, all five in scope —
 the fifth, the replay site, is confirmed above to be a copy of rung 7 rather than an independent
 filter). **0 of 40** tool classes relax relative to the pre-change fallback. Rung 7 in
 `policyeval.go`, its JS twin at `policyeval.js:317-319` and `enforcingPromptFindings` all read the
-same grade predicate, and the §8 ladder table records rung 7's new input.
+same grade predicate, and the §8 ladder table records rung 7's new input. Both self-defense classes
+pass the five-state matrix, and the #188 golden reports its exact matched/skipped row counts.
 
 ---
 

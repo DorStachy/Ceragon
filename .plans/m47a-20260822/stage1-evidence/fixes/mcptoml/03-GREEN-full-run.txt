@@ -1,0 +1,29 @@
+### FINAL RUN (after the extension pre-filter refinement)
+2026-09-06T07:21:44Z
+f6148c37
+
+### go build ./...
+build exit=0
+
+### go vet ./internal/mcpgov/ ./internal/mcpsources/ ./internal/daemon/
+vet exit=0
+
+### go test ./internal/mcpgov/ ./internal/mcpsources/
+ok  	github.com/codefense/cli-wrapper/internal/mcpgov	1.342s
+ok  	github.com/codefense/cli-wrapper/internal/mcpsources	(cached)
+exit=0
+
+### go test -run 'Mcp|MCP' ./internal/daemon/
+ok  	github.com/codefense/cli-wrapper/internal/daemon	0.687s
+exit=0
+
+### go test ./internal/mcpwatch/ (the watcher half)
+ok  	github.com/codefense/cli-wrapper/internal/mcpwatch	(cached)
+exit=0
+
+### downstream callers
+ok  	github.com/codefense/cli-wrapper/internal/plugingate	2.313s
+ok  	github.com/codefense/cli-wrapper/internal/aicanary	13.711s
+ok  	github.com/codefense/cli-wrapper/internal/mcpquarantine	(cached)
+ok  	github.com/codefense/cli-wrapper/internal/sweep	1.952s
+exit=0

@@ -1,0 +1,7 @@
+--- FAIL: TestTwoHandlesOnOneSpoolAreRefused (0.02s)
+    restart_overlap_test.go:63: a second Open succeeded while a live handle held the spool — this is the defect: two counters, one WAL, and a duplicate sequence that poisons every later Open
+--- FAIL: TestConcurrentOpenYieldsExactlyOneOwner (0.02s)
+    spool_test.go:357: 8 concurrent Opens succeeded, want exactly 1 — two live handles over one WAL is the defect
+FAIL
+FAIL	github.com/codefense/cli-wrapper/internal/evidencespool	0.700s
+FAIL

@@ -765,6 +765,40 @@ was, and a PR body claiming otherwise re-commits the mis-statement Wave 1 closed
 
 # Wave 0A — Stop hard-blocking ordinary work
 
+## Post-implementation reconciliation (2026-08-29)
+
+**This block supersedes every conflicting Wave 0A statement below that describes the change as
+regex-only, reports `16 removals + 1 addition`, or classifies A10 `rm -rf ~/.` and A11
+`rm -rf ~/..` as attacks.** The historical task text remains for traceability, not as the
+implemented contract. The canonical truth is a **50-row matrix: 28 attack + 17 benign + 5
+invariant**, with **18 `destructive-rm` removals + 1 addition**. A10/A11 became benign rows B16/B17
+because conforming `rm` rejects final `.` and `..` operands; the sole addition is A4, direct
+unquoted `rm -rf ${HOME}`.
+
+The implementation narrows the flat POSIX home-target rule and adds **bounded, source-proven shell
+semantics**, not a general shell interpreter: lexical home cancellation; active `${HOME}`
+provenance and masking; recursive-`rm` option/terminator handling including `POSIXLY_CORRECT`;
+exact transparent wrappers and supported shell `-c` forms; selected structural reachability and
+statically invoked functions; ordered HOME/PATH/PWD/OLDPWD/IFS state; and left-to-right argv,
+substitution, redirection, here-string and heredoc execution checks. Explicit
+source/marker/provenance budgets and conservative silence preserve the malicious-floor
+zero-fabrication boundary whenever execution, lookup, expansion or shell state is not proved.
+
+The residual and release limits do **not** move: `rm -rf "$HOME"` remains unresolved; the six named
+credential-store tails remain unrelaxable pending Wave 4B Task 6; general `.docker`/`.config`,
+literal-prefixed glob/bracket coverage, quoted-literal-tilde provenance and broader shell
+interpretation remain deferred exactly as inventoried. This proves scanner classification only—not
+complete `rm` grammar, shell effect, zero false positives, policy delivery or fleet behavior. The
+class catalog/parity vector is unchanged, so no Backend deploy is required; an owner-authorized
+agent release is still required. The pre-fix live observation was **NOT EXERCISED**, no post-fix
+released-endpoint observation exists, and customer-impact closure is therefore **NOT PROVEN**.
+
+The authoritative implemented boundary, row accounting and residual ownership are in
+`Installers/.plans/m47a-20260822/v2-waves/W0A_COVERAGE_DELTA.md`; source-gate, deployment, release
+and live-observation evidence are in
+`Installers/.plans/m47a-20260822/v2-waves/W0A_RUN_LOG.md`. Where the historical tasks or exit
+criteria below conflict with those records, these reconciliation sources govern.
+
 **Depends on:** Wave −1 Task 1 (fetch + manifest). Nothing else.
 **Implements decisions:** — (new wave). It is Step 1 of the critical path in source material §8.
 **Certificate impact:** **Risk 4** — removes the first named blocker on that lane ("a known-benign

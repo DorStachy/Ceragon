@@ -1,0 +1,11 @@
+ok  	github.com/codefense/cli-wrapper/internal/evidencespool	7.809s
+ok  	github.com/codefense/cli-wrapper/internal/toolrisk	6.608s
+ok  	github.com/codefense/cli-wrapper/internal/mcpgov	1.862s
+ok  	github.com/codefense/cli-wrapper/internal/mcpsources	1.090s
+ok  	github.com/codefense/cli-wrapper/internal/controls	0.702s
+ok  	github.com/codefense/cli-wrapper/internal/localdecide	11.221s
+ok  	github.com/codefense/cli-wrapper/internal/aihooks	1.940s
+ok  	github.com/codefense/cli-wrapper/internal/promptevidencegate	1.845s
+ok  	github.com/codefense/cli-wrapper/internal/airuntimeintegrity	5.412s
+ok  	github.com/codefense/cli-wrapper/internal/policybundle	4.569s
+fast_rc=0

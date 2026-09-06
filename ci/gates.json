@@ -38,6 +38,16 @@
       "why": "Mutation proof for the check above: fabricates divergent trios, including the historical interpreter-exec/fetch-then-exec/substitution-exfil incident, and asserts it goes red naming the class and the repos missing it -- plus that a missing checkout reports NOT CHECKED rather than passing. A drift check nobody has made go red has not been run."
     },
     {
+      "id": "claim-contract",
+      "script": "ci/lib/claim-contract.mjs",
+      "why": "Fifteen named sentences overstate what this programme can prove -- eight forbidden by the source material, seven by published research about this class of product -- and until this landed the only thing stopping one reaching a customer was a person remembering the list. It greps the plan's goal statement and any release note for them and fails naming the file, the line and the checklist row. It also compares the plan's prose checklist against Wave 8 Task 11's Go renderer, which is the other half of a deliberately-two-artifact design; the renderer does not exist yet and the check reports it ABSENT rather than as zero, because 0 == 0 reading as agreement is the exact defect it exists to prevent."
+    },
+    {
+      "id": "claim-contract-selftest",
+      "script": "ci/lib/claim-contract.test.mjs",
+      "why": "Mutation proof for the check above: 35 assertions over a real plan mutated on disk, including the discriminating pair that an absent renderer and a renderer encoding 15 produce different verdicts, and the case that found a real hole -- deleting ONE fence end marker merges two fences, silently exempting everything between them, and the guard passed until this case existed."
+    },
+    {
       "id": "vendored-engine-parity",
       "script": "ci/lib/vendored-engine-parity.mjs",
       "why": "The console's AI Security policy playground evaluates admin-typed prompts through a VERBATIM COPY of the endpoint's browser engine. Frontend's vendored-digest.test.ts compares that copy against a manifest sitting beside it -- both halves in the same repo -- so it is structurally incapable of seeing the copy and the manifest agreeing with each other while the Installers source has moved, which is exactly when the console starts demonstrating behaviour the endpoint does not have. The GitHub-side answer, vendored-upstream-drift.yml, is dispatch plus a daily cron and needs a cross-repo token; its per-PR trigger is an owner cost decision owned by Wave -1. Both checkouts are already on disk here, so this asks the question with no token, no network, and nothing a GitHub setting can switch off."
@@ -65,7 +75,8 @@
         "security:rate_limit_taskdef": {},
         "security:rds_boundary": {},
         "build:build_and_test": {},
-        "build:e2e_advisory": {}
+        "build:e2e_advisory": {},
+        "pr-checks:shared-contracts-pin": {}
       },
       "cannotMirror": {
         "build:required_checks": "Polls the GitHub Checks API for this SHA to decide whether the deploy may start. There is no local equivalent of 'what did GitHub record for this commit', and faking one would defeat the gate.",
@@ -195,7 +206,9 @@
         "pr-checks:macos-legacy-identity": {},
         "pr-checks:toolrisk-lane": {},
         "holdout-score:score": {},
-        "finding-b-e2e:shim-enforcement": {}
+        "finding-b-e2e:shim-enforcement": {},
+        "pr-checks:uninstall-honesty": {},
+        "pr-checks:hard-deny-stress": {}
       },
       "cannotMirror": {
         "pr-checks:cli-entrypoint-tests": "runs-on windows-latest. cmd/devoid's entrypoint tests exercise Windows service control, ACLs and PATH resolution; a Linux container cannot stand in. Run them on this machine with `go test ./cmd/devoid/... -count=1` from a Windows shell.",

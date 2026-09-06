@@ -1,0 +1,59 @@
+# >>> devoid codex hook (managed) >>>
+[[hooks.PreToolUse]]
+matcher = "*"
+
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = "C:/Users/Owner/AppData/Local/Temp/devoid-p47-iso/home/.devoid/codex-hooks/devoid-codex-hook.cmd PRE_TOOL_USE 90e34e695df1ca9cbb709771a3056f51"
+timeout = 60
+
+[[hooks.UserPromptSubmit]]
+
+[[hooks.UserPromptSubmit.hooks]]
+type = "command"
+command = "C:/Users/Owner/AppData/Local/Temp/devoid-p47-iso/home/.devoid/codex-hooks/devoid-codex-hook.cmd USER_PROMPT_SUBMIT 9b7438618d6ecfffb58c06dd3f85c2c8"
+timeout = 60
+
+[[hooks.PostToolUse]]
+matcher = "*"
+
+[[hooks.PostToolUse.hooks]]
+type = "command"
+command = "C:/Users/Owner/AppData/Local/Temp/devoid-p47-iso/home/.devoid/codex-hooks/devoid-codex-hook.cmd POST_TOOL_USE 8f9c66eb7c09cb99e60f7d569083554a"
+timeout = 60
+
+[[hooks.SessionStart]]
+
+[[hooks.SessionStart.hooks]]
+type = "command"
+command = "C:/Users/Owner/AppData/Local/Temp/devoid-p47-iso/home/.devoid/codex-hooks/devoid-codex-hook.cmd SESSION_START 41b99d49b26f81aa4e51b740c4524c71"
+timeout = 60
+
+[[hooks.PermissionRequest]]
+matcher = "*"
+
+[[hooks.PermissionRequest.hooks]]
+type = "command"
+command = "C:/Users/Owner/AppData/Local/Temp/devoid-p47-iso/home/.devoid/codex-hooks/devoid-codex-hook.cmd PERMISSION_REQUEST 0c69d7e957c0a06210e5dc90e64fc76c"
+timeout = 60
+
+[hooks.state.'C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.codex\config.toml:pre_tool_use:0:0']
+enabled = true
+trusted_hash = "sha256:c086529bde1d4dd1ae30921ff3aa60a4a8f6ccd870eda0cda888227ef63e7829"
+
+[hooks.state.'C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.codex\config.toml:user_prompt_submit:0:0']
+enabled = true
+trusted_hash = "sha256:0d0fffb9d351455034ec0caac3874b2b9f1525a623d301acb7294419395e047f"
+
+[hooks.state.'C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.codex\config.toml:post_tool_use:0:0']
+enabled = true
+trusted_hash = "sha256:5815c5cef0e42bd9be709bb23315db0334489d0896057a70daa316aa58e62e84"
+
+[hooks.state.'C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.codex\config.toml:session_start:0:0']
+enabled = true
+trusted_hash = "sha256:768a8cb730a1f1ef1f0673bfddb8647f3d851b1549ab2583b8764cc073508ad0"
+
+[hooks.state.'C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.codex\config.toml:permission_request:0:0']
+enabled = true
+trusted_hash = "sha256:367b85d9961d2c8405392519f2cda99a2a31fcdf1f87a427f68a2ea08c001618"
+# <<< devoid codex hook (managed) <<<

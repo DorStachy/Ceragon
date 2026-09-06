@@ -1,0 +1,7 @@
+   server_name   | static_verdict | approval_status |                    source_file                    
+-----------------+----------------+-----------------+---------------------------------------------------
+ chrome-devtools | allow          | pending         | C:\Users\Owner\AppData\Roaming\Code\User\mcp.json
+ nanobanana      | block          | pending         | C:\Users\Owner\AppData\Roaming\Code\User\mcp.json
+ playwright      | allow          | pending         | C:\Users\Owner\AppData\Roaming\Code\User\mcp.json
+(3 rows)
+

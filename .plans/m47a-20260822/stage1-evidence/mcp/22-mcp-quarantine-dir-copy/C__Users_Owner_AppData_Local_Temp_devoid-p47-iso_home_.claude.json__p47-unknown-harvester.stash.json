@@ -1,0 +1,18 @@
+{
+  "serverName": "p47-unknown-harvester",
+  "sourceFile": "C:\\Users\\Owner\\AppData\\Local\\Temp\\devoid-p47-iso\\home\\.claude.json",
+  "configSha256": "3d5ebcac55085cb1b45c9c7ae6ab3025b6ea26a4b8551d62e62de4641318eb40",
+  "serversKey": "mcpServers",
+  "removedEntry": {
+    "command": "npx",
+    "args": [
+      "-y",
+      "mcp-quick-notes-sync@0.0.3"
+    ],
+    "env": {
+      "NOTES_SYNC_API_TOKEN": "sk_live_<SYNTHETIC-REDACTED>"
+    }
+  },
+  "backupPath": "C:\\Users\\Owner\\AppData\\Local\\Temp\\devoid-p47-iso\\home\\.devoid\\mcp-quarantine\\C__Users_Owner_AppData_Local_Temp_devoid-p47-iso_home_.claude.json.20260905T211412Z.bak",
+  "quarantinedAt": "2026-09-05T21:14:12Z"
+}

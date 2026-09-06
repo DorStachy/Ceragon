@@ -1,0 +1,4 @@
+ERROR:  column "package_name" does not exist
+LINE 1: select id,package_name,package_version,ecosystem,status,verd...
+                  ^
+HINT:  Perhaps you meant to reference the column "analysis.packageName".

@@ -1,0 +1,18 @@
+[1s] 0 baseline: mcp_servers rows=13 ; 'MCP scan posted' lines=5
+[1s] 1 planting three [mcp_servers.*] tables (TOML)
+[1s]    config.toml now declares p47_files, p47_harvester, p47_remote
+[1s] 2 waiting for the real-time watcher to post (NOT the 6-hourly sweep)
+[7s]    watcher posted after ~10s (scan-posted lines 5 -> 6)
+time=2026-09-06T11:11:11.356+03:00 level=INFO msg="mcpwatch: cannot watch dir yet, will retry on the next sweep" dir=C:\Users\Owner\AppData\Roaming\Windsurf\User error="GetFileAttr
+time=2026-09-06T11:11:11.356+03:00 level=INFO msg="mcpwatch watcher started"
+time=2026-09-06T11:11:15.028+03:00 level=INFO msg="MCP scan posted" servers=3 accepted=3
+time=2026-09-06T11:12:15.356+03:00 level=INFO msg="MCP scan posted" servers=3 accepted=3
+[7s] 3 the rows and their static verdicts
+p47_files|allow|-|C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.codex\config.toml
+p47_harvester|allow|-|C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.codex\config.toml
+p47_remote|warn|["network-egress"]|C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.codex\config.toml
+[8s]    (full rows -> live-toml-rows.json)
+[8s] 4 was it the watcher, or would only 'devoid mcp scan' have found it?
+   the watcher path is proven if step 2 posted without anyone running 'devoid mcp scan'.
+[9s] done (tables will be removed on exit)
+[9s]    removed the planted tables from config.toml

@@ -1,0 +1,20 @@
+[1s] 0 baseline: control.spool_cause=NULL | health=degraded/unexpected-stream-rotation | health.spool_cause=NULL
+[1s] 1 graceful stop, WAIT for exit
+Error: DeVoid daemon pid 20576 is system-managed; stop it with an elevated Task Scheduler ("Devoid Daemon") command
+[65s]    PID-killed 20576
+[66s]    daemon down
+[68s] 2 poison the WAL: duplicate one sequence under a fresh event id
+   duplicated sequence 17 under a new event id
+[68s] 3 start the daemon — it must quarantine, not die
+[69s]    daemon :19390 http=404
+[70s]    quarantine files: endpoint-evidence.lock endpoint-evidence.wal endpoint-evidence.wal.poisoned-1788682270 endpoint-evidence.wal.poisoned-20260906-004629 
+time=2026-09-06T11:11:10.947+03:00 level=WARN msg="endpoint evidence WAL was poisoned and has been quarantined; the endpoint emits on a new stream" cause=spool-corrupt-quarantined reason=sequence-conf
+[70s] 4 wait for a heartbeat carrying the cause, then read the backend
+[70s]    backend recorded the cause after ~5s
+[71s]    control.spool_cause=spool-corrupt-quarantined | health=degraded/spool-unavailable | health.spool_cause=spool-corrupt-quarantined
+   --- EVIDENCE_WAL_QUARANTINED event in the backend? ---
+0
+   --- poisoned file preserved? ---
+   15631 /c/Users/Owner/AppData/Local/Temp/devoid-p47-iso/home/.devoid/evidence-spool/9cc7bb95-78ec-4bcd-9c08-15de21a1c625/endpoint-evidence.wal.poisoned-1788682270
+   6200 /c/Users/Owner/AppData/Local/Temp/devoid-p47-iso/home/.devoid/evidence-spool/9cc7bb95-78ec-4bcd-9c08-15de21a1c625/endpoint-evidence.wal.poisoned-20260906-004629
+[72s] done — the endpoint recovered; the WAL was quarantined, not lost, and the backend no longer reads it healthy

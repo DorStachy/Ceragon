@@ -1,0 +1,43 @@
+=== analysis (after left-pad) ===
+-[ RECORD 1 ]--+---------------------------------------------------------------
+id             | 821e4cb5-0ae9-4527-9bb7-f4eb594dcfeb
+packageName    | left-pad
+packageVersion | 1.3.0
+ecosystem      | npm
+verdict        | ALLOW
+riskScore      | 0
+reason         | Risk score 0 is in your policy's ALLOW band (0-39) for INSTALL
+status         | COMPLETED
+tool           | npm
+intent         | INSTALL
+createdAt      | 2026-09-05 21:10:00.715071+00
+
+=== fetch_jobs ===
+-[ RECORD 1 ]--+-------------------------------------
+id             | c6bc9065-f28e-4df1-99e1-870f1a2d3241
+ecosystem      | npm
+name           | left-pad
+version        | 1.3.0
+status         | COMPLETE
+priority       | 1
+attempts       | 0
+createdAt      | 2026-09-05 21:10:00.740361+00
+processedAt    | 2026-09-05 21:10:08.948+00
+correlation_id | 14187bdf-5eee-4944-a6b6-ec0edaaef5b2
+
+=== global_artifact_cache ===
+-[ RECORD 1 ]----+-------------------------------------
+id               | 7d1cc452-4d4f-4e9d-ae1c-814feb1455e1
+ecosystem        | npm
+name             | left-pad
+version          | 1.3.0
+riskScore        | 0
+staticComplete   | t
+sandboxComplete  | f
+reputationTier   | 
+vulnScanStatus   | COMPLETE
+staticScanStatus | COMPLETE
+primaryReason    | 
+decisionSource   | FRESH_ANALYSIS
+createdAt        | 2026-09-05 21:10:09.408471+00
+

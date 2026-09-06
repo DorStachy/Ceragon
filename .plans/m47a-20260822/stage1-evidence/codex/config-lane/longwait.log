@@ -1,0 +1,34 @@
+backend revision=3  dlp.actions["stripe-live"]=redact -> block
+daemon /v1/ai/policy stripe-live=redact
+codex hashes BEFORE: {"managed_config.toml":"62ed0880d69e11a413c897b5a1919e63c855ee863b40f88e6fe6a2a3c3b875bc","requirements.toml":"87042f68a51d5e96e285905f778db635d0478df3efa08076e722cc32d86031b7","config.toml":"0eeeea02e339175810ba6de6d2ad5d272563381a1edb8308f5b819349469e56a"}
+PUT -> http 200 revision=4 at 2026-09-05T21:21:40.891Z
+  ...60s: daemon still says stripe-live=redact
+  ...120s: daemon still says stripe-live=redact
+  ...180s: daemon still says stripe-live=redact
+  ...240s: daemon still says stripe-live=redact
+  ...300s: daemon still says stripe-live=redact
+  ...360s: daemon still says stripe-live=redact
+  ...420s: daemon still says stripe-live=redact
+  ...480s: daemon still says stripe-live=redact
+daemon did NOT pick up the org policy change within 480s
+codex hashes AFTER : {"managed_config.toml":"62ed0880d69e11a413c897b5a1919e63c855ee863b40f88e6fe6a2a3c3b875bc","requirements.toml":"87042f68a51d5e96e285905f778db635d0478df3efa08076e722cc32d86031b7","config.toml":"0eeeea02e339175810ba6de6d2ad5d272563381a1edb8308f5b819349469e56a"}
+NO Codex config file changed
+daemon log lines mentioning policy/bundle/activation during the window: 14
+  | time=2026-09-06T00:25:55.124+03:00 level=WARN msg="ai hook undecidable outcomes observed since the last heartbeat" adapter=codex undecidable=2 normalize=2 stdinOversize=0 stdinTimeout=0 stdinError=0 other=0 daemonUnreachable=0 daemonError=0 ungoverned=0 proven
+  | time=2026-09-06T00:25:55.124+03:00 level=WARN msg="ai hook undecidable outcomes observed since the last heartbeat" adapter=codex undecidable=2 normalize=2 stdinOversize=0 stdinTimeout=0 stdinError=0 other=0 daemonUnreachable=0 daemonError=0 ungoverned=0 proven
+  | time=2026-09-06T00:25:55.124+03:00 level=WARN msg="ai hook undecidable outcomes observed since the last heartbeat" adapter=codex undecidable=2 normalize=2 stdinOversize=0 stdinTimeout=0 stdinError=0 other=0 daemonUnreachable=0 daemonError=0 ungoverned=0 proven
+  | time=2026-09-06T00:25:55.125+03:00 level=WARN msg="ai hook undecidable outcomes observed since the last heartbeat" adapter=codex undecidable=2 normalize=2 stdinOversize=0 stdinTimeout=0 stdinError=0 other=0 daemonUnreachable=0 daemonError=0 ungoverned=0 proven
+  | time=2026-09-06T00:25:55.125+03:00 level=WARN msg="ai hook undecidable outcomes observed since the last heartbeat" adapter=codex undecidable=2 normalize=2 stdinOversize=0 stdinTimeout=0 stdinError=0 other=0 daemonUnreachable=0 daemonError=0 ungoverned=0 proven
+  | time=2026-09-06T00:25:55.125+03:00 level=WARN msg="ai hook undecidable outcomes observed since the last heartbeat" adapter=codex undecidable=2 normalize=2 stdinOversize=0 stdinTimeout=0 stdinError=0 other=0 daemonUnreachable=0 daemonError=0 ungoverned=0 proven
+  | time=2026-09-06T00:25:55.125+03:00 level=WARN msg="ai hook undecidable outcomes observed since the last heartbeat" adapter=codex undecidable=2 normalize=2 stdinOversize=0 stdinTimeout=0 stdinError=0 other=0 daemonUnreachable=0 daemonError=0 ungoverned=0 proven
+  | time=2026-09-06T00:25:55.125+03:00 level=WARN msg="ai hook undecidable outcomes observed since the last heartbeat" adapter=codex undecidable=2 normalize=2 stdinOversize=0 stdinTimeout=0 stdinError=0 other=0 daemonUnreachable=0 daemonError=0 ungoverned=0 proven
+  | time=2026-09-06T00:25:55.125+03:00 level=WARN msg="ai hook undecidable outcomes observed since the last heartbeat" adapter=codex undecidable=2 normalize=2 stdinOversize=0 stdinTimeout=0 stdinError=0 other=0 daemonUnreachable=0 daemonError=0 ungoverned=0 proven
+  | time=2026-09-06T00:25:55.126+03:00 level=WARN msg="ai hook undecidable outcomes observed since the last heartbeat" adapter=codex undecidable=2 normalize=2 stdinOversize=0 stdinTimeout=0 stdinError=0 other=0 daemonUnreachable=0 daemonError=0 ungoverned=0 proven
+  | time=2026-09-06T00:25:55.126+03:00 level=WARN msg="ai hook undecidable outcomes observed since the last heartbeat" adapter=codex undecidable=2 normalize=2 stdinOversize=0 stdinTimeout=0 stdinError=0 other=0 daemonUnreachable=0 daemonError=0 ungoverned=0 proven
+  | time=2026-09-06T00:25:55.126+03:00 level=WARN msg="ai hook undecidable outcomes observed since the last heartbeat" adapter=codex undecidable=2 normalize=2 stdinOversize=0 stdinTimeout=0 stdinError=0 other=0 daemonUnreachable=0 daemonError=0 ungoverned=0 proven
+  | time=2026-09-06T00:27:55.510+03:00 level=INFO msg="AI policy trust converged (refresh)" posture=V2_ATTESTED alreadyAttested=true rootFingerprint=sha256:13532287da8519531ccf5584be4c139219253d2cba9df49fabffb4390ac6d308 firstBootstrap=false
+  | time=2026-09-06T00:27:55.619+03:00 level=WARN msg="signed AI policy refresh after trust convergence refused" error="signed policy activation refused (chain-discontinuity): V2 policy bundle does not chain from the endpoint's last activated bundle: non-genesis a
+RESTORE -> http 200 revision=5
+backend after restore: revision=5 stripe-live=redact
+backend config identical to original: true
+daemon /v1/ai/policy identical before vs final: true

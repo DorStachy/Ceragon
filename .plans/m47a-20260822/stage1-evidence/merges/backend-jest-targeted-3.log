@@ -1,0 +1,601 @@
+PASS src/auth/services/auth-service-sentinel-org.spec.ts
+PASS src/common/build-stamp-deploy-gate.spec.ts (13.606 s)
+PASS src/auth/cli-request-signature.verify-coalesce.spec.ts
+PASS src/audit/audit.service.login.spec.ts
+PASS src/common/contracts/console-response-only-fields.spec.ts (9.737 s)
+PASS src/common/helpers/tenant-scope.helper.spec.ts
+PASS src/auth/services/auth-service-token-purpose.spec.ts
+PASS src/auth/guards/jwt-auth.guard.act-as.spec.ts
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:28 AM [33m   WARN[39m [38;5;3m[AuditService] [39m[33mLogged BYPASS_ALERT for org org-1, agent agent-1: mcp_identity_unknown (critical)[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:28 AM [33m   WARN[39m [38;5;3m[AuditService] [39m[33mLogged BYPASS_ALERT for org org-1, agent agent-1: mcp_identity_blocked (critical)[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:28 AM [33m   WARN[39m [38;5;3m[AuditService] [39m[33mWebhook fan-out failed for audit event audit-evt-1: webhook down[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:28 AM [33m   WARN[39m [38;5;3m[AuditService] [39m[33mLogged BYPASS_ALERT for org org-1, agent agent-1: bypass_detected (high)[39m
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:28 AM [32m    LOG[39m [38;5;3m[AuditService] [39m[32mLogged PROMPT_OUTCOME for org org-1: proceed on analysis-1[39m
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:28 AM [32m    LOG[39m [38;5;3m[AuditService] [39m[32mLogged 2 EXCEPTION_EXPIRED audit events (chained)[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:28 AM [33m   WARN[39m [38;5;3m[AuditService] [39m[33mGap 7: erased-user lookup failed for org org-1; returning audit rows unredacted this read: this.auditEventRepo.find is not a function[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:28 AM [33m   WARN[39m [38;5;3m[AuditService] [39m[33mGap 7: erased-user lookup failed for org org-1; returning audit rows unredacted this read: this.auditEventRepo.find is not a function[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:28 AM [33m   WARN[39m [38;5;3m[AuditService] [39m[33mLogged BYPASS_ALERT for org org-A, agent agent-1: bypass_detected (high)[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:28 AM [33m   WARN[39m [38;5;3m[AuditService] [39m[33mLogged BYPASS_ALERT for org org-A, agent agent-1: t (low)[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:28 AM [33m   WARN[39m [38;5;3m[AuditService] [39m[33mLogged BYPASS_ALERT for org org-A, agent agent-1: t (low)[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:28 AM [33m   WARN[39m [38;5;3m[AuditService] [39m[33m[S4] integrations audit-tap failed for event audit-evt-1: dispatcher boom[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:28 AM [33m   WARN[39m [38;5;3m[AuditService] [39m[33mLogged BYPASS_ALERT for org org-A, agent agent-1: t (low)[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:28 AM [33m   WARN[39m [38;5;3m[AuditService] [39m[33m[S4] integrations audit-tap failed for event audit-evt-1: dispatcher boom[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:28 AM [33m   WARN[39m [38;5;3m[AuditService] [39m[33mQueryRunner release failed after primary error: release boom[39m
+PASS src/audit/audit.service.spec.ts
+PASS src/common/build-identity.spec.ts
+PASS src/common/validation/per-item-batch.spec.ts
+PASS src/common/pipes/agent-wire-leniency.spec.ts (55.449 s)
+[31m[Nest] 14292  - [39m09/06/2026, 1:14:30 AM [31m  ERROR[39m [38;5;3m[AuditRetentionService] [39m[31mAudit retention SKIPPED — AUDIT_RETENTION_DAYS="14.7" is not a valid integer in [1, 3650]. Refusing to fall back to the default 30 — fix the env var and the next 02:00 UTC tick will run.[39m
+[31m[Nest] 14292  - [39m09/06/2026, 1:14:30 AM [31m  ERROR[39m [38;5;3m[AuditRetentionService] [39m[31mAudit retention SKIPPED — AUDIT_RETENTION_DAYS="0" is not a valid integer in [1, 3650]. Refusing to fall back to the default 30 — fix the env var and the next 02:00 UTC tick will run.[39m
+[31m[Nest] 14292  - [39m09/06/2026, 1:14:30 AM [31m  ERROR[39m [38;5;3m[AuditRetentionService] [39m[31mAudit retention SKIPPED — AUDIT_RETENTION_DAYS="-5" is not a valid integer in [1, 3650]. Refusing to fall back to the default 30 — fix the env var and the next 02:00 UTC tick will run.[39m
+[31m[Nest] 14292  - [39m09/06/2026, 1:14:30 AM [31m  ERROR[39m [38;5;3m[AuditRetentionService] [39m[31mAudit retention SKIPPED — AUDIT_RETENTION_DAYS="90d" is not a valid integer in [1, 3650]. Refusing to fall back to the default 30 — fix the env var and the next 02:00 UTC tick will run.[39m
+[31m[Nest] 14292  - [39m09/06/2026, 1:14:30 AM [31m  ERROR[39m [38;5;3m[AuditRetentionService] [39m[31mAudit retention SKIPPED — AUDIT_RETENTION_DAYS="forever" is not a valid integer in [1, 3650]. Refusing to fall back to the default 30 — fix the env var and the next 02:00 UTC tick will run.[39m
+[31m[Nest] 14292  - [39m09/06/2026, 1:14:30 AM [31m  ERROR[39m [38;5;3m[AuditRetentionService] [39m[31mAudit retention sweep FAILED (retentionDays=30): Error: db down[39m
+PASS src/audit/audit-retention.service.spec.ts
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:30 AM [32m    LOG[39m [38;5;3m[AuditRetentionService] [39m[32mAudit retention sweep complete: deleted=0, retentionDays=30, batchSize=1000, elapsedMs=0[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:30 AM [32m    LOG[39m [38;5;3m[AuditRetentionService] [39m[32mAudit retention sweep complete: deleted=0, retentionDays=30, batchSize=1000, elapsedMs=0[39m
+[95m[Nest] 14292  - [39m09/06/2026, 1:14:30 AM [95m  DEBUG[39m [38;5;3m[AuditRetentionService] [39m[95mAudit retention skipped (AUDIT_RETENTION_ENABLED=false).[39m
+[95m[Nest] 14292  - [39m09/06/2026, 1:14:30 AM [95m  DEBUG[39m [38;5;3m[AuditRetentionService] [39m[95mAudit retention skipped (AUDIT_RETENTION_ENABLED=false).[39m
+[95m[Nest] 14292  - [39m09/06/2026, 1:14:30 AM [95m  DEBUG[39m [38;5;3m[AuditRetentionService] [39m[95mAudit retention skipped (AUDIT_RETENTION_ENABLED=false).[39m
+[95m[Nest] 14292  - [39m09/06/2026, 1:14:30 AM [95m  DEBUG[39m [38;5;3m[AuditRetentionService] [39m[95mAudit retention skipped (AUDIT_RETENTION_ENABLED=false).[39m
+[95m[Nest] 14292  - [39m09/06/2026, 1:14:30 AM [95m  DEBUG[39m [38;5;3m[AuditRetentionService] [39m[95mAudit retention skipped (AUDIT_RETENTION_ENABLED=false).[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:30 AM [32m    LOG[39m [38;5;3m[AuditRetentionService] [39m[32mAudit retention sweep complete: deleted=0, retentionDays=30, batchSize=1000, elapsedMs=0[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:30 AM [32m    LOG[39m [38;5;3m[AuditRetentionService] [39m[32mAudit retention sweep complete: deleted=0, retentionDays=30, batchSize=1000, elapsedMs=0[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:30 AM [32m    LOG[39m [38;5;3m[AuditRetentionService] [39m[32mAudit retention sweep complete: deleted=0, retentionDays=30, batchSize=1000, elapsedMs=0[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:30 AM [32m    LOG[39m [38;5;3m[AuditRetentionService] [39m[32mAudit retention sweep complete: deleted=0, retentionDays=30, batchSize=1000, elapsedMs=0[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:30 AM [32m    LOG[39m [38;5;3m[AuditRetentionService] [39m[32mAudit retention sweep complete: deleted=0, retentionDays=30, batchSize=1000, elapsedMs=0[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:30 AM [32m    LOG[39m [38;5;3m[AuditRetentionService] [39m[32mAudit retention sweep complete: deleted=0, retentionDays=3650, batchSize=1000, elapsedMs=0[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:30 AM [32m    LOG[39m [38;5;3m[AuditRetentionService] [39m[32mAudit retention sweep complete: deleted=0, retentionDays=30, batchSize=1000, elapsedMs=0[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:30 AM [32m    LOG[39m [38;5;3m[AuditRetentionService] [39m[32mAudit retention sweep complete: deleted=0, retentionDays=100, batchSize=1000, elapsedMs=0[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:30 AM [32m    LOG[39m [38;5;3m[AuditRetentionService] [39m[32mAudit retention sweep complete: deleted=3, retentionDays=30, batchSize=2, elapsedMs=0[39m
+[31m[Nest] 18876  - [39m09/06/2026, 1:14:31 AM [31m  ERROR[39m [38;5;3m[ExceptionsHandler] [39m[31mrequest entity too large[39m
+PayloadTooLargeError: request entity too large
+    at readStream (C:\cwt\p47-w4b-be\node_modules\raw-body\index.js:163:17)
+    at getRawBody (C:\cwt\p47-w4b-be\node_modules\raw-body\index.js:116:12)
+    at read (C:\cwt\p47-w4b-be\node_modules\body-parser\lib\read.js:79:3)
+    at jsonParser (C:\cwt\p47-w4b-be\node_modules\body-parser\lib\types\json.js:138:5)
+    at Layer.handle [as handle_request] (C:\cwt\p47-w4b-be\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\cwt\p47-w4b-be\node_modules\express\lib\router\index.js:328:13)
+    at C:\cwt\p47-w4b-be\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (C:\cwt\p47-w4b-be\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\cwt\p47-w4b-be\node_modules\express\lib\router\index.js:280:10)
+    at expressInit (C:\cwt\p47-w4b-be\node_modules\express\lib\middleware\init.js:40:5)
+    at Layer.handle [as handle_request] (C:\cwt\p47-w4b-be\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\cwt\p47-w4b-be\node_modules\express\lib\router\index.js:328:13)
+    at C:\cwt\p47-w4b-be\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (C:\cwt\p47-w4b-be\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\cwt\p47-w4b-be\node_modules\express\lib\router\index.js:280:10)
+    at query (C:\cwt\p47-w4b-be\node_modules\express\lib\middleware\query.js:45:5)
+    at Layer.handle [as handle_request] (C:\cwt\p47-w4b-be\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\cwt\p47-w4b-be\node_modules\express\lib\router\index.js:328:13)
+    at C:\cwt\p47-w4b-be\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (C:\cwt\p47-w4b-be\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\cwt\p47-w4b-be\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (C:\cwt\p47-w4b-be\node_modules\express\lib\router\index.js:175:3)
+    at app.handle (C:\cwt\p47-w4b-be\node_modules\express\lib\application.js:181:10)
+    at Server.app (C:\cwt\p47-w4b-be\node_modules\express\lib\express.js:39:9)
+    at Server.emit (node:events:520:35)
+    at parserOnIncoming (node:_http_server:1212:12)
+    at HTTPParser.parserOnHeadersComplete (node:_http_common:123:17)
+PASS src/auth/guards/jwt-auth.guard.lab.spec.ts
+PASS src/common/build-identity-stamp-pre-nest.spec.ts
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:31 AM [33m   WARN[39m [38;5;3m[LabTenantGuard] [39m[33mLAB_TENANT_REJECTED (parsed-claims): iss="lab-fixtures" starts with "lab-" (path=POST /api/v1/packages, ip=unknown)[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:31 AM [33m   WARN[39m [38;5;3m[LabTenantGuard] [39m[33mLAB_TENANT_REJECTED (parsed-claims): iss="lab-fixtures" starts with "lab-" (path=POST /api/v1/packages, ip=unknown)[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:31 AM [33m   WARN[39m [38;5;3m[LabTenantGuard] [39m[33mLAB_TENANT_REJECTED (parsed-claims): orgId="lab-tenant-A" starts with "lab-" (path=POST /api/v1/packages, ip=unknown)[39m
+PASS src/auth/guards/api-key.guard.error-propagation.spec.ts
+PASS src/auth/guards/site.guard.agent-wire.spec.ts
+PASS src/auth/guards/jwt-auth.guard.mfa.spec.ts
+PASS src/common/build-identity-coverage.spec.ts
+PASS src/audit/audit.service.user-management.spec.ts
+PASS src/auth/services/auth-service-ws-token.spec.ts
+PASS src/agents/ai-trust-anchor-bootstrap.service.spec.ts
+PASS src/auth/guards/jwt-auth.guard.global-account.spec.ts
+PASS src/common/build-stamp-nest-build.spec.ts (33.662 s)
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:35 AM [32m    LOG[39m [38;5;3m[AuthService] [39m[32mUser accepted invite: u1@example.com[39m
+PASS src/audit/audit.service.concurrent.spec.ts
+[build-stamp] the launch environment says CF_BUILD_SHA=staleaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa but the dist being served was built from 37df0489e932aed94f6fdd87de28bbbe1dc4769d. Reporting the dist — it is the code that is running. This container is serving a build it was not created for.
+PASS src/auth/services/auth-service-token-hashing.spec.ts
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:36 AM [32m    LOG[39m [38;5;3m[AuthService] [39m[32mUser accepted invite: u2@example.com[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:36 AM [33m   WARN[39m [38;5;3m[AuthService] [39m[33mAccept invite attempt with invalid token[39m
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:36 AM [32m    LOG[39m [38;5;3m[AuthService] [39m[32mNew verification token issued for: u3@example.com[39m
+PASS src/auth/agent-signing-credential.service.spec.ts
+PASS src/common/build-stamp-dist.spec.ts
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:36 AM [33m   WARN[39m [38;5;3m[AgentSigningCredentialService] [39m[33mRefused bearer-only signing credential reissue for enrolled agent 33333333-3333-4333-8333-333333333333[39m
+PASS src/auth/guards/site.guard.spec.ts
+PASS src/audit/audit.service.threat-intel.spec.ts
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:37 AM [33m   WARN[39m [38;5;3m[AuditService] [39m[33mLogged THREAT_INTEL_MATCH_DETECTED for org 00000000-0000-0000-0000-0000000000aa: MAL-2026-9001 affects npm:evil-pkg[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:37 AM [33m   WARN[39m [38;5;3m[AuditService] [39m[33mLogged THREAT_INTEL_MATCH_DETECTED for org 00000000-0000-0000-0000-0000000000aa: MAL-2026-9002 affects pypi:evil-py[39m
+PASS src/audit/audit.service.erasure.spec.ts
+PASS src/auth/mfa/mfa.service.spec.ts
+PASS src/auth/guards/jwt-auth.guard.sessions.spec.ts
+PASS src/audit/policy-rule-audit.spec.ts
+PASS src/auth/sessions/sessions.service.spec.ts
+PASS src/agents/ai-correlation-key-custody.service.spec.ts
+PASS src/common/build-stamp-taskdef.spec.ts
+PASS src/audit/audit-retention.row-count.spec.ts
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:40 AM [32m    LOG[39m [38;5;3m[AuditRetentionService] [39m[32mAudit retention sweep complete: deleted=3500, retentionDays=30, batchSize=1000, elapsedMs=0[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:40 AM [32m    LOG[39m [38;5;3m[AuditRetentionService] [39m[32mAudit retention sweep complete: deleted=1000, retentionDays=30, batchSize=500, elapsedMs=0[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:40 AM [32m    LOG[39m [38;5;3m[AuditRetentionService] [39m[32mAudit retention sweep complete: deleted=0, retentionDays=30, batchSize=1000, elapsedMs=0[39m
+PASS src/auth/services/auth-service-mfa-setup-pending.spec.ts
+PASS src/auth/controllers/auth.controller.logout.spec.ts
+PASS src/auth/mfa/mfa.service.force-enrollment.spec.ts
+PASS src/auth/cli-request-signature.v2.spec.ts
+PASS src/audit/audit.service.pe0-content-scrub.spec.ts
+PASS src/auth/services/auth-service-last-used-coalesce.spec.ts
+[33m[Nest] 13240  - [39m09/06/2026, 1:14:42 AM [33m   WARN[39m [38;5;3m[AuditService] [39m[33mLogged BYPASS_ALERT for org org-1, agent agent-1: ai_proxy_decision (high)[39m
+PASS src/common/throttler/standard-retry-after.spec.ts
+[31m[Nest] 14292  - [39m09/06/2026, 1:14:42 AM [31m  ERROR[39m [38;5;3m[HmacPepper] [39m[31m[SECURITY] API_KEY_HMAC_PEPPER is not set in production (AuthService.validateApiKey) — refusing rather than silently falling back to SITE_TOKEN_SECRET/JWT_SECRET. Set API_KEY_HMAC_PEPPER on the backend task definition (see env.validation.ts SECURITY_VARS).[39m
+PASS src/auth/services/auth-service-pepper-fail-closed.spec.ts
+PASS src/audit/audit.service.policy-groups.spec.ts
+PASS src/auth/guards/jwt-auth.guard.read-only.spec.ts
+PASS src/auth/services/auth-service-validate-api-key-any.spec.ts
+PASS src/agents/ai-trust-anchor-enrollment-advisory.spec.ts
+PASS src/audit/audit.service.verify-chain.spec.ts
+PASS src/auth/guards/internal-hmac.guard.spec.ts
+PASS src/agents/ai-correlation-tag-reader.service.spec.ts
+PASS src/common/types/pagination.dto.spec.ts
+PASS src/auth/internal-hmac.service.fail-closed.spec.ts
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:45 AM [33m   WARN[39m [38;5;3m[InternalHmacService] [39m[33mInternalHmacService initialized without AWS_REGION; nonce replay protection unavailable. Set INTERNAL_HMAC_SINGLE_INSTANCE_MODE=true for dev, or configure AWS_REGION for prod.[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:45 AM [33m   WARN[39m [38;5;3m[InternalHmacService] [39m[33m[SECURITY] INTERNAL_HMAC_SINGLE_INSTANCE_MODE=true in production — nonce replay protection is per-pod only (in-memory), not distributed. A multi-instance fleet will NOT detect a nonce replayed against a different pod. Configure AWS_REGION + CODEFENCE_NONCE_TABLE for distributed replay protection.[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:45 AM [33m   WARN[39m [38;5;3m[InternalHmacService] [39m[33m[SECURITY] Consuming nonce via the per-pod in-memory store in production (INTERNAL_HMAC_SINGLE_INSTANCE_MODE=true). Distributed replay protection is OFF; a nonce replayed against a different pod will not be detected. Configure AWS_REGION + CODEFENCE_NONCE_TABLE for distributed replay protection.[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:45 AM [33m   WARN[39m [38;5;3m[InternalHmacService] [39m[33m[SECURITY] INTERNAL_HMAC_SINGLE_INSTANCE_MODE=true in production — nonce replay protection is per-pod only (in-memory), not distributed. A multi-instance fleet will NOT detect a nonce replayed against a different pod. Configure AWS_REGION + CODEFENCE_NONCE_TABLE for distributed replay protection.[39m
+PASS src/common/pipes/agent-wire-drift-observability.spec.ts
+PASS src/agents/ai-correlation-prompt-evidence-domain.spec.ts
+PASS src/agents/ai-trust-anchor-ack.service.spec.ts (8.69 s)
+PASS src/common/pipes/agent-ingest-validation.pipe.spec.ts
+PASS src/auth/guards/mfa-enforcement.guard.spec.ts
+[33m[Nest] 13240  - [39m09/06/2026, 1:14:45 AM [33m   WARN[39m [38;5;3m[AgentIngestValidationPipe] [39m[33magent wire drift: CreateDelegatedApprovalDto dropped undeclared key(s) fieldFromAnAgentThisBuildHasNeverHeardOf[39m
+[33m[Nest] 13240  - [39m09/06/2026, 1:14:45 AM [33m   WARN[39m [38;5;3m[AgentIngestValidationPipe] [39m[33magent wire drift: AgentBodyDto dropped undeclared key(s) fieldNoProducerEmits[39m
+[95m[Nest] 13240  - [39m09/06/2026, 1:14:45 AM [95m  DEBUG[39m [38;5;3m[AgentIngestValidationPipe] [39m[95magent wire drift: AgentBodyDto dropped undeclared key(s) fieldNoProducerEmits[39m
+[33m[Nest] 13240  - [39m09/06/2026, 1:14:45 AM [33m   WARN[39m [38;5;3m[AgentIngestValidationPipe] [39m[33magent wire drift: AgentBodyDto dropped undeclared key(s) nested.brandNewKey[39m
+PASS src/auth/mfa/recovery-code.service.spec.ts
+PASS src/common/interceptors/build-identity.interceptor.spec.ts
+[31m[Nest] 18876  - [39m09/06/2026, 1:14:45 AM [31m  ERROR[39m [38;5;3m[TestPackageUtil] [39m[31mTEST_FIXTURE_REGEX_FALLBACK=true is IGNORED in production. Lab/test-fixture trust must come from a signed lab token; remove this env var from production config immediately.[39m
+[31m[Nest] 18876  - [39m09/06/2026, 1:14:45 AM [31m  ERROR[39m [38;5;3m[TestPackageUtil] [39m[31mTEST_FIXTURE_REGEX_FALLBACK=true is IGNORED in production. Lab/test-fixture trust must come from a signed lab token; remove this env var from production config immediately.[39m
+PASS src/common/utils/test-package.util.spec.ts
+PASS src/auth/cli-nonce-replay.service.spec.ts
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:45 AM [33m   WARN[39m [38;5;3m[TestPackageUtil] [39m[33mtest_fixture_regex_fallback_hit: package="test-evil", context="unknown", count=1. Migrate this fixture to a signed lab token before TEST_FIXTURE_REGEX_FALLBACK is removed.[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:45 AM [33m   WARN[39m [38;5;3m[TestPackageUtil] [39m[33mtest_fixture_regex_fallback_hit: package="test-evil", context="cache-write", count=2. Migrate this fixture to a signed lab token before TEST_FIXTURE_REGEX_FALLBACK is removed.[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:45 AM [33m   WARN[39m [38;5;3m[TestPackageUtil] [39m[33mtest_fixture_regex_fallback_hit: package="test-evil", context="isTestPackage(legacy-shim)", count=1. Migrate this fixture to a signed lab token before TEST_FIXTURE_REGEX_FALLBACK is removed.[39m
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:45 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITHOUT lab signing key (production environment).[39m
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:45 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:45 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:45 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:45 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITHOUT lab signing key (production environment).[39m
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:45 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:45 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:45 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:45 AM [33m   WARN[39m [38;5;3m[TestPackageUtil] [39m[33mtest_fixture_token_rejected: reason=TENANT_MISMATCH tenantId="lab-tenant-VICTIM" pkg="malware-fixture-1" detail=claim.tenantId="lab-tenant-A" !== expected="lab-tenant-VICTIM"[39m
+[33m[Nest] 13240  - [39m09/06/2026, 1:14:45 AM [33m   WARN[39m [38;5;3m[MfaRolloutService] [39m[33m[P1-S21] MFA_ENFORCEMENT_ROLLOUT="typo-value" is not one of: disabled, shadow, admins-only, all. Falling back to 'disabled' (nobody is locked out). Fix the env var on the task def.[39m
+[33m[Nest] 13240  - [39m09/06/2026, 1:14:45 AM [33m   WARN[39m [38;5;3m[MfaRolloutService] [39m[33m[P1-S21] MFA_ENFORCEMENT_ROLLOUT="enabled" is not one of: disabled, shadow, admins-only, all. Falling back to 'disabled' (nobody is locked out). Fix the env var on the task def.[39m
+PASS src/auth/mfa/mfa-rollout.service.spec.ts
+PASS src/auth/guards/lab-tenant.guard.spec.ts
+[31m[Nest] 14292  - [39m09/06/2026, 1:14:46 AM [31m  ERROR[39m [38;5;3m[TestFixtureTokenService] [39m[31mLAB_FIXTURE_TOKEN_KEY env var is set but is NOT 64 lowercase hex chars; treating as production (no lab tokens will verify).[39m
+PASS src/common/utils/test-fixture-token.service.spec.ts
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:45 AM [33m   WARN[39m [38;5;3m[LabTenantGuard] [39m[33mLAB_TENANT_REJECTED (parsed-claims): iss="lab-fixtures" starts with "lab-" (path=POST /api/v1/packages, ip=10.0.0.1)[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:45 AM [33m   WARN[39m [38;5;3m[LabTenantGuard] [39m[33mLAB_TENANT_REJECTED (parsed-claims): iss="lab-fixtures" starts with "lab-" (path=POST /api/v1/packages, ip=10.0.0.1)[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:45 AM [33m   WARN[39m [38;5;3m[LabTenantGuard] [39m[33mLAB_TENANT_REJECTED (parsed-claims): aud="lab-test-runner" starts with "lab-" (path=POST /api/v1/packages, ip=unknown)[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:45 AM [33m   WARN[39m [38;5;3m[LabTenantGuard] [39m[33mLAB_TENANT_REJECTED (parsed-claims): aud="lab-test-runner" starts with "lab-" (path=POST /api/v1/packages, ip=unknown)[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:46 AM [33m   WARN[39m [38;5;3m[LabTenantGuard] [39m[33mLAB_TENANT_REJECTED (parsed-claims): orgId="lab-tenant-A" starts with "lab-" (path=POST /api/v1/packages, ip=unknown)[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:46 AM [33m   WARN[39m [38;5;3m[LabTenantGuard] [39m[33mLAB_TENANT_REJECTED (raw-jwt): iss="lab-fixtures" starts with "lab-" (raw-jwt-only — parser stripped claim?) (path=POST /api/v1/packages, ip=unknown)[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:46 AM [33m   WARN[39m [38;5;3m[LabTenantGuard] [39m[33mLAB_TENANT_REJECTED (raw-jwt): iss="lab-fixtures" starts with "lab-" (raw-jwt-only — parser stripped claim?) (path=POST /api/v1/packages, ip=unknown)[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:46 AM [33m   WARN[39m [38;5;3m[LabTenantGuard] [39m[33mLAB_TENANT_REJECTED (parsed-claims): orgId="lab-tenant-A" starts with "lab-" (path=POST /api/v1/packages, ip=unknown)[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:46 AM [33m   WARN[39m [38;5;3m[LabTenantGuard] [39m[33mLAB_TENANT_REJECTED (parsed-claims): orgId="lab-tenant-A" starts with "lab-" (path=POST /api/v1/packages, ip=unknown)[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:46 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:46 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:46 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITHOUT lab signing key (production environment).[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:46 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITHOUT lab signing key (production environment).[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:46 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:46 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITHOUT lab signing key (production environment).[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:46 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:46 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:46 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:46 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:46 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:46 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:46 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:46 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:46 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:46 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:46 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:46 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:46 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:46 AM [32m    LOG[39m [38;5;3m[TestFixtureTokenService] [39m[32mTestFixtureTokenService initialized WITH lab signing key (lab environment).[39m
+PASS src/auth/services/act-as-grant.service.spec.ts
+PASS src/common/middleware/request-id.middleware.spec.ts
+PASS src/auth/user-token-hash.util.spec.ts
+[31m[Nest] 13240  - [39m09/06/2026, 1:14:46 AM [31m  ERROR[39m [38;5;3m[HmacPepper] [39m[31m[SECURITY] API_KEY_HMAC_PEPPER is not set in production — refusing rather than silently falling back to SITE_TOKEN_SECRET/JWT_SECRET. Set API_KEY_HMAC_PEPPER on the backend task definition (see env.validation.ts SECURITY_VARS).[39m
+[31m[Nest] 13240  - [39m09/06/2026, 1:14:46 AM [31m  ERROR[39m [38;5;3m[HmacPepper] [39m[31m[SECURITY] API_KEY_HMAC_PEPPER is not set in production — refusing rather than silently falling back to SITE_TOKEN_SECRET/JWT_SECRET. Set API_KEY_HMAC_PEPPER on the backend task definition (see env.validation.ts SECURITY_VARS).[39m
+PASS src/audit/audit-chain-lock.spec.ts
+[31m[Nest] 13240  - [39m09/06/2026, 1:14:46 AM [31m  ERROR[39m [38;5;3m[HmacPepper] [39m[31m[SECURITY] API_KEY_HMAC_PEPPER is not set in production — refusing rather than silently falling back to SITE_TOKEN_SECRET/JWT_SECRET. Set API_KEY_HMAC_PEPPER on the backend task definition (see env.validation.ts SECURITY_VARS).[39m
+PASS src/auth/hmac-pepper.util.spec.ts
+PASS src/common/utils/post-hardening-redaction.spec.ts
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:46 AM [33m   WARN[39m [38;5;3m[HmacPepper] [39m[33mAPI_KEY_HMAC_PEPPER unset; using dev/test fallback secret for HMAC/key derivation. This path is disabled in production.[39m
+[33m[Nest] 13240  - [39m09/06/2026, 1:14:46 AM [33m   WARN[39m [38;5;3m[HmacPepper] [39m[33mAPI_KEY_HMAC_PEPPER unset; using dev/test fallback secret for HMAC/key derivation. This path is disabled in production.[39m
+[33m[Nest] 13240  - [39m09/06/2026, 1:14:46 AM [33m   WARN[39m [38;5;3m[HmacPepper] [39m[33mAPI_KEY_HMAC_PEPPER unset; using dev/test fallback secret for HMAC/key derivation. This path is disabled in production.[39m
+[33m[Nest] 13240  - [39m09/06/2026, 1:14:46 AM [33m   WARN[39m [38;5;3m[HmacPepper] [39m[33mAPI_KEY_HMAC_PEPPER unset; using dev/test fallback secret for HMAC/key derivation. This path is disabled in production.[39m
+PASS src/common/utils/action-verdict.util.spec.ts
+PASS src/shared-contracts-guard/m3-contracts.parity.spec.ts
+PASS src/common/utils/alert-derivation.util.spec.ts
+PASS src/common/endpoint-detail-scrub.spec.ts
+PASS src/common/utils/risk-scoring.util.spec.ts
+PASS src/common/hot-path/coalesce-window.spec.ts
+PASS src/common/csv.util.spec.ts
+PASS src/common/utils/select-worst-findings.spec.ts
+PASS src/common/pg-rows-affected.spec.ts
+PASS src/common/utils/test-fixture-env-lockdown.spec.ts
+PASS src/common/filters/http-exception.filter.spec.ts
+PASS src/common/throttler/agent-throttle-metadata.spec.ts
+PASS src/common/throttler/agent-throttler.produces-key.spec.ts
+PASS src/auth/sessions/sessions.controller.spec.ts
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:47 AM [33m   WARN[39m [38;5;3m[SessionsController] [39m[33mAudit emit failed: chain locked[39m
+PASS src/auth/guards/roles.guard.unknown-role.spec.ts
+PASS src/auth/cli-request-signature.service.spec.ts
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] retrying issuance for endpoint=33333333-3333-4333-8333-333333333333 attempt=1: AI policy authority changed during issuance[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] retrying issuance for endpoint=33333333-3333-4333-8333-333333333333 attempt=1: could not serialize access due to read/write dependencies among transactions[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] retrying issuance for endpoint=33333333-3333-4333-8333-333333333333 attempt=1: AI policy authority changed during issuance[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] retrying issuance for endpoint=33333333-3333-4333-8333-333333333333 attempt=2: AI policy authority changed during issuance[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] retrying issuance for endpoint=33333333-3333-4333-8333-333333333333 attempt=3: AI policy authority changed during issuance[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+PASS src/ai-governance/services/ai-policy-bundle.service.spec.ts
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:48 AM [33m   WARN[39m [38;5;3m[AiPolicyBundleService] [39m[33m[ai-policy-bundle] no enforcement-decision producer wired for endpoint=33333333-3333-4333-8333-333333333333; V2 enforcement receipts from this endpoint will be rejected as unknown-causal-decision[39m
+PASS src/audit/audit.controller.spec.ts
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:49 AM [32m    LOG[39m [38;5;3m[AuditController] [39m[32mRequesting audit log for org org-1[39m
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:49 AM [32m    LOG[39m [38;5;3m[AuditController] [39m[32mRequesting audit log for org org-1[39m
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:49 AM [32m    LOG[39m [38;5;3m[AuditController] [39m[32mRequesting audit log for org org-1[39m
+PASS src/audit/audit.controller.correlation.spec.ts
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:50 AM [32m    LOG[39m [38;5;3m[AuditController] [39m[32mRequesting audit log for org 00000000-0000-0000-0000-0000000000aa[39m
+PASS src/auth/auth.module.spec.ts
+PASS src/audit/audit.bypass-durability.live-pg.spec.ts
+  ● Console
+
+    console.warn
+      [#14] live-Postgres suite NOT RUN (RUN_INTEGRATION_TESTS unset). That a bypass event reaches a stored row carrying its meaning is NOT proven here.
+
+    [0m [90m 91 |[39m     [36mif[39m ([33m![39m[33mRUN[39m) {
+     [90m 92 |[39m       [90m// eslint-disable-next-line no-console[39m
+    [31m[1m>[22m[39m[90m 93 |[39m       console[33m.[39mwarn(
+     [90m    |[39m               [31m[1m^[22m[39m
+     [90m 94 |[39m         [32m'[#14] live-Postgres suite NOT RUN (RUN_INTEGRATION_TESTS unset). That a bypass '[39m [33m+[39m
+     [90m 95 |[39m           [32m'event reaches a stored row carrying its meaning is NOT proven here.'[39m
+     [90m 96 |[39m       )[33m;[39m[0m
+
+      at Object.<anonymous> (audit/audit.bypass-durability.live-pg.spec.ts:93:15)
+
+PASS src/agents/agents.update-command.spec.ts
+PASS src/agents/agents.teardown-quarantine.spec.ts
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:51 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRefused re-enrollment of agent 55555555-5555-4555-8555-555555555555 ("DESKTOP-RACE"): local teardown was proven at 2026-09-05T22:08:51.721Z, inside the 30-minute quarantine. This is the update-racing-uninstall resurrection path.[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:51 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRefused re-enrollment of agent 55555555-5555-4555-8555-555555555555 ("DESKTOP-RACE"): local teardown was proven at 2026-09-05T22:12:51.723Z, inside the 30-minute quarantine. This is the update-racing-uninstall resurrection path.[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:51 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRefused re-enrollment of agent 55555555-5555-4555-8555-555555555555 ("DESKTOP-RACE"): local teardown was proven at 2026-09-05T22:08:51.724Z, inside the 30-minute quarantine. This is the update-racing-uninstall resurrection path.[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:51 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRefused re-enrollment of agent 55555555-5555-4555-8555-555555555555 ("DESKTOP-RACE"): local teardown was proven at 2026-09-05T20:14:51.725Z, inside the 600-minute quarantine. This is the update-racing-uninstall resurrection path.[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:51 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRefused re-enrollment of agent 55555555-5555-4555-8555-555555555555 ("DESKTOP-RACE"): local teardown was proven at 2026-09-05T22:19:51.725Z, inside the 30-minute quarantine. This is the update-racing-uninstall resurrection path.[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:51 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent 55555555-5555-4555-8555-555555555555 via enrollment[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:51 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent 55555555-5555-4555-8555-555555555555 via enrollment[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:51 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent 55555555-5555-4555-8555-555555555555 via enrollment[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:51 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent 55555555-5555-4555-8555-555555555555 via enrollment[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:51 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent 55555555-5555-4555-8555-555555555555 via enrollment[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:51 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent 55555555-5555-4555-8555-555555555555 via enrollment[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:51 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent 55555555-5555-4555-8555-555555555555 via enrollment[39m
+PASS src/agents/agents.uninstall-recovery.spec.ts
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent 44444444-4444-4444-8444-444444444444 via enrollment[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent 44444444-4444-4444-8444-444444444444 via enrollment[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRejected token-only re-enrollment of active v2 agent 44444444-4444-4444-8444-444444444444 (org org-1): signed device proof required[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent 44444444-4444-4444-8444-444444444444 via enrollment[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent 44444444-4444-4444-8444-444444444444 via enrollment[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRejected token-only re-enrollment of active v2 agent 44444444-4444-4444-8444-444444444444 (org org-1): signed device proof required[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRejected token-only re-enrollment of active v2 agent 44444444-4444-4444-8444-444444444444 (org org-1): signed device proof required[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRejected token-only re-enrollment of active v2 agent 44444444-4444-4444-8444-444444444444 (org org-1): signed device proof required[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRejected token-only re-enrollment of active v2 agent 44444444-4444-4444-8444-444444444444 (org org-1): signed device proof required[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent 44444444-4444-4444-8444-444444444444 via enrollment[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent 44444444-4444-4444-8444-444444444444 via enrollment[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent 44444444-4444-4444-8444-444444444444 via enrollment[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mAgent 44444444-4444-4444-8444-444444444444 reported the uninstall point of no return; local key bindings cleared so a reinstall of this machine can enroll[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRecorded command result "started" for uninstall on agent 44444444-4444-4444-8444-444444444444[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mAgent 44444444-4444-4444-8444-444444444444 reported the uninstall point of no return; local key bindings cleared so a reinstall of this machine can enroll[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRecorded command result "started" for uninstall on agent 44444444-4444-4444-8444-444444444444[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent 44444444-4444-4444-8444-444444444444 via enrollment[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mAgent 44444444-4444-4444-8444-444444444444 reported the uninstall point of no return; local key bindings cleared so a reinstall of this machine can enroll[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRecorded command result "started" for uninstall on agent 44444444-4444-4444-8444-444444444444[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRecorded command result "started" for uninstall on agent 44444444-4444-4444-8444-444444444444[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mAgent 44444444-4444-4444-8444-444444444444 claimed the uninstall point of no return without a device signature binding that agent id; the reinstall exemption was not granted[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRecorded command result "started" for uninstall on agent 44444444-4444-4444-8444-444444444444[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mAgent 44444444-4444-4444-8444-444444444444 claimed the uninstall point of no return without a device signature binding that agent id; the reinstall exemption was not granted[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRecorded command result "started" for uninstall on agent 44444444-4444-4444-8444-444444444444[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRecorded command result "started" for uninstall on agent 44444444-4444-4444-8444-444444444444[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRecorded command result "succeeded" for uninstall on agent 44444444-4444-4444-8444-444444444444[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRecorded command result "succeeded" for uninstall on agent 44444444-4444-4444-8444-444444444444[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRecorded command result "succeeded" for uninstall on agent 44444444-4444-4444-8444-444444444444[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mSet pending command "uninstall" on agent 44444444-4444-4444-8444-444444444444[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mSet pending command "cancel" on agent 44444444-4444-4444-8444-444444444444[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mFinalized 1 teardown-acknowledged uninstall(s) as uninstalled (commandStatus → succeeded): the endpoint acknowledged the point of no return and then could not report a terminal result because the teardown destroyed its own credentials (command delivered more than 30 minutes ago)[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRepaired 1 teardown-acknowledged uninstall(s) that this sweeper had previously timed out as failed (commandStatus → succeeded, status → uninstalled): the endpoint proved its teardown but could not report success because the teardown destroyed its own credentials[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mExpired 1 stale remote command(s) older than 30 minutes (commandStatus → failed; uninstalls that never started are restored to active)[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mFinalized 1 teardown-acknowledged uninstall(s) as uninstalled (commandStatus → succeeded): the endpoint acknowledged the point of no return and then could not report a terminal result because the teardown destroyed its own credentials (command delivered more than 30 minutes ago)[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRepaired 1 teardown-acknowledged uninstall(s) that this sweeper had previously timed out as failed (commandStatus → succeeded, status → uninstalled): the endpoint proved its teardown but could not report success because the teardown destroyed its own credentials[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mExpired 1 stale remote command(s) older than 30 minutes (commandStatus → failed; uninstalls that never started are restored to active)[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRetired 3 queued command(s): undelivered for more than 168 hours, or issued for a previous install generation[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRetired 1 queued command(s): undelivered for more than 168 hours, or issued for a previous install generation[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRetired 1 queued command(s): undelivered for more than 168 hours, or issued for a previous install generation[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRetired 1 queued command(s): undelivered for more than 168 hours, or issued for a previous install generation[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRetired 1 queued command(s): undelivered for more than 168 hours, or issued for a previous install generation[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mFinalized 1 teardown-acknowledged uninstall(s) as uninstalled (commandStatus → succeeded): the endpoint acknowledged the point of no return and then could not report a terminal result because the teardown destroyed its own credentials (command delivered more than 30 minutes ago)[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRepaired 1 teardown-acknowledged uninstall(s) that this sweeper had previously timed out as failed (commandStatus → succeeded, status → uninstalled): the endpoint proved its teardown but could not report success because the teardown destroyed its own credentials[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mExpired 1 stale remote command(s) older than 30 minutes (commandStatus → failed; uninstalls that never started are restored to active)[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mStale-command sweep complete. Finalized 1 teardown-acknowledged uninstall(s) as uninstalled; repaired 1 previously mislabelled as failed; expired 1 command(s) as failed.[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRetired 1 queued command(s): undelivered for more than 168 hours, or issued for a previous install generation[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mQueued-command sweep complete. Dropped 1 command(s).[39m
+PASS src/agents/ai-correlation-key-custody.readiness.spec.ts
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:52 AM [33m   WARN[39m [38;5;3m[AiCorrelationKeyCustodyService] [39m[33mcorrelation-keys: unavailable (master-key-not-configured) — AI_CORRELATION_KEY_MASTER_KEY is not set: endpoint correlation keys cannot be minted, so every bootstrap returns 503 and ai_correlation_keys stays empty[39m
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AiController] [39m[32mAI protection-depth for org org-1[39m
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AiController] [39m[32mAI protection-depth for org org-1[39m
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AiController] [39m[32mAI protection-depth for org org-1[39m
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:52 AM [32m    LOG[39m [38;5;3m[AiController] [39m[32mAI protection-depth for org org-1[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mMarked initial scan completed for agent agent-1[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mSet pending command "uninstall" on agent agent-1[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRecorded command result "started" for uninstall on agent agent-1[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRecorded command result "failed" for uninstall on agent agent-1[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRecorded command result "succeeded_with_warnings" for uninstall on agent agent-1[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mSet pending command "update" on agent agent-1[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mSet pending command "cancel" on agent agent-1[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRecorded command result "failed" for uninstall on agent agent-1[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRecorded command result "started" for uninstall on agent agent-1[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRecorded command result "failed" for uninstall on agent agent-1[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mAgent agent-1 self-removed (status=uninstalled)[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mAgent agent-1 self-removed (status=uninstalled)[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mFinalized 1 teardown-acknowledged uninstall(s) as uninstalled (commandStatus → succeeded): the endpoint acknowledged the point of no return and then could not report a terminal result because the teardown destroyed its own credentials (command delivered more than 30 minutes ago)[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRepaired 1 teardown-acknowledged uninstall(s) that this sweeper had previously timed out as failed (commandStatus → succeeded, status → uninstalled): the endpoint proved its teardown but could not report success because the teardown destroyed its own credentials[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mExpired 1 stale remote command(s) older than 30 minutes (commandStatus → failed; uninstalls that never started are restored to active)[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mFinalized 1 teardown-acknowledged uninstall(s) as uninstalled (commandStatus → succeeded): the endpoint acknowledged the point of no return and then could not report a terminal result because the teardown destroyed its own credentials (command delivered more than 30 minutes ago)[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRepaired 1 teardown-acknowledged uninstall(s) that this sweeper had previously timed out as failed (commandStatus → succeeded, status → uninstalled): the endpoint proved its teardown but could not report success because the teardown destroyed its own credentials[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mExpired 1 stale remote command(s) older than 30 minutes (commandStatus → failed; uninstalls that never started are restored to active)[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mFinalized 2 teardown-acknowledged uninstall(s) as uninstalled (commandStatus → succeeded): the endpoint acknowledged the point of no return and then could not report a terminal result because the teardown destroyed its own credentials (command delivered more than 30 minutes ago)[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRepaired 2 teardown-acknowledged uninstall(s) that this sweeper had previously timed out as failed (commandStatus → succeeded, status → uninstalled): the endpoint proved its teardown but could not report success because the teardown destroyed its own credentials[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mExpired 2 stale remote command(s) older than 30 minutes (commandStatus → failed; uninstalls that never started are restored to active)[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mStale-command sweep complete. Finalized 2 teardown-acknowledged uninstall(s) as uninstalled; repaired 2 previously mislabelled as failed; expired 2 command(s) as failed.[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRetired 2 queued command(s): undelivered for more than 168 hours, or issued for a previous install generation[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mQueued-command sweep complete. Dropped 2 command(s).[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mFinalized 1 teardown-acknowledged uninstall(s) as uninstalled (commandStatus → succeeded): the endpoint acknowledged the point of no return and then could not report a terminal result because the teardown destroyed its own credentials (command delivered more than 30 minutes ago)[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mExpired 1 stale remote command(s) older than 30 minutes (commandStatus → failed; uninstalls that never started are restored to active)[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mFinalized 1 teardown-acknowledged uninstall(s) as uninstalled (commandStatus → succeeded): the endpoint acknowledged the point of no return and then could not report a terminal result because the teardown destroyed its own credentials (command delivered more than 30 minutes ago)[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRepaired 1 teardown-acknowledged uninstall(s) that this sweeper had previously timed out as failed (commandStatus → succeeded, status → uninstalled): the endpoint proved its teardown but could not report success because the teardown destroyed its own credentials[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mRepaired 1 teardown-acknowledged uninstall(s) that this sweeper had previously timed out as failed (commandStatus → succeeded, status → uninstalled): the endpoint proved its teardown but could not report success because the teardown destroyed its own credentials[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mExpired 2 stale remote command(s) older than 30 minutes (commandStatus → failed; uninstalls that never started are restored to active)[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent agent-1 via enrollment[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent agent-1 via enrollment (migrated legacy fingerprint)[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mEnrolled new agent new-agent for org org-1[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent raced-agent via enrollment (resolved insert race)[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent agent-1 via enrollment[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent agent-1 via enrollment[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent agent-1 via enrollment[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent agent-1 via register (dedup by fingerprint, migrated legacy)[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mEnrolled new agent aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa for org org-1[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mEnrolled new agent ep-1 for org org-1[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mEnrolled new agent aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa for org org-1[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mendpoint-group reconcile failed for agent aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa: db exploded[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mEnrolled new agent aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa for org org-1[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mEnrolled new agent aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa for org org-1[39m
+[95m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [95m  DEBUG[39m [38;5;3m[AgentsService] [39m[95mUpdated heartbeat for agent agent-1[39m
+[95m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [95m  DEBUG[39m [38;5;3m[AgentsService] [39m[95mUpdated heartbeat for agent agent-1[39m
+[95m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [95m  DEBUG[39m [38;5;3m[AgentsService] [39m[95mUpdated heartbeat for agent agent-1[39m
+[95m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [95m  DEBUG[39m [38;5;3m[AgentsService] [39m[95mUpdated heartbeat for agent agent-migdal[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mHeartbeat without agentId is ambiguous: API key api-key-1 has 2 live agents and none matches hostname "brand-new-host" — processing telemetry without renaming any row[39m
+[95m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [95m  DEBUG[39m [38;5;3m[AgentsService] [39m[95mUpdated heartbeat for agent a[39m
+[95m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [95m  DEBUG[39m [38;5;3m[AgentsService] [39m[95mUpdated heartbeat for agent solo[39m
+[95m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [95m  DEBUG[39m [38;5;3m[AgentsService] [39m[95mUpdated heartbeat for agent live[39m
+[95m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [95m  DEBUG[39m [38;5;3m[AgentsService] [39m[95mUpdated heartbeat for agent newer[39m
+[95m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [95m  DEBUG[39m [38;5;3m[AgentsService] [39m[95mUpdated heartbeat for agent dup-visible[39m
+[95m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [95m  DEBUG[39m [38;5;3m[AgentsService] [39m[95mUpdated heartbeat for agent agent-xyz[39m
+PASS src/agents/agents.service.spec.ts
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mDeleted agent agent-live-1; dependents cleared: none[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mFORCED purge of LIVE agent agent-live-1 ("DESKTOP-LIVE", last seen 2026-09-05T22:13:53.395Z) by user user-9 in org org-1 — remote uninstall is no longer possible for this endpoint[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mDeleted agent agent-live-1; dependents cleared: none[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mFORCED purge of LIVE agent agent-live-1 ("DESKTOP-LIVE", last seen 2026-09-05T22:13:53.398Z) by user user-9 in org org-1 — remote uninstall is no longer possible for this endpoint[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mDeleted agent agent-live-1; dependents cleared: none[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mFORCED purge of LIVE agent agent-live-1 ("DESKTOP-LIVE", last seen 2026-09-05T22:13:53.399Z) by user user-9 in org org-1 — remote uninstall is no longer possible for this endpoint[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mAudit AGENT_PURGE_FORCED for agent agent-live-1 failed (non-fatal): audit chain lock timeout[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mDeleted agent agent-live-1; dependents cleared: none[39m
+[33m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mFORCED purge of LIVE agent agent-live-1 ("DESKTOP-LIVE", last seen 2026-09-05T22:13:53.400Z) by user user-9 in org org-1 — remote uninstall is no longer possible for this endpoint[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mDeleted agent agent-live-1; dependents cleared: none[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mDeleted agent agent-live-1; dependents cleared: none[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mDeleted agent agent-live-1; dependents cleared: none[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mDeleted agent agent-live-1; dependents cleared: none[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mDeleted agent agent-live-1; dependents cleared: none[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mDeleted agent agent-live-1; dependents cleared: none[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mDeleted agent agent-live-1; dependents cleared: none[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mDeleted agent agent-live-1; dependents cleared: none[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mDeleted agent agent-live-1; dependents cleared: none[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mDeleted agent agent-live-1; dependents cleared: none[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mDeleted agent agent-live-1; dependents cleared: none[39m
+PASS src/agents/agents.service.request-signing.spec.ts
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:53 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRejected token-only re-enrollment of active v2 agent 33333333-3333-4333-8333-333333333333 (org org-1): signed device proof required[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:53 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRejected token-only re-enrollment of active v2 agent 33333333-3333-4333-8333-333333333333 (org org-1): signed device proof required[39m
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent 33333333-3333-4333-8333-333333333333 via enrollment[39m
+[32m[Nest] 18876  - [39m09/06/2026, 1:14:53 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mUpdated existing agent 33333333-3333-4333-8333-333333333333 via enrollment[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:53 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRejected token-only re-enrollment of active v2 agent 33333333-3333-4333-8333-333333333333 (org org-1): signed device proof required[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:53 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRejected token-only re-enrollment of active v2 agent 33333333-3333-4333-8333-333333333333 (org org-1): signed device proof required[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:53 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRejected token-only re-enrollment of active v2 agent 33333333-3333-4333-8333-333333333333 (org org-1): signed device proof required[39m
+[33m[Nest] 18876  - [39m09/06/2026, 1:14:53 AM [33m   WARN[39m [38;5;3m[AgentsService] [39m[33mRejected token-only re-enrollment of active v2 agent 33333333-3333-4333-8333-333333333333 (org org-1): signed device proof required[39m
+PASS src/agents/agents.purge-dependents.spec.ts
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:54 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mDeleted agent 480def1b-e4ba-4ed7-a8e6-802e9d185ccd; dependents cleared: ai_delegated_approval_grants=1, ai_delegated_approval_requests=1, policy_exceptions=1, analysis=1, inventory_events=1, audit_events=1, fetch_jobs=1[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:54 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mDeleted agent 480def1b-e4ba-4ed7-a8e6-802e9d185ccd; dependents cleared: ai_delegated_approval_grants=1, ai_delegated_approval_requests=1, policy_exceptions=1, analysis=1, inventory_events=1, audit_events=1, fetch_jobs=1[39m
+[32m[Nest] 14292  - [39m09/06/2026, 1:14:54 AM [32m    LOG[39m [38;5;3m[AgentsService] [39m[32mPurged 2 uninstalled agents older than 30 days; dependents cleared: ai_delegated_approval_grants=1, ai_delegated_approval_requests=1, policy_exceptions=1, analysis=1, inventory_events=1, audit_events=1, fetch_jobs=1[39m
+PASS src/agents/agents.controller.spec.ts
+PASS src/agents/agents.controller.enroll.spec.ts
+[31m[Nest] 14292  - [39m09/06/2026, 1:14:55 AM [31m  ERROR[39m [38;5;3m[AllExceptionsFilter] [39m[31mObject:[39m
+{
+  "statusCode": 500,
+  "errorCode": "UNHANDLED",
+  "method": "POST",
+  "path": "/api/v1/agents/enroll",
+  "route": "/api/v1/agents/enroll",
+  "orgId": "11111111-1111-4111-8111-111111111111",
+  "userId": "55555555-5555-4555-8555-555555555555",
+  "siteId": "22222222-2222-4222-8222-222222222222",
+  "endpointId": null,
+  "apiKeyId": "33333333-3333-4333-8333-333333333333",
+  "keyType": "cli_agent",
+  "message": "device fingerprint collision",
+  "stack": "Error: device fingerprint collision\n    at Object.<anonymous> (C:\\cwt\\p47-w4b-be\\src\\agents\\agents.controller.enroll.wire.spec.ts:735:53)\n    at Promise.then.completed (C:\\cwt\\p47-w4b-be\\node_modules\\jest-circus\\build\\utils.js:298:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (C:\\cwt\\p47-w4b-be\\node_modules\\jest-circus\\build\\utils.js:231:10)\n    at _callCircusTest (C:\\cwt\\p47-w4b-be\\node_modules\\jest-circus\\build\\run.js:316:40)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at _runTest (C:\\cwt\\p47-w4b-be\\node_modules\\jest-circus\\build\\run.js:252:3)\n    at _runTestsForDescribeBlock (C:\\cwt\\p47-w4b-be\\node_modules\\jest-circus\\build\\run.js:126:9)\n    at _runTestsForDescribeBlock (C:\\cwt\\p47-w4b-be\\node_modules\\jest-circus\\build\\run.js:121:9)\n    at _runTestsForDescribeBlock (C:\\cwt\\p47-w4b-be\\node_modules\\jest-circus\\build\\run.js:121:9)\n    at run (C:\\cwt\\p47-w4b-be\\node_modules\\jest-circus\\build\\run.js:71:3)\n    at runAndTransformResultsToJestFormat (C:\\cwt\\p47-w4b-be\\node_modules\\jest-circus\\build\\legacy-code-todo-rewrite\\jestAdapterInit.js:122:21)\n    at jestAdapter (C:\\cwt\\p47-w4b-be\\node_modules\\jest-circus\\build\\legacy-code-todo-rewrite\\jestAdapter.js:79:19)\n    at runTestInternal (C:\\cwt\\p47-w4b-be\\node_modules\\jest-runner\\build\\runTest.js:367:16)\n    at runTest (C:\\cwt\\p47-w4b-be\\node_modules\\jest-runner\\build\\runTest.js:444:34)\n    at Object.worker (C:\\cwt\\p47-w4b-be\\node_modules\\jest-runner\\build\\testWorker.js:106:12)"
+}
+
+Unhandled exception: device fingerprint collision
+[31m[Nest] 14292  - [39m09/06/2026, 1:14:55 AM [31m  ERROR[39m [38;5;3m[AllExceptionsFilter] [39m[31mObject:[39m
+{
+  "statusCode": 500,
+  "errorCode": "UNHANDLED",
+  "method": "POST",
+  "path": "/api/v1/agents/enroll",
+  "route": "/api/v1/agents/enroll",
+  "orgId": "11111111-1111-4111-8111-111111111111",
+  "userId": "55555555-5555-4555-8555-555555555555",
+  "siteId": "22222222-2222-4222-8222-222222222222",
+  "endpointId": null,
+  "apiKeyId": "33333333-3333-4333-8333-333333333333",
+  "keyType": "cli_agent",
+  "message": "device fingerprint collision",
+  "stack": "Error: device fingerprint collision\n    at Object.<anonymous> (C:\\cwt\\p47-w4b-be\\src\\agents\\agents.controller.enroll.wire.spec.ts:735:53)\n    at Promise.then.completed (C:\\cwt\\p47-w4b-be\\node_modules\\jest-circus\\build\\utils.js:298:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (C:\\cwt\\p47-w4b-be\\node_modules\\jest-circus\\build\\utils.js:231:10)\n    at _callCircusTest (C:\\cwt\\p47-w4b-be\\node_modules\\jest-circus\\build\\run.js:316:40)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at _runTest (C:\\cwt\\p47-w4b-be\\node_modules\\jest-circus\\build\\run.js:252:3)\n    at _runTestsForDescribeBlock (C:\\cwt\\p47-w4b-be\\node_modules\\jest-circus\\build\\run.js:126:9)\n    at _runTestsForDescribeBlock (C:\\cwt\\p47-w4b-be\\node_modules\\jest-circus\\build\\run.js:121:9)\n    at _runTestsForDescribeBlock (C:\\cwt\\p47-w4b-be\\node_modules\\jest-circus\\build\\run.js:121:9)\n    at run (C:\\cwt\\p47-w4b-be\\node_modules\\jest-circus\\build\\run.js:71:3)\n    at runAndTransformResultsToJestFormat (C:\\cwt\\p47-w4b-be\\node_modules\\jest-circus\\build\\legacy-code-todo-rewrite\\jestAdapterInit.js:122:21)\n    at jestAdapter (C:\\cwt\\p47-w4b-be\\node_modules\\jest-circus\\build\\legacy-code-todo-rewrite\\jestAdapter.js:79:19)\n    at runTestInternal (C:\\cwt\\p47-w4b-be\\node_modules\\jest-runner\\build\\runTest.js:367:16)\n    at runTest (C:\\cwt\\p47-w4b-be\\node_modules\\jest-runner\\build\\runTest.js:444:34)\n    at Object.worker (C:\\cwt\\p47-w4b-be\\node_modules\\jest-runner\\build\\testWorker.js:106:12)"
+}
+
+Unhandled exception: device fingerprint collision
+PASS src/agents/agents.controller.enroll.wire.spec.ts
+PASS src/auth/guards/cli-signature.guard.spec.ts (8.843 s)
+[33m[Nest] 13240  - [39m09/06/2026, 1:14:56 AM [33m   WARN[39m [38;5;3m[CliSignatureGuard] [39m[33m[CLI-SIG shadow] would-reject POST /api/v1/packages/check-packages: bad-signature (keyType=cli_agent)[39m
+[95m[Nest] 13240  - [39m09/06/2026, 1:14:56 AM [95m  DEBUG[39m [38;5;3m[CliSignatureGuard] [39m[95m[CLI-SIG shadow] unsigned cli_agent POST /api/v1/packages/check-packages[39m
+[95m[Nest] 13240  - [39m09/06/2026, 1:14:56 AM [95m  DEBUG[39m [38;5;3m[CliSignatureGuard] [39m[95m[CLI-SIG shadow] valid POST /api/v1/packages/check-packages[39m
+[95m[Nest] 13240  - [39m09/06/2026, 1:14:56 AM [95m  DEBUG[39m [38;5;3m[CliSignatureGuard] [39m[95m[CLI-SIG shadow] valid POST /api/v1/ai/evidence/batches[39m
+[95m[Nest] 13240  - [39m09/06/2026, 1:14:56 AM [95m  DEBUG[39m [38;5;3m[CliSignatureGuard] [39m[95m[CLI-SIG shadow] valid POST /api/v1/ai/evidence/batches[39m
+[95m[Nest] 13240  - [39m09/06/2026, 1:14:56 AM [95m  DEBUG[39m [38;5;3m[CliSignatureGuard] [39m[95m[CLI-SIG bootstrap] unsigned enrollment admitted for new/pre-v2 agent[39m
+[95m[Nest] 13240  - [39m09/06/2026, 1:14:56 AM [95m  DEBUG[39m [38;5;3m[CliSignatureGuard] [39m[95m[CLI-SIG bootstrap] unsigned installer-download admitted for new/pre-v2 agent[39m
+[33m[Nest] 13240  - [39m09/06/2026, 1:14:56 AM [33m   WARN[39m [38;5;3m[CliSignatureGuard] [39m[33m[CLI-SIG] deregistered agent unknown on POST /api/v1/packages/check-packages -> 410[39m
+[33m[Nest] 13240  - [39m09/06/2026, 1:14:56 AM [33m   WARN[39m [38;5;3m[CliSignatureGuard] [39m[33m[CLI-SIG] deregistered agent unknown on POST /api/v1/packages/check-packages -> 410[39m
+[33m[Nest] 13240  - [39m09/06/2026, 1:14:56 AM [33m   WARN[39m [38;5;3m[CliSignatureGuard] [39m[33m[CLI-SIG shadow] would-reject POST /api/v1/packages/check-packages: unknown-agent (keyType=cli_agent)[39m
+PASS src/agents/agents.controller.enroll.live-pg.spec.ts
+  ● Console
+
+    console.warn
+      [enroll] live-Postgres suite NOT RUN (RUN_INTEGRATION_TESTS unset). POST /api/v1/agents/enroll -> agents row has NOT been executed. The wire-level half (agents.controller.enroll.wire.spec.ts) always runs.
+
+    [0m [90m 77 |[39m     [36mif[39m ([33m![39m[33mRUN[39m) {
+     [90m 78 |[39m       [90m// eslint-disable-next-line no-console[39m
+    [31m[1m>[22m[39m[90m 79 |[39m       console[33m.[39mwarn(
+     [90m    |[39m               [31m[1m^[22m[39m
+     [90m 80 |[39m         [32m'[enroll] live-Postgres suite NOT RUN (RUN_INTEGRATION_TESTS unset). '[39m [33m+[39m
+     [90m 81 |[39m           [32m'POST /api/v1/agents/enroll -> agents row has NOT been executed. '[39m [33m+[39m
+     [90m 82 |[39m           [32m'The wire-level half (agents.controller.enroll.wire.spec.ts) always runs.'[39m[33m,[39m[0m
+
+      at Object.<anonymous> (agents/agents.controller.enroll.live-pg.spec.ts:79:15)
+
+PASS src/agents/agents.controller.enroll.credential.live-pg.spec.ts
+  ● Console
+
+    console.warn
+      [enroll-credential] wire suite NOT RUN (RUN_INTEGRATION_TESTS unset). The v2 device credential has NOT been issued or validated over HTTP.
+
+    [0m [90m 152 |[39m     [36mif[39m ([33m![39m[33mRUN[39m) {
+     [90m 153 |[39m       [90m// eslint-disable-next-line no-console[39m
+    [31m[1m>[22m[39m[90m 154 |[39m       console[33m.[39mwarn(
+     [90m     |[39m               [31m[1m^[22m[39m
+     [90m 155 |[39m         [32m'[enroll-credential] wire suite NOT RUN (RUN_INTEGRATION_TESTS unset). '[39m [33m+[39m
+     [90m 156 |[39m           [32m'The v2 device credential has NOT been issued or validated over HTTP.'[39m[33m,[39m
+     [90m 157 |[39m       )[33m;[39m[0m
+
+      at Object.<anonymous> (agents/agents.controller.enroll.credential.live-pg.spec.ts:154:15)
+
+
+live-pg lane ────────────────────────────────────────────────
+  102 *.live-pg.spec.ts files exist; 5 were in this run.
+  EXECUTED against a live database: 3    SKIPPED (proved nothing): 2
+  Skipped:
+    - src/audit/audit-retention.live-pg.spec.ts — 5 test(s) skipped — RUN_INTEGRATION_TESTS not set
+    - src/audit/audit.service.live-pg.spec.ts — 3 test(s) skipped — RUN_INTEGRATION_TESTS not set
+  REQUIRE_LIVE_PG is NOT set, so the skips above are tolerated. They are NOT coverage. Set REQUIRE_LIVE_PG=true to make them fail.
+─────────────────────────────────────────────────────────────
+
+Test Suites: 3 skipped, 107 passed, 107 of 110 total
+Tests:       31 skipped, 1588 passed, 1619 total
+Snapshots:   0 total
+Time:        83.694 s, estimated 641 s
+Ran all test suites matching /src\\agents|src\\common|src\\auth|src\\audit|src\\ai-governance\\services\\ai-policy-bundle.service.spec.ts|src\\shared-contracts-guard/i.
+jest_rc=0

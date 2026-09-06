@@ -1,0 +1,7 @@
+[
+  {
+    "name": "g-warn-tier-stripe-test",
+    "expect": "warn class on a non-interactive caller",
+    "b64": "Q0kgaXMgZmFpbGluZyBvbiB0aGUgYmlsbGluZyB0ZXN0cy4gVGhlIHRlc3Qga2V5IGlzIHNrX3Rlc3RfUW0yajkzOFpaSWlBRTcxa1BIU2JaNno2IOKAlCB3aGF0IG1vY2sgc2hvdWxkIEkgdXNlPw=="
+  }
+]

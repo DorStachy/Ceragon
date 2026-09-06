@@ -1,0 +1,17 @@
+A  exit=0  BLOCKS  0.144-shaped payload + REAL marker
+    stdout: "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"DeVoid blocked this tool call: authorized-keys-write. Safe alternative: Manage SSH access th"
+    stderr: "[devoid] WARNING: credentials at C:\\Users\\Owner\\AppData\\Local\\Temp\\devoid-p47-iso\\home\\.devoid\\credentials.json set a loopback backend (http://127.0.0.1:2353) and this build is NOT a stamped release (version 7.10.99, channel dev), so verdicts WILL be routed there, not to https://api.devoid.one. | [d"
+B  exit=0  BLOCKS  0.134-shaped payload + REAL marker
+    stdout: "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"DeVoid blocked this tool call: authorized-keys-write. Safe alternative: Manage SSH access th"
+    stderr: "[devoid] WARNING: credentials at C:\\Users\\Owner\\AppData\\Local\\Temp\\devoid-p47-iso\\home\\.devoid\\credentials.json set a loopback backend (http://127.0.0.1:2353) and this build is NOT a stamped release (version 7.10.99, channel dev), so verdicts WILL be routed there, not to https://api.devoid.one. | [d"
+C  exit=0  BLOCKS  0.134-shaped payload + WRONG marker (legacy firewall)
+    stdout: "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"DeVoid could not read this tool call for scanning: the payload was not a recognized Codex ho"
+    stderr: "[devoid] ai hook: normalize: airuntime: unknown hook payload dialect | [devoid] ai hook: closed-world fail-closed deny for PRE_TOOL_USE (normalize) | [devoid] ai hook: adapter=codex event=PRE_TOOL_USE outcome=normalize-oracle-deny dur=24ms | "
+D  exit=0  BLOCKS  0.134-shaped payload + NO marker (legacy firewall)
+    stdout: "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"DeVoid could not read this tool call for scanning: the payload was not a recognized Codex ho"
+    stderr: "[devoid] ai hook: normalize: airuntime: unknown hook payload dialect | [devoid] ai hook: closed-world fail-closed deny for PRE_TOOL_USE (normalize) | [devoid] ai hook: adapter=codex event=PRE_TOOL_USE outcome=normalize-oracle-deny dur=25ms | "
+E  exit=0  BLOCKS  0.144-shaped payload + NO marker (legacy firewall, shape passes)
+    stdout: "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"DeVoid blocked this tool call: authorized-keys-write. Safe alternative: Manage SSH access th"
+    stderr: "[devoid] WARNING: credentials at C:\\Users\\Owner\\AppData\\Local\\Temp\\devoid-p47-iso\\home\\.devoid\\credentials.json set a loopback backend (http://127.0.0.1:2353) and this build is NOT a stamped release (version 7.10.99, channel dev), so verdicts WILL be routed there, not to https://api.devoid.one. | [d"
+
+-> C:/Users/Owner/Documents/Ceragon/.plans/m47a-20260822/stage1-evidence/codex/dialect-probe-results.json

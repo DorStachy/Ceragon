@@ -1,0 +1,16 @@
+=== BENIGN TWIN: same client, same home, an ordinary prompt ===
+OpenAI Codex v0.147.0
+provider: devoid
+approval: never
+user
+hook: SessionStart
+hook: SessionStart Completed
+hook: UserPromptSubmit
+hook: UserPromptSubmit Completed
+ERROR: Reconnecting... 1/5
+ERROR: Reconnecting... 2/5
+ERROR: Reconnecting... 3/5
+ERROR: Reconnecting... 4/5
+ERROR: Reconnecting... 5/5
+ERROR: unexpected status 403 Forbidden: devoid refused to route this request upstream, url: http://127.0.0.1:19390/proxy/openai/v1/responses
+ERROR: unexpected status 403 Forbidden: devoid refused to route this request upstream, url: http://127.0.0.1:19390/proxy/openai/v1/responses

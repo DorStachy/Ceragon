@@ -1,0 +1,3450 @@
+
+<--- Last few GCs --->
+
+[19412:000002BDF5975000]    65795 ms: Scavenge (during sweeping) 368.9 (434.5) -> 347.9 (459.8) MB, pooled: 0.0 MB, 465.17 / 0.00 ms (average mu = 0.998, current mu = 0.998) allocation failure; 
+[19412:000002BDF5975000]    68462 ms: Mark-Compact 382.0 (464.5) -> 348.8 (467.0) MB, pooled: 0.0 MB, 434.87 / 0.00 ms (average mu = 0.989, current mu = 0.981) background allocation failure; GC in old space requested
+
+FATAL ERROR: Zone Allocation failed - process out of memory
+----- Native stack trace -----
+
+
+<--- Last few GCs --->
+
+[19412:000002BDF5975000]    65795 ms: Scavenge (during sweeping) 368.9 (434.5) -> 347.9 (459.8) MB, pooled: 0.0 MB, 465.17 / 0.00 ms (average mu = 0.998, current mu = 0.998) allocation failure; 
+[19412:000002BDF5975000]    68462 ms: Mark-Compact 382.0 (464.5) -> 348.8 (467.0) MB, pooled: 0.0 MB, 434.87 / 0.00 ms (average mu = 0.989, current mu = 0.981) background allocation failure; GC in old space requested
+
+FATAL ERROR: Zone Allocation failed - process out of memory
+----- Native stack trace -----
+
+ 1: 00007FF7D3B1B106 
+ 2: 00007FF7D46B9C67 
+ 3: 00007FF7D4078303 
+ 4: 00007FF7D57A65FB 
+ 5: 00007FF7D5115773 
+ 6: 00007FF7D57A040F 
+ 7: 00007FF7D579B196 
+ 8: 00007FF7D579ABD5 
+ 9: 00007FF7D5657055 
+10: 00007FF7D5101FB9 
+11: 00007FF7D50E1F34 
+12: 00007FF7D50D8471 
+13: 00007FF7D50D77AD 
+14: 00007FF7D46474BF 
+15: 00007FF7D4608753 
+16: 00007FF7D4609CFE 
+17: 00007FF7D4EB6B3F 
+18: 00007FF7D3A69D2E 
+19: 00007FF7D47108B6 
+20: 00007FF7D5ABB363 
+21: 00007FFEBC3CCCB7 
+22: 00007FFEBDC0AD6C 
+FAIL src/lambda/router-handler.spec.ts
+  ● Test suite failed to run
+
+    A jest worker process (pid=19412) was terminated by another process: signal=SIGTERM, exitCode=null. Operating system logs may contain more information on why this occurred.
+
+      at ChildProcessWorker._onExit (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-worker/build/workers/ChildProcessWorker.js:370:23)
+
+FAIL src/lambda/router-handler.artifact-class.spec.ts (62.815 s)
+  ● router handles non-package artifact classes › routes an mcp server to artifact-fetch, not metadata-only
+
+
+
+
+
+  ● router handles non-package artifact classes › routes an editor extension to artifact-fetch
+
+
+
+
+
+  ● router handles non-package artifact classes › routes an agent skill pinned to an OCI digest to artifact-fetch
+
+
+
+
+
+  ● router handles non-package artifact classes › NEVER silently drops an unknown class — it throws
+
+
+
+
+
+  ● router handles non-package artifact classes › skips a candidate-only sighting WITH a stated reason rather than dropping it
+
+
+
+
+
+  ● router handles non-package artifact classes › skips a non-package artifact whose only route is a bare registry pointer
+
+
+
+
+
+  ● router handles non-package artifact classes › derives the class from ecosystem and ignores the wire-supplied artifactClass
+
+
+
+
+
+  ● router preserves existing package behaviour exactly › still routes a complete registry package to artifact-fetch
+
+
+
+
+
+  ● router preserves existing package behaviour exactly › still skips a yanked package — now with a stated reason
+
+
+
+
+
+  ● router preserves existing package behaviour exactly › still skips a package missing registry coordinates — now with a stated reason
+
+
+
+
+
+  ● handler routes non-package observations end to end › enqueues an artifact-source-fetch message carrying the pinned sourceRef
+
+
+
+
+
+  ● handler routes non-package observations end to end › reports an unknown ecosystem as a batch item failure so it reaches the DLQ
+
+
+
+
+
+  ● handler routes non-package observations end to end › does not divert a non-package artifact to metadata-only under the value gate
+
+
+
+
+
+FAIL src/runtime/intel-result-writer.sandbox-gate.spec.ts (65.307 s)
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES the stale-job payload that caused the incident (no cache row, no verdict)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › still writes the S3 forensics snapshot for a REFUSED detonation (audit trail survives)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › does NOT let a forensics S3 failure block the cache write (S3 is not a prerequisite)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › returns normally on refusal so the caller still acks the SQS message (no DLQ loop)
+
+    expect(received).resolves.toBeUndefined()
+
+    Received promise rejected instead of resolved
+    Rejected to value: {"diagnosticCodes": [2305], "diagnosticText": "[96msrc/runtime/intel-result-writer.ts[0m:[93m34[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '\"@ceragon/shared-contracts\"' has no exported member 'coalesceArtifactCacheDigest'.·
+    [7m34[0m   coalesceArtifactCacheDigest,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    ", "name": "TSError"}
+
+    [0m [90m 169 |[39m
+     [90m 170 |[39m   it([32m'returns normally on refusal so the caller still acks the SQS message (no DLQ loop)'[39m[33m,[39m [36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 171 |[39m     [36mawait[39m expect(
+     [90m     |[39m           [31m[1m^[22m[39m
+     [90m 172 |[39m       run({ riskScore[33m:[39m [35m0[39m[33m,[39m sandboxQuality[33m:[39m [32m'skipped'[39m[33m,[39m sandboxOutcome[33m:[39m [32m'inconclusive'[39m })[33m,[39m
+     [90m 173 |[39m     )[33m.[39mresolves[33m.[39mtoBeUndefined()[33m;[39m
+     [90m 174 |[39m   })[33m;[39m[0m
+
+      at expect (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/expect/build/index.js:113:15)
+      at Object.<anonymous> (src/runtime/intel-result-writer.sandbox-gate.spec.ts:171:11)
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES an ALLOW-band inconclusive detonation with sandboxQuality=skipped and no static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES an ALLOW-band inconclusive detonation with sandboxQuality=failed and no static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES an ALLOW-band inconclusive detonation with sandboxQuality=degraded and no static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES an ALLOW-band inconclusive detonation with sandboxQuality=strace_only and no static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES when the fresh static row carries NO riskScore (fusion did not actually run)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES when the existing static row is STALE-SCHEMA (no fresh base to fuse against)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES the synthetic OS coverage-gap result (os-sandbox-route shape)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES a full_telemetry run whose coverage was NOT met
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › WRITES an untrusted detonation that is NOT in the ALLOW band (fail-closed leans to BLOCK)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › WRITES at the ALLOW-band boundary (score 40 is not ALLOW band)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › WRITES a trustworthy full_telemetry detonation with no static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › WRITES an inconclusive detonation that WAS fused against a fresh static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static result, even at riskScore 0 with no prior entry
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static npm result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static pypi result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static cargo result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static go result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static mcp result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static agent-skill result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static plugin result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static editor-extension result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+FAIL src/lambda/result-aggregator-handler.sandbox-gate.spec.ts
+  ● result-aggregator — fail-closed sandbox reconciliation gate (wiring) › an INCONCLUSIVE Windows detonation with no static base writes NO verdict + NO cache row (fail-closed skip)
+
+
+
+
+
+  ● result-aggregator — fail-closed sandbox reconciliation gate (wiring) › a MALICIOUS untrusted Windows detonation with no static base still WRITES a verdict (never suppressed → BLOCK)
+
+
+
+
+
+  ● result-aggregator — fail-closed sandbox reconciliation gate (wiring) › an INCONCLUSIVE detonation fused over a SUSPICIOUS static base writes a verdict that never downgrades
+
+
+
+
+
+FAIL src/lambda/dispatcher-handler.mac-gap.spec.ts
+  ● dispatcher — fail-closed macOS coverage gap › mac + a result-write queue + no Mac sandbox → emits a synthetic coverage-gap result (NOT a Linux detonation)
+
+
+
+
+
+  ● dispatcher — fail-closed macOS coverage gap › mac + NO result-write queue → DROPPED fail-closed (NEVER routed to Linux), acked
+
+
+
+
+
+  ● dispatcher — fail-closed macOS coverage gap › regression: a linux/either dynamic message still routes to the Linux queue
+
+
+
+
+
+  ● dispatcher — fail-closed macOS coverage gap › regression: windows + a Windows queue still routes to the Windows queue
+
+
+
+
+
+FAIL src/lambda/dispatcher-handler.spec.ts
+  ● lambda dispatcher handler › dispatches static analysis messages to the static worker queue
+
+
+
+
+
+  ● lambda dispatcher handler › dispatches dynamic analysis messages to the dynamic worker queue
+
+
+
+
+
+  ● lambda dispatcher handler › routes a windows-classified dynamic job to the Windows queue when configured
+
+
+
+
+
+  ● lambda dispatcher handler › SAFETY: a windows-classified job stays on Linux when the Windows queue is NOT configured
+
+
+
+
+
+  ● lambda dispatcher handler › routes an "either"-classified job to the Linux queue even when Windows is configured
+
+
+
+
+
+  ● lambda dispatcher handler › a message with no osTarget falls back to a thin classify (→ Linux) and never throws
+
+
+
+
+
+FAIL src/lambda/result-aggregator-handler.spec.ts (68.13 s)
+  ● lambda result-aggregator-handler › processes a valid IntelWorkerResult and writes cache + verdict
+
+
+
+
+
+  ● lambda result-aggregator-handler › classifies riskScore >= 70 as MALICIOUS
+
+
+
+
+
+  ● lambda result-aggregator-handler › escalates to dynamic queue when escalateToDynamic is true
+
+
+
+
+
+  ● lambda result-aggregator-handler › reports batch item failure on processing error
+
+
+
+
+
+  ● lambda result-aggregator-handler › writes release baseline for clean static verdicts (score <= 39)
+
+
+
+
+
+  ● lambda result-aggregator-handler › does not write baseline for high-risk verdicts
+
+
+
+
+
+  ● lambda result-aggregator-handler › policyFactsCoverage emit (C7 v10 read-floor interlock) › stamps the cache LATEST row with policyFactsCoverage (terminal-ok static producer)
+
+
+
+
+
+  ● lambda result-aggregator-handler › policyFactsCoverage emit (C7 v10 read-floor interlock) › makes the Intel-written row a FRESH warm hit under the v10 read floor (BACKEND_POLICY_FACTS_READ_V10 on)
+
+
+
+
+
+  ● lambda result-aggregator-handler › policyFactsCoverage emit (C7 v10 read-floor interlock) › propagates policyFacts onto the cache row when the static result carries them
+
+
+
+
+
+  ● lambda result-aggregator-handler › oversized-verdict S3 spill › spills signalSummary to S3 + slims the verdict item when the item exceeds the threshold
+
+
+
+
+
+  ● lambda result-aggregator-handler › oversized-verdict S3 spill › writes a normal-size verdict inline — no spill, no signal-summary S3 write
+
+
+
+
+
+  ● lambda result-aggregator-handler › oversized-verdict S3 spill › surfaces an error (batchItemFailure) when the S3 spill offload fails — never writes an oversized item
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (a) first delivery with a dedup id is processed and writes the verdict
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (b) a redelivery whose prior delivery COMPLETED is SKIPPED — no second verdict/cache write
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (c) a message WITHOUT a dedup id is processed (legacy producer back-compat)
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (d) a DDB error on the dedup pre-check FAILS the record (not silently processed or skipped)
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (e) two DIFFERENT dedup ids both process (distinct logical results)
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (f) a crash mid-processing leaves NO marker, so the redelivery RE-PROCESSES (no permanent drop)
+
+
+
+
+
+  ● lambda result-aggregator-handler › verdict-aware raw-artifact S3 tagging › tags the raw artifact object with the correct key + verdict tag value on a terminal verdict
+
+
+
+
+
+  ● lambda result-aggregator-handler › verdict-aware raw-artifact S3 tagging › maps BLOCK -> block
+
+
+
+
+
+  ● lambda result-aggregator-handler › verdict-aware raw-artifact S3 tagging › maps PROMPT -> prompt
+
+
+
+
+
+  ● lambda result-aggregator-handler › verdict-aware raw-artifact S3 tagging › maps ALLOW -> allow
+
+
+
+
+
+  ● lambda result-aggregator-handler › verdict-aware raw-artifact S3 tagging › swallows a tagging failure — the verdict write still completes (best-effort)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › flag OFF => zero fan-out sends
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › sandbox result => zero fan-out sends
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › empty/absent transitiveInstallSet => zero fan-out sends
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › ARTIFACT_FETCH_QUEUE_URL unset => zero fan-out sends (short-circuit)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › flag ON + 3 cold registry nodes => 3 sends with correct child shape
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › passes the node integrity through as upstreamDigest when present
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › parentDepth >= MAX_DEPTH => zero sends (leaf)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › parentDepth = MAX_DEPTH - 1 => children at childDepth = MAX_DEPTH
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › duplicate node listed twice => exactly one send (dedup Set)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › node equal to root => skipped
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › scope=dev / specifierKind!=registry / resolved=false => skipped
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › 300 nodes with MAX_CHILDREN=250 => exactly 250 sends
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › skips falsy / missing name|version|ecosystem nodes
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › node already cached fresh at the CURRENT schema version (coverage + future expiry) => skipped (no send)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › node cached at v9 => NOT skipped (send)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › current-version row with NO policyFactsCoverage => NOT skipped (coverage interlock)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › NV# GetItem throws => NOT skipped (fail-open-to-enqueue)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › a fan-out throw does NOT fail the record (non-fatal)
+
+
+
+
+
+FAIL src/runtime/analysis-dispatcher.spec.ts
+  ● Test suite failed to run
+
+    A jest worker process (pid=11568) was terminated by another process: signal=SIGTERM, exitCode=null. Operating system logs may contain more information on why this occurred.
+
+      at ChildProcessWorker._onExit (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-worker/build/workers/ChildProcessWorker.js:370:23)
+
+PASS src/followers/pypi-follower.spec.ts (12.928 s)
+PASS src/followers/cargo-follower.spec.ts (14.715 s)
+PASS src/advisory/advisory-verdict-refresher.test.ts (14.875 s)
+PASS src/lambda/result-aggregator-fanout.integration.spec.ts
+  ● Console
+
+    console.warn
+      
+      [result-aggregator-fanout.integration] SKIPPING — the AWS SDK needs --experimental-vm-modules inside jest's VM. RE-RUN WITH:
+          NODE_OPTIONS=--experimental-vm-modules LOG_LEVEL=silent npx jest src/lambda/result-aggregator-fanout.integration.spec.ts --runInBand
+      (engines were otherwise reachable; this is a jest-runner flag, not a code/engine failure)
+
+    [0m [90m 241 |[39m       [36mif[39m ([35m/ERR_VM_DYNAMIC_IMPORT_CALLBACK_MISSING_FLAG|experimental-vm-modules/i[39m[33m.[39mtest(msg)) {
+     [90m 242 |[39m         [90m// eslint-disable-next-line no-console[39m
+    [31m[1m>[22m[39m[90m 243 |[39m         console[33m.[39mwarn(
+     [90m     |[39m                 [31m[1m^[22m[39m
+     [90m 244 |[39m           [32m`\n[result-aggregator-fanout.integration] SKIPPING — the AWS SDK needs `[39m [33m+[39m
+     [90m 245 |[39m             [32m`--experimental-vm-modules inside jest's VM. RE-RUN WITH:\n`[39m [33m+[39m
+     [90m 246 |[39m             [32m`    NODE_OPTIONS=--experimental-vm-modules LOG_LEVEL=silent npx jest `[39m [33m+[39m[0m
+
+      at Object.<anonymous> (src/lambda/result-aggregator-fanout.integration.spec.ts:243:17)
+
+    console.warn
+      [A] skipped — engines down
+
+    [0m [90m 322 |[39m   it([32m'A: cold fan-out enqueues exactly 3 identity-only child fetch messages (live SQS)'[39m[33m,[39m [36masync[39m () [33m=>[39m {
+     [90m 323 |[39m     [36mif[39m ([33m![39menginesUp) {
+    [31m[1m>[22m[39m[90m 324 |[39m       console[33m.[39mwarn([32m'[A] skipped — engines down'[39m)[33m;[39m
+     [90m     |[39m               [31m[1m^[22m[39m
+     [90m 325 |[39m       [36mreturn[39m[33m;[39m
+     [90m 326 |[39m     }
+     [90m 327 |[39m     [36mconst[39m result [33m=[39m {[0m
+
+      at Object.<anonymous> (src/lambda/result-aggregator-fanout.integration.spec.ts:324:15)
+
+    console.warn
+      [B] skipped — engines down
+
+    [0m [90m 373 |[39m   it([32m'B: a warm v10 NV# row skips that node; a v9 row does NOT (live DDB)'[39m[33m,[39m [36masync[39m () [33m=>[39m {
+     [90m 374 |[39m     [36mif[39m ([33m![39menginesUp) {
+    [31m[1m>[22m[39m[90m 375 |[39m       console[33m.[39mwarn([32m'[B] skipped — engines down'[39m)[33m;[39m
+     [90m     |[39m               [31m[1m^[22m[39m
+     [90m 376 |[39m       [36mreturn[39m[33m;[39m
+     [90m 377 |[39m     }
+     [90m 378 |[39m     [90m// Pre-seed: b@2.0.0 warm at v10 (with coverage, future expiry) → must SKIP.[39m[0m
+
+      at Object.<anonymous> (src/lambda/result-aggregator-fanout.integration.spec.ts:375:15)
+
+    console.warn
+      [C] skipped — engines down
+
+    [0m [90m 409 |[39m   it([32m'C: parentDepth==MAX_DEPTH => ZERO sends; parentDepth==MAX_DEPTH-1 => children at childDepth==MAX_DEPTH (live DDB marker)'[39m[33m,[39m [36masync[39m () [33m=>[39m {
+     [90m 410 |[39m     [36mif[39m ([33m![39menginesUp) {
+    [31m[1m>[22m[39m[90m 411 |[39m       console[33m.[39mwarn([32m'[C] skipped — engines down'[39m)[33m;[39m
+     [90m     |[39m               [31m[1m^[22m[39m
+     [90m 412 |[39m       [36mreturn[39m[33m;[39m
+     [90m 413 |[39m     }
+     [90m 414 |[39m     [36mconst[39m result [33m=[39m {[0m
+
+      at Object.<anonymous> (src/lambda/result-aggregator-fanout.integration.spec.ts:411:15)
+
+    console.warn
+      [D] skipped — engines down
+
+    [0m [90m 455 |[39m   it([32m'D: writeLineageMarker → readLineageDepth round-trips depth 2; absent key => 0; marker carries ttl/expiresAt (live DDB)'[39m[33m,[39m [36masync[39m () [33m=>[39m {
+     [90m 456 |[39m     [36mif[39m ([33m![39menginesUp) {
+    [31m[1m>[22m[39m[90m 457 |[39m       console[33m.[39mwarn([32m'[D] skipped — engines down'[39m)[33m;[39m
+     [90m     |[39m               [31m[1m^[22m[39m
+     [90m 458 |[39m       [36mreturn[39m[33m;[39m
+     [90m 459 |[39m     }
+     [90m 460 |[39m     [36mawait[39m writeLineageMarker(ddb[33m,[39m [33mCACHE_TABLE[39m[33m,[39m [32m'npm'[39m[33m,[39m [32m'round-trip-pkg'[39m[33m,[39m [32m'5.5.5'[39m[33m,[39m [35m2[39m[33m,[39m [32m'npm:round-trip-pkg@5.5.5'[39m)[33m;[39m[0m
+
+      at Object.<anonymous> (src/lambda/result-aggregator-fanout.integration.spec.ts:457:15)
+
+    console.warn
+      [E] skipped — engines down
+
+    [0m [90m 489 |[39m   it([32m'E: with INTEL_SUBDEP_FANOUT_ENABLED unset, the REAL handler sends ZERO artifact-fetch messages (live handler + DDB + SQS)'[39m[33m,[39m [36masync[39m () [33m=>[39m {
+     [90m 490 |[39m     [36mif[39m ([33m![39menginesUp) {
+    [31m[1m>[22m[39m[90m 491 |[39m       console[33m.[39mwarn([32m'[E] skipped — engines down'[39m)[33m;[39m
+     [90m     |[39m               [31m[1m^[22m[39m
+     [90m 492 |[39m       [36mreturn[39m[33m;[39m
+     [90m 493 |[39m     }
+     [90m 494 |[39m     [90m// Re-import the handler with the flag UNSET so the module-load gate is OFF.[39m[0m
+
+      at Object.<anonymous> (src/lambda/result-aggregator-fanout.integration.spec.ts:491:15)
+
+PASS src/runtime/write-current-verdict.spec.ts
+PASS src/followers/adapters/backend-demand-source.spec.ts
+PASS src/lambda/verdict-writer-handler.spec.ts
+{"level":30,"time":"2026-09-05T22:07:55.575Z","pid":10300,"hostname":"CND34521VN","name":"lambda-verdict-writer","sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","egPg":"1#1","verdict":"ALLOW","riskScore":15,"seq":1788646075574,"msg":"verdict-of-record written (single CURRENT pointer + per-generation row)"}
+{"level":40,"time":"2026-09-05T22:07:55.619Z","pid":10300,"hostname":"CND34521VN","name":"lambda-verdict-writer","messageType":"wrong-type.v1","msg":"unexpected verdict message type, skipping"}
+{"level":30,"time":"2026-09-05T22:07:55.636Z","pid":10300,"hostname":"CND34521VN","name":"lambda-verdict-writer","sha256":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","s3Key":"verdicts/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/1/1/snapshot.json","msg":"verdict snapshot written to S3"}
+{"level":50,"time":"2026-09-05T22:07:55.658Z","pid":10300,"hostname":"CND34521VN","name":"lambda-verdict-writer","error":"DDB write failed","sha256":"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc","msg":"verdict write failed"}
+{"level":30,"time":"2026-09-05T22:07:55.637Z","pid":10300,"hostname":"CND34521VN","name":"lambda-verdict-writer","sha256":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","egPg":"1#1","verdict":"BLOCK","riskScore":85,"seq":1788646075636,"msg":"verdict-of-record written (single CURRENT pointer + per-generation row)"}
+PASS src/advisory/bumblebee-threat-intel-client.spec.ts
+PASS src/routing/os-target-classifier.mac.spec.ts
+PASS src/contracts/shared-contracts-parity.spec.ts
+PASS src/contracts/intel-cache-precheck.spec.ts
+{"level":40,"time":"2026-09-05T22:07:56.122Z","pid":412,"hostname":"CND34521VN","name":"intel-cache-precheck","eco":"npm","name":"a","version":"1.0.0","err":"write failed","msg":"lineage marker write failed (best-effort; fetch proceeds)"}
+PASS src/routing/build-os-classifier-input.spec.ts
+PASS packages/shared-contracts/src/package-intelligence/shared-contracts.spec.ts
+PASS src/lookup/verdict-lookup.packaging-only-change.spec.ts
+PASS src/lambda/hotset-seeder.spec.ts
+PASS src/followers/go-follower.spec.ts
+PASS src/pipeline/fetch/content-hash.path-collision.spec.ts
+{"level":40,"time":"2026-09-05T22:07:57.615Z","pid":6708,"hostname":"CND34521VN","name":"content-hash","fileCount":2,"hashedPaths":1,"collidingPaths":["lib/index.js"],"treeFingerprint":"cd22f563632dc0eb0c60902907ce87ef654a69d61a6cd679e03c2b0b67dee7fe","msg":"path collision — the fingerprint does not cover every extracted file"}
+{"level":40,"time":"2026-09-05T22:07:57.636Z","pid":6708,"hostname":"CND34521VN","name":"content-hash","fileCount":2,"hashedPaths":1,"collidingPaths":["lib/index.js"],"treeFingerprint":"cd22f563632dc0eb0c60902907ce87ef654a69d61a6cd679e03c2b0b67dee7fe","msg":"path collision — the fingerprint does not cover every extracted file"}
+{"level":40,"time":"2026-09-05T22:07:57.639Z","pid":6708,"hostname":"CND34521VN","name":"content-hash","fileCount":3,"hashedPaths":2,"collidingPaths":["a/b.js"],"treeFingerprint":"c5f7a6ff6b8c57a5818274e4c66495803d9bef4fdb9eee64963cfe4556bd0225","msg":"path collision — the fingerprint does not cover every extracted file"}
+{"level":40,"time":"2026-09-05T22:07:57.654Z","pid":6708,"hostname":"CND34521VN","name":"content-hash","fileCount":3,"hashedPaths":1,"collidingPaths":["x.js"],"treeFingerprint":"6b1654b8c959c8465a2f5b43e0c38c6cf0657a3512451cb34a67fc6bc1b74a9d","msg":"path collision — the fingerprint does not cover every extracted file"}
+PASS src/followers/npm-follower.spec.ts
+PASS src/pipeline/hotset/context-builder-hotset.spec.ts
+PASS src/lookup/verdict-lookup.spec.ts
+PASS src/pipeline/hotset/flood-throttle.spec.ts
+{"level":30,"time":"2026-09-05T22:07:58.578Z","pid":10300,"hostname":"CND34521VN","name":"flood-throttle","config":{"publisherBurstLimit":10,"scopeBurstLimit":100,"windowMs":3600000,"campaignClusterLimit":20,"campaignSimilarityThreshold":0.85},"msg":"throttle config updated"}
+PASS src/operations/alarms.spec.ts
+PASS src/advisory/cache-nv-keys.test.ts
+PASS src/operations/slo.spec.ts
+PASS packages/shared-contracts/src/package-intelligence/artifact-class.spec.ts
+PASS src/runtime/write-current-verdict.integration.spec.ts
+PASS src/pipeline/escalation/context-builder.spec.ts
+PASS src/runtime/intel-dynamic-adapter.spec.ts
+PASS src/pipeline/fetch/integrity-threat-state.spec.ts
+{"level":30,"time":"2026-09-05T22:08:00.770Z","pid":6708,"hostname":"CND34521VN","name":"budget-manager","config":{"totalCapacity":200,"shares":{"interactive":50,"background-high":25,"background-normal":15,"reconciliation":10},"borrowFraction":0.5},"msg":"budget config updated"}
+PASS src/pipeline/hotset/budget-manager.spec.ts
+PASS src/lambda/deps-dev-dependents.spec.ts
+PASS src/runtime/intel-result-writer.spec.ts
+{"level":40,"time":"2026-09-05T22:08:00.790Z","pid":6708,"hostname":"CND34521VN","name":"budget-manager","shares":{"interactive":60,"background-high":25,"background-normal":15,"reconciliation":10},"sum":110,"msg":"budget shares do not sum to 100 — rejecting update"}
+{"level":30,"time":"2026-09-05T22:08:00.791Z","pid":6708,"hostname":"CND34521VN","name":"budget-manager","config":{"totalCapacity":100,"shares":{"interactive":40,"background-high":30,"background-normal":20,"reconciliation":10},"borrowFraction":0.5},"msg":"budget config updated"}
+{"level":30,"time":"2026-09-05T22:08:00.791Z","pid":6708,"hostname":"CND34521VN","name":"budget-manager","config":{"totalCapacity":200,"shares":{"interactive":50,"background-high":25,"background-normal":15,"reconciliation":10},"borrowFraction":1},"msg":"budget config updated"}
+PASS src/pipeline/escalation/escalation-scoring.spec.ts
+{"level":30,"time":"2026-09-05T22:08:01.720Z","pid":6708,"hostname":"CND34521VN","name":"lambda-hotset","processed":1,"failed":0,"msg":"batch completed"}
+PASS src/advisory/cve-alert-publisher.spec.ts
+PASS src/lambda/hotset-handler.spec.ts
+{"level":30,"time":"2026-09-05T22:08:01.863Z","pid":6708,"hostname":"CND34521VN","name":"lambda-hotset","hotsetKey":"npm#react","tier":"top-1000","downloads":250000,"msg":"popularity updated"}
+{"level":30,"time":"2026-09-05T22:08:01.878Z","pid":6708,"hostname":"CND34521VN","name":"lambda-hotset","processed":1,"failed":0,"msg":"batch completed"}
+PASS src/advisory/vuln-applicability.test.ts
+PASS src/lambda/os-sandbox-route.spec.ts
+PASS packages/shared-contracts/src/package-intelligence/queue-messages.spec.ts
+PASS src/common/observation-emitter.spec.ts
+PASS src/lambda/sandbox-verdict-reconciliation.spec.ts
+PASS src/common/cursor-store.spec.ts
+PASS src/operations/metrics.service.spec.ts
+PASS src/routing/__tests__/os-target-classifier.test.ts
+PASS src/operations/runbooks.spec.ts
+PASS src/operations/dashboards.spec.ts
+FAIL src/followers/adapters/__tests__/discovery-clients.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/followers/adapters/__tests__/skills-sh-installs.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/followers/adapters/__tests__/mcp-registry-client.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/followers/adapters/__tests__/plugin-marketplace-client.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/followers/adapters/__tests__/github-repo-clients.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/followers/adapters/__tests__/glama-registry-client.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/followers/adapters/__tests__/clawhub-client.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/followers/adapters/__tests__/github-stars-client.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+
+<--- Last few GCs --->
+
+[6708:000001DC317F6000]    94922 ms: Scavenge 455.1 (523.9) -> 405.1 (524.6) MB, pooled: 0.0 MB, 33.59 / 1.98 ms (average mu = 0.989, current mu = 0.980) task; 
+[6708:000001DC317F6000]    99329 ms: Scavenge 454.4 (526.8) -> 416.0 (538.3) MB, pooled: 0.0 MB, 260.38 / 3.67 ms (average mu = 0.989, current mu = 0.980) task; 
+[6708:000001DC317F6000]   107352 ms: Scavenge 477.3 (545.9) -> 431.5 (552.8) MB, pooled: 0.0 MB, 237.94 / 0.65 ms (average mu = 0.989, current mu = 0.980) task; 
+
+FATAL ERROR: Zone Allocation failed - process out of memory
+----- Native stack trace -----
+
+FAIL src/workers/source-adapters/git-source.real-git.spec.ts
+  ● Test suite failed to run
+
+    A jest worker process (pid=6708) was terminated by another process: signal=SIGTERM, exitCode=null. Operating system logs may contain more information on why this occurred.
+
+      at ChildProcessWorker._onExit (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-worker/build/workers/ChildProcessWorker.js:370:23)
+
+FAIL src/workers/source-adapters/source-adapters.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/source-adapters/source-adapters.spec.ts[0m:[93m422[0m:[93m55[0m - [91merror[0m[90m TS2694: [0mNamespace '"C:/Users/Owner/Documents/Ceragon/Ceragon-Intelligence/packages/shared-contracts/dist/index"' has no exported member 'ArtifactSourceRef'.
+
+    [7m422[0m     }) as Extract<import('@ceragon/shared-contracts').ArtifactSourceRef, { kind: 'archive' }>;
+    [7m   [0m [91m                                                      ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/source-adapters/source-adapters.spec.ts[0m:[93m562[0m:[93m43[0m - [91merror[0m[90m TS2694: [0mNamespace '"C:/Users/Owner/Documents/Ceragon/Ceragon-Intelligence/packages/shared-contracts/dist/index"' has no exported member 'ArtifactSourceRef'.
+
+    [7m562[0m       import('@ceragon/shared-contracts').ArtifactSourceRef,
+    [7m   [0m [91m                                          ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/reconcile/rescan-planner.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+PASS src/workers/source-adapters/git-source.binary-fidelity.spec.ts (43.926 s)
+FAIL src/pipeline/reconcile/reconciliation-runner.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/reconcile/cursor-health-monitor.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/reconcile/gap-detector.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/hotset/hotset-priority.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/hotset/customer-manifest-tracker.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/enrichment/publisher-profile.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/enrichment/provenance-checker.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/fetch/pipeline-fetch.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/pipeline/fetch/metadata-extractor.service.ts[0m:[93m9[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m9[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/source-adapters/git-source.blobless-strategy.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/source-adapters/git-source.ts[0m:[93m10[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m10[0m import type { ArtifactSourceRef } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/escalation/force-routing-policy.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/pipeline/escalation/force-routing-policy.ts[0m:[93m11[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isPackageEcosystem'.
+
+    [7m11[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/source-adapters/git-source.content-identity.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/source-adapters/git-source.ts[0m:[93m10[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m10[0m import type { ArtifactSourceRef } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/vscode-marketplace-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/__tests__/vscode-marketplace-follower.spec.ts[0m:[93m113[0m:[93m23[0m - [91merror[0m[90m TS2551: [0mProperty 'sourceRef' does not exist on type 'ReleaseObservationMessage'. Did you mean 'source'?
+
+    [7m113[0m     expect(emitted[0].sourceRef).toEqual({
+    [7m   [0m [91m                      ~~~~~~~~~[0m
+
+      [96m../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/packages/shared-contracts/dist/package-intelligence/queue-messages.d.ts[0m:[93m6[0m:[93m5[0m
+        [7m6[0m     source: string;
+        [7m [0m [96m    ~~~~~~[0m
+        'source' is declared here.
+
+FAIL src/followers/__tests__/sighting-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/pipeline/escalation/escalation-router.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/plugin-marketplace-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/__tests__/plugin-marketplace-follower.spec.ts[0m:[93m137[0m:[93m29[0m - [91merror[0m[90m TS2367: [0mThis comparison appears to be unintentional because the types 'Ecosystem' and '"plugin"' have no overlap.
+
+    [7m137[0m   return rows.filter((o) => o.ecosystem === 'plugin');
+    [7m   [0m [91m                            ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/plugin-marketplace-follower.spec.ts[0m:[93m165[0m:[93m14[0m - [91merror[0m[90m TS2551: [0mProperty 'sourceRef' does not exist on type 'ReleaseObservationMessage'. Did you mean 'source'?
+
+    [7m165[0m     expect(o.sourceRef).toEqual({
+    [7m   [0m [91m             ~~~~~~~~~[0m
+
+      [96m../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/packages/shared-contracts/dist/package-intelligence/queue-messages.d.ts[0m:[93m6[0m:[93m5[0m
+        [7m6[0m     source: string;
+        [7m [0m [96m    ~~~~~~[0m
+        'source' is declared here.
+    [96msrc/followers/__tests__/plugin-marketplace-follower.spec.ts[0m:[93m256[0m:[93m56[0m - [91merror[0m[90m TS2367: [0mThis comparison appears to be unintentional because the types 'Ecosystem' and '"agent-skill"' have no overlap.
+
+    [7m256[0m     const skills = (await runFollower()).filter((o) => o.ecosystem === 'agent-skill');
+    [7m   [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/plugin-marketplace-follower.spec.ts[0m:[93m262[0m:[93m18[0m - [91merror[0m[90m TS2551: [0mProperty 'sourceRef' does not exist on type 'ReleaseObservationMessage'. Did you mean 'source'?
+
+    [7m262[0m     expect(skill.sourceRef).toEqual({
+    [7m   [0m [91m                 ~~~~~~~~~[0m
+
+      [96m../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/packages/shared-contracts/dist/package-intelligence/queue-messages.d.ts[0m:[93m6[0m:[93m5[0m
+        [7m6[0m     source: string;
+        [7m [0m [96m    ~~~~~~[0m
+        'source' is declared here.
+    [96msrc/followers/__tests__/plugin-marketplace-follower.spec.ts[0m:[93m274[0m:[93m18[0m - [91merror[0m[90m TS2551: [0mProperty 'sourceRef' does not exist on type 'ReleaseObservationMessage'. Did you mean 'source'?
+
+    [7m274[0m     expect(skill.sourceRef).toEqual({
+    [7m   [0m [91m                 ~~~~~~~~~[0m
+
+      [96m../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/packages/shared-contracts/dist/package-intelligence/queue-messages.d.ts[0m:[93m6[0m:[93m5[0m
+        [7m6[0m     source: string;
+        [7m [0m [96m    ~~~~~~[0m
+        'source' is declared here.
+    [96msrc/followers/__tests__/plugin-marketplace-follower.spec.ts[0m:[93m283[0m:[93m56[0m - [91merror[0m[90m TS2367: [0mThis comparison appears to be unintentional because the types 'Ecosystem' and '"agent-skill"' have no overlap.
+
+    [7m283[0m     const skills = (await runFollower()).filter((o) => o.ecosystem === 'agent-skill');
+    [7m   [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/plugin-marketplace-follower.spec.ts[0m:[93m292[0m:[93m56[0m - [91merror[0m[90m TS2367: [0mThis comparison appears to be unintentional because the types 'Ecosystem' and '"agent-skill"' have no overlap.
+
+    [7m292[0m     const skills = (await runFollower()).filter((o) => o.ecosystem === 'agent-skill');
+    [7m   [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/plugin-marketplace-follower.spec.ts[0m:[93m298[0m:[93m56[0m - [91merror[0m[90m TS2367: [0mThis comparison appears to be unintentional because the types 'Ecosystem' and '"agent-skill"' have no overlap.
+
+    [7m298[0m     const skills = (await runFollower()).filter((o) => o.ecosystem === 'agent-skill');
+    [7m   [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/mcp-registry-follower.hot-set.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/discovery-observation.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/mcp-registry-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/__tests__/mcp-registry-follower.spec.ts[0m:[93m113[0m:[93m23[0m - [91merror[0m[90m TS2551: [0mProperty 'sourceRef' does not exist on type 'ReleaseObservationMessage'. Did you mean 'source'?
+
+    [7m113[0m     expect(emitted[0].sourceRef).toEqual({
+    [7m   [0m [91m                      ~~~~~~~~~[0m
+
+      [96m../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/packages/shared-contracts/dist/package-intelligence/queue-messages.d.ts[0m:[93m6[0m:[93m5[0m
+        [7m6[0m     source: string;
+        [7m [0m [96m    ~~~~~~[0m
+        'source' is declared here.
+    [96msrc/followers/__tests__/mcp-registry-follower.spec.ts[0m:[93m123[0m:[93m23[0m - [91merror[0m[90m TS2551: [0mProperty 'sourceRef' does not exist on type 'ReleaseObservationMessage'. Did you mean 'source'?
+
+    [7m123[0m     expect(emitted[0].sourceRef).toEqual({
+    [7m   [0m [91m                      ~~~~~~~~~[0m
+
+      [96m../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/packages/shared-contracts/dist/package-intelligence/queue-messages.d.ts[0m:[93m6[0m:[93m5[0m
+        [7m6[0m     source: string;
+        [7m [0m [96m    ~~~~~~[0m
+        'source' is declared here.
+
+FAIL src/followers/__tests__/discovery-enablement.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-enablement.ts[0m:[93m37[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m37[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/github-repo-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/__tests__/github-repo-follower.spec.ts[0m:[93m238[0m:[93m30[0m - [91merror[0m[90m TS2367: [0mThis comparison appears to be unintentional because the types 'Ecosystem' and '"agent-skill"' have no overlap.
+
+    [7m238[0m     expect(msgs.every((m) => m.ecosystem === 'agent-skill')).toBe(true);
+    [7m   [0m [91m                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/github-repo-follower.spec.ts[0m:[93m612[0m:[93m44[0m - [91merror[0m[90m TS2367: [0mThis comparison appears to be unintentional because the types 'Ecosystem' and '"agent-skill"' have no overlap.
+
+    [7m612[0m     const skills = emitted().filter((m) => m.ecosystem === 'agent-skill');
+    [7m   [0m [91m                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/github-repo-follower.spec.ts[0m:[93m615[0m:[93m27[0m - [91merror[0m[90m TS2339: [0mProperty 'externalSecuritySignals' does not exist on type '{ projectSerial?: number | undefined; customerRelevant?: boolean | undefined; hotPackage?: boolean | undefined; upstreamDigestType?: string | undefined; upstreamDigestValue?: string | undefined; ... 16 more ...; entryOrShapeChanged?: boolean | undefined; }'.
+
+    [7m615[0m     expect(enriched.hints.externalSecuritySignals).toEqual([
+    [7m   [0m [91m                          ~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/github-repo-follower.spec.ts[0m:[93m618[0m:[93m29[0m - [91merror[0m[90m TS2339: [0mProperty 'externalSecuritySignals' does not exist on type '{ projectSerial?: number | undefined; customerRelevant?: boolean | undefined; hotPackage?: boolean | undefined; upstreamDigestType?: string | undefined; upstreamDigestValue?: string | undefined; ... 16 more ...; entryOrShapeChanged?: boolean | undefined; }'.
+
+    [7m618[0m     expect(unenriched.hints.externalSecuritySignals).toBeUndefined();
+    [7m   [0m [91m                            ~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/github-repo-follower.spec.ts[0m:[93m635[0m:[93m22[0m - [91merror[0m[90m TS2339: [0mProperty 'externalSecuritySignals' does not exist on type '{ projectSerial?: number | undefined; customerRelevant?: boolean | undefined; hotPackage?: boolean | undefined; upstreamDigestType?: string | undefined; upstreamDigestValue?: string | undefined; ... 16 more ...; entryOrShapeChanged?: boolean | undefined; }'.
+
+    [7m635[0m       expect(m.hints.externalSecuritySignals).toBeUndefined();
+    [7m   [0m [91m                     ~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/clawhub-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/__tests__/clawhub-follower.spec.ts[0m:[93m173[0m:[93m20[0m - [91merror[0m[90m TS2551: [0mProperty 'sourceRef' does not exist on type 'ReleaseObservationMessage'. Did you mean 'source'?
+
+    [7m173[0m     expect(msgs[0].sourceRef).toEqual({
+    [7m   [0m [91m                   ~~~~~~~~~[0m
+
+      [96m../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/packages/shared-contracts/dist/package-intelligence/queue-messages.d.ts[0m:[93m6[0m:[93m5[0m
+        [7m6[0m     source: string;
+        [7m [0m [96m    ~~~~~~[0m
+        'source' is declared here.
+    [96msrc/followers/__tests__/clawhub-follower.spec.ts[0m:[93m361[0m:[93m22[0m - [91merror[0m[90m TS2339: [0mProperty 'externalSecuritySignals' does not exist on type '{ projectSerial?: number | undefined; customerRelevant?: boolean | undefined; hotPackage?: boolean | undefined; upstreamDigestType?: string | undefined; upstreamDigestValue?: string | undefined; ... 16 more ...; entryOrShapeChanged?: boolean | undefined; }'.
+
+    [7m361[0m     expect(msg.hints.externalSecuritySignals).toBeUndefined();
+    [7m   [0m [91m                     ~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/clawhub-follower.spec.ts[0m:[93m398[0m:[93m48[0m - [91merror[0m[90m TS2339: [0mProperty 'externalSecuritySignals' does not exist on type '{ projectSerial?: number | undefined; customerRelevant?: boolean | undefined; hotPackage?: boolean | undefined; upstreamDigestType?: string | undefined; upstreamDigestValue?: string | undefined; ... 16 more ...; entryOrShapeChanged?: boolean | undefined; }'.
+
+    [7m398[0m     const signals = emittedMessages()[0].hints.externalSecuritySignals!;
+    [7m   [0m [91m                                               ~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/clawhub-follower.spec.ts[0m:[93m454[0m:[93m22[0m - [91merror[0m[90m TS2339: [0mProperty 'externalSecuritySignals' does not exist on type '{ projectSerial?: number | undefined; customerRelevant?: boolean | undefined; hotPackage?: boolean | undefined; upstreamDigestType?: string | undefined; upstreamDigestValue?: string | undefined; ... 16 more ...; entryOrShapeChanged?: boolean | undefined; }'.
+
+    [7m454[0m     expect(msg.hints.externalSecuritySignals).toBeUndefined();
+    [7m   [0m [91m                     ~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/clawhub-follower.spec.ts[0m:[93m474[0m:[93m39[0m - [91merror[0m[90m TS2339: [0mProperty 'externalSecuritySignals' does not exist on type '{ projectSerial?: number | undefined; customerRelevant?: boolean | undefined; hotPackage?: boolean | undefined; upstreamDigestType?: string | undefined; upstreamDigestValue?: string | undefined; ... 16 more ...; entryOrShapeChanged?: boolean | undefined; }'.
+
+    [7m474[0m     expect(emittedMessages()[0].hints.externalSecuritySignals).toHaveLength(1);
+    [7m   [0m [91m                                      ~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/clawhub-follower.spec.ts[0m:[93m491[0m:[93m39[0m - [91merror[0m[90m TS2339: [0mProperty 'externalSecuritySignals' does not exist on type '{ projectSerial?: number | undefined; customerRelevant?: boolean | undefined; hotPackage?: boolean | undefined; upstreamDigestType?: string | undefined; upstreamDigestValue?: string | undefined; ... 16 more ...; entryOrShapeChanged?: boolean | undefined; }'.
+
+    [7m491[0m     expect(emittedMessages()[0].hints.externalSecuritySignals).toHaveLength(1);
+    [7m   [0m [91m                                      ~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/runtime/wave5-cache-digest-coalescing.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/runtime/wave5-cache-digest-coalescing.spec.ts[0m:[93m4[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'coalesceArtifactCacheDigest'.
+
+    [7m4[0m   coalesceArtifactCacheDigest,
+    [7m [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/runtime/intel-static-adapter.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/runtime/release-observation-router.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/runtime/release-observation-router.ts[0m:[93m9[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isPackageEcosystem'.
+
+    [7m9[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/runtime/release-observation-router.ts[0m:[93m10[0m:[93m15[0m - [91merror[0m[90m TS2724: [0m'"@ceragon/shared-contracts"' has no exported member named 'ArtifactSourceFetchMessage'. Did you mean 'ArtifactFetchMessage'?
+
+    [7m10[0m import type { ArtifactSourceFetchMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/runtime/release-observation-router.ts[0m:[93m148[0m:[93m35[0m - [91merror[0m[90m TS2551: [0mProperty 'sourceRef' does not exist on type 'ReleaseObservationMessage'. Did you mean 'source'?
+
+    [7m148[0m     const sourceRef = observation.sourceRef!;
+    [7m   [0m [91m                                  ~~~~~~~~~[0m
+
+      [96m../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/packages/shared-contracts/dist/package-intelligence/queue-messages.d.ts[0m:[93m6[0m:[93m5[0m
+        [7m6[0m     source: string;
+        [7m [0m [96m    ~~~~~~[0m
+        'source' is declared here.
+    [96msrc/runtime/release-observation-router.ts[0m:[93m166[0m:[93m47[0m - [91merror[0m[90m TS2339: [0mProperty 'externalSecuritySignals' does not exist on type '{ projectSerial?: number | undefined; customerRelevant?: boolean | undefined; hotPackage?: boolean | undefined; upstreamDigestType?: string | undefined; upstreamDigestValue?: string | undefined; ... 16 more ...; entryOrShapeChanged?: boolean | undefined; }'.
+
+    [7m166[0m     const externalSignals = observation.hints.externalSecuritySignals;
+    [7m   [0m [91m                                              ~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/runtime/multi-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-enablement.ts[0m:[93m37[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m37[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/runtime/ai-artifact-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/workers/artifact-fetcher.packaging-only-change.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m17[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isPackageEcosystem'.
+
+    [7m17[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m34[0m - [91merror[0m[90m TS2724: [0m'"@ceragon/shared-contracts"' has no exported member named 'ArtifactSourceFetchMessage'. Did you mean 'ArtifactFetchMessage'?
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m62[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                             ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/artifact-fetcher.source-fetch.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m17[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isPackageEcosystem'.
+
+    [7m17[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m34[0m - [91merror[0m[90m TS2724: [0m'"@ceragon/shared-contracts"' has no exported member named 'ArtifactSourceFetchMessage'. Did you mean 'ArtifactFetchMessage'?
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m62[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                             ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/packaging-only-change.e2e.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m17[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isPackageEcosystem'.
+
+    [7m17[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m34[0m - [91merror[0m[90m TS2724: [0m'"@ceragon/shared-contracts"' has no exported member named 'ArtifactSourceFetchMessage'. Did you mean 'ArtifactFetchMessage'?
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m62[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                             ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/popularity-gate.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/popularity-gate.ts[0m:[93m43[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m43[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/artifact-fetcher.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m17[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isPackageEcosystem'.
+
+    [7m17[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m34[0m - [91merror[0m[90m TS2724: [0m'"@ceragon/shared-contracts"' has no exported member named 'ArtifactSourceFetchMessage'. Did you mean 'ArtifactFetchMessage'?
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m62[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                             ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/contracts/translate-dynamic-to-sandbox.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/artifact-fetcher.corrupt-baseline-guard.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m17[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isPackageEcosystem'.
+
+    [7m17[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m34[0m - [91merror[0m[90m TS2724: [0m'"@ceragon/shared-contracts"' has no exported member named 'ArtifactSourceFetchMessage'. Did you mean 'ArtifactFetchMessage'?
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m62[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                             ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/osv-client.querybatch.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/known-malware-index-writer.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/verdict/verdict-tagging.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-sync.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/ecosystem-coverage.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/ecosystem-coverage.test.ts[0m:[93m30[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m30[0m import { ARTIFACT_ECOSYSTEMS, artifactClassOf } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/ecosystem-coverage.test.ts[0m:[93m30[0m:[93m31[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'artifactClassOf'.
+
+    [7m30[0m import { ARTIFACT_ECOSYSTEMS, artifactClassOf } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                              ~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/ecosystem-coverage.test.ts[0m:[93m31[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m31[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/end-to-end.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-overlay-writer.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-overlay-writer.observability.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-cursor-clamp.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-impact-resolver.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-endpoint-verdict-writer.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-cache-sweep.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-ai-artifact-endpoint-coverage.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/discovery-enablement.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-enablement.ts[0m:[93m37[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m37[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+A worker process has failed to exit gracefully and has been force exited. This is likely caused by tests leaking due to improper teardown. Try running with --detectOpenHandles to find leaks. Active timers can also cause this, ensure that .unref() was called on them.
+Summary of all failing tests
+FAIL src/lambda/router-handler.spec.ts
+  ● Test suite failed to run
+
+    A jest worker process (pid=19412) was terminated by another process: signal=SIGTERM, exitCode=null. Operating system logs may contain more information on why this occurred.
+
+      at ChildProcessWorker._onExit (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-worker/build/workers/ChildProcessWorker.js:370:23)
+
+FAIL src/lambda/router-handler.artifact-class.spec.ts (62.815 s)
+  ● router handles non-package artifact classes › routes an mcp server to artifact-fetch, not metadata-only
+
+
+
+
+
+  ● router handles non-package artifact classes › routes an editor extension to artifact-fetch
+
+
+
+
+
+  ● router handles non-package artifact classes › routes an agent skill pinned to an OCI digest to artifact-fetch
+
+
+
+
+
+  ● router handles non-package artifact classes › NEVER silently drops an unknown class — it throws
+
+
+
+
+
+  ● router handles non-package artifact classes › skips a candidate-only sighting WITH a stated reason rather than dropping it
+
+
+
+
+
+  ● router handles non-package artifact classes › skips a non-package artifact whose only route is a bare registry pointer
+
+
+
+
+
+  ● router handles non-package artifact classes › derives the class from ecosystem and ignores the wire-supplied artifactClass
+
+
+
+
+
+  ● router preserves existing package behaviour exactly › still routes a complete registry package to artifact-fetch
+
+
+
+
+
+  ● router preserves existing package behaviour exactly › still skips a yanked package — now with a stated reason
+
+
+
+
+
+  ● router preserves existing package behaviour exactly › still skips a package missing registry coordinates — now with a stated reason
+
+
+
+
+
+  ● handler routes non-package observations end to end › enqueues an artifact-source-fetch message carrying the pinned sourceRef
+
+
+
+
+
+  ● handler routes non-package observations end to end › reports an unknown ecosystem as a batch item failure so it reaches the DLQ
+
+
+
+
+
+  ● handler routes non-package observations end to end › does not divert a non-package artifact to metadata-only under the value gate
+
+
+
+
+
+FAIL src/runtime/intel-result-writer.sandbox-gate.spec.ts (65.307 s)
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES the stale-job payload that caused the incident (no cache row, no verdict)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › still writes the S3 forensics snapshot for a REFUSED detonation (audit trail survives)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › does NOT let a forensics S3 failure block the cache write (S3 is not a prerequisite)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › returns normally on refusal so the caller still acks the SQS message (no DLQ loop)
+
+    expect(received).resolves.toBeUndefined()
+
+    Received promise rejected instead of resolved
+    Rejected to value: {"diagnosticCodes": [2305], "diagnosticText": "[96msrc/runtime/intel-result-writer.ts[0m:[93m34[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '\"@ceragon/shared-contracts\"' has no exported member 'coalesceArtifactCacheDigest'.·
+    [7m34[0m   coalesceArtifactCacheDigest,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    ", "name": "TSError"}
+
+    [0m [90m 169 |[39m
+     [90m 170 |[39m   it([32m'returns normally on refusal so the caller still acks the SQS message (no DLQ loop)'[39m[33m,[39m [36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 171 |[39m     [36mawait[39m expect(
+     [90m     |[39m           [31m[1m^[22m[39m
+     [90m 172 |[39m       run({ riskScore[33m:[39m [35m0[39m[33m,[39m sandboxQuality[33m:[39m [32m'skipped'[39m[33m,[39m sandboxOutcome[33m:[39m [32m'inconclusive'[39m })[33m,[39m
+     [90m 173 |[39m     )[33m.[39mresolves[33m.[39mtoBeUndefined()[33m;[39m
+     [90m 174 |[39m   })[33m;[39m[0m
+
+      at expect (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/expect/build/index.js:113:15)
+      at Object.<anonymous> (src/runtime/intel-result-writer.sandbox-gate.spec.ts:171:11)
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES an ALLOW-band inconclusive detonation with sandboxQuality=skipped and no static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES an ALLOW-band inconclusive detonation with sandboxQuality=failed and no static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES an ALLOW-band inconclusive detonation with sandboxQuality=degraded and no static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES an ALLOW-band inconclusive detonation with sandboxQuality=strace_only and no static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES when the fresh static row carries NO riskScore (fusion did not actually run)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES when the existing static row is STALE-SCHEMA (no fresh base to fuse against)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES the synthetic OS coverage-gap result (os-sandbox-route shape)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › REFUSES a full_telemetry run whose coverage was NOT met
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › WRITES an untrusted detonation that is NOT in the ALLOW band (fail-closed leans to BLOCK)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › WRITES at the ALLOW-band boundary (score 40 is not ALLOW band)
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › WRITES a trustworthy full_telemetry detonation with no static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › WRITES an inconclusive detonation that WAS fused against a fresh static base
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static result, even at riskScore 0 with no prior entry
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static npm result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static pypi result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static cargo result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static go result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static mcp result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static agent-skill result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static plugin result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+  ● intel-result-writer — fail-closed sandbox reconciliation gate (wiring) › ALWAYS writes a static editor-extension result — package AND AI-artifact lanes are unaffected by the gate
+
+
+
+
+
+FAIL src/lambda/result-aggregator-handler.sandbox-gate.spec.ts
+  ● result-aggregator — fail-closed sandbox reconciliation gate (wiring) › an INCONCLUSIVE Windows detonation with no static base writes NO verdict + NO cache row (fail-closed skip)
+
+
+
+
+
+  ● result-aggregator — fail-closed sandbox reconciliation gate (wiring) › a MALICIOUS untrusted Windows detonation with no static base still WRITES a verdict (never suppressed → BLOCK)
+
+
+
+
+
+  ● result-aggregator — fail-closed sandbox reconciliation gate (wiring) › an INCONCLUSIVE detonation fused over a SUSPICIOUS static base writes a verdict that never downgrades
+
+
+
+
+
+FAIL src/lambda/dispatcher-handler.mac-gap.spec.ts
+  ● dispatcher — fail-closed macOS coverage gap › mac + a result-write queue + no Mac sandbox → emits a synthetic coverage-gap result (NOT a Linux detonation)
+
+
+
+
+
+  ● dispatcher — fail-closed macOS coverage gap › mac + NO result-write queue → DROPPED fail-closed (NEVER routed to Linux), acked
+
+
+
+
+
+  ● dispatcher — fail-closed macOS coverage gap › regression: a linux/either dynamic message still routes to the Linux queue
+
+
+
+
+
+  ● dispatcher — fail-closed macOS coverage gap › regression: windows + a Windows queue still routes to the Windows queue
+
+
+
+
+
+FAIL src/lambda/dispatcher-handler.spec.ts
+  ● lambda dispatcher handler › dispatches static analysis messages to the static worker queue
+
+
+
+
+
+  ● lambda dispatcher handler › dispatches dynamic analysis messages to the dynamic worker queue
+
+
+
+
+
+  ● lambda dispatcher handler › routes a windows-classified dynamic job to the Windows queue when configured
+
+
+
+
+
+  ● lambda dispatcher handler › SAFETY: a windows-classified job stays on Linux when the Windows queue is NOT configured
+
+
+
+
+
+  ● lambda dispatcher handler › routes an "either"-classified job to the Linux queue even when Windows is configured
+
+
+
+
+
+  ● lambda dispatcher handler › a message with no osTarget falls back to a thin classify (→ Linux) and never throws
+
+
+
+
+
+FAIL src/lambda/result-aggregator-handler.spec.ts (68.13 s)
+  ● lambda result-aggregator-handler › processes a valid IntelWorkerResult and writes cache + verdict
+
+
+
+
+
+  ● lambda result-aggregator-handler › classifies riskScore >= 70 as MALICIOUS
+
+
+
+
+
+  ● lambda result-aggregator-handler › escalates to dynamic queue when escalateToDynamic is true
+
+
+
+
+
+  ● lambda result-aggregator-handler › reports batch item failure on processing error
+
+
+
+
+
+  ● lambda result-aggregator-handler › writes release baseline for clean static verdicts (score <= 39)
+
+
+
+
+
+  ● lambda result-aggregator-handler › does not write baseline for high-risk verdicts
+
+
+
+
+
+  ● lambda result-aggregator-handler › policyFactsCoverage emit (C7 v10 read-floor interlock) › stamps the cache LATEST row with policyFactsCoverage (terminal-ok static producer)
+
+
+
+
+
+  ● lambda result-aggregator-handler › policyFactsCoverage emit (C7 v10 read-floor interlock) › makes the Intel-written row a FRESH warm hit under the v10 read floor (BACKEND_POLICY_FACTS_READ_V10 on)
+
+
+
+
+
+  ● lambda result-aggregator-handler › policyFactsCoverage emit (C7 v10 read-floor interlock) › propagates policyFacts onto the cache row when the static result carries them
+
+
+
+
+
+  ● lambda result-aggregator-handler › oversized-verdict S3 spill › spills signalSummary to S3 + slims the verdict item when the item exceeds the threshold
+
+
+
+
+
+  ● lambda result-aggregator-handler › oversized-verdict S3 spill › writes a normal-size verdict inline — no spill, no signal-summary S3 write
+
+
+
+
+
+  ● lambda result-aggregator-handler › oversized-verdict S3 spill › surfaces an error (batchItemFailure) when the S3 spill offload fails — never writes an oversized item
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (a) first delivery with a dedup id is processed and writes the verdict
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (b) a redelivery whose prior delivery COMPLETED is SKIPPED — no second verdict/cache write
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (c) a message WITHOUT a dedup id is processed (legacy producer back-compat)
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (d) a DDB error on the dedup pre-check FAILS the record (not silently processed or skipped)
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (e) two DIFFERENT dedup ids both process (distinct logical results)
+
+
+
+
+
+  ● lambda result-aggregator-handler › redelivery dedup on X-Result-Dedup-Id (#38) › (f) a crash mid-processing leaves NO marker, so the redelivery RE-PROCESSES (no permanent drop)
+
+
+
+
+
+  ● lambda result-aggregator-handler › verdict-aware raw-artifact S3 tagging › tags the raw artifact object with the correct key + verdict tag value on a terminal verdict
+
+
+
+
+
+  ● lambda result-aggregator-handler › verdict-aware raw-artifact S3 tagging › maps BLOCK -> block
+
+
+
+
+
+  ● lambda result-aggregator-handler › verdict-aware raw-artifact S3 tagging › maps PROMPT -> prompt
+
+
+
+
+
+  ● lambda result-aggregator-handler › verdict-aware raw-artifact S3 tagging › maps ALLOW -> allow
+
+
+
+
+
+  ● lambda result-aggregator-handler › verdict-aware raw-artifact S3 tagging › swallows a tagging failure — the verdict write still completes (best-effort)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › flag OFF => zero fan-out sends
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › sandbox result => zero fan-out sends
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › empty/absent transitiveInstallSet => zero fan-out sends
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › ARTIFACT_FETCH_QUEUE_URL unset => zero fan-out sends (short-circuit)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › flag ON + 3 cold registry nodes => 3 sends with correct child shape
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › passes the node integrity through as upstreamDigest when present
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › parentDepth >= MAX_DEPTH => zero sends (leaf)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › parentDepth = MAX_DEPTH - 1 => children at childDepth = MAX_DEPTH
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › duplicate node listed twice => exactly one send (dedup Set)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › node equal to root => skipped
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › scope=dev / specifierKind!=registry / resolved=false => skipped
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › 300 nodes with MAX_CHILDREN=250 => exactly 250 sends
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › skips falsy / missing name|version|ecosystem nodes
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › node already cached fresh at the CURRENT schema version (coverage + future expiry) => skipped (no send)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › node cached at v9 => NOT skipped (send)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › current-version row with NO policyFactsCoverage => NOT skipped (coverage interlock)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › NV# GetItem throws => NOT skipped (fail-open-to-enqueue)
+
+
+
+
+
+  ● lambda result-aggregator-handler — sub-dep fan-out (C1) › a fan-out throw does NOT fail the record (non-fatal)
+
+
+
+
+
+FAIL src/runtime/analysis-dispatcher.spec.ts
+  ● Test suite failed to run
+
+    A jest worker process (pid=11568) was terminated by another process: signal=SIGTERM, exitCode=null. Operating system logs may contain more information on why this occurred.
+
+      at ChildProcessWorker._onExit (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-worker/build/workers/ChildProcessWorker.js:370:23)
+
+FAIL src/followers/adapters/__tests__/discovery-clients.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/followers/adapters/__tests__/skills-sh-installs.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/followers/adapters/__tests__/mcp-registry-client.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/followers/adapters/__tests__/plugin-marketplace-client.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/followers/adapters/__tests__/github-repo-clients.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/followers/adapters/__tests__/glama-registry-client.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/followers/adapters/__tests__/clawhub-client.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/followers/adapters/__tests__/github-stars-client.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/workers/source-adapters/git-source.real-git.spec.ts
+  ● Test suite failed to run
+
+    A jest worker process (pid=6708) was terminated by another process: signal=SIGTERM, exitCode=null. Operating system logs may contain more information on why this occurred.
+
+      at ChildProcessWorker._onExit (../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/node_modules/jest-worker/build/workers/ChildProcessWorker.js:370:23)
+
+FAIL src/workers/source-adapters/source-adapters.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/source-adapters/source-adapters.spec.ts[0m:[93m422[0m:[93m55[0m - [91merror[0m[90m TS2694: [0mNamespace '"C:/Users/Owner/Documents/Ceragon/Ceragon-Intelligence/packages/shared-contracts/dist/index"' has no exported member 'ArtifactSourceRef'.
+
+    [7m422[0m     }) as Extract<import('@ceragon/shared-contracts').ArtifactSourceRef, { kind: 'archive' }>;
+    [7m   [0m [91m                                                      ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/source-adapters/source-adapters.spec.ts[0m:[93m562[0m:[93m43[0m - [91merror[0m[90m TS2694: [0mNamespace '"C:/Users/Owner/Documents/Ceragon/Ceragon-Intelligence/packages/shared-contracts/dist/index"' has no exported member 'ArtifactSourceRef'.
+
+    [7m562[0m       import('@ceragon/shared-contracts').ArtifactSourceRef,
+    [7m   [0m [91m                                          ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/reconcile/rescan-planner.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/reconcile/reconciliation-runner.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/reconcile/cursor-health-monitor.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/reconcile/gap-detector.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/hotset/hotset-priority.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/hotset/customer-manifest-tracker.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/enrichment/publisher-profile.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/enrichment/provenance-checker.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/fetch/pipeline-fetch.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/pipeline/fetch/metadata-extractor.service.ts[0m:[93m9[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m9[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/source-adapters/git-source.blobless-strategy.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/source-adapters/git-source.ts[0m:[93m10[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m10[0m import type { ArtifactSourceRef } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/escalation/force-routing-policy.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/pipeline/escalation/force-routing-policy.ts[0m:[93m11[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isPackageEcosystem'.
+
+    [7m11[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/source-adapters/git-source.content-identity.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/source-adapters/git-source.ts[0m:[93m10[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m10[0m import type { ArtifactSourceRef } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/vscode-marketplace-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/__tests__/vscode-marketplace-follower.spec.ts[0m:[93m113[0m:[93m23[0m - [91merror[0m[90m TS2551: [0mProperty 'sourceRef' does not exist on type 'ReleaseObservationMessage'. Did you mean 'source'?
+
+    [7m113[0m     expect(emitted[0].sourceRef).toEqual({
+    [7m   [0m [91m                      ~~~~~~~~~[0m
+
+      [96m../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/packages/shared-contracts/dist/package-intelligence/queue-messages.d.ts[0m:[93m6[0m:[93m5[0m
+        [7m6[0m     source: string;
+        [7m [0m [96m    ~~~~~~[0m
+        'source' is declared here.
+
+FAIL src/followers/__tests__/sighting-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/pipeline/escalation/escalation-router.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/plugin-marketplace-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/__tests__/plugin-marketplace-follower.spec.ts[0m:[93m137[0m:[93m29[0m - [91merror[0m[90m TS2367: [0mThis comparison appears to be unintentional because the types 'Ecosystem' and '"plugin"' have no overlap.
+
+    [7m137[0m   return rows.filter((o) => o.ecosystem === 'plugin');
+    [7m   [0m [91m                            ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/plugin-marketplace-follower.spec.ts[0m:[93m165[0m:[93m14[0m - [91merror[0m[90m TS2551: [0mProperty 'sourceRef' does not exist on type 'ReleaseObservationMessage'. Did you mean 'source'?
+
+    [7m165[0m     expect(o.sourceRef).toEqual({
+    [7m   [0m [91m             ~~~~~~~~~[0m
+
+      [96m../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/packages/shared-contracts/dist/package-intelligence/queue-messages.d.ts[0m:[93m6[0m:[93m5[0m
+        [7m6[0m     source: string;
+        [7m [0m [96m    ~~~~~~[0m
+        'source' is declared here.
+    [96msrc/followers/__tests__/plugin-marketplace-follower.spec.ts[0m:[93m256[0m:[93m56[0m - [91merror[0m[90m TS2367: [0mThis comparison appears to be unintentional because the types 'Ecosystem' and '"agent-skill"' have no overlap.
+
+    [7m256[0m     const skills = (await runFollower()).filter((o) => o.ecosystem === 'agent-skill');
+    [7m   [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/plugin-marketplace-follower.spec.ts[0m:[93m262[0m:[93m18[0m - [91merror[0m[90m TS2551: [0mProperty 'sourceRef' does not exist on type 'ReleaseObservationMessage'. Did you mean 'source'?
+
+    [7m262[0m     expect(skill.sourceRef).toEqual({
+    [7m   [0m [91m                 ~~~~~~~~~[0m
+
+      [96m../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/packages/shared-contracts/dist/package-intelligence/queue-messages.d.ts[0m:[93m6[0m:[93m5[0m
+        [7m6[0m     source: string;
+        [7m [0m [96m    ~~~~~~[0m
+        'source' is declared here.
+    [96msrc/followers/__tests__/plugin-marketplace-follower.spec.ts[0m:[93m274[0m:[93m18[0m - [91merror[0m[90m TS2551: [0mProperty 'sourceRef' does not exist on type 'ReleaseObservationMessage'. Did you mean 'source'?
+
+    [7m274[0m     expect(skill.sourceRef).toEqual({
+    [7m   [0m [91m                 ~~~~~~~~~[0m
+
+      [96m../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/packages/shared-contracts/dist/package-intelligence/queue-messages.d.ts[0m:[93m6[0m:[93m5[0m
+        [7m6[0m     source: string;
+        [7m [0m [96m    ~~~~~~[0m
+        'source' is declared here.
+    [96msrc/followers/__tests__/plugin-marketplace-follower.spec.ts[0m:[93m283[0m:[93m56[0m - [91merror[0m[90m TS2367: [0mThis comparison appears to be unintentional because the types 'Ecosystem' and '"agent-skill"' have no overlap.
+
+    [7m283[0m     const skills = (await runFollower()).filter((o) => o.ecosystem === 'agent-skill');
+    [7m   [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/plugin-marketplace-follower.spec.ts[0m:[93m292[0m:[93m56[0m - [91merror[0m[90m TS2367: [0mThis comparison appears to be unintentional because the types 'Ecosystem' and '"agent-skill"' have no overlap.
+
+    [7m292[0m     const skills = (await runFollower()).filter((o) => o.ecosystem === 'agent-skill');
+    [7m   [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/plugin-marketplace-follower.spec.ts[0m:[93m298[0m:[93m56[0m - [91merror[0m[90m TS2367: [0mThis comparison appears to be unintentional because the types 'Ecosystem' and '"agent-skill"' have no overlap.
+
+    [7m298[0m     const skills = (await runFollower()).filter((o) => o.ecosystem === 'agent-skill');
+    [7m   [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/mcp-registry-follower.hot-set.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/discovery-observation.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/mcp-registry-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/__tests__/mcp-registry-follower.spec.ts[0m:[93m113[0m:[93m23[0m - [91merror[0m[90m TS2551: [0mProperty 'sourceRef' does not exist on type 'ReleaseObservationMessage'. Did you mean 'source'?
+
+    [7m113[0m     expect(emitted[0].sourceRef).toEqual({
+    [7m   [0m [91m                      ~~~~~~~~~[0m
+
+      [96m../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/packages/shared-contracts/dist/package-intelligence/queue-messages.d.ts[0m:[93m6[0m:[93m5[0m
+        [7m6[0m     source: string;
+        [7m [0m [96m    ~~~~~~[0m
+        'source' is declared here.
+    [96msrc/followers/__tests__/mcp-registry-follower.spec.ts[0m:[93m123[0m:[93m23[0m - [91merror[0m[90m TS2551: [0mProperty 'sourceRef' does not exist on type 'ReleaseObservationMessage'. Did you mean 'source'?
+
+    [7m123[0m     expect(emitted[0].sourceRef).toEqual({
+    [7m   [0m [91m                      ~~~~~~~~~[0m
+
+      [96m../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/packages/shared-contracts/dist/package-intelligence/queue-messages.d.ts[0m:[93m6[0m:[93m5[0m
+        [7m6[0m     source: string;
+        [7m [0m [96m    ~~~~~~[0m
+        'source' is declared here.
+
+FAIL src/followers/__tests__/discovery-enablement.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-enablement.ts[0m:[93m37[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m37[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/github-repo-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/__tests__/github-repo-follower.spec.ts[0m:[93m238[0m:[93m30[0m - [91merror[0m[90m TS2367: [0mThis comparison appears to be unintentional because the types 'Ecosystem' and '"agent-skill"' have no overlap.
+
+    [7m238[0m     expect(msgs.every((m) => m.ecosystem === 'agent-skill')).toBe(true);
+    [7m   [0m [91m                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/github-repo-follower.spec.ts[0m:[93m612[0m:[93m44[0m - [91merror[0m[90m TS2367: [0mThis comparison appears to be unintentional because the types 'Ecosystem' and '"agent-skill"' have no overlap.
+
+    [7m612[0m     const skills = emitted().filter((m) => m.ecosystem === 'agent-skill');
+    [7m   [0m [91m                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/github-repo-follower.spec.ts[0m:[93m615[0m:[93m27[0m - [91merror[0m[90m TS2339: [0mProperty 'externalSecuritySignals' does not exist on type '{ projectSerial?: number | undefined; customerRelevant?: boolean | undefined; hotPackage?: boolean | undefined; upstreamDigestType?: string | undefined; upstreamDigestValue?: string | undefined; ... 16 more ...; entryOrShapeChanged?: boolean | undefined; }'.
+
+    [7m615[0m     expect(enriched.hints.externalSecuritySignals).toEqual([
+    [7m   [0m [91m                          ~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/github-repo-follower.spec.ts[0m:[93m618[0m:[93m29[0m - [91merror[0m[90m TS2339: [0mProperty 'externalSecuritySignals' does not exist on type '{ projectSerial?: number | undefined; customerRelevant?: boolean | undefined; hotPackage?: boolean | undefined; upstreamDigestType?: string | undefined; upstreamDigestValue?: string | undefined; ... 16 more ...; entryOrShapeChanged?: boolean | undefined; }'.
+
+    [7m618[0m     expect(unenriched.hints.externalSecuritySignals).toBeUndefined();
+    [7m   [0m [91m                            ~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/github-repo-follower.spec.ts[0m:[93m635[0m:[93m22[0m - [91merror[0m[90m TS2339: [0mProperty 'externalSecuritySignals' does not exist on type '{ projectSerial?: number | undefined; customerRelevant?: boolean | undefined; hotPackage?: boolean | undefined; upstreamDigestType?: string | undefined; upstreamDigestValue?: string | undefined; ... 16 more ...; entryOrShapeChanged?: boolean | undefined; }'.
+
+    [7m635[0m       expect(m.hints.externalSecuritySignals).toBeUndefined();
+    [7m   [0m [91m                     ~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/__tests__/clawhub-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/__tests__/clawhub-follower.spec.ts[0m:[93m173[0m:[93m20[0m - [91merror[0m[90m TS2551: [0mProperty 'sourceRef' does not exist on type 'ReleaseObservationMessage'. Did you mean 'source'?
+
+    [7m173[0m     expect(msgs[0].sourceRef).toEqual({
+    [7m   [0m [91m                   ~~~~~~~~~[0m
+
+      [96m../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/packages/shared-contracts/dist/package-intelligence/queue-messages.d.ts[0m:[93m6[0m:[93m5[0m
+        [7m6[0m     source: string;
+        [7m [0m [96m    ~~~~~~[0m
+        'source' is declared here.
+    [96msrc/followers/__tests__/clawhub-follower.spec.ts[0m:[93m361[0m:[93m22[0m - [91merror[0m[90m TS2339: [0mProperty 'externalSecuritySignals' does not exist on type '{ projectSerial?: number | undefined; customerRelevant?: boolean | undefined; hotPackage?: boolean | undefined; upstreamDigestType?: string | undefined; upstreamDigestValue?: string | undefined; ... 16 more ...; entryOrShapeChanged?: boolean | undefined; }'.
+
+    [7m361[0m     expect(msg.hints.externalSecuritySignals).toBeUndefined();
+    [7m   [0m [91m                     ~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/clawhub-follower.spec.ts[0m:[93m398[0m:[93m48[0m - [91merror[0m[90m TS2339: [0mProperty 'externalSecuritySignals' does not exist on type '{ projectSerial?: number | undefined; customerRelevant?: boolean | undefined; hotPackage?: boolean | undefined; upstreamDigestType?: string | undefined; upstreamDigestValue?: string | undefined; ... 16 more ...; entryOrShapeChanged?: boolean | undefined; }'.
+
+    [7m398[0m     const signals = emittedMessages()[0].hints.externalSecuritySignals!;
+    [7m   [0m [91m                                               ~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/clawhub-follower.spec.ts[0m:[93m454[0m:[93m22[0m - [91merror[0m[90m TS2339: [0mProperty 'externalSecuritySignals' does not exist on type '{ projectSerial?: number | undefined; customerRelevant?: boolean | undefined; hotPackage?: boolean | undefined; upstreamDigestType?: string | undefined; upstreamDigestValue?: string | undefined; ... 16 more ...; entryOrShapeChanged?: boolean | undefined; }'.
+
+    [7m454[0m     expect(msg.hints.externalSecuritySignals).toBeUndefined();
+    [7m   [0m [91m                     ~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/clawhub-follower.spec.ts[0m:[93m474[0m:[93m39[0m - [91merror[0m[90m TS2339: [0mProperty 'externalSecuritySignals' does not exist on type '{ projectSerial?: number | undefined; customerRelevant?: boolean | undefined; hotPackage?: boolean | undefined; upstreamDigestType?: string | undefined; upstreamDigestValue?: string | undefined; ... 16 more ...; entryOrShapeChanged?: boolean | undefined; }'.
+
+    [7m474[0m     expect(emittedMessages()[0].hints.externalSecuritySignals).toHaveLength(1);
+    [7m   [0m [91m                                      ~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/__tests__/clawhub-follower.spec.ts[0m:[93m491[0m:[93m39[0m - [91merror[0m[90m TS2339: [0mProperty 'externalSecuritySignals' does not exist on type '{ projectSerial?: number | undefined; customerRelevant?: boolean | undefined; hotPackage?: boolean | undefined; upstreamDigestType?: string | undefined; upstreamDigestValue?: string | undefined; ... 16 more ...; entryOrShapeChanged?: boolean | undefined; }'.
+
+    [7m491[0m     expect(emittedMessages()[0].hints.externalSecuritySignals).toHaveLength(1);
+    [7m   [0m [91m                                      ~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/runtime/wave5-cache-digest-coalescing.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/runtime/wave5-cache-digest-coalescing.spec.ts[0m:[93m4[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'coalesceArtifactCacheDigest'.
+
+    [7m4[0m   coalesceArtifactCacheDigest,
+    [7m [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/runtime/intel-static-adapter.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/runtime/release-observation-router.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/runtime/release-observation-router.ts[0m:[93m9[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isPackageEcosystem'.
+
+    [7m9[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/runtime/release-observation-router.ts[0m:[93m10[0m:[93m15[0m - [91merror[0m[90m TS2724: [0m'"@ceragon/shared-contracts"' has no exported member named 'ArtifactSourceFetchMessage'. Did you mean 'ArtifactFetchMessage'?
+
+    [7m10[0m import type { ArtifactSourceFetchMessage } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/runtime/release-observation-router.ts[0m:[93m148[0m:[93m35[0m - [91merror[0m[90m TS2551: [0mProperty 'sourceRef' does not exist on type 'ReleaseObservationMessage'. Did you mean 'source'?
+
+    [7m148[0m     const sourceRef = observation.sourceRef!;
+    [7m   [0m [91m                                  ~~~~~~~~~[0m
+
+      [96m../../Users/Owner/Documents/Ceragon/Ceragon-Intelligence/packages/shared-contracts/dist/package-intelligence/queue-messages.d.ts[0m:[93m6[0m:[93m5[0m
+        [7m6[0m     source: string;
+        [7m [0m [96m    ~~~~~~[0m
+        'source' is declared here.
+    [96msrc/runtime/release-observation-router.ts[0m:[93m166[0m:[93m47[0m - [91merror[0m[90m TS2339: [0mProperty 'externalSecuritySignals' does not exist on type '{ projectSerial?: number | undefined; customerRelevant?: boolean | undefined; hotPackage?: boolean | undefined; upstreamDigestType?: string | undefined; upstreamDigestValue?: string | undefined; ... 16 more ...; entryOrShapeChanged?: boolean | undefined; }'.
+
+    [7m166[0m     const externalSignals = observation.hints.externalSecuritySignals;
+    [7m   [0m [91m                                              ~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/runtime/multi-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-enablement.ts[0m:[93m37[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m37[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/runtime/ai-artifact-follower.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-observation.ts[0m:[93m23[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isArtifactEcosystem'.
+
+    [7m23[0m import { isArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m29[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m29[0m import type { ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/followers/discovery-observation.ts[0m:[93m266[0m:[93m5[0m - [91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'sourceRef' does not exist in type 'ReleaseObservationMessage'. Did you mean to write 'source'?
+
+    [7m266[0m     sourceRef: input.sourceRef,
+    [7m   [0m [91m    ~~~~~~~~~[0m
+
+FAIL src/workers/artifact-fetcher.packaging-only-change.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m17[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isPackageEcosystem'.
+
+    [7m17[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m34[0m - [91merror[0m[90m TS2724: [0m'"@ceragon/shared-contracts"' has no exported member named 'ArtifactSourceFetchMessage'. Did you mean 'ArtifactFetchMessage'?
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m62[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                             ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/artifact-fetcher.source-fetch.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m17[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isPackageEcosystem'.
+
+    [7m17[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m34[0m - [91merror[0m[90m TS2724: [0m'"@ceragon/shared-contracts"' has no exported member named 'ArtifactSourceFetchMessage'. Did you mean 'ArtifactFetchMessage'?
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m62[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                             ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/packaging-only-change.e2e.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m17[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isPackageEcosystem'.
+
+    [7m17[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m34[0m - [91merror[0m[90m TS2724: [0m'"@ceragon/shared-contracts"' has no exported member named 'ArtifactSourceFetchMessage'. Did you mean 'ArtifactFetchMessage'?
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m62[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                             ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/popularity-gate.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/popularity-gate.ts[0m:[93m43[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m43[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/artifact-fetcher.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m17[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isPackageEcosystem'.
+
+    [7m17[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m34[0m - [91merror[0m[90m TS2724: [0m'"@ceragon/shared-contracts"' has no exported member named 'ArtifactSourceFetchMessage'. Did you mean 'ArtifactFetchMessage'?
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m62[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                             ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/contracts/translate-dynamic-to-sandbox.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/workers/artifact-fetcher.corrupt-baseline-guard.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m17[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'isPackageEcosystem'.
+
+    [7m17[0m import { isPackageEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m34[0m - [91merror[0m[90m TS2724: [0m'"@ceragon/shared-contracts"' has no exported member named 'ArtifactSourceFetchMessage'. Did you mean 'ArtifactFetchMessage'?
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/workers/artifact-fetcher.ts[0m:[93m18[0m:[93m62[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m18[0m import type { ArtifactEcosystem, ArtifactSourceFetchMessage, ExternalSecuritySignal } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                                                             ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/osv-client.querybatch.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/known-malware-index-writer.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/pipeline/verdict/verdict-tagging.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/contracts/types.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m11[0m   ArtifactEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m12[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'PackageEcosystem'.
+
+    [7m12[0m   PackageEcosystem,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m13[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactClass'.
+
+    [7m13[0m   ArtifactClass,
+    [7m  [0m [91m  ~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactSourceRef'.
+
+    [7m14[0m   ArtifactSourceRef,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ObservationIdentityState'.
+
+    [7m15[0m   ObservationIdentityState,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/contracts/types.ts[0m:[93m36[0m:[93m3[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ExternalSecuritySignal'.
+
+    [7m36[0m   ExternalSecuritySignal,
+    [7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-sync.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/ecosystem-coverage.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/ecosystem-coverage.test.ts[0m:[93m30[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m30[0m import { ARTIFACT_ECOSYSTEMS, artifactClassOf } from '@ceragon/shared-contracts';
+    [7m  [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/ecosystem-coverage.test.ts[0m:[93m30[0m:[93m31[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'artifactClassOf'.
+
+    [7m30[0m import { ARTIFACT_ECOSYSTEMS, artifactClassOf } from '@ceragon/shared-contracts';
+    [7m  [0m [91m                              ~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/ecosystem-coverage.test.ts[0m:[93m31[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m31[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/end-to-end.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-overlay-writer.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-overlay-writer.observability.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-cursor-clamp.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-impact-resolver.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-endpoint-verdict-writer.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-cache-sweep.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/advisory/advisory-ai-artifact-endpoint-coverage.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/discovery-enablement.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-enablement.ts[0m:[93m37[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m37[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+
+Test Suites: 66 failed, 46 passed, 112 total
+Tests:       92 failed, 577 passed, 669 total
+Snapshots:   0 total
+Time:        246.247 s
+Ran all test suites.
+jest_rc=1

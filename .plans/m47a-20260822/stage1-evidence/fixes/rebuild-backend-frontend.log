@@ -1,0 +1,11 @@
+[0s] == Backend: build (/c/cwt/p47-w4b-be @ 6453bc02) ==
+build rc=0
+[63s] == Backend: migrations ==
+migration rc=0
+[107s] == Backend: restart :2353 ==
+[110s]    backend /health http=200
+[110s] == Frontend: build (/c/cwt/p47-final-frontend-20260830 @ 0e8b730e) ==
+build rc=1
+[125s] == Frontend: restart :3201 ==
+[129s]    frontend /login http=200
+[129s] done

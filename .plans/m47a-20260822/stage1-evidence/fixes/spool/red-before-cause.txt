@@ -1,0 +1,9 @@
+--- FAIL: TestSpoolHeldByAnotherProcessIsItsOwnCause (0.01s)
+    evidence_spool_cause_test.go:72: cause = "spool-not-enrolled", want "spool-held-by-another-process" — 'not enrolled' sends an operator to the wrong place
+--- FAIL: TestQuarantinedSpoolIsAuditableAndSaysSo (0.47s)
+    evidence_spool_cause_test.go:124: recovery cause = "", want "spool-corrupt-quarantined"
+--- FAIL: TestSpoolOpenFailureIsNotReportedAsUnenrolled (0.22s)
+    evidence_spool_cause_test.go:195: cause = "spool-not-enrolled", want "spool-open-failed"
+FAIL
+FAIL	github.com/codefense/cli-wrapper/internal/daemon	0.862s
+FAIL

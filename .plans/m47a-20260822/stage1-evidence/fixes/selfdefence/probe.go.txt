@@ -1,0 +1,100 @@
+package main
+
+import (
+	"fmt"
+	"strings"
+
+	"github.com/codefense/cli-wrapper/internal/toolrisk"
+)
+
+func main() {
+	bs := string(rune(92))
+	dq := string(rune(34))
+	rmrf := "rm" + " -rf "
+	scv := "sc" + " "
+	dv := "devoid"
+	pf := "C:" + bs + "Program Files" + bs + "Devoid"
+	pd := "C:" + bs + "ProgramData" + bs + "Devoid"
+	ws := "C:" + bs + "Users" + bs + "Owner" + bs + "Documents" + bs + "Ceragon"
+	cases := []struct{ name, cmd string }{
+		// ---- ATTACK (must fire) ----
+		{"X-sc-delete-daemon", scv + "delete " + dv + "-daemon"},
+		{"X-sc-remote-delete", "sc " + bs + bs + "HOST delete " + dv},
+		{"X-schtasks-delete", "schtasks /Delete /TN " + dq + "Devoid Daemon" + dq + " /F"},
+		{"X-schtasks-end", "schtasks /End /TN " + dq + "Devoid Daemon" + dq},
+		{"X-unregister-task", "Unregister-ScheduledTask -TaskName " + dq + "Devoid Daemon" + dq + " -Confirm:$false"},
+		{"X-disable-task", "Disable-ScheduledTask -TaskName " + dq + "Devoid Daemon" + dq},
+		{"X-schtasks-cera", "schtasks /Delete /TN " + dq + "Cera Daemon" + dq + " /F"},
+		{"X-del-pf-exe", "del /f /q " + dq + pf + bs + dv + ".exe" + dq},
+		{"X-del-env-pf", "del " + dq + "%ProgramFiles%" + bs + "Devoid" + bs + dv + ".exe" + dq},
+		{"X-rd-pf", "rd /s /q " + dq + pf + dq},
+		{"X-rmdir-pd", "rmdir /s /q " + pd},
+		{"X-ri-pd", "ri C:" + bs + "ProgramData" + bs + "devoid -Recurse -Force"},
+		{"X-ps-localappdata", "Remove-Item -Recurse -Force " + dq + "$env:LOCALAPPDATA" + bs + "Devoid" + dq},
+		{"X-userprofile-dotdir", "Remove-Item -Recurse -Force C:" + bs + "Users" + bs + "Owner" + bs + ".devoid"},
+		{"X-rm-dotdevoid-quoted", rmrf + dq + "$HOME/.devoid" + dq},
+		{"X-rm-dotdevoid-braced", rmrf + "${HOME}/.devoid"},
+		{"X-rm-usrlocalbin", rmrf + "/usr/local/bin/devoid"},
+		{"X-rm-varlib", rmrf + "/var/lib/devoid"},
+		{"X-mixed-case", "RM -RF ~/.DEVOID"},
+		{"X-sudo-rm-opt", "sudo " + rmrf + "/opt/devoid"},
+		{"X-chain-sep", "cd /tmp && " + rmrf + "~/.devoid"},
+		{"X-sudo-cli-stop", "sudo " + dv + " daemon stop"},
+		{"X-abs-cli-stop", "/usr/local/bin/" + dv + " daemon stop"},
+		{"X-cli-remove-daemon", dv + " setup remove-daemon"},
+		{"X-cli-cleanup", dv + " setup cleanup"},
+		{"X-cli-unpatch", dv + " setup unpatch-profile"},
+		{"X-cli-exe-stop", dv + ".exe daemon stop"},
+		{"X-nested-sh-c", "sh -c '" + dv + " daemon stop'"},
+		{"X-rm-home-dq", rmrf + dq + "$HOME" + dq},
+		// ---- BENIGN (must NOT fire self-disable/destructive) ----
+		{"N-workspace-del", "del " + ws + bs + "tmp.txt"},
+		{"N-workspace-rm", rmrf + ws + bs + "build"},
+		{"N-nodemodules", "Remove-Item -Recurse -Force node_modules"},
+		{"N-usrlocal-lib", rmrf + "/usr/local/lib/node_modules"},
+		{"N-varlib-docker", rmrf + "/var/lib/docker"},
+		{"N-pf-nodejs", "Remove-Item -Recurse " + dq + "C:" + bs + "Program Files" + bs + "nodejs" + dq},
+		{"N-devoid-frontend", rmrf + "./devoid-frontend"},
+		{"N-opt-devoid-old", rmrf + "/opt/devoid-old"},
+		{"N-cache-pip", rmrf + dq + "$HOME/.cache/pip" + dq},
+		{"N-dist", rmrf + "./dist"},
+		{"N-ps-dist", "Remove-Item ." + bs + "dist -Recurse"},
+		{"N-obj", "del build" + bs + "*.obj"},
+		{"N-sc-query", scv + "query " + dv},
+		{"N-schtasks-query", "schtasks /Query /TN " + dq + "Devoid Daemon" + dq},
+		{"N-taskkill-node", "taskkill /F /IM node.exe"},
+		{"N-status", dv + " status"},
+		{"N-daemon-status", dv + " daemon status"},
+		{"N-daemon-start", dv + " daemon start"},
+		{"N-setup-enroll", dv + " setup enroll"},
+		{"N-commit-mention", "git commit -m " + dq + "docs: explain the " + dv + " daemon stop verb" + dq},
+		{"N-commit-mention2", "git commit -m " + dq + "fix: rm -rf ~/.devoid during uninstall" + dq},
+		{"N-grep-mention", "grep -rn " + dq + dv + " daemon stop" + dq + " internal/"},
+		{"N-rg-mention", "rg --files-with-matches " + dv + "-self-disable"},
+		{"N-ls-progdata", "ls C:" + bs + "ProgramData" + bs + "Devoid"},
+		{"N-cat-devoid-exe", "cat " + pf + bs + dv + ".exe"},
+	}
+	w := 0
+	for _, c := range cases {
+		if len(c.name) > w {
+			w = len(c.name)
+		}
+	}
+	for _, c := range cases {
+		fs := toolrisk.Scan("Bash", map[string]any{"command": c.cmd})
+		var classes []string
+		seen := map[string]bool{}
+		for _, f := range fs {
+			if seen[f.Class] {
+				continue
+			}
+			seen[f.Class] = true
+			classes = append(classes, f.Class)
+		}
+		got := "NONE"
+		if len(classes) > 0 {
+			got = strings.Join(classes, ",")
+		}
+		fmt.Printf("%-*s | %s\n", w, c.name, got)
+	}
+}

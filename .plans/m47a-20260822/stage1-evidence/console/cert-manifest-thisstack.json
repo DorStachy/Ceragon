@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 2,
+  "certificateId": "m47a-toolauthority-p47stage1-7.10.99",
+  "profile": {
+    "id": "p47-stage1-local-rig",
+    "protectedPopulation": "the P47 stage-1 local rig: one Windows endpoint CND34521VN running the DeVoid agent 7.10.99 against the p47 integration backend",
+    "exclusions": [
+      "every endpoint that is not this rig",
+      "the production DeVoid agent on this machine, which is out of scope"
+    ],
+    "prerequisites": []
+  },
+  "system": {
+    "sourceCommits": {
+      "Backend": "1ff37f3f",
+      "Frontend": "486730db",
+      "Installers": "951d790a"
+    },
+    "artifactDigests": {
+      "devoid.exe": "sha256:88b22b6442f659fa518ed35c4edab22cc4f1ec81cb86a7f76f9081cbe2d3e415"
+    },
+    "detectorCatalogDigest": "sha256:bd4302907e91f79387920df045ffb6c269397cf1af03856687af2f7bad44916c",
+    "policyDigest": "sha256:bd4302907e91f79387920df045ffb6c269397cf1af03856687af2f7bad44916c",
+    "rulesetDigest": "sha256:bd4302907e91f79387920df045ffb6c269397cf1af03856687af2f7bad44916c",
+    "normalizerVersion": "n1",
+    "parserVersion": "p1",
+    "sinkInventoryDigest": "sha256:bd4302907e91f79387920df045ffb6c269397cf1af03856687af2f7bad44916c",
+    "runtime": "windows-amd64",
+    "osShellTool": "powershell",
+    "modelProviderPrompt": "anthropic/claude-code",
+    "engineVersion": "7.10.99",
+    "environmentDigest": "sha256:b32ac31bf57de3e114cd1bb5d029232de7d561cdaa530e57c2e7d6ed6981513f",
+    "standardsMapping": {
+      "owaspLlm2026": [],
+      "owaspAsi2026": [],
+      "atlasRelease": "v2026.07",
+      "atlasTechniques": [],
+      "aiuc1Controls": []
+    }
+  },
+  "evaluation": {
+    "lane": "tool",
+    "surface": "claude-code",
+    "suite": "regression",
+    "corpusDigest": "sha256:b32ac31bf57de3e114cd1bb5d029232de7d561cdaa530e57c2e7d6ed6981513f",
+    "labelVersion": "l1",
+    "windowStart": "2026-09-05T19:04:24Z",
+    "windowEnd": "2026-09-05T21:21:05Z",
+    "eligible": 211,
+    "executed": 179,
+    "unknown": 32,
+    "dropped": 0,
+    "uniqueUsersSessionsEndpointsTenants": {
+      "endpoints": 1,
+      "tenants": 1
+    },
+    "clusteringUnit": "scenario",
+    "nEffective": null,
+    "rho": null,
+    "strata": []
+  },
+  "metrics": {
+    "precision": {
+      "numerator": 0,
+      "denominator": 0,
+      "lower95": null,
+      "gateMethod": "clopper-pearson-onesided",
+      "reportMethod": "bayes-uniform"
+    },
+    "recall": {
+      "numerator": 0,
+      "denominator": 0,
+      "lower95": null
+    },
+    "falsePositiveRate": {
+      "numerator": 0,
+      "denominator": 0,
+      "upper95": null
+    },
+    "ppvAtDeclaredBaseRate": {
+      "baseRate": null,
+      "value": null,
+      "lower95": null
+    },
+    "unknownRate": {
+      "numerator": 32,
+      "denominator": 211,
+      "upper95": null
+    },
+    "adaptiveAsr": null,
+    "inspectionCompleteness": {
+      "complete": 179,
+      "degraded": 32,
+      "denominatorUncertainty": null
+    },
+    "ungovernedInvocations": {
+      "decided": 179,
+      "undecided": 32,
+      "vendorDiscarded": 0,
+      "notMeasured": null,
+      "rate": null,
+      "byAdapter": {
+        "claude-code": 32
+      },
+      "byReason": {
+        "policy-decision-null-in-ai_events": 32
+      }
+    },
+    "mediationGap": {
+      "numerator": 0,
+      "denominator": 211
+    },
+    "utility": {},
+    "interventions": {},
+    "latency": {}
+  },
+  "multiplicity": {
+    "family": [
+      "destructive-rm",
+      "chmod-broad-777"
+    ],
+    "K": 2,
+    "method": "holm",
+    "alphaPerClaim": 0.025,
+    "tier": "A"
+  },
+  "proof": {
+    "positive": [],
+    "negative": [],
+    "degraded": [],
+    "replay": [],
+    "bypass": [],
+    "rollback": [],
+    "liveCanary": [],
+    "independentReview": []
+  },
+  "status": "FAIL",
+  "expiresAt": "2026-12-04T21:22:19Z",
+  "downgradeTriggers": [
+    "no labelled corpus exists for this rig: precision, recall and FPR have no denominator"
+  ]
+}

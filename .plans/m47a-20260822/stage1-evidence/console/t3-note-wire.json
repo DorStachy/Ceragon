@@ -1,0 +1,27 @@
+# T3(a) NOTE WITHOUT RESOLVING — event abaaac27-f808-4452-a0b1-313cd3a79fec
+# POST http://localhost:3201/api/ai-control-plane/events/abaaac27-f808-4452-a0b1-313cd3a79fec/triage -> 200
+# body sent by the console: {"note":"P47-STAGE1 console lane: note added without resolving. Synthetic test note."}
+# GET the same path AFTER a full page reload:
+{
+ "triage": {
+  "eventId": "abaaac27-f808-4452-a0b1-313cd3a79fec",
+  "status": "new",
+  "classification": "not_set",
+  "resolutionReason": null, "assigneeId": null, "hidden": false,
+  "secondsToTriaged": null, "secondsToResolved": null,
+  "updatedAt": "2026-09-05T21:07:35.378Z",
+  "adjudicationStatus": "NOT_REQUIRED", "secondLabelerId": null, "secondLabelerRole": null,
+  "disputedClassification": null, "adjudicatorId": null, "adjudicatedAt": null
+ },
+ "activity": [
+  { "sequence": 1, "fromStatus": "new", "toStatus": "new",
+    "fromClassification": "not_set", "toClassification": "not_set",
+    "resolutionReason": null, "assigneeId": null, "hidden": null,
+    "actorType": "user", "actorId": "cc6c4681-612e-46f6-ad70-121373b55439",
+    "note": "P47-STAGE1 console lane: note added without resolving. Synthetic test note.",
+    "createdAt": "2026-09-05T21:07:35.378Z" }
+ ]
+}
+# WHAT THE CONSOLE RENDERS for that same row, read out of the DOM after reload:
+#   #1 new · “P47-STAGE1 console lane: note added without resolving. Synthetic test note.” · just now
+# -> the wire carries actorType+actorId; the ledger line shows NEITHER.

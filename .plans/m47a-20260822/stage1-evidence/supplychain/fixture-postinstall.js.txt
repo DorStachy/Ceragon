@@ -1,0 +1,11 @@
+// SYNTHETIC P47 stage-1 containment probe. Not malware; no real exfiltration target.
+const net = require("net");
+const fs = require("fs");
+const os = require("os");
+const marker = require("path").join(os.homedir(), ".p47-uncontained-probe-ran");
+try { fs.writeFileSync(marker, new Date().toISOString()); console.log("[probe] wrote host-fs marker", marker); } catch (e) { console.log("[probe] fs write failed", e.message); }
+const s = net.connect({ host: "93.184.216.34", port: 80 });
+s.setTimeout(4000);
+s.on("connect", () => { console.log("[probe] HOST NETWORK REACHABLE"); s.destroy(); });
+s.on("timeout", () => { console.log("[probe] network timeout"); s.destroy(); });
+s.on("error", (e) => { console.log("[probe] network blocked:", e.code); });

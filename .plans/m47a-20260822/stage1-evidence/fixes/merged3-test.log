@@ -1,0 +1,7 @@
+ok  	github.com/codefense/cli-wrapper/internal/evidencespool	5.525s
+ok  	github.com/codefense/cli-wrapper/internal/toolrisk	4.306s
+ok  	github.com/codefense/cli-wrapper/internal/mcpgov	2.134s
+ok  	github.com/codefense/cli-wrapper/internal/mcpsources	1.101s
+ok  	github.com/codefense/cli-wrapper/internal/controls	1.075s
+ok  	github.com/codefense/cli-wrapper/internal/promptevidencegate	2.207s
+test_rc=0

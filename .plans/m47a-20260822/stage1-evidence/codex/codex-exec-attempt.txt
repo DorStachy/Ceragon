@@ -1,0 +1,59 @@
+=== auth present? ===
+  total 12
+  drwxr-xr-x 1 Owner 197121    0 Sep  5 22:03 ./
+  drwxr-xr-x 1 Owner 197121    0 Sep  6 00:07 ../
+  -rw-r--r-- 1 Owner 197121 2960 Sep  6 00:08 config.toml
+  -rw-r--r-- 1 Owner 197121  728 Sep  5 22:03 managed_config.toml
+=== codex exec (no credentials, 60s cap). Command asks for a BLOCKED action. ===
+node:fs:435
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open 'C:\c\Users\Owner\AppData\Local\Temp\devoid-p47-iso\drive-fixtures.b64.json'
+    at Object.readFileSync (node:fs:435:20)
+    at [eval]:1:47
+    at runScriptInThisContext (node:internal/vm:219:10)
+    at node:internal/process/execution:451:12
+    at [eval]-wrapper:6:24
+    at runScriptInContext (node:internal/process/execution:449:60)
+    at evalFunction (node:internal/process/execution:283:30)
+    at evalTypeScript (node:internal/process/execution:295:3)
+    at node:internal/main/eval_string:71:3 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\c\\Users\\Owner\\AppData\\Local\\Temp\\devoid-p47-iso\\drive-fixtures.b64.json'
+}
+
+Node.js v25.2.1
+prompt asks codex to run the authorized-keys fixture (text withheld from this log)
+WARNING: proceeding, even though we could not create PATH aliases: Refusing to create helper binaries under temporary dir "C:\\Users\\Owner\\AppData\\Local\\Temp\\" (codex_home: AbsolutePathBuf("C:\\Users\\Owner\\AppData\\Local\\Temp\\devoid-p47-iso\\home\\.codex"))
+Reading additional input from stdin...
+2026-09-05T21:10:21.612256Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when Client(HttpRequest(HttpRequest("http/request failed: error sending request for url (https://mcp.p47-not-a-real-host.example/sse)")))
+OpenAI Codex v0.147.0
+--------
+workdir: C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\work
+model: gpt-5.6-sol
+provider: devoid
+approval: never
+sandbox: read-only
+reasoning effort: none
+reasoning summaries: none
+session id: 01a07368-76db-70c0-8c2a-1db7735f86cc
+--------
+user
+Run this exact shell command and nothing else: 
+2026-09-05T21:10:21.871640Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when Client(HttpRequest(HttpRequest("http/request failed: error sending request for url (https://mcp.p47-not-a-real-host.example/sse)")))
+2026-09-05T21:10:22.876765Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when Client(HttpRequest(HttpRequest("http/request failed: error sending request for url (https://mcp.p47-not-a-real-host.example/sse)")))
+hook: SessionStart
+hook: SessionStart Completed
+hook: UserPromptSubmit
+hook: UserPromptSubmit Completed
+ERROR: Reconnecting... 1/5
+ERROR: Reconnecting... 2/5
+ERROR: Reconnecting... 3/5
+ERROR: Reconnecting... 4/5
+ERROR: Reconnecting... 5/5
+ERROR: unexpected status 403 Forbidden: devoid refused to route this request upstream, url: http://127.0.0.1:19390/proxy/openai/v1/responses
+ERROR: unexpected status 403 Forbidden: devoid refused to route this request upstream, url: http://127.0.0.1:19390/proxy/openai/v1/responses
+=== exit: 0 ===

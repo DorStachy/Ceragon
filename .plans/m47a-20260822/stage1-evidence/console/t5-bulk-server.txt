@@ -1,0 +1,11 @@
+### T5-A mixed selection: G1 already 'investigating' (8 members), G2 untouched (2 members)
+POST http://127.0.0.1:2353/api/v1/ai/events/bulk-triage
+body: {"groupKeys":["k:authorized-keys-write|authorized-keys-write|9cc7bb95-78ec-4bcd-9c08-15de21a1c625","k:network-egress|network-egress-remote-transport|9cc7bb95-78ec-4bcd-9c08-15de21a1c625"],"status":"investigating"}
+response: {"selected":10,"applied":2,"unchanged":8,"failed":0,"failures":[]}
+
+### T5-B a member the action CANNOT be applied to: resolve WITHOUT a note (mandatory)
+body: {"groupKeys":["k:network-egress|network-egress-remote-transport|9cc7bb95-78ec-4bcd-9c08-15de21a1c625"],"status":"resolved","resolutionReason":"false_positive"}
+response: {"selected":2,"applied":0,"unchanged":0,"failed":2,"failures":[{"eventId":"1f19052e-3902-4659-b72e-e0f283bc4795","reason":"a resolution note is required to resolve an event"},{"eventId":"f0d490f8-9eba-48f4-b00b-0a504a974059","reason":"a resolution note is required to resolve an event"}]}
+
+### T5-C the SAME action twice: every member already in the requested state
+response: {"selected":8,"applied":0,"unchanged":8,"failed":0,"failures":[]}
