@@ -71,6 +71,16 @@
       "id": "vendored-engine-parity-selftest",
       "script": "ci/lib/vendored-engine-parity.test.mjs",
       "why": "Mutation proof for the check above. Nine fabricated trios, including the blind case it exists for -- manifest and copy agreeing while upstream moved -- plus a missing checkout, a missing upstream file, unparseable JSON and an empty file map all reporting NOT CHECKED rather than a pass, and CRLF-vs-LF NOT counting as drift. If the blind case ever passes, the check has stopped doing the only job that justifies it."
+    },
+    {
+      "id": "vendored-prose",
+      "script": "ci/lib/vendored-prose.mjs",
+      "why": "Wave 8 Task 11 binds the certificate claim renderer to the plan's fenced forbidden-claims checklist and the system card's per-surface rows, and those two documents live in other repositories. Installers therefore carries a VENDORED extract of each under internal/certificate/testdata/ so that go test ./... measures the binding from a standalone checkout (ship-ledger debt item 5) -- and a vendored copy is a measurement only while it equals its source. This re-derives both extracts from the plan and the card with the Go tests' own rule and compares bytes after CRLF/LF normalisation; a missing copy or source is NOT MEASURED, never a pass."
+    },
+    {
+      "id": "vendored-prose-selftest",
+      "script": "ci/lib/vendored-prose.test.mjs",
+      "why": "Mutation proof for the check above: one edited byte in a copy is DRIFT naming the file and the offset, a changed source under an unchanged copy is DRIFT, a missing copy or an unterminated fence or a missing heading is NOT MEASURED, and the real plan in this checkout carries exactly the two fenced regions the fixture was cut from."
     }
   ],
   "repos": {
@@ -223,7 +233,8 @@
         "holdout-score:score": {},
         "finding-b-e2e:shim-enforcement": {},
         "pr-checks:uninstall-honesty": {},
-        "pr-checks:hard-deny-stress": {}
+        "pr-checks:hard-deny-stress": {},
+        "pr-checks:neutraleval-ratchets": {}
       },
       "cannotMirror": {
         "pr-checks:cli-entrypoint-tests": "runs-on windows-latest. cmd/devoid's entrypoint tests exercise Windows service control, ACLs and PATH resolution; a Linux container cannot stand in. Run them on this machine with `go test ./cmd/devoid/... -count=1` from a Windows shell.",
