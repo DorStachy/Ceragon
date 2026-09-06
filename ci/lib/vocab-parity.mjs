@@ -94,6 +94,8 @@ import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
+import { workspaceRootOr } from './workspace-root.mjs';
+
 const CI_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 /**
@@ -509,7 +511,16 @@ export function compare(resolved) {
 }
 
 export function check(opts = {}) {
-  const options = { root: opts.root || resolve(CI_DIR, '..'), ref: opts.ref || null };
+  // `resolve(CI_DIR, '..')` is the checkout this script lives in, which holds
+  // the component repos only when that checkout IS the workspace. From a
+  // worktree of the meta-repo it holds none of them, and this check reported
+  // "checkout not found" about repositories that are on disk one directory
+  // away. workspaceRootOr keeps the old answer when there is no workspace to
+  // find, so a standalone layout behaves exactly as before.
+  const options = {
+    root: opts.root || workspaceRootOr(resolve(CI_DIR, '..')).root,
+    ref: opts.ref || null,
+  };
   const resolved = COPIES.map((copy) => resolveCopy(copy, options));
   const result = compare(resolved);
   return { ...result, resolved, options };

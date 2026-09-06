@@ -26,9 +26,29 @@ import { execFileSync } from 'node:child_process';
 import { parse as parseYaml } from 'yaml';
 import { expandMatrix } from './workflow.mjs';
 import { listWorkflowsOnMain } from './wfsource.mjs';
+import { workspaceRootOr } from './workspace-root.mjs';
 
 const CI_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const ROOT = resolve(CI_DIR, '..');
+
+/*
+ * WHERE THE SEVEN CHECKOUTS ARE.
+ *
+ * `resolve(CI_DIR, '..')` is the checkout this script lives in. That is the
+ * workspace when run from the workspace, and it is NOT the workspace when run
+ * from a git worktree of the meta-repo -- the component repos are separate
+ * repositories that a worktree does not clone. Run from one, this check printed
+ * seven copies of
+ *
+ *     no workflows readable on origin/main -- run: git -C Backend fetch origin
+ *
+ * which is red, so nothing was ever reported green that should not have been --
+ * but it names a cause that is not the cause, and sends the reader to fetch a
+ * repository that is not there. The workspace is derived instead, and the ROOT
+ * actually used is printed, so a surprising answer is visible rather than
+ * inferred.
+ */
+const ROOT_RESOLUTION = workspaceRootOr(resolve(CI_DIR, '..'));
+const ROOT = ROOT_RESOLUTION.root;
 const MANIFEST = JSON.parse(readFileSync(join(CI_DIR, 'gates.json'), 'utf8'));
 
 const E = String.fromCharCode(27);
@@ -194,6 +214,10 @@ function main() {
   const wantCost = args.includes('--cost');
   const named = args.filter((a) => !a.startsWith('-'));
   const repoKeys = named.length ? named : Object.keys(MANIFEST.repos);
+
+  // Say which tree was read. A check that silently reads a different workspace
+  // than the reader assumes is worse than one that cannot find it at all.
+  process.stdout.write(`${DIM}workspace: ${ROOT} (${ROOT_RESOLUTION.how})${RESET}\n\n`);
 
   let errors = 0;
   const allCost = [];

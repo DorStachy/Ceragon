@@ -28,15 +28,20 @@
  * ── The half this guard REFUSES to fake ──────────────────────────────────────
  *
  * The plan's prose checklist and Wave 8 Task 11's Go renderer are deliberately
- * two artifacts, and the exit criterion is that their counts are EQUAL. The Go
- * renderer does not exist yet. This guard therefore reports the renderer side as
- * ABSENT and exits non-zero on `--require-renderer`.
+ * two artifacts, and the exit criterion is that their counts are EQUAL. When the
+ * renderer is absent this guard reports it as ABSENT and exits non-zero on
+ * `--require-renderer`.
  *
  * It does NOT report the renderer as holding zero entries and it does NOT report
  * 0 == 0 as agreement. A measurement nobody took is not a measurement that came
  * back empty, and an equality between a real list and a missing one is not an
  * equality. That distinction is the single most repeated defect in this
  * codebase, and a guard built to enforce honesty must not commit it itself.
+ *
+ * As of 2026-09-06 the renderer EXISTS -- Wave 8 Task 11 landed it on Installers
+ * `origin/main` carrying 15 entries -- and this guard now measures 15 == 15. It
+ * spent some time before that printing ABSENT from a worktree, about a file that
+ * was already there; see the RENDERER export below.
  *
  *   node ci/lib/claim-contract.mjs                    # scan plan + release notes
  *   node ci/lib/claim-contract.mjs --require-renderer # also demand the Go side
@@ -49,10 +54,30 @@ import { readFileSync, existsSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { workspaceRootOr } from './workspace-root.mjs';
+
 export const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
 export const PLAN = join(REPO_ROOT, '.plans', 'm47a-20260822', 'M47A_IMPLEMENTATION_PLAN.md');
-export const RENDERER = join(REPO_ROOT, 'Installers', 'internal', 'certificate', 'claim_test.go');
+
+/**
+ * The renderer lives in a DIFFERENT repository, so `REPO_ROOT` is only the right
+ * place to look when this script runs from the workspace checkout. Run from a
+ * worktree of the meta-repo -- which is how the plan is edited -- `Installers/`
+ * is not beside `ci/` and this guard printed "ABSENT — the file does not exist"
+ * about a file that does exist and encodes 15 entries. That is the measurement
+ * -nobody-took defect the guard exists to prevent, committed by the guard.
+ *
+ * `workspaceRootOr` finds the workspace this checkout belongs to and falls back
+ * to REPO_ROOT when there is none, so a standalone checkout behaves as before.
+ */
+export const RENDERER = join(
+  workspaceRootOr(REPO_ROOT).root,
+  'Installers',
+  'internal',
+  'certificate',
+  'claim_test.go',
+);
 
 /**
  * How much of the plan is in scope.
@@ -68,6 +93,16 @@ export const RENDERER = join(REPO_ROOT, 'Installers', 'internal', 'certificate',
  * specification text and no reason to quote a banned sentence at all.
  */
 export const PLAN_SCOPE_END = '## Decisions this plan implements';
+
+/**
+ * A path for humans. `relative()` alone renders a sibling repo as a stack of
+ * `..` segments, which reads like a bug in the guard rather than a location;
+ * anything outside this checkout is printed absolute instead.
+ */
+function display(p) {
+  const rel = relative(REPO_ROOT, p);
+  return rel.startsWith('..') ? p : rel;
+}
 
 /** Truncate a document at the scope marker. Returns the whole text if absent. */
 export function planScope(text, marker = PLAN_SCOPE_END) {
@@ -267,13 +302,13 @@ export function check(opts = {}) {
   out.push(`checklist rows in ${relative(REPO_ROOT, planPath)}: ${planRows.size}`);
   if (rendererCount === null) {
     out.push(
-      `renderer entries in ${relative(REPO_ROOT, rendererPath)}: ABSENT — the file does not exist. ` +
+      `renderer entries in ${display(rendererPath)}: ABSENT — the file does not exist. ` +
         'This is NOT zero and the counts are NOT equal; the second side of the equality has not ' +
         'been written. Wave 8 Task 11 owns it.'
     );
     if (opts.requireRenderer) failed = true;
   } else {
-    out.push(`renderer entries in ${relative(REPO_ROOT, rendererPath)}: ${rendererCount}`);
+    out.push(`renderer entries in ${display(rendererPath)}: ${rendererCount}`);
     if (rendererCount !== planRows.size) {
       out.push(
         `DRIFT    the plan checklist carries ${planRows.size} rows; the renderer encodes ` +
@@ -322,7 +357,16 @@ if (invokedDirectly) {
   // plan. A release note has no specification text and no reason to quote a
   // banned sentence, so nothing in it is exempt.
   const extra = process.argv.slice(2).filter((a) => !a.startsWith('--')).map((a) => resolve(a));
-  const result = check({ documents: [PLAN, ...extra] });
+  // `--renderer=<path>` names the Go side explicitly. Without it the CLI could
+  // only ever be run against whatever renderer this machine happens to have, so
+  // the ABSENT path -- exit 2, the one that matters most -- became unprovable
+  // the day the renderer landed. A guard's unmeasured branch has to stay
+  // reachable from a test or it stops being a branch anyone can trust.
+  const rendererArg = process.argv.slice(2).find((a) => a.startsWith('--renderer='));
+  const result = check({
+    documents: [PLAN, ...extra],
+    ...(rendererArg ? { rendererPath: resolve(rendererArg.slice('--renderer='.length)) } : {}),
+  });
   console.log(result.lines.join('\n'));
   if (!result.ok) process.exit(EXIT_VIOLATION);
   if (result.rendererCount === null) {

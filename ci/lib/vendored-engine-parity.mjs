@@ -47,8 +47,21 @@ import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
+import { workspaceRootOr } from './workspace-root.mjs'
+
 const HERE = path.dirname(fileURLToPath(import.meta.url))
-const WORKSPACE = path.resolve(HERE, '..', '..')
+
+/*
+ * WHERE THE TWO CHECKOUTS ARE.
+ *
+ * `path.resolve(HERE, '..', '..')` is the checkout this script lives in, which
+ * is the workspace only when it IS the workspace. From a git worktree of the
+ * meta-repo neither Frontend nor Installers sits beside `ci/`, and this check
+ * reported "no Frontend checkout at ..." -- NOT CHECKED, correctly non-zero, but
+ * about repositories that were on disk one directory away. workspaceRootOr
+ * derives the workspace and falls back to the old answer when there is none.
+ */
+const WORKSPACE = workspaceRootOr(path.resolve(HERE, '..', '..')).root
 
 const MANIFEST_REL = 'lib/ai-security/vendored/MANIFEST.json'
 const UPSTREAM_REL = 'browser-extension/src'

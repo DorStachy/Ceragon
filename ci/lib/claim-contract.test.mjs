@@ -68,9 +68,16 @@ console.log('precondition: the real plan passes its own guard');
   const real = check();
   assert(real.ok, 'the shipped plan passes the guard as written');
   assert(real.planRows === 15, `the shipped plan carries 15 checklist rows (saw ${real.planRows})`);
+  // This assertion used to read `real.rendererCount === null` — "the Go renderer
+  // is reported ABSENT, not as a count". That was true when it was written and
+  // is not true now: Wave 8 Task 11 landed the renderer, and it encodes 15.
+  // Keeping the old form would have pinned the suite to a fact the tree had
+  // moved past, which is the same defect as a stale citation. The DISCRIMINATING
+  // case — that an absent renderer reports null and never 0 — is unchanged and
+  // still runs below, over a fabricated tree, where it belongs.
   assert(
-    real.rendererCount === null,
-    'the Go renderer is reported ABSENT, not as a count'
+    real.rendererCount === real.planRows,
+    `plan checklist and Go renderer agree (${real.planRows} rows, ${real.rendererCount} renderer entries)`
   );
 }
 
@@ -267,8 +274,15 @@ console.log('\ncase 9: the command exits 2 when the equality cannot be measured'
     return { code: r.status, out: `${r.stdout}${r.stderr}` };
   };
 
-  // The real repository state today: the renderer lives on unmerged branches.
-  const absent = run([]);
+  // The renderer now EXISTS on Installers origin/main, so `run([])` measures a
+  // real 15 == 15. The branch this case is about — the equality that CANNOT be
+  // measured — is therefore forced with `--renderer=` pointing at a path that is
+  // not there. Asserting it against "whatever renderer this machine happens to
+  // have" is what made this case stop testing anything the day Wave 8 Task 11
+  // landed: it went green, then red, for reasons that had nothing to do with the
+  // behaviour under test.
+  const missingRenderer = join(dir, 'no-such-dir', 'claim_test.go');
+  const absent = run([`--renderer=${missingRenderer}`]);
   assert(absent.code === 2, `an absent renderer exits 2, not 0 (saw ${absent.code})`);
   assert(
     absent.out.includes('NOT MEASURED'),
@@ -279,7 +293,7 @@ console.log('\ncase 9: the command exits 2 when the equality cannot be measured'
   // A forbidden claim is a different failure and must not be confused with it.
   const notePath = join(dir, 'RELEASE_NOTES.md');
   writeFileSync(notePath, '# 7.11.0\n\nM4.7A is complete.\n', 'utf8');
-  const violation = run([notePath]);
+  const violation = run([notePath, `--renderer=${missingRenderer}`]);
   assert(violation.code === 1, `a forbidden claim exits 1, not 2 (saw ${violation.code})`);
   assert(
     violation.out.includes('m4.7a is complete'),
@@ -290,7 +304,7 @@ console.log('\ncase 9: the command exits 2 when the equality cannot be measured'
   // still 2, because the note being clean says nothing about the equality.
   const cleanNote = join(dir, 'CLEAN_NOTES.md');
   writeFileSync(cleanNote, '# 7.11.0\n\nScanner execution truth is now reported.\n', 'utf8');
-  const cleanButUnmeasured = run([cleanNote]);
+  const cleanButUnmeasured = run([cleanNote, `--renderer=${missingRenderer}`]);
   assert(
     cleanButUnmeasured.code === 2,
     `a clean note with no renderer is still NOT MEASURED (saw ${cleanButUnmeasured.code})`
