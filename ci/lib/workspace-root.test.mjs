@@ -34,11 +34,22 @@ function assert(condition, message) {
 }
 
 /** A directory that looks like this workspace: the manifest plus one component. */
+/**
+ * A component CHECKOUT carries a `.git` entry (a directory for a clone, a file
+ * for a linked worktree). The fixtures write the file form, because a directory
+ * that merely has a component's name — the meta-repo tracks a few files under
+ * `docs/`, and `docs` is also a component repo — must not count.
+ */
+function makeCheckout(dir) {
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, '.git'), 'gitdir: /nowhere\n', 'utf8');
+}
+
 function makeWorkspace() {
   const root = mkdtempSync(join(tmpdir(), 'workspace-root-'));
   mkdirSync(join(root, 'ci'), { recursive: true });
   writeFileSync(join(root, 'ci', 'gates.json'), '{"repos":{}}', 'utf8');
-  mkdirSync(join(root, 'Backend'), { recursive: true });
+  makeCheckout(join(root, 'Backend'));
   return root;
 }
 
@@ -57,8 +68,23 @@ console.log('case 1: what makes a directory a workspace');
   );
 
   const reposOnly = mkdtempSync(join(tmpdir(), 'workspace-root-'));
-  mkdirSync(join(reposOnly, 'Backend'), { recursive: true });
-  assert(!looksLikeWorkspace(reposOnly), 'a stray Backend directory alone is not a workspace either');
+  makeCheckout(join(reposOnly, 'Backend'));
+  assert(!looksLikeWorkspace(reposOnly), 'a stray Backend checkout alone is not a workspace either');
+
+  // The 2026-09-07 case: a worktree of the meta-repo carries ci/gates.json AND a
+  // tracked `docs/` directory that is not a checkout of the docs repository.
+  // Before the checkout test, that worktree resolved as the workspace and every
+  // guard reported the sibling repos "not checked out".
+  const namedOnly = mkdtempSync(join(tmpdir(), 'workspace-root-'));
+  mkdirSync(join(namedOnly, 'ci'), { recursive: true });
+  writeFileSync(join(namedOnly, 'ci', 'gates.json'), '{}', 'utf8');
+  mkdirSync(join(namedOnly, 'docs'), { recursive: true });
+  writeFileSync(join(namedOnly, 'docs', 'README.md'), '# tracked, not a checkout\n', 'utf8');
+  assert(
+    !looksLikeWorkspace(namedOnly),
+    'a directory merely NAMED like a component (no .git) does not make a workspace'
+  );
+  assert(presentRepos(namedOnly).length === 0, 'and it is not reported as a present checkout');
 
   rmSync(ws, { recursive: true, force: true });
   rmSync(manifestOnly, { recursive: true, force: true });
@@ -118,7 +144,7 @@ console.log('\ncase 4: the main worktree of a linked worktree');
   git(['commit', '-qm', 'init'], repo);
   // The component checkouts sit BESIDE the main worktree and are not tracked by
   // it — that is the real layout, and the reason a worktree cannot see them.
-  mkdirSync(join(repo, 'Backend'), { recursive: true });
+  makeCheckout(join(repo, 'Backend'));
 
   // The linked worktree carries ci/gates.json and NO component repos — which is
   // exactly the shape that used to be mistaken for a workspace. `--detach`

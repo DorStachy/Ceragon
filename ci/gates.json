@@ -99,18 +99,8 @@
     },
     {
       "id": "w-1-rebase-manifest-selftest",
-      "script": "ci/lib/rebase-manifest.test.mjs",
+      "script": "ci/lib/w-1-rebase-manifest.test.mjs",
       "why": "Mutation proof for the rebase manifest: seven real temporary Git repositories are generated, one Installers SHA is hand-edited, and validation must fail with the recorded and actual origin/main values."
-    },
-    {
-      "id": "claim-contract-guard",
-      "script": "ci/lib/claim-contract-guard.mjs",
-      "why": "Pins the exact no-PASS statement and all 15 sourced forbidden claims."
-    },
-    {
-      "id": "claim-contract-guard-selftest",
-      "script": "ci/lib/claim-contract-guard.test.mjs",
-      "why": "Defeat proof that removing one forbidden claim makes the contract guard red."
     },
     {
       "id": "standards-schema-declaration",

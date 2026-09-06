@@ -78,6 +78,19 @@ function isDir(p) {
 }
 
 /**
+ * A component CHECKOUT, not merely a directory with a component's name. The
+ * meta-repo itself tracks a handful of files under `docs/` (a name that is also
+ * a component repo), so a worktree of the meta-repo carries a `docs/` directory
+ * that is not a checkout of anything. Measured 2026-09-07: that directory made
+ * every guard resolve the worktree as the workspace and report the sibling
+ * repos "not checked out". A checkout has a `.git` entry — a directory for a
+ * clone, a file for a linked worktree — and nothing else does.
+ */
+function isCheckout(p) {
+  return isDir(p) && existsSync(resolve(p, '.git'));
+}
+
+/**
  * A workspace is a directory that carries the meta-repo's own `ci/gates.json`
  * AND at least one component checkout. Both halves matter: the manifest alone
  * is true of every worktree (which is the bug), and a component directory alone
@@ -85,12 +98,12 @@ function isDir(p) {
  */
 export function looksLikeWorkspace(dir) {
   if (!dir || !existsSync(resolve(dir, 'ci', 'gates.json'))) return false;
-  return COMPONENT_REPOS.some((repo) => isDir(resolve(dir, repo)));
+  return COMPONENT_REPOS.some((repo) => isCheckout(resolve(dir, repo)));
 }
 
 /** Which of the component checkouts `dir` actually holds. */
 export function presentRepos(dir) {
-  return COMPONENT_REPOS.filter((repo) => isDir(resolve(dir, repo)));
+  return COMPONENT_REPOS.filter((repo) => isCheckout(resolve(dir, repo)));
 }
 
 /** The main worktree of the git repository containing `start`, or null. */

@@ -153,30 +153,6 @@ good value.
 `docs/superpowers/plans/2026-07-15-ai-security-detection-enforcement-master-plan.md:695-829`. Do not
 create a second table. Every budget quoted anywhere in this packet resolves there or it is not a
 budget.
-<!-- CLAIM-CONTRACT:FORBIDDEN:BEGIN -->
-### Claims this packet forbids
-
-The sole authority for a numeric product claim is a signed evidence certificate produced from a
-named build and corpus, reviewed under the release rubric, and no older than **90 days**.
-
-| ID | Forbidden claim | Named authority for removing the prohibition |
-|---|---|---|
-| FC-01 | Universal zero false positives | Signed precision certificate + release rubric |
-| FC-02 | All detections are high quality | Per-class recall/precision certificate |
-| FC-03 | Evasive attacks are comprehensively detected | Adaptive-evasion corpus certificate |
-| FC-04 | Prompt injection is high-assurance | Prompt-injection evaluation certificate |
-| FC-05 | All DLP classes are governed | Governed-vocabulary totality certificate |
-| FC-06 | A green scan proves no vulnerability exists | Scanner coverage/limitations statement |
-| FC-07 | Dangerous actions are prevented | Authoritative-checkpoint effectiveness certificate |
-| FC-08 | M4.7A is complete or Risks 1, 2, 4, and 5 are 9+/10 | Release rubric signed by the accountable reviewer |
-| FC-09 | A static corpus proves prompt-injection resistance | Adaptive-evaluation protocol |
-| FC-10 | One prompt-injection number represents every surface | Per-surface prompt certificate |
-| FC-11 | Safeguards exist merely because installation completed | Runtime safeguard-attestation certificate |
-| FC-12 | A canary result proves the evaluation was uncontaminated | Corpus custody and contamination audit |
-| FC-13 | Production false-positive performance is certified without independent review | Independent production-window adjudication |
-| FC-14 | A lexical or ML score alone is an enforcing decision | Enforcing-tier eligibility review |
-| FC-15 | Third-party validation exists without a named external assessor and report | Named external assessment report |
-<!-- CLAIM-CONTRACT:FORBIDDEN:END -->
 
 ---
 

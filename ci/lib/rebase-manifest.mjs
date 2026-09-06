@@ -59,9 +59,15 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { workspaceRootOr } from './workspace-root.mjs';
 
 const CI_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const WORKSPACE = resolve(CI_DIR, '..');
+// The sibling repositories live in the WORKSPACE (the live checkout that holds
+// Backend/, Installers/ and the rest), which is not this checkout when this
+// script runs from a linked worktree of the meta-repo. The manifest under test
+// is this checkout's own file. See workspace-root.mjs for the resolution order.
+const REPOS_ROOT = workspaceRootOr(WORKSPACE).root;
 
 /**
  * The seven governed repositories, in the order the plan lists them. The order
@@ -325,9 +331,9 @@ const yellow = (s) => (colour ? `${E}[33m${s}${E}[0m` : s);
 function main(argv) {
   const args = argv.slice(2);
   const rootIdx = args.indexOf('--root');
-  const root = rootIdx >= 0 ? resolve(args[rootIdx + 1]) : WORKSPACE;
+  const root = rootIdx >= 0 ? resolve(args[rootIdx + 1]) : REPOS_ROOT;
   const manIdx = args.indexOf('--manifest');
-  const manifestPath = manIdx >= 0 ? resolve(args[manIdx + 1]) : join(root, MANIFEST_RELPATH);
+  const manifestPath = manIdx >= 0 ? resolve(args[manIdx + 1]) : join(rootIdx >= 0 ? root : WORKSPACE, MANIFEST_RELPATH);
   const wantsWrite = args.includes('--write');
   const wantsJson = args.includes('--json');
   const noFetch = args.includes('--no-fetch');
