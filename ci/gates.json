@@ -48,6 +48,11 @@
       "why": "Mutation proof for the check above: 35 assertions over a real plan mutated on disk, including the discriminating pair that an absent renderer and a renderer encoding 15 produce different verdicts, and the case that found a real hole -- deleting ONE fence end marker merges two fences, silently exempting everything between them, and the guard passed until this case existed."
     },
     {
+      "id": "workspace-root-selftest",
+      "script": "ci/lib/workspace-root.test.mjs",
+      "why": "Every cross-repo check here asks one module where the other checkouts are, and a wrong answer does not raise an error -- it produces a check that compared the wrong trees, or reported a file missing that is not. 23 assertions over workspaces built on disk, including a real git worktree, cover each resolution step and the two a normal run never reaches: the upward walk, and the refusal that returns null. The discriminating case is that ci/gates.json ALONE is not a workspace -- that is true of every worktree in this programme, and mistaking one for a workspace is the defect the module was written for."
+    },
+    {
       "id": "plan-citations",
       "script": "ci/lib/plan-citations.mjs",
       "why": "The M4.7A plan argues from evidence: over a thousand of its sentences point at a file and a line. Two failures of that are silent and both were present. A BARE BASENAME -- `main.ts:429`, `constants.ts:150-165`, `server.go:365` -- names four different files in this workspace, so the claim cannot be checked by a reader or by a script while looking like the most precise evidence there is; 744 citations were in that state. A LINE NUMBER THAT DRIFTED is worse, because it still resolves: the plan's own text said `internal/dlp/dlp.go` was 1510 lines and put `func Redact` at :1479, and on origin/main today the file is 1572 lines and Redact is at :1541. This check requires a repo qualifier on every `path:line` and resolves each one against that repo's origin/main, asserting the line exists. It cannot check that the line SAYS what the plan claims -- that is a reading, not a measurement -- and it prints what it did not look at rather than leaving a green run to imply coverage it does not have."
