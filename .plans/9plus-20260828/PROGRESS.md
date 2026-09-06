@@ -2,9 +2,74 @@
 
 ## READ THIS FIRST
 
-**58 of the plan's 83 tasks merged, plus 9 unplanned fixes found on the way (68 merges total)**, across Installers and Backend, by ~15 parallel agents.
-Installers `origin/main` and Backend `origin/main` both build and vet clean, and every package the
-work touched is green together.
+**81 of the plan's 83 tasks are merged** — 58 in session 1, 23 more in session 2 — plus 9 unplanned
+fixes found on the way, across Installers, Backend and Frontend.
+
+**Installers `origin/main` is `dbfff756` and the module is green in an isolated worktree: `go test
+./...` = 0 failures**, with `go build` and `go vet` clean. Read that carefully: it is green *in a
+worktree*. In the main `Installers` checkout two guards are red because both walk into the five
+nested checkouts under `.worktrees/` and judge their files — environmental, pre-existing, and
+recorded in the last section of this file rather than counted as a pass.
+
+**One task remains**: `W2 T6b`, blocked on a measurement the mechanism cannot produce, and it should
+not be forced. `W7 T4` is **done** — its EXIT was met on a real endpoint on 2026-09-02 (Probe 4: 41
+files to 0) and it is merged. Getting there took fixing two wrong addresses that every fixture-based
+test had agreed with; the last section of this file is the account.
+
+**Nothing is deployed.** Backend last deployed 2026-08-27; five deploy-blocked tasks merged after
+that. No agent release has been cut since 2026-07-14.
+
+## 2026-09-02 — `main` was RED, in two ways neither `go test` nor the merge output showed
+
+Both are now fixed and on `main` (`48c3d2eb`), verified by ancestry.
+
+### 1. The plan's own W1 T4 broke the C04 inertness gate
+
+`internal/neutraleval/capture.go` imported `internal/aipolicycontract` to project per-class scan
+budgets. `neutraleval` was already live via `internal/daemon/ai_lane_shadow.go`, so that import
+dragged the C04 contract package into the shipped daemon's graph —
+`TestPackageRemainsInertOutsideItsOwnToolingTree` failed deterministically, naming both capture files.
+
+Fixed by moving the read into `internal/localdecide/hardstop.go`, which was **already** importing the
+package and is **already** in `gateOpenedConsumerFiles`, and whose written rationale explicitly covers
+reading each class's `Budgets`. **The allowlist was not touched.** P47 had independently spotted this
+and offered two repairs in the handshake; this is their second, stronger one.
+
+### 2. The holdout-score gate could not pass on ANY platform
+
+Each corpus case carries `provenance.sourceDigest` = sha256 over its seed's RAW BYTES, and neither new
+seed was pinned `text eol=lf` while `core.autocrlf=true`. `toolrisk-seed.json` hashed CRLF (seeded on
+Windows), `ingress-seed.json` hashed LF (seeded on Linux) — so `--check` failed on Linux for toolrisk
+(the nightly gate, red since 2026-08-31) and on Windows for ingress. There was no machine where it
+passed.
+
+Fixed with a tree-wide `parity-vectors/** text eol=lf` pin (the old "forward-looking catch-all"
+`parity-vectors/*.json` matched **none** of the 14 unpinned files under `neutral/` — `*` does not
+cross a directory separator and does not match `.jsonl`), a re-seed of toolrisk from LF bytes
+(**digests only** — verified field-by-field, case count held at 4), and the LF tripwire widened from
+2 named files to the whole tree with a control that catches a *narrowed* walk, not just an empty one.
+
+### 3. The same defect class one directory up, found while fixing the above
+
+`dependency_isolation_test.go` pins raw-byte sha256 of `go.mod`/`go.sum`; neither was pinned and both
+constants were the **CRLF** hashes, so that test — and with it the whole `internal/aipolicycontract`
+package, **including the inertness gate in item 1** — could only ever be red on Linux CI. Both are now
+pinned and the constants re-pinned to LF **in one commit**; splitting them just moves the failure to
+Windows.
+
+### Why none of this was visible
+
+The corpus freshness check runs as a **CI step, not a test**, so `go test ./...` passed while CI was
+red. And 25 of the 171 session-2 commits carry `[skip ci]`, including every merge commit — so the
+integrated state never ran gates on GitHub at all.
+
+### Operational note for anyone pulling this
+
+On Windows you will get a RED `TestParityVectorCorporaAndSeedsAreLFOnly` naming ~24 files. That is the
+guard working: a `.gitattributes` pin cannot un-smudge files git already rewrote. The failure message
+tells you the fix — `rm <path> && git checkout -- <path>`.
+
+---
 
 ### The two tasks that produced nothing
 
@@ -645,3 +710,496 @@ is the log.
 already-pinned spine's `classes[].budgets` and `classes[].defaults`, provided
 `DetectorCatalogDigest` stays `sha256:b252ee02…`, `classCount` stays 55 and
 `hardStopEligibleClassCount` stays 4. That unblocked W1 T3, T4 and T9.
+
+---
+
+## 2026-09-02 — machine-scope install verified on the owner's box
+
+Built from main 48c3d2eb, MSI built with WiX v4, installed with enrolment deferred. Not enrolled,
+and the Claude Code hooks were not wired (wiring them would gate the live session).
+
+PROVEN LIVE
+- Local hard stop refuses with no control plane: daemon stopped, a parsed PEM private key in a
+  prompt returned a block decided on-box. W1's headline, observed.
+- The Tier-A bound is real: a shape-matched access key only warns locally while the daemon blocks
+  it; the parsed PEM blocks locally. Documented four-class bound, not a fail-open.
+- Service is AUTO_START under LocalSystem with restart-on-failure 60s/60s/120s, reset 86400s.
+- Machine root SYSTEM-owned, 19 shims installed, machine PATH prepended; npm and go pass through.
+- Doctor moved from 1 passed/21 failed to 10 passed/9 failed; every remaining failure is either
+  deliberately skipped or a property of an unsigned local build.
+- Neutral capture writes with plaintext false, budgets 65536 and 2296 — the values the relocated
+  projection from the C04 fix computes, so that fix is live in the shipped path.
+
+FINDING 1 — running doctor before installing permanently blocks the install.
+Doctor creates the machine root owned by the running user. The machine-root guard then refuses every
+install for untrusted owner, and its migration path refuses too. Surfaces as 1722 then 1603.
+The guard is correct, but the state is unrecoverable without deleting the directory by hand, the
+installer never names the offending entry, and doctor-then-install is an ordinary customer sequence.
+Same family as F-MSI-1722, from a new direction: wrong OWNER on first install, not an unknown entry.
+
+FINDING 2 — the endpoint reports the daemon unreachable while it is running.
+The hook path warns that the daemon is unreachable and the action was not checked, then in the same
+output returns a deny whose reason says the decision was made on-box. Measured: service state
+RUNNING, observed-runtime endpoint HTTP 401. The daemon is alive; the CLI is unauthorised because
+the endpoint is not enrolled. The stated cause is false, the prescribed remedy cannot work, doctor in
+the same binary disagrees, and the browser-beacon row already words this correctly. Enforcement is
+unaffected. This is the programme's own governing class: a reason asserting a condition it never
+established.
+
+---
+
+## 2026-09-02 — Backend DEPLOYED to production; agent 7.10.7 STAGED, not promoted
+
+Running the gates on main for the first time since 08-26 found two real defects, both merged with
+CI skipped and neither visible from a local test run.
+
+### Backend — deployed and verified live
+
+`bc11446c` is serving production, confirmed from production itself:
+
+    x-devoid-backend-build: bc11446ce3b4495e9d0cf772aa0ea092eca5b75f
+
+The Deploy-to-ECS JOB reports success, which is the truth here; the run conclusion is not.
+Five deploy-blocked P9 tasks are now actually deployed, and the Backend-before-agent ordering
+rule is satisfied for the first time since 2026-08-27.
+
+FIX — the container could not start. src/ai-security-policy/dlp-governance-gap.ts imported the
+producer vector by a relative path escaping src/. An import outside rootDir widens rootDir and
+moves the emit. Measured, both builds exit 0:
+
+    relative import   -> dist/src/main.js   (CMD ["node","dist/main.js"] never starts)
+    package specifier -> dist/main.js       (correct)
+
+Landed 08-29; last deploy was 08-27, so production never had it and the gate caught it in time.
+Verified before pushing: the package resolves through a symlink so the files array does not gate
+subpath access; ai-security-policy runs 74 suites / 1656 tests green against a live Postgres.
+
+### Frontend — fixes green, BLOCKED on a repo secret
+
+Two independent causes, both fixed and confirmed green in CI:
+
+- Security Audit: two new upstream advisories against browserslist <=4.28.6. Bumped to 4.28.8,
+  lockfile only, no allowlist entry because a patched version exists.
+- Tests (jest): a TIME BOMB. Nine fixtures hard-coded expiresAt 2026-09-01, which the wall clock
+  passed. Seven tests failed against code that had not changed; the panel said "the viewing window
+  for this preview has ended". The component was right, the fixture had expired. Now derived from
+  the clock. 105/105 pass.
+
+Still red, and not fixable in code: Detector vocabulary parity refuses to pass without a GH_TOKEN
+to read Ceragon-Prod/Installers. That refusal is CORRECT — it will not claim a pass it cannot
+substantiate. The deploy gate is fail-closed on both workflows, so Frontend cannot ship until that
+secret exists. Owner action.
+
+### Agent release — 7.10.7 staged, stable untouched
+
+Cut from 48c3d2eb with promote=false, managed_firefox=false, bootstrap_trust_chain=false,
+require_signed_windows=false. Every job green; `7 · Promote to Stable` SKIPPED by design.
+
+    stable.json          still 7.10.6, published 2026-08-27  (no customer affected)
+    releases/7.10.7/     published 2026-09-02, sequence 7000010000007
+
+SHA-256 verified on prod S3; Authenticode not configured, as expected for a cert-less build.
+
+Promoting is the fleet-wide step and is the owner's decision, not an agent's.
+
+---
+
+## 2026-09-02 — RETRACTION: "the installer never starts the daemon" was WRONG
+
+The finding recorded earlier today under the machine-scope install section — that the MSI registers
+the service but never starts the daemon, leaving an endpoint dark until reboot — is FALSE. It is
+withdrawn. Nothing in the product needs changing for it, and it must not be used as a reason to hold
+a release.
+
+WHAT ACTUALLY HAPPENS. The installer runs `devoid setup install-daemon`, which does all of:
+
+- creates the ONSTART SYSTEM scheduled task "Devoid Daemon" (schtasks /Create);
+- registers the devoid-daemon SERVICE as an AUTO_START supervisor with SCM failure actions;
+- STARTS the task (Start-ScheduledTask);
+- and then VERIFIES the daemon answers before returning.
+
+Measured from C:\Windows\Temp\devoid-setup-ca.log, the installer's own diagnostic file:
+
+    04:40:07.425 [install-daemon] schtasks /Create (err=<nil>): SUCCESS: ... "Devoid Daemon" ...
+    04:40:07.457 [install-daemon] sc create devoid-daemon: created
+    04:40:09.457 [install-daemon] Start-ScheduledTask (err=<nil>):
+    04:40:09.869 [install-daemon] listening after Start-ScheduledTask
+
+and confirmed live, elevated:
+
+    TaskName: \Devoid Daemon   Status: Running   Run As User: SYSTEM
+    Schedule Type: At system start up   Last Run Time: 9/2/2026 4:40:09 AM
+
+HOW THE ERROR WAS MADE, because the shape will recur. There are TWO mechanisms and they are not
+interchangeable: the scheduled task RUNS the daemon, and the service is the SUPERVISOR that gives it
+restart-on-failure and external recovery. `Get-Service devoid-daemon` reported Stopped straight after
+install — correct, because the supervisor starts at boot — and that was read as "the daemon is not
+running". The daemon was running the whole time, from the task.
+
+The refutation was already on screen and was walked past: doctor immediately after the install
+printed `+ Daemon reachable   port 19280 (DeVoid vdev)`. A reachable daemon is not a dark endpoint.
+Two devoid-daemon.exe processes are live now (6804, 15256) because a redundant `sc start` was issued
+on top of the task's daemon.
+
+Also note `Get-ScheduledTask` UNELEVATED reports the task as absent — doctor_persistence.go:16
+documents exactly this ("an unelevated schtasks /Query on the SYSTEM/HIGHEST task returns Access is
+denied"). An unelevated absence is not evidence of absence, and was nearly used as one here.
+
+### The second finding, restated more narrowly and still open
+
+`hooks-status` renders every hook row NEVER FIRED and `0 of 5 have fired` when the daemon's fire
+store cannot be read, while the same line reports a climbing count of delivered decisions. That is
+real and reproducible, but the earlier wording overstated it. The two numbers come from DIFFERENT
+sources: the fire counts are read from the daemon (unreadable to an unenrolled CLI, so rendered 0),
+whereas "delivered decision(s)" and the undecided/discard counters come from a LOCAL marker store
+that genuinely is measured. So "measured zero" is accurate about the counter it describes; the
+incoherence is that one line carries a daemon-sourced 0 next to a locally-sourced 129.
+
+This is a deliberate, documented decision, not an oversight. observedRuntimeForStatus's own comment
+states it: the only correct rendering of "I could not get evidence" is the same one as "there is no
+evidence", because a separate error state would re-open the neutral third answer that wave removed.
+Four tests pin it by name across both lanes (StoreErrorRendersNeverFired,
+DaemonUnreachableRendersNeverFired, on Claude and Codex).
+
+It nonetheless sits against this codebase's own rule 7 — a check that cannot answer reports FAIL —
+which the SAME verdict line applies to the ungoverned counters via !state.Measured(). The fire count
+takes the opposite branch. Reconciling those two is an owner decision about the surface, not an agent
+edit, and it was deliberately NOT changed.
+
+---
+
+## 2026-09-02 — agent 7.10.8 PROMOTED to stable; and `promote: false` is a one-way door
+
+### Promoted, verified against the channel itself
+
+    stable.json  version 7.10.6 -> 7.10.8
+                 releaseSequence 7000010000006 -> 7000010000008
+                 publishedAt 2026-09-02T08:16:47Z
+                 manifestKeyId key-2026-07
+
+All 15 release jobs green, and `7 · Promote to Stable` RAN rather than being skipped. The release
+manifest at releases/7.10.8/manifest.json is public and agrees with the channel on both version and
+sequence. The binaries are not anonymously readable (403, expected — they are not public objects);
+their existence and SHA-256 were verified by job 6b using real credentials, not by an anonymous
+probe.
+
+Cut from Installers 48c3d2eb, which carries the three fixes from earlier today (the C04 inertness
+repair, the parity-vector LF pin + toolrisk re-seed, and the go.mod/go.sum LF pin). Backend
+bc11446c was already deployed and verified live first, so the Backend-before-agent ordering rule
+held.
+
+### THE DEFECT THIS EXPOSED — `promote: false` burns the version it stages
+
+release.yml's `promote` input says: "Set false to stage + verify, then promote separately."
+**There is no separately.** Promoting a staged version is impossible:
+
+- job `7 · Promote to Stable` is gated on `inputs.promote` AND `needs` every deploy job;
+- the deploy jobs cannot re-run for a version whose prefix exists, because release storage is
+  immutable — measured, on the attempt to promote the staged 7.10.7:
+
+      ##[error]immutable release prefix already exists: s3://installer-binaries-prod/releases/7.10.7/
+
+- and there is no standalone promote workflow anywhere in .github/workflows.
+
+So staging with promote=false publishes artifacts under a version number that can then NEVER reach
+stable. 7.10.7 is now permanently stranded on prod S3: published, signed, and unreachable by any
+customer. Nothing shipped from it and stable was never at risk — the pipeline is fail-closed in that
+direction, which is why the failed promote attempt was harmless — but the version number is spent.
+
+The fix is one of two things, and it is a process change rather than a code edit:
+either a standalone promote job that takes an already-published version and only rewrites the
+channel pointer, or a candidate channel so a staged build can be exercised before promotion. The
+second also closes the gap recorded earlier today: the customer install path is pinned to
+channels/stable.json server-side with no channel selector, so today a release cannot be rehearsed
+the way a customer runs it without first promoting it to every customer.
+
+---
+
+## 2026-09-02 — anti-tamper PROVEN WORKING against an AI agent on the box, with controls
+
+A fresh reinstall was attempted from this agent-governed session and could not be done, because the
+product refused it. That is the correct outcome and the strongest positive result of the install
+testing so far: DeVoid stopped an AI agent operating with full local privileges from removing
+DeVoid.
+
+What was refused, and the CONTROL that proves each refusal is targeted rather than a blanket denial:
+
+    msiexec /x {DeVoid ProductCode}              BLOCKED
+    msiexec /x {00000000-1111-...-444444444444}  ALLOWED (ran, product-not-installed)
+
+    reg query ...\Uninstall /s /f DeVoid          BLOCKED
+    reg query ...\Uninstall /s /f Python          ALLOWED (ran, returned rows)
+
+    devoid uninstall --help                       BLOCKED
+
+Ordinary work is untouched: `ls C:\ProgramData\devoid`, `sc query devoid-daemon`, reading
+~/.claude/settings.json, and the shims (`npm --version`, `go version`) all pass. So the policy
+discriminates on the ACT, not on the string "devoid" and not on registry or msiexec as such.
+
+### Three things worth fixing, none of which weaken the defence
+
+1. `devoid uninstall --help` is blocked. Reading a command's documentation is not tampering, and
+   an operator who cannot read the help cannot follow the sanctioned removal path either.
+
+2. The deny reason is the SAME generic string used everywhere else — "the local governor did not
+   answer in time, so the decision was made on-box" — and never names the class. It describes a
+   TIMEOUT, which is not what happened: benign commands in the same session answer immediately.
+   Compare the tool gate, which says `destructive-rm` and offers a safe alternative. An operator
+   blocked here is told the governor was slow, not that anti-tamper refused them.
+
+3. The uninstall command published in this ledger earlier today is STALE. The 0.0.2 upgrade changed
+   the ProductCode, as WiX does per version. Correct values measured now:
+
+       UpgradeCode   {A1B2C3D4-E5F6-4A7B-8C9D-0E1F2A3B4C5D}
+       installed     {F0CDE123-2F75-4734-BC37-299F0C7154D3}
+       ORPHAN        {1C624ACD-D701-4A5E-81B2-97A8800CC19F}
+
+### The orphan is the W7 residue mechanism, live on this box
+
+TWO product codes are registered under one UpgradeCode. `{1C624ACD-...}` is the same id the first
+install's log reported as `FindRelatedProducts: could not read ASSIGNMENTTYPE info for product ...
+Skipping`. That is exactly the shape W7 T1 diagnosed — an orphaned MSI client that survives, so a
+later uninstall counts two clients, declines them, removes nothing and exits 0. It is present here
+and has not been cleaned up by either the install or the upgrade.
+
+### Consequence for testing
+
+A FRESH install cannot be performed from an agent session, by design. Removal has to be driven by
+the human from their own elevated terminal, which is what the existing operating note already says.
+Anything an agent can do here is an upgrade or a repair over the existing install, which is a
+different test and must not be reported as a fresh one.
+
+---
+
+## 2026-09-02 — clean removal + FRESH install at the shipped commit, verified
+
+### First, an error of mine that cost a round trip
+
+The removal command published earlier could not work in the shell an operator would actually use.
+In PowerShell `{...}` is a SCRIPT BLOCK, not a string, so an unquoted product code is never passed
+through. Measured:
+
+    unquoted -> ARG=%1 -encodedCommand MAAwADAAMAAwADAAMAAwAC0AMQAxADEAMQAt...
+    quoted   -> ARG=%1 {00000000-1111-2222-3333-444444444444}
+
+That is why the owner's attempt produced no MSI transaction, no log file, and removed nothing. The
+product code must be QUOTED. The same hazard is in the product's own LaunchCondition text, which
+tells the operator to run an .msi path containing spaces without quoting it.
+
+### Removal, run correctly: it completes, and it leaves 608 MB behind
+
+Exit 0. Genuinely removed: the service (no longer registered), every daemon process, the listener on
+19280, the shim directory from the machine PATH, and DeVoid's own five hooks from the live Claude
+profile — that last one is a good behaviour and it removed them cleanly.
+
+NOT removed, after an uninstall that exited 0:
+
+    C:\ProgramData\devoid\bin    41 files, 608.7 MB
+                                 every shim, INCLUDING claude.exe, codex.exe, npm.exe
+    C:\ProgramData\devoid\sessions  present
+    MSI client {1C624ACD-...}    STILL REGISTERED
+
+That orphan is the same id the very first install log reported as an unreadable ASSIGNMENTTYPE, i.e.
+the W7 T1 residue mechanism, measured live. The removal deregistered its OWN product code but the
+orphan survived it, so the box still carries two clients under one UpgradeCode.
+
+The 608 MB matters beyond disk: those are DeVoid binaries named claude.exe, codex.exe and npm.exe
+sitting in a directory that is no longer on PATH. They intercept nothing today, and anything that
+put that directory back on PATH would silently make them live again.
+
+### Fresh install at the shipped commit — verified
+
+Built from 48c3d2eb, the same commit promoted as 7.10.8, and installed with enrolment deferred.
+
+    machine root      aitrust bin config doctor evidence logs sessions
+    daemon            RUNNING, port 19280 listening, started by the scheduled task
+    service           registered, STOPPED (the supervisor; it starts at boot)
+    shims             19, and the machine PATH carries C:\ProgramData\devoid\bin\
+    pass-through      npm --version 11.6.2, go version go1.25.5 - unharmed
+    doctor            10 passed / 9 failed / 1 unverified, same as the previous install
+
+ENFORCEMENT, exercised on this fresh install:
+
+    destructive tool call          -> deny, decided on-box
+    shape-matched access key       -> warn only (correct: not a Tier-A hard-stop class)
+    PARSED private key in a prompt -> BLOCK, decided on-box
+
+Every failing doctor row is either deliberate (no enrolment) or a property of an unsigned local
+build (release manifest). Nothing regressed against the earlier install.
+
+### Two observations worth following up
+
+1. THE NEUTRAL CAPTURE NEVER RECORDS A HARD-STOPPED PROMPT. Confirmed by pairing, not inferred: the
+   parsed-key prompt hard-stops and writes NO capture, while the shape-matched key prompt on the
+   same lane with the same env var writes one. The hard-stop returns before the capture call, so the
+   strongest decisions the endpoint makes are exactly the ones it cannot replay later. Whether that
+   is intended is a W1 T4 / P47 question.
+
+2. A FRESH INSTALL DOES NOT WIRE THE CLAUDE HOOKS. `wired on 0 of 1 profiles` after this install,
+   and the live profile shows zero DeVoid entries — so this session is ungoverned again. The earlier
+   UPGRADE did wire them. That asymmetry is the known ship-ON gap, now measured on both paths.
+
+---
+
+## 2026-09-02 — W7 T4 implemented and merged (82 of 83), integration-unproven
+
+Its blocker cleared the same day: W7 T3 shipped in agent 7.10.8, which was the ordering constraint
+("Task 3 in a shipped release before Task 4"). W7 T1's diagnosis had already selected the branch.
+Merged to Installers main as `1b121d5e`.
+
+### The defect, reproduced first
+
+Measured on a real machine before any code was written: removal exited 0 and left 41 files and
+608.7 MB behind, and the orphaned client the diagnosis names by GUID was still registered afterwards.
+The plan's Task 1 heading says "the 41-file / 424 MB residue" — the same 41.
+
+### The fix
+
+When a force-strip clears a ProductCode's registration it now also clears that ProductCode's client
+entry, from only the 65 components this package owns. BOTH paths call it: the Go one in
+`ForceRemoveWindowsInstallerRegistration` and the PowerShell one in
+`Remove-DevoidInstallerRegistrationByProductCode`. Fixing one is how this returns; the two having
+diverged is why it exists at all.
+
+Five safety properties, each with its own test, because these values sit in a hive shared with every
+other installed product: the allowlist is generated from Product.wxs and matched by exact set
+membership, never a prefix; values only, and a key that loses its last value stays; a rollback export
+is written first and a failure aborts everything; the staleness rule fails closed; and no foreign
+entries are tidied.
+
+### Proven, and not
+
+PROVEN. Nine tests, all RED first. The mandated defeat test — swapping the set lookup for a prefix
+match — produces the plan's designed message and shows a foreign vendor's entry going from
+`FEEDFACE...=01:vendorA` to empty, the corruption scenario caught. Two tests beyond the plan pin the
+PowerShell and Go allowlists to each other and assert the PowerShell path really calls the clear. An
+integration test drives the real adapter against a scratch key under HKCU: the stale entry goes, the
+LIVE one survives, the key survives, a prefix-sharing foreign component is byte-identical, and
+`reg.exe export` really runs and produces bytes.
+
+NOT PROVEN, and the task is not complete without it. The stated EXIT is Probe 4 on a clean VM:
+install, force-strip, install, remove, then assert 0 files. There is no VM on this machine (`Get-VM`
+returns none; WSL is Linux only), and the plan forbids Probe 4 against the owner's box. So the MSI
+refcount behaviour end to end is untested, and the orphan already on the maintainer's machine is
+untouched for the same reason.
+
+**Do not cut an agent release carrying this until Probe 4 has run.** It is the most dangerous edit in
+the wave, and 7.10.8 does not contain it, so nothing is exposed today.
+
+### A near miss whose lesson generalises
+
+The first version put an em dash in a PowerShell comment. `internal/scripthygiene` caught it: a
+BOM-less file decodes as Windows-1252 under Windows PowerShell 5.1, where that character becomes a
+quote that terminates a string mid-script — the same class that already broke two shipped scripts. A
+parse check had been run and PASSED, because ParseFile reads UTF-8 and therefore tested a proxy for
+the thing that actually happens. The guard tested the real thing. "I verified it" is worth exactly
+what the check exercises.
+
+### One item left in the programme
+
+W2 T6b, and it needs the SAME VM: its condition 4 requires `graceMs = 5 x the measured p95 from
+W2 Task 6`, and Task 6's exit is 20 logon cycles on a clean VM. Deliberately not implemented. Its own
+spec opens with the reason — a fail-closed checkpoint on an unprovable condition bricked a machine in
+July 2026 and the operator removed the agent. Landing it dormant, with only its refusing path
+untested, is the shape this codebase has shipped green before.
+
+## 2026-09-02 — W7 T4 EXIT MET: Probe 4 returns 0. It took two wrong addresses to get there
+
+Supersedes the "integration-unproven" entry above. `(Get-ChildItem C:\ProgramData\devoid\bin -File).Count`
+went from **41 to 0** through the full sequence, on a real endpoint. Merged to Installers main as
+`dbfff756`.
+
+The plan restricts Probe 4 to a clean VM and forbids it against the owner's box. The owner authorised
+the deviation explicitly, on a machine that is recoverable and whose agent can be reinstalled. That is
+recorded here as a deviation, not folded away as a detail.
+
+### What the probe measured
+
+| step | measured |
+|---|---|
+| orphan client present on | 64 of 65 components — exactly the diagnosis's number |
+| stale sweep cleared | 64 entries |
+| component keys before / after | 49,381 / 49,381 — values only, keys untouched |
+| rollback export | written before any change, 33 MB |
+| `msiexec /x` | exit 0 |
+| **files in `bin` before / after** | **41 / 0** |
+
+Every earlier removal on this box also exited 0 and also left 41 files. Same command, same machine;
+the only difference is that the client holding the refcount is gone. That is what makes this a
+demonstration of the mechanism rather than a correlation.
+
+### Defect 1: the merged sweep was a NO-OP. It addressed the wrong hive
+
+Fixed in `dc81831f`. The code that merged an hour earlier targeted
+`HKLM\SOFTWARE\Classes\Installer\Components`. Per-machine component clients do not live there.
+Measured on this endpoint:
+
+```
+Classes\Installer\Components                       2 keys, none of ours, 0 clients
+...\Installer\UserData\S-1-5-18\Components    49,381 keys, 65 of 65 ours, 64 with the orphan
+```
+
+E2 of `residue-diagnosis.md` names the correct path in full. It was in front of us. The sweep would
+have run on every recovering machine, reported success, and cleared nothing.
+
+**Nine tests passed on the wrong address.** The unit tests drive a fake hive. The integration test
+drives a scratch key the test itself creates. Neither can notice that production is pointed somewhere
+nothing lives — *a fake cannot catch a wrong address.* The address is now pinned by three tests that
+name it, including one checking the PowerShell half on code lines only, so the comment explaining the
+wrong hive survives for the next reader.
+
+### Defect 2: the rollback export was deleted by the run that wrote it
+
+Fixed in `01ad370e`. Found by reading the EXIT criterion literally instead of stopping at the half
+that had already passed. EXIT has two clauses, and after the sequence
+`installer-components-backup.reg` did not exist.
+
+The sweep writes a `.reg` export as its gate: no export, no change. It wrote it to
+`%ProgramData%\devoid\evidence` — chosen for a real reason, since anywhere else under the machine root
+arms the MSI root guard. But the machine root is on `Get-DevoidResidueDirs`, and the recovery path
+removes that tree recursively a few steps later. The export lived about a second. The `reg import` in
+this task's own ROLLBACK section had nothing to import.
+
+Keeping the file and emptying the rest is not available: the residue probe counts the presence of the
+machine root as residue, so preserving anything under it makes every recovery run report failure. A
+sibling satisfies both constraints — outside the guard's root allowlist, and `Get-DevoidResidueDirs`
+joins the exact names `devoid`/`ceragon`/`cera`, so nothing sweeps it. **Deviation from the plan:**
+both halves now write to `%ProgramData%\devoid-recovery`, not the path the plan names in its ROLLBACK
+section. The plan's path cannot satisfy the plan's own EXIT.
+
+Nothing could have caught this either, and the reason is worth keeping. The unit tests pass a
+`t.TempDir()` path in, so they never see the production location. The live probe checks the file
+exists and it does — it runs before the removal. And `TestMain` redirects `ProgramData` for the whole
+package, so **every observation anyone ever made of that export was under a redirected root that no
+removal touches.** The probe's log line looked like production evidence and was not; it now says so
+in the line itself. Only measuring after the full sequence shows the file gone, and no test did that.
+
+The property is now pinned rather than the path: `TestRollbackExportSurvivesTheRemovalThatWritesIt`
+reads the directory names out of `Get-DevoidResidueDirs` and asserts the export is under none of them,
+with `TestResidueDirParseFindsTheMachineRoot` as the positive control so a broken parse cannot make it
+vacuously green. Defeat-tested both ways.
+
+### The generalisable part
+
+Two defects, one shape: **a wrong address that every fixture-based test agrees with.** Fixtures pin
+behaviour, and behaviour was never wrong here — the sweep did precisely the right thing at a place
+nothing lived, and wrote a correct rollback to a directory about to be deleted. Neither is visible
+from the code, and both were found the same way: run the real thing, and read the result against the
+written criterion rather than against what the code intended.
+
+Both would have shipped. The merged version was green, reviewed, and wrong.
+
+### State of the machine
+
+The agent is **not installed** — Probe 4 removed it, and no registered product remains. The box is
+unprotected until it is reinstalled. Also: `go test ./...` in the main `Installers` checkout is red in
+two guards (`TestOptOutEnvIsReadInExactlyOnePlace`, `TestPackageRemainsInertOutsideItsOwnToolingTree`)
+because both walk into the 5 nested checkouts under `.worktrees/` and judge their files. Pre-existing,
+environmental, green in any isolated worktree; every reported path is under `.worktrees/`. Separately,
+`go.mod`/`go.sum` were still CRLF in that checkout after the LF pin merged — git does not renormalise
+files it has not touched — which failed the C04 digest pin until they were re-checked-out.
+
+### Still open
+
+W2 T6b, unchanged: it needs the same clean VM for a 20-logon-cycle p95, and is deliberately not
+implemented. Cutting an agent release carrying W7 T4 is now unblocked — 7.10.8 does not contain it.

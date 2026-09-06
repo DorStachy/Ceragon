@@ -1,0 +1,14 @@
+=== T0: hooks-status undecided line BEFORE ===
+  [i] vendor hook fail-open: measured zero, over 51 delivered decision(s) · NOT MEASURED by this observer: hook-never-spawned (an invocation the client never spawned leaves no spawn-side trace)
+[devoid] [OK] Codex managed controls installed + compliant — the hook checkpoints are governed by the MACHINE baseline, not by the user-scope block · 5 of 5 checkpoints have fired · 0 invocations undecided (measured zero).
+
+=== now create 3 UNDECIDABLE invocations (unverified provenance + 0.134-shaped payload) ===
+A  exit=0  OPENS   0.144-shaped payload + REAL marker
+B  exit=0  OPENS   0.134-shaped payload + REAL marker
+C  exit=0  BLOCKS  0.134-shaped payload + WRONG marker (legacy firewall)
+D  exit=0  BLOCKS  0.134-shaped payload + NO marker (legacy firewall)
+E  exit=0  OPENS   0.144-shaped payload + NO marker (legacy firewall, shape passes)
+
+=== T1: hooks-status undecided line AFTER (same command, seconds later) ===
+  [i] vendor hook fail-open: measured zero, over 56 delivered decision(s) · NOT MEASURED by this observer: hook-never-spawned (an invocation the client never spawned leaves no spawn-side trace)
+[devoid] [OK] Codex managed controls installed + compliant — the hook checkpoints are governed by the MACHINE baseline, not by the user-scope block · 5 of 5 checkpoints have fired · 0 invocations undecided (measured zero).

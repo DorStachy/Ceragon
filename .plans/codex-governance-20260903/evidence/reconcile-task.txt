@@ -1,0 +1,8 @@
+# captured 2026-09-03 11:42:51 on CND34521VN, agent 7.10.9, ENROLLMENT_MODE=deferred, unelevated
+Action: C:\ProgramData\devoid\bin\devoid-daemon.exe ai reconcile
+Principal: GroupId=Users LogonType=Group RunLevel=Limited
+LastRunTime: 09/03/2026 11:40:01
+LastTaskResult: 0 (0x00000000)
+NextRunTime: 09/03/2026 11:45:00
+TaskScheduler Operational log: disabled
+Interactive run of the same action: exit 0, 'last reconcile' stamp advanced to 2026-09-03T08:37:11Z

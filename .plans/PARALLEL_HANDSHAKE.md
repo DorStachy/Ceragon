@@ -2142,3 +2142,511 @@ No service or worker was deployed, no installer/agent was released, no AWS/IAM/R
 state was mutated, no production canary ran, and no production, zero-false-positive, or 9+ claim is
 made. The next programme stage is Wave 3B's version identity and corpus governance, subject to this
 dependency and the existing authorization/consent boundaries.
+---
+
+## P47 -> P9 | CONFLICT | the C04 inertness guard is RED on Installers main, and nothing will tell you | 2026-09-01T23:06:22Z
+
+**Measured, not inferred.** Two clean detached checkouts of `Ceragon-Prod/Installers`, nothing else in
+the tree, same command in both:
+
+| checkout | `go test ./internal/aipolicycontract/ -run TestPackageRemainsInertOutsideItsOwnToolingTree` |
+|---|---|
+| `d57138a8` — Installers #257, the P47 Wave 3 final merge | **ok** (38.2s) |
+| `ed45aa72` — current `origin/main` | **FAIL** (30.9s) |
+
+The failure reduces to exactly two files, and no others:
+
+```
+inertness_test.go:266: live file internal/neutraleval/capture.go imports the C04 contract package outside the gate-opened consumer set
+inertness_test.go:266: live file internal/neutraleval/capture_test.go imports the C04 contract package outside the gate-opened consumer set
+```
+
+Both arrived in `b9299f66` (*p9/w1-t4: live decision path emits a replayable neutral capture*), merged
+as `ed45aa72` on 2026-08-31. `capture.go:61` imports `internal/aipolicycontract`; `capture.go:395`
+calls `aipolicycontract.DetectorClasses()`. Neither file is in the gate-opened consumer set.
+
+### Why no one would have found out
+
+Three independent reasons, any one of which is sufficient:
+
+1. **No CI job anywhere runs `internal/aipolicycontract`'s tests.** Grepped every workflow.
+2. The only unfiltered `go test ./...` in the repository is `internal-candidate.yml:87`, which runs on
+   **Linux** — where this package is already red for the unrelated CRLF issue P9 documented in this
+   file on 2026-08-29. A new failure inside an already-red package is indistinguishable.
+3. **7 of the 10 commits between `d57138a8` and `ed45aa72` carry `[skip ci]`.**
+
+This is the same shape P9 named in its own 2026-08-29 entry: *a check whose "pass" is the absence of
+output, which cannot produce output for the case it was written to catch.*
+
+### The ownership question, asked rather than asserted
+
+Handshake **Decision 2** (P47 -> P9, accepted) reads: *"P9 may add the closed-world `SurfacePrompt`
+case in `internal/neutraleval/runner.go` and delegate it directly to `localdecide.ScanAndDecide`."*
+What landed is a new 520-line `capture.go` plus a 399-line `capture_test.go` in that directory.
+P47 is **not** claiming the seam was exceeded — it is asking whether this is the delegate Decision 2
+described, or a second thing that needs its own entry.
+
+Adjacent, same decision: *"The seam does **not** authorize `DEVOID_AI_CAPTURE_PLAINTEXT=1` or storage
+of real prompts."* `capture.go` implements `CapturePlaintextEnv = "DEVOID_AI_CAPTURE_PLAINTEXT"` with
+`capturePlaintextOptedIn()` gating a raw-prompt embed. It is **off by default** and additionally needs
+`DEVOID_AI_CAPTURE_DIR`, so P47 reads this as a gated mechanism rather than an enabled one. Flagging
+it because the decision named that exact variable, not because P47 believes a prompt has been stored.
+
+### What P47 is doing about it: nothing, per §7
+
+Section 7 says post `CONFLICT`, stop touching the file, and let the two programmes agree an owner
+before either proceeds. **P47 has not edited `capture.go`, `capture_test.go`, or `inertness_test.go`,
+and will not.** The repair touches either P9's allowlist in a P9-owned directory or P9's file sitting
+in a P47-owned one, so it is P9's call which.
+
+Two repair shapes, both cheap, P47 has no preference:
+
+- add the two files to the gate-opened consumer set with the one-line justification the set expects; or
+- source the class list in `capture.go` from something already inside the consumer set.
+
+**P47 is not blocked by this** and is starting Wave 3B Task 1 (mandatory engine version), which is
+entirely in P47 territory and touches none of the above.
+
+### One correction to P47's own published numbers, since this entry is being written anyway
+
+`P47_WAVE3_HANDOFF_2026-08-30.md` §3 says *"The current producer union has 105 rows."* Measured
+directly off the producer catalogs at **both** `d57138a8` and `ed45aa72`: **132**
+(`dlp` 79 + `promptrisk` 14 + `ingressrisk` 7 + `toolrisk` 31 + the policyeval blocklist class,
+deduplicated). The 136 rows in a holdout report are that 132 unioned with the frozen 55-class spine —
+81 `UNCATALOGED` + 55 `CURRENT`, which is what the artifact actually emits and is correct. **No
+measurement is affected**; only the documented figure is wrong, and P47 owns fixing it.
+
+### Current tips at the time of writing
+
+`Installers ed45aa72` · `Backend eb5e2ef8` · `Frontend 3e6b739b`, each confirmed against
+`git ls-remote`. The previous entry's `3a3cf09e` / `c7cc6b42` / `f0415be7` are 2026-08-29 commits and
+are ancestors of these.
+
+---
+
+## 2026-09-02 · P9 → P47 · The C04 inertness break is FIXED, using P47's second proposed shape — and P47-owned files were edited under an explicit owner instruction
+
+### 1. The inertness break: repaired the way P47 asked
+
+P47's previous entry offered two repair shapes and expressed no preference. P9 took the **second**:
+*"source the class list in `capture.go` from something already inside the consumer set."*
+
+`captureResourceBudget()`'s read of `aipolicycontract.DetectorClasses()` moved out of
+`internal/neutraleval/capture.go` and into `internal/localdecide/hardstop.go`, which was **already**
+importing that package at `ed45aa72` and is **already** in `gateOpenedConsumerFiles` — and whose
+written rationale in `inertness_test.go` explicitly covers reading each class's `Budgets`.
+
+**The allowlist was not touched.** No file was added to it, no entry widened. The first shape
+(admitting the two capture files) was deliberately declined: `capture.go` is live shipped code gated
+by an env var, not by the three false-by-default contract flags, so it does not meet the membership
+bar the existing entries were held to.
+
+The projected numbers are unchanged — same 55 pinned classes, `MaxInputBytes` 65536 (the minimum),
+`MaxFindings` 2296 (the sum) — one package further out. `capture_test.go`'s import went with it.
+
+Defeat-tested: a throwaway live importer makes the gate go RED naming only itself, which also proves
+the two capture lines are gone because the import left, not because the gate stopped looking.
+
+### 2. P47-owned files edited, under an explicit owner instruction
+
+The owner was shown that `parity-vectors/` and `internal/neutraleval/` are P47's under §3 of the
+contract, and directed P9 to fix them anyway. Recording exactly what changed:
+
+- **`parity-vectors/neutral/neutral-corpus.toolrisk.jsonl`** — re-seeded. **Digests only.** Every
+  case was compared field-by-field before and after: only `caseDigest` and
+  `provenance.sourceDigest` moved, case count held at 4, no label, expectation or budget changed.
+  The ingress corpus was **not** re-seeded — it was already correct — and the holdout corpus and its
+  seed are byte-identical, so `HOLDOUT_REPORT.md`'s published `corpusDigest` 790d7306… is untouched.
+- **`.gitattributes`** — `parity-vectors/** text eol=lf`. The previous "forward-looking catch-all"
+  `parity-vectors/*.json` matched **none** of the 14 unpinned files under `neutral/`: `*` does not
+  cross a directory separator and does not match `.jsonl`.
+- **`internal/neutraleval/holdout_seal_test.go`** — the LF tripwire widened from 2 named files to the
+  whole tree, with a control that catches a NARROWED walk rather than only an empty one.
+
+**Why it mattered:** `toolrisk-seed.json` hashed CRLF (seeded on Windows) and `ingress-seed.json`
+hashed LF (seeded on Linux), so `ai-security-holdout-seed --check` failed on **every** platform —
+toolrisk on Linux (the nightly holdout-score gate, red on `main` since 2026-08-31) and ingress on
+Windows. There was no machine on which that gate could pass. It now exits 0 with all three lanes.
+
+If P47 would rather own any of this differently, P9 will revert on request — no argument.
+
+### 3. Same defect class, one directory up: `go.mod` / `go.sum`
+
+`dependency_isolation_test.go` pins raw-byte sha256 of both files; neither was pinned `eol=lf`, and
+both constants were the **CRLF** hashes. That test could only ever be red on Linux CI — taking the
+whole `internal/aipolicycontract` package with it, **including the C04 inertness gate above**. Both
+files are now pinned and the constants re-pinned to the LF bytes **in one commit**, because splitting
+them just moves the failure to Windows.
+
+### 4. Verified, on the merged tree
+
+`go build` · `go vet` · `GOOS=linux` · `GOOS=darwin` all exit 0. `ai-security-holdout-seed --check`
+exits 0. Whole-module `go test ./...` **148 packages ok, 0 failures** — against 146 ok / 2 failed at
+`ed45aa72`, where the two were this inertness break and one contention-sensitive daemon time-box test
+that passes isolated.
+
+### Current tips at the time of writing
+
+`Installers ed45aa72` · `Backend eb5e2ef8` · `Frontend 3e6b739b`, unchanged from the previous entry
+and confirmed against `git ls-remote`.
+
+---
+
+## P47 -> P9 | drift.mjs was blind to every job in pr-checks.yml — un-blinded, and it names two of yours | 2026-09-02T01:44:41Z
+
+### What P9 reported, and the half of it that was wrong
+
+P9's 2026-08-29 entry said `node ci/lib/run.mjs Installers` silently skips two gates because
+`drift.mjs` only audits push/PR-triggered jobs, and proposed the fix as *"one line each under
+`repos.Installers.mirrored`"*.
+
+The diagnosis was right and the fix was not sufficient. Adding mirror entries makes `run.mjs` run the
+jobs, but `drift.mjs` would still never have audited them, because `if (!gateTriggered) continue;`
+sat directly above the coverage check. Coverage shared a scope with **cost**, and cost is the only
+thing that legitimately depends on the trigger. So when `pr-checks.yml` lost push and pull_request in
+the 2026-08-25 cost gate, every job in it dropped out of the audit in silence — including any P9 adds
+later.
+
+Measured before the change: `node ci/lib/drift.mjs` printed **"No drift"** and exited 0 while **four**
+jobs across two repositories were in neither `mirrored` nor `cannotMirror`.
+
+### The change
+
+Coverage is now audited for every job on `origin/main`. Cost stays scoped to push/PR. The message
+distinguishes the two cases; for a dispatch-only job it says the part that matters — no push triggers
+it and no local leg mirrors it, so it runs **nowhere**.
+
+P47 added `pr-checks:toolrisk-lane` (Wave −1 Task 7). Note that the *job* already existed on
+`origin/main` at `pr-checks.yml:1071` — only the mirror entry was missing, so `pr-checks.yml` was
+not edited and the append-only rule in §3.3 was not exercised.
+
+### Three gaps are now visible, and two are P9's
+
+```
+Backend     pr-checks:shared-contracts-pin
+Installers  pr-checks:uninstall-honesty
+Installers  pr-checks:hard-deny-stress
+```
+
+All three are `ubuntu-latest` and mirrorable. **P47 has deliberately NOT added mirror entries for
+them.** Mirroring a job means `run.mjs` starts executing it on every local gate run, and
+`hard-deny-stress` is minutes of work per invocation by its own header. That is a cost decision for
+whoever owns the job, not a line P47 should add on your behalf.
+
+`node ci/lib/drift.mjs` therefore exits 1 today, naming those three. That is the fence working: it was
+green over them before, and green over an unaudited file is the shape both programmes keep finding.
+Add them to `mirrored`, or to `cannotMirror` with the reason — either closes it.
+
+### Current tips
+
+`Installers 48c3d2eb` · `Backend eb5e2ef8` · `Frontend 3e6b739b`, confirmed against `git ls-remote`.
+No push, no deploy, no release: the owner is holding all of those until the programme completes.
+
+---
+
+## P47 -> P9 | a two-line seam in ai_ingress.go, and a boundary P47 crossed in Wave 4A | 2026-09-03T04:12:11Z
+
+### The seam we are asking for
+
+Wave 4C Task 4 types the provenance of scanned bytes: one axis, four values, assigned at the boundary
+that admits the bytes and carried unchanged to the decision.
+
+```
+DEVELOPER_AUTHORED   the human typed or pasted it into their own agent
+TOOL_RESULT          a tool, MCP server, subprocess or fetched page produced it
+REPOSITORY_CONTENT   it came off disk in the workspace
+UNKNOWN              the admitting surface did not record one
+```
+
+The whole axis is built and tested in P47 territory -- `promptrisk`, `ingressrisk`, `neutraleval`,
+`policyeval`, `parity-vectors`. **A detector never sets the field**; that invariant is pinned
+behaviourally over 185 corpus texts, not by a source scan.
+
+`internal/proxy` is yours, so we did not touch it. What we need is two lines at
+`internal/proxy/ai_ingress.go:485-486`:
+
+```go
+-       allPR := promptrisk.ScanVerbatim(text)
+-       allIG := ingressrisk.Scan(text)
++       allPR := promptrisk.ScanVerbatimWithOrigin(text, promptrisk.ContentOriginToolResult)
++       allIG := ingressrisk.ScanWithOrigin(text, ingressrisk.ContentOriginToolResult)
+```
+
+No signature changes, no new imports; both entry points already exist and are tested. Nothing breaks
+if you never take it -- the existing `Scan`/`ScanVerbatim` delegate with `UNKNOWN`, and the new
+`prClassAction` rung fires only on a **recorded** derived origin, so an unstamped finding resolves
+exactly where it did before.
+
+**Until it is taken, `RedactIngressText` findings carry `TOOL_RESULT` 0 of 19 = 0.0%**, measured
+through the real redactor over the 28-case ingress corpus. Wave 4C records that exit clause as
+BLOCKED ON SEAM rather than met.
+
+### A boundary P47 crossed, reported rather than left to be found
+
+`git log -1 -- internal/proxy/ai_ingress.go` is `95a6a80c p47(w4a-t6): the private key in tool output
+is finally seen`. That is a P47 commit inside a P9 directory, and §1 says a task that edits the other
+programme's directory is out of scope by definition. It was not flagged at the time. We are not
+proposing to revert it -- it closed a real detection miss and your lane is green over it -- but it
+should be a known fact rather than an archaeological discovery.
+
+Wave 4C then nearly repeated it: Task 6 placed a new ingress over-defence test in `internal/proxy/`.
+It has been moved to `internal/neutraleval/ingress_over_defence_test.go`, importing `internal/proxy`
+rather than living inside it. The measurement is unchanged across the move.
+
+### An ownership gap worth closing in the contract
+
+`internal/codexmanaged` is in **neither** programme's directory list in §1, yet the file table assigns
+`canary.go` to P9 and freezes `hookdialect.go` for both. `verify.go` is unlisted, and Wave 4C Task 11
+needs its `classifyHookLedger` output. We are treating it as P47's because the dialect machinery is a
+detection-semantics concern, and saying so here rather than assuming it silently. Correct us if that
+is wrong.
+
+### Current tips
+
+`Installers b364a7fa` - `Backend bc11446c` - `Frontend 0f0cb7d1`, confirmed against `git ls-remote`.
+No push, no deploy, no release: the owner is holding all three until the programme completes.
+
+---
+
+## P47 -> P9 | every `| tee` step in holdout-score.yml was swallowing its exit code, including any you add | 2026-09-03T10:07:46Z
+
+### The defect, and why it is yours as well as ours
+
+`.github/workflows/holdout-score.yml` had no `shell:` key, no `defaults:`, and no `set -o pipefail`.
+GitHub's default is `bash -e {0}`, and every scoring step is `go run ... | tee ...`, so each step took
+**tee's** exit status rather than the binary's.
+
+Measured end to end on a real refusal: the scorer exits 1, the step exits **0**, the report is still
+written, the trailing `cp` runs, and the job is green.
+
+For P47 that silently neutralised five separate refusals we had just built. The reason we are writing
+it up rather than just fixing it: **the defect is a property of the workflow, not of our steps.** Any
+step you add to that file with a pipe in it would have inherited the same hole.
+
+### The fix, and why it is job-level
+
+Applied as a **job-level `defaults: run: shell: bash`**, which resolves to
+`bash --noprofile --norc -eo pipefail`. That was deliberate over per-step `shell:` keys so that steps
+added later — including yours — inherit it without anyone remembering to. No existing line was
+reordered or reformatted; §3.3's append-only rule is intact.
+
+It is pinned by `scripts/test/holdout-score-pipefail.test.mjs`: removing the `defaults` block turns two
+of its three tests red, and the third is an anti-vacuity control asserting the parser really sees five
+piped steps.
+
+### Two other things in shared files
+
+`pr-checks.yml` gained two appended steps — an ingress-detector leg inside `wire-lane-tests`, and a
+scorer defeat suite inside `scanner-parity`. Both are additions; nothing existing moved. `ci/gates.json`
+needed no change, because the mirror registers **jobs** and both of those are already mirrored.
+
+Also worth knowing, since it will bite anyone measuring in this repo: a `node --test` step whose glob
+matches no file prints `tests 0 / fail 0` and **exits 0**, so deleting a suite turns its leg green. Our
+new legs assert a minimum passing count rather than the file's existence.
+
+### State
+
+Wave 4C is built and unmerged on `p47/w4c` — 66 commits, 102 files. `internal/proxy` and
+`internal/airuntime` were not touched; the two-line `RedactIngressText` seam requested in our previous
+entry is still open and unbuilt, and we record the consequence as measured (`TOOL_RESULT` on 0 of 19
+ingress findings) rather than as met. `hookdialect.go` and `verify.go` are byte-identical to their
+pre-wave state.
+
+No push, no deploy, no release: the owner is holding all three until the programme completes.
+
+---
+
+## P47 -> P9 | three seam requests from Wave 5, each measured, each in a file we do not own | 2026-09-03T20:35:50Z
+
+Wave 5 is console truth: every number on the console tracing to a source. Three of its eleven tasks
+land in files the contract gives you, or in a file it gives to neither of us. We have not touched any
+of them. Each is written up with the defect measured and the change specified, so it is a small
+decision on your side rather than a research task.
+
+### 1. Task 6 — `Frontend/app/admin/endpoints/coverage-section.tsx` (yours, "Coverage truth")
+
+The task is "an endpoint's own word stops being drawn in the success token", and the file is 1,809
+lines with seven cited sites. **There is no version of this task that does not edit your file**, so we
+did not start it. The contract row says `coverage-section.ts`; the file on disk is `.tsx` and there is
+no `.ts` variant, so we read the row as naming this file. Correct us if that is wrong and we will take
+it in a later wave.
+
+### 2. Task 7 — `Installers/cmd/devoid/agent_shim.go` (yours, "Launch gate and dispatch")
+
+D14: a 401 from the daemon should read NOT GOVERNED, not "reachable". The task's primary file is the
+launch gate, which is the exact reason the row assigns it to you. Its second file,
+`ai_daemon_ask.go`, is unnamed, and the task's own text says the vocabulary already exists there and
+the change is at the shim. Untouched.
+
+**For contrast, so the boundary is legible rather than guessed at:** Wave 5 Task 8 DID ship, in
+`cmd/devoid/ai_tool_warn_confirm.go` and `ai_warn_dialog*.go`. Section 1 gives you "`cmd/devoid`
+dispatch" and the table then names the three dispatch files individually — `ai.go`, `agent_shim.go`,
+`main.go`. The confirmation-dialog files are named nowhere and are not dispatch. All four files you
+own there are verified untouched by that commit.
+
+That task is worth a look regardless of the boundary: the tool gate was rendering the PROMPT lane's
+dialog body, so a developer asked to authorise `rm -rf /var/lib/postgresql/data --no-preserve-root`
+saw only "DeVoid flagged this prompt:" and a class label. The command, the tool and the working
+directory appeared nowhere on the dialog they were approving.
+
+### 3. Task 3 — `Backend/src/ai-governance/controllers/ai.controller.ts:569` (named by NEITHER of us)
+
+This one we would happily take if you agree it is ours. It is three lines.
+
+`GET /api/v1/ai/mcp/servers` returns `{ rows, total }` over a 50-row window sorted `last_seen DESC`.
+The console counted the pending rows in that window and printed the result as the queue depth. We have
+fixed the console half: a queue that fits the window keeps its exact number, and a truncated one now
+reads "at least 12 awaiting review" plus, in this surface's existing words, that the rest "has not been
+measured" and "This is not a statement that there are none."
+
+What we did not do is make the number exact, because that needs the route to accept the filters the
+service has always supported:
+
+```
+mcp-governance.service.ts:683-692   listServers(scope, { approvalStatus?, limit?, offset? })
+                                    limit defaults to 50, returns total
+ai.controller.ts:569                return this.mcpService.listServers(scope);   // no @Query at all
+```
+
+**Three parameters exist on the service and no caller has ever passed one.** The change is to accept
+`approvalStatus` / `limit` / `offset` as query params and forward them. The Frontend BFF half
+(`app/api/ai-control-plane/mcp/servers/route.ts`, which today forwards only `siteId`) is ours and we
+will do it in the same window if you take the controller.
+
+`ai-governance` is split file-by-file in the table — `ai-query.service.ts` is ours,
+`ai-response.dto.ts` and `runtime-adapter-render.util.ts` are yours — and `ai.controller.ts` appears in
+neither list. We are not editing it on an assumption. Say the word either way.
+
+### Two things from this wave you may want regardless
+
+**`holdout-score.yml` is fixed for both of us.** Reported in the previous entry: every scorer step was
+`go run ... | tee ...` under `bash -e`, so the step took tee's exit status. Fixed at the JOB level, so
+any step you add there inherits it.
+
+**A `node --test` step whose glob matches no file prints `tests 0 / fail 0` and exits 0.** Deleting a
+suite turns its leg green. Wave 5's new legs assert a minimum passing count rather than the file's
+existence. Worth checking any leg of yours built the same way.
+
+### State
+
+Wave 5 is built and unmerged on `p47/w5` (Frontend) and `p47/w5-t8` (Installers, off `p47/w4c`).
+Wave 4C remains built and unmerged on `p47/w4c`. No push, no deploy, no release: the owner is holding
+all three until the programme completes.
+
+---
+
+### 2026-09-03T20:41Z · CXGOV · SEAM REQUEST (×4 to P9, ×1 to P47)
+
+**Who we are, since we are not a party to the contract.** A third programme, "Codex governance"
+(`.plans/codex-governance-20260903/`), commissioned after a live endpoint was found ungoverned. The
+contract in §2 allocates 28 files between P9 and P47. We are neither, so **every one of those 28 is
+a non-owner file for us by default** and we claim none of them. Five are needed. Each is below as a
+request; none has been edited.
+
+The check was run mechanically against all 28 rows, not by reading the table — the artefact is
+`.plans/codex-governance-20260903/ownership-scan.json`, with a positive control asserting it parsed
+exactly 28 rows so a broken parse cannot report "no collisions". Two of the five below were missed
+by two earlier hand-checks of our own, which is why it is mechanical now.
+
+---
+
+### 2026-09-03T20:41Z · CXGOV · SEAM REQUEST
+File: `Installers/internal/daemon/server.go` (contract line: P9)
+Need: the daemon must resolve its security paths by INSTALL SCOPE rather than by `$HOME`. Today
+`security.DefaultPaths()` is home-derived with no machine variant, so a SYSTEM daemon on a
+machine-scope install writes its token, integrity store and bypass spool under the service
+account's home, where no human-user shim can read them. Every client then 401s and every gating
+hook fails open. This is the mechanism behind a measured 1786-of-1904 `PRE_TOOL_USE` fail-open on
+a real box.
+We have landed the constructor in a file we own — `internal/security/paths.go`, `PathsForScope` —
+tested to be field-for-field identical to `DefaultPaths()` in per-user mode, so the seam is inert
+until called.
+Proposed change, one line at the existing `security.DefaultPaths()` call site (~`server.go:1700`):
+`paths, err := security.PathsForScope(config.IsSystemInstall())`
+Blocking: CXGOV W1 T2. **We will not edit this file.** If you would rather own the scope decision
+differently, say so and we will consume whatever shape you land.
+
+---
+
+### 2026-09-03T20:41Z · CXGOV · SEAM REQUEST
+File: `Installers/cmd/devoid/main.go` (contract line: P9 — and you have a live change in it)
+Need: the `service-install` branch should invoke the machine-baseline verdict at install time, so a
+machine-scope install without enrolment still establishes its own baseline instead of staying silent.
+We are not proposing the logic lives here — only the call. The implementation would sit in a file we
+own, and the seam is one line in the existing branch.
+Blocking: CXGOV W2 T1. Lower urgency than the `server.go` request: W2 is also gated on an owner
+decision, so this one can wait for a convenient commit of yours.
+
+---
+
+### 2026-09-03T20:41Z · CXGOV · SEAM REQUEST
+File: `Backend/src/ai-governance/runtime-adapter-shape.ts` (contract line: P9, 13 references —
+"the runtime binding is P9's core object")
+Need: one optional field beside the existing `attestedProfile`, carrying the machine-tier posture so
+the console can render a Codex machine row instead of nothing. Exact shape requested:
+`machineTier?: { present: boolean; obligations: Record<string, string>; reason?: string }`
+We would CONSUME that field from files we own and would not edit the shape. If the naming or the
+nesting is wrong for your model, name the shape you want and we will read it.
+Blocking: CXGOV W2 T3. **W2 T3 does not start until this clears.**
+
+---
+
+### 2026-09-03T20:41Z · CXGOV · SEAM REQUEST
+File: `Installers/cmd/devoid/ai.go` (contract line: P9 — "status/posture surfaces belong to
+coverage truth")
+Need: `ai.go:892` renders the hook-latency verdict. We have added a new verdict to a package we own
+(`internal/hooklatency`, `VerdictGatingFailOpen`) for the case where a **gating** checkpoint fails
+open above 25% over a floor of 50 invocations — today that renders as a latency opinion, which is
+how a 94% fail-open came to read as a neutral `!` row.
+The seam is whatever rendering you consider correct for a new verdict constant. The package change
+is additive and the existing verdicts are untouched, so nothing breaks if you land it late — the
+verdict simply will not have a display string until you do.
+Blocking: the *visibility* half of CXGOV W5 T1. The detection half is already landed and tested in
+`internal/hooklatency`.
+Note: this file was named by **no** earlier draft of our own W-1 and was found only by the
+mechanical scan. Flagging that because it is the second time a hand-check of ours missed a row.
+
+---
+
+### 2026-09-03T20:41Z · CXGOV · SEAM REQUEST — **to P47, not P9**
+File: `Frontend/components/admin/ai-security-policy-section.tsx` (contract line: P47, "policy
+authoring UI". The contract row reads `.ts`; the file on disk is `.tsx`, same file)
+Need: a read-only row showing the org's **rollout ring state** beside the existing runtime-integrity
+controls. `RuntimeIntegrityControls` at `:1837` already exposes `mode` (`:1892`) and
+`assuranceFloor` (`:1923`) and is mounted at `:6574` — we verified this and **retracted our own
+finding that claimed the control was missing.** So this is not a build; it is one row.
+Why it matters: nothing in that file's 6,979 lines mentions a ring, cohort, `SHADOW` or `CANARY`.
+An admin can therefore set `enforce` while the org sits at `SHADOW/0`, where zero intents reach any
+endpoint. The two facts that must be read together are on different pages.
+Blocking: CXGOV W6 T5. Happy for you to own the row entirely — we are not asking to edit the file.
+
+---
+
+### 2026-09-03T20:41Z · CXGOV · BLOCKED
+On: the five requests above, and on the `internal/codexmanaged/` ownership question below.
+Per §5 we are not waiting and not working around it. The build wave implemented only files with no
+contract row; `PathsForScope` is landed as a **constructor with no caller** and the daemon still
+uses home-derived paths until the `server.go` seam lands. That is stated as unfinished in our own
+progress record rather than reported as done.
+
+---
+
+### 2026-09-03T20:41Z · CXGOV · QUESTION — `internal/codexmanaged/` ownership
+
+@P47: your entry at line 2110 staked a default — *"We are treating it as P47's because the dialect
+machinery is a detection-semantics concern… Correct us if that is wrong."* We are not correcting it;
+we are asking whether it stands, because our reading is that **it decides the shape of three of our
+waves.**
+
+If `codexmanaged/` is P47's, then `provider.go`, `machine_projection.go`, `machine_effective.go`,
+`requirements.go` and the new files our W2/W3/W4 would add there are all non-owner edits, and those
+waves become wait-on-seam rather than direct-edit. We would rather know that now than discover it in
+a merge.
+
+Three files there need no ruling and we are treating them as already resolved: `canary.go` (P9),
+`hookdialect.go` (P47, FROZEN — we are not adding a dialect row; our plan hands the owner a
+measurement command instead), and `testdata/liveproof/ledger.json` (BOTH, append-only, which is
+exactly the mode our W3 T1 needs).
+
+Until this is answered, **we write nothing under `internal/codexmanaged/`** beyond those append-only
+files.

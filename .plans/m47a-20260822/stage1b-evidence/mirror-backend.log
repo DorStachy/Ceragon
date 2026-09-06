@@ -1,0 +1,79 @@
+[2mBackend[0m on [36mp47/stage1b-backend[0m (3 ahead)
+[2m>>[0m Backend [36mpr-checks:typecheck[0m
+   [32mPASS   [0m Backend pr-checks:typecheck [2m205s[0m
+[2m>>[0m Backend [36mpr-checks:lint#node-version=24.x[0m
+   [32mPASS   [0m Backend pr-checks:lint#node-version=24.x [2m113s[0m
+[2m>>[0m Backend [36mpr-checks:audit_integration[0m
+      service postgres: postgres:17
+   [32mPASS   [0m Backend pr-checks:audit_integration [2m124s[0m
+[2m>>[0m Backend [36mpr-checks:licenses_integration[0m
+      service postgres: postgres:17
+   [32mPASS   [0m Backend pr-checks:licenses_integration [2m113s[0m
+[2m>>[0m Backend [36mpr-checks:alerts_integration[0m
+      service postgres: postgres:17
+   [32mPASS   [0m Backend pr-checks:alerts_integration [2m117s[0m
+[2m>>[0m Backend [36mpr-checks:migration_chain_from_empty[0m
+      service postgres: postgres:17
+   [32mPASS   [0m Backend pr-checks:migration_chain_from_empty [2m88s[0m
+[2m>>[0m Backend [36mpr-checks:full_test#shard=1[0m
+      service postgres: postgres:17
+      service postgres_aicp_m1: postgres:17 listening on 55432
+      service postgres_aicp_m2: postgres:17 listening on 55433
+   [31mFAIL   [0m Backend pr-checks:full_test#shard=1 [2m315s[0m  [31m<- Run full Jest suite (shard 1/4)[0m
+[2m>>[0m Backend [36mpr-checks:full_test#shard=2[0m
+      service postgres: postgres:17
+      service postgres_aicp_m1: postgres:17 listening on 55432
+      service postgres_aicp_m2: postgres:17 listening on 55433
+   [32mPASS   [0m Backend pr-checks:full_test#shard=2 [2m321s[0m
+[2m>>[0m Backend [36mpr-checks:full_test#shard=3[0m
+      service postgres: postgres:17
+      service postgres_aicp_m1: postgres:17 listening on 55432
+      service postgres_aicp_m2: postgres:17 listening on 55433
+   [32mPASS   [0m Backend pr-checks:full_test#shard=3 [2m315s[0m
+[2m>>[0m Backend [36mpr-checks:full_test#shard=4[0m
+      service postgres: postgres:17
+      service postgres_aicp_m1: postgres:17 listening on 55432
+      service postgres_aicp_m2: postgres:17 listening on 55433
+   [32mPASS   [0m Backend pr-checks:full_test#shard=4 [2m308s[0m
+[2m>>[0m Backend [36msecurity:audit[0m
+   [32mPASS   [0m Backend security:audit [2m26s[0m
+[2m>>[0m Backend [36msecurity:rate_limit_taskdef[0m
+   [33mPARTIAL[0m Backend security:rate_limit_taskdef [2m28s[0m
+[2m>>[0m Backend [36msecurity:rds_boundary[0m
+   [33mPARTIAL[0m Backend security:rds_boundary [2m31s[0m
+[2m>>[0m Backend [36mbuild:build_and_test#node-version=24.x[0m
+      service postgres: postgres:17
+      service postgres_aicp_m1: postgres:17 listening on 55432
+      service postgres_aicp_m2: postgres:17 listening on 55433
+   [31mFAIL   [0m Backend build:build_and_test#node-version=24.x [2m906s[0m  [31m<- Run tests[0m
+[2m>>[0m Backend [36mbuild:e2e_advisory#node-version=24.x[0m
+   [32mPASS   [0m Backend build:e2e_advisory#node-version=24.x [2m58s[0m
+[2m>>[0m Backend [36mpr-checks:shared-contracts-pin[0m
+   [32mPASS   [0m Backend pr-checks:shared-contracts-pin [2m21s[0m
+
+[1m========================================================================[0m
+[31mFAIL   [0m Backend                        build:build_and_test#node-version=24.x
+          [2mlog: C:\cwt\p47b-ciroot\ci\.logs\Backend\build-build_and_test-node-version-24.x.log[0m
+[32mPASS   [0m Backend                        build:e2e_advisory#node-version=24.x
+[32mPASS   [0m Backend                        pr-checks:alerts_integration
+[32mPASS   [0m Backend                        pr-checks:audit_integration
+[31mFAIL   [0m Backend                        pr-checks:full_test#shard=1
+          [2mlog: C:\cwt\p47b-ciroot\ci\.logs\Backend\pr-checks-full_test-shard-1.log[0m
+[32mPASS   [0m Backend                        pr-checks:full_test#shard=2
+[32mPASS   [0m Backend                        pr-checks:full_test#shard=3
+[32mPASS   [0m Backend                        pr-checks:full_test#shard=4
+[32mPASS   [0m Backend                        pr-checks:licenses_integration
+[32mPASS   [0m Backend                        pr-checks:lint#node-version=24.x
+[32mPASS   [0m Backend                        pr-checks:migration_chain_from_empty
+[32mPASS   [0m Backend                        pr-checks:shared-contracts-pin
+[32mPASS   [0m Backend                        pr-checks:typecheck
+[32mPASS   [0m Backend                        security:audit
+[33mPARTIAL[0m Backend                        security:rate_limit_taskdef
+          [2mstopped at: Configure AWS credentials (OIDC) -- aws-actions/configure-aws-credentials@v4.3.1 mints cloud credentials[0m
+          [2mlog: C:\cwt\p47b-ciroot\ci\.logs\Backend\security-rate_limit_taskdef.log[0m
+[33mPARTIAL[0m Backend                        security:rds_boundary
+          [2mstopped at: Configure AWS credentials (OIDC) -- aws-actions/configure-aws-credentials@v4.3.1 mints cloud credentials[0m
+          [2mlog: C:\cwt\p47b-ciroot\ci\.logs\Backend\security-rds_boundary.log[0m
+
+12 pass, 2 fail, 2 partial, 0 error
+backend mirror exit=1

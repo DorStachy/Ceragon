@@ -1,0 +1,456 @@
+ok  	github.com/codefense/cli-wrapper/cmd/ai-lane-shadow-report	1.963s
+ok  	github.com/codefense/cli-wrapper/cmd/ai-security-holdout-seed	2.288s
+ok  	github.com/codefense/cli-wrapper/cmd/ai-security-neutral	13.460s
+ok  	github.com/codefense/cli-wrapper/cmd/devoid	683.625s
+?   	github.com/codefense/cli-wrapper/cmd/devoid-certificate	[no test files]
+ok  	github.com/codefense/cli-wrapper/cmd/devoid-daemon	2.411s
+?   	github.com/codefense/cli-wrapper/cmd/devoid-evidence-writer	[no test files]
+?   	github.com/codefense/cli-wrapper/cmd/devoid-g8check	[no test files]
+ok  	github.com/codefense/cli-wrapper/cmd/devoid-msi-acl-snapshot	2.520s
+ok  	github.com/codefense/cli-wrapper/cmd/devoid-msi-handle-holder	1.611s
+ok  	github.com/codefense/cli-wrapper/cmd/devoid-msi-root-guard	26.538s
+ok  	github.com/codefense/cli-wrapper/cmd/devoid-prompt-guard-host	1.903s
+?   	github.com/codefense/cli-wrapper/cmd/devoid-recover	[no test files]
+?   	github.com/codefense/cli-wrapper/cmd/egress-e2e	[no test files]
+?   	github.com/codefense/cli-wrapper/cmd/egress-permit-e2e	[no test files]
+?   	github.com/codefense/cli-wrapper/cmd/tuitest	[no test files]
+?   	github.com/codefense/cli-wrapper/cmd/w0a-perf-sample	[no test files]
+ok  	github.com/codefense/cli-wrapper/install-scripts/production	20.172s
+ok  	github.com/codefense/cli-wrapper/internal/aiagent	1.132s
+ok  	github.com/codefense/cli-wrapper/internal/aicanary	16.293s
+ok  	github.com/codefense/cli-wrapper/internal/aiclaudehost	1.403s
+ok  	github.com/codefense/cli-wrapper/internal/aicontext	201.392s
+ok  	github.com/codefense/cli-wrapper/internal/aicontextstash	1.588s
+ok  	github.com/codefense/cli-wrapper/internal/aicorrelation	1.619s
+ok  	github.com/codefense/cli-wrapper/internal/aiegress	1.352s
+ok  	github.com/codefense/cli-wrapper/internal/aiegressmatrix	1.909s
+ok  	github.com/codefense/cli-wrapper/internal/aigrade	0.921s
+ok  	github.com/codefense/cli-wrapper/internal/aiguard	1.159s
+ok  	github.com/codefense/cli-wrapper/internal/aihookmetrics	1.206s
+ok  	github.com/codefense/cli-wrapper/internal/aihooks	3.342s
+ok  	github.com/codefense/cli-wrapper/internal/aikeystore	4.268s
+ok  	github.com/codefense/cli-wrapper/internal/aipolicycontract	17.315s
+ok  	github.com/codefense/cli-wrapper/internal/aireasoning	2.350s
+ok  	github.com/codefense/cli-wrapper/internal/airuntime	2.702s
+ok  	github.com/codefense/cli-wrapper/internal/airuntime/adapters	1.441s
+ok  	github.com/codefense/cli-wrapper/internal/airuntime/adapters/claudecode	1.593s
+ok  	github.com/codefense/cli-wrapper/internal/airuntime/adapters/codex	4.696s
+ok  	github.com/codefense/cli-wrapper/internal/airuntimeintegrity	10.229s
+ok  	github.com/codefense/cli-wrapper/internal/airuntimeintegrity/providers/claude	25.980s
+ok  	github.com/codefense/cli-wrapper/internal/airuntimeinventory	2.802s
+ok  	github.com/codefense/cli-wrapper/internal/aiverdict	1.353s
+ok  	github.com/codefense/cli-wrapper/internal/aiwire	20.576s
+ok  	github.com/codefense/cli-wrapper/internal/aiwiretask	1.863s
+ok  	github.com/codefense/cli-wrapper/internal/brand	1.025s
+ok  	github.com/codefense/cli-wrapper/internal/browserinv	1.580s
+ok  	github.com/codefense/cli-wrapper/internal/certificate	1.778s
+ok  	github.com/codefense/cli-wrapper/internal/clientkind	1.358s
+ok  	github.com/codefense/cli-wrapper/internal/codexfailopen	25.333s
+ok  	github.com/codefense/cli-wrapper/internal/codexmanaged	84.185s
+ok  	github.com/codefense/cli-wrapper/internal/commandshape	1.095s
+ok  	github.com/codefense/cli-wrapper/internal/configwatch	2.669s
+ok  	github.com/codefense/cli-wrapper/internal/contentriskcatalog	1.237s
+ok  	github.com/codefense/cli-wrapper/internal/contenttransform	1.966s
+ok  	github.com/codefense/cli-wrapper/internal/controls	1.806s
+ok  	github.com/codefense/cli-wrapper/internal/core/backend	60.146s
+ok  	github.com/codefense/cli-wrapper/internal/core/config	5.523s
+ok  	github.com/codefense/cli-wrapper/internal/core/enforce	1.288s
+ok  	github.com/codefense/cli-wrapper/internal/coveragetruth	1.319s
+--- FAIL: TestEndTrackedAISessions_BoundedFanOutCompletesInTimeBox (5.21s)
+    ai_session_track_test.go:136: ended 1020 sessions, want all 1024 within the box (elapsed 5.0248289s)
+time=2026-09-06T22:27:38.356+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=6b777b94-7f30-4d68-8df9-48c998bff8ac error="backend status 404"
+time=2026-09-06T22:27:38.648+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=c9ebd300-df61-4556-a2c4-5aa444066f17 error="backend status 404"
+time=2026-09-06T22:27:38.811+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=11ccd0ed-5fec-4284-8a3a-c8ccea4ebd84 error="backend status 404"
+time=2026-09-06T22:27:40.568+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=45s retryAfterFromServer=true backingOffFor=45s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T22:27:40.568+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode="(absent — not from the app throttler)" retryAfter=0s retryAfterFromServer=false backingOffFor=5s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T22:27:40.568+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=30s retryAfterFromServer=true backingOffFor=30s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T22:27:40.568+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=30s retryAfterFromServer=true backingOffFor=32s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T22:27:40.714+03:00 level=WARN msg="AI tool-check post failed" toolName=Bash localDecision=block localFindings=2 error="backend status 429: ThrottlerException: Too Many Requests"
+time=2026-09-06T22:27:40.714+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=30s retryAfterFromServer=true backingOffFor=36s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T22:27:40.714+03:00 level=WARN msg="daemon AI tool-decision: control plane THROTTLED this report; using local decision" toolName=Bash decision=block backendReconciliation=unavailable
+time=2026-09-06T22:27:41.026+03:00 level=WARN msg="AI tool-check post failed" toolName=Read localDecision=allow localFindings=0 error="backend status 429: ThrottlerException: Too Many Requests"
+time=2026-09-06T22:27:41.026+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=30s retryAfterFromServer=true backingOffFor=30s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T22:27:41.026+03:00 level=WARN msg="daemon AI tool-decision: control plane THROTTLED this report; using local decision" toolName=Read decision=allow backendReconciliation=unavailable
+time=2026-09-06T22:27:41.452+03:00 level=WARN msg="AI tool-check post failed" toolName=Bash localDecision=block localFindings=2 error="backend status 429: ThrottlerException: Too Many Requests"
+time=2026-09-06T22:27:41.452+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=1m0s retryAfterFromServer=true backingOffFor=1m8s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T22:27:41.452+03:00 level=WARN msg="daemon AI tool-decision: control plane THROTTLED this report; using local decision" toolName=Bash decision=block backendReconciliation=unavailable
+time=2026-09-06T22:27:41.510+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=30s retryAfterFromServer=true backingOffFor=35s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T22:27:41.560+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=30s retryAfterFromServer=true backingOffFor=36s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T22:27:41.672+03:00 level=WARN msg="AI tool-check post failed" toolName=Read localDecision=allow localFindings=0 error="backend status 429: ThrottlerException: Too Many Requests"
+time=2026-09-06T22:27:41.672+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=1m30s retryAfterFromServer=true backingOffFor=1m37s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T22:27:41.672+03:00 level=WARN msg="daemon AI tool-decision: control plane THROTTLED this report; using local decision" toolName=Read decision=allow backendReconciliation=unavailable
+time=2026-09-06T22:27:45.041+03:00 level=WARN msg="AI policy fetch failed" error="http: dial tcp 127.0.0.1:64902: connectex: No connection could be made because the target machine actively refused it."
+time=2026-09-06T22:27:45.075+03:00 level=WARN msg="AI tool-check post failed" toolName=Bash localDecision=block localFindings=2 error="http: dial tcp 127.0.0.1:64902: connectex: No connection could be made because the target machine actively refused it."
+time=2026-09-06T22:27:45.075+03:00 level=WARN msg="daemon AI tool-decision: backend report failed; using local decision" toolName=Bash decision=block error="http: dial tcp 127.0.0.1:64902: connectex: No connection could be made because the target machine actively refused it." backendReconciliation=unavailable
+time=2026-09-06T22:27:46.692+03:00 level=WARN msg="tool-hold approval: the effect of this action could not be determined; the hold stands" reason=effect-inspection-incomplete requestId=22222222-2222-4222-8222-222222222222
+time=2026-09-06T22:27:49.473+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=bf7f2e4e-1e9e-4583-a265-3347b9082fbc error="backend status 503: no reviewer available for this org"
+time=2026-09-06T22:27:49.749+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=4682aff8-a2f8-4ea3-b72e-5b90624fced9 error="backend status 503: no reviewer available for this org"
+time=2026-09-06T22:27:55.760+03:00 level=WARN msg="tool-hold approval: the stored record's resolved effect does not match this invocation; the hold stands" reason=normalized-effect-mismatch requestId=22222222-2222-4222-8222-222222222222
+time=2026-09-06T22:27:59.158+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=f4c639e0-9f07-4265-a4a9-c47ac95c427e error="backend status 404"
+time=2026-09-06T22:28:00.702+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=8cbbc806-a3da-4190-90ed-489bf04c01df error="backend status 404"
+time=2026-09-06T22:28:01.007+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=04546975-2279-40c6-b8a9-b7804a3d1359 error="backend status 404"
+time=2026-09-06T22:28:01.626+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=0c7c3ebd-59e3-4010-83fd-5fe7e539d642 error="backend status 404"
+time=2026-09-06T22:28:05.012+03:00 level=ERROR msg="AI policy trust convergence refused: this daemon process may not write the machine-scoped endpoint signing key" posture=V1_DEGRADED issue=unprivileged-converge-actor
+time=2026-09-06T22:28:05.012+03:00 level=ERROR msg="AI policy trust convergence refused: this daemon process may not write the machine-scoped endpoint signing key" posture=V1_DEGRADED issue=unprivileged-converge-actor
+time=2026-09-06T22:28:05.021+03:00 level=ERROR msg="AI policy trust refresh did not converge; endpoint remains truthful V1/degraded" error="AI trust endpoint returned HTTP 409 (errorCode=AI_TRUST_ANCHOR_KEY_SUBSTITUTION)" posture=V1_DEGRADED firstBootstrap=true
+time=2026-09-06T22:28:05.022+03:00 level=ERROR msg="AI policy trust refresh did not converge; endpoint remains truthful V1/degraded" error="ack endpoint unreachable" posture=V1_DEGRADED firstBootstrap=false
+time=2026-09-06T22:28:05.022+03:00 level=ERROR msg="AI policy trust refresh did not converge; endpoint remains truthful V1/degraded" error="empty result" posture=V1_DEGRADED firstBootstrap=false
+time=2026-09-06T22:28:07.928+03:00 level=WARN msg="DEVOID_SKIP_AI_HOOKS HONORED — this endpoint is cooperative, so the local opt-out applies and DeVoid AI controls are NOT being reconciled. Recorded as a local disablement." surface=daemon-reconcile control=SIGNED_POLICY reason=LOCAL_OPTOUT_ATTEMPT allowed=true
+time=2026-09-06T22:28:08.741+03:00 level=WARN msg="non-interactive profile coverage not recorded: the per-user map is reserved for reporting users beyond this point" profile=dormant32 budget=32
+time=2026-09-06T22:28:08.745+03:00 level=WARN msg="non-interactive profile coverage not recorded: the per-user map is reserved for reporting users beyond this point" profile=dormant33 budget=32
+time=2026-09-06T22:28:08.747+03:00 level=WARN msg="non-interactive profile coverage not recorded: the per-user map is reserved for reporting users beyond this point" profile=dormant34 budget=32
+time=2026-09-06T22:28:08.760+03:00 level=WARN msg="non-interactive profile coverage not recorded: the per-user map is reserved for reporting users beyond this point" profile=dormant35 budget=32
+time=2026-09-06T22:28:08.932+03:00 level=WARN msg="endpoint inventory: profile stamp refused, path exceeds the bound" bytes=4105 max=4096
+time=2026-09-06T22:28:09.203+03:00 level=ERROR msg="Daemon cannot start: loopback port already in use" addr=127.0.0.1:65398 port=65398 hint="another process is holding this port (e.g. a stale devoid daemon, or a WSL/Docker port forward); stop that process or set DEVOID_DAEMON_PORT to a free port"
+time=2026-09-06T22:28:09.914+03:00 level=WARN msg="codex vendor hook fail-open observed since the last heartbeat" discarded=1 delivered=9 unobservedTier=hook-never-spawned detail="vendor hook fail-open: 1 invocation(s) were spawned and delivered no decision — those actions ran ungoverned (over 9 delivered decision(s)) · NOT MEASURED by this observer: hook-never-spawned (an invocation the client never spawned leaves no spawn-side trace)"
+time=2026-09-06T22:28:09.965+03:00 level=WARN msg="codex vendor hook fail-open is NOT MEASURED while hooks are running on this endpoint" reason=vendor-fail-open-not-measured delivered=31 detail="vendor hook fail-open: NOT MEASURED (no hook invocation has ever been observed on this endpoint) — no count is available from this endpoint; this is not a zero · 1 user profile(s) NOT MEASURED: their invocations are outside every count above · NOT MEASURED by this observer: hook-never-spawned (an invocation the client never spawned leaves no spawn-side trace)"
+time=2026-09-06T22:28:10.140+03:00 level=WARN msg="codex vendor hook fail-open observed since the last heartbeat" discarded=1 delivered=2 unobservedTier=hook-never-spawned detail="vendor hook fail-open: 1 invocation(s) were spawned and delivered no decision — those actions ran ungoverned (over 2 delivered decision(s)) · NOT MEASURED by this observer: hook-never-spawned (an invocation the client never spawned leaves no spawn-side trace)"
+time=2026-09-06T22:28:10.173+03:00 level=WARN msg="codex vendor hook fail-open is NOT MEASURED while hooks are running on this endpoint" reason=vendor-fail-open-not-measured delivered=100 detail="vendor hook fail-open: NOT MEASURED (no hook invocation has ever been observed on this endpoint) — no count is available from this endpoint; this is not a zero · 1 user profile(s) NOT MEASURED: their invocations are outside every count above · NOT MEASURED by this observer: hook-never-spawned (an invocation the client never spawned leaves no spawn-side trace)"
+time=2026-09-06T22:28:10.532+03:00 level=WARN msg="codex machine baseline: hook commands were migrated but the machine-owner DACL did NOT land — the baseline that pins allow_managed_hooks_only is left with the ACL it inherited from %ProgramData%, which grants BUILTIN\\Users write. Re-run 'devoid ai codex-machine install' from an elevated shell" repaired_commands=5
+time=2026-09-06T22:28:10.534+03:00 level=WARN msg="Self-update: release channel check loop NOT started — this endpoint will not update itself" autoUpdate=true credentialsValid=false runningVersion=test-cx3
+time=2026-09-06T22:28:12.176+03:00 level=WARN msg="AI prompt-check post failed" decision=allow findings=0 error="http: unsupported protocol scheme \"\""
+time=2026-09-06T22:28:12.176+03:00 level=WARN msg="daemon AI prompt-check: backend report failed; using local decision" decision=allow error="http: unsupported protocol scheme \"\"" backendReconciliation=unavailable
+time=2026-09-06T22:28:12.295+03:00 level=WARN msg="AI tool-check post failed" toolName=unnamed-tool localDecision=allow localFindings=0 error="http: unsupported protocol scheme \"\""
+time=2026-09-06T22:28:12.295+03:00 level=WARN msg="daemon AI tool-decision: backend report failed; using local decision" toolName="" decision=allow error="http: unsupported protocol scheme \"\"" backendReconciliation=unavailable
+time=2026-09-06T22:28:12.940+03:00 level=ERROR msg="daemon: machine capability-token hardening failed; mutating IPC is locked" error="injected ACL failure" path=C:\Users\Owner\AppData\Local\Temp\TestLoadOrCreateDaemonTokenLocksClosedWhenExistingMachineTokenCa2513888744\001\machine\daemon-token
+time=2026-09-06T22:28:12.950+03:00 level=ERROR msg="daemon: machine capability-token hardening failed after creation; mutating IPC is locked" error="injected ACL failure" path=C:\Users\Owner\AppData\Local\Temp\TestLoadOrCreateDaemonTokenRemovesFreshMachineTokenWhenHardening2589926999\001\machine\daemon-token
+time=2026-09-06T22:28:13.179+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T22:28:13.179+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.179+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.179+03:00 level=ERROR msg="Agent deregistered self-uninstall TRIGGERED: the backend has consistently reported this agent as removed from the DeVoid console; removing the agent from this machine via the privileged detached uninstall path" consecutive=3 requiredConsecutive=3 streakElapsed=10m0s requiredSpan=10m0s
+time=2026-09-06T22:28:13.181+03:00 level=WARN msg="Agent deregistered self-uninstall: already launched; waiting for the detached uninstall child to stop this daemon" consecutive=4 streakElapsed=11m0s
+time=2026-09-06T22:28:13.181+03:00 level=WARN msg="Agent deregistered self-uninstall: already launched; waiting for the detached uninstall child to stop this daemon" consecutive=5 streakElapsed=12m0s
+time=2026-09-06T22:28:13.209+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T22:28:13.209+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.209+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=1m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=9m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.209+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=3 requiredConsecutive=3 streakElapsed=2m0s requiredSpan=10m0s heartbeatsRemaining=0 timeRemaining=8m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.209+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=4 requiredConsecutive=3 streakElapsed=3m0s requiredSpan=10m0s heartbeatsRemaining=0 timeRemaining=7m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.209+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=5 requiredConsecutive=3 streakElapsed=4m0s requiredSpan=10m0s heartbeatsRemaining=0 timeRemaining=6m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.209+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=6 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=0 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.209+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=7 requiredConsecutive=3 streakElapsed=6m0s requiredSpan=10m0s heartbeatsRemaining=0 timeRemaining=4m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.209+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=8 requiredConsecutive=3 streakElapsed=7m0s requiredSpan=10m0s heartbeatsRemaining=0 timeRemaining=3m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.209+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=9 requiredConsecutive=3 streakElapsed=8m0s requiredSpan=10m0s heartbeatsRemaining=0 timeRemaining=2m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.209+03:00 level=ERROR msg="Agent deregistered self-uninstall TRIGGERED: the backend has consistently reported this agent as removed from the DeVoid console; removing the agent from this machine via the privileged detached uninstall path" consecutive=10 requiredConsecutive=3 streakElapsed=10m0s requiredSpan=10m0s
+time=2026-09-06T22:28:13.242+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T22:28:13.243+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.243+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.243+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.243+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.266+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:13.270+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T22:28:13.270+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.270+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.270+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.297+03:00 level=WARN msg="Heartbeat returned non-OK status" status=500 body="{\"message\":\"boom\"}"
+time=2026-09-06T22:28:13.301+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T22:28:13.302+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.302+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.302+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.332+03:00 level=WARN msg="Heartbeat returned non-OK status" status=503 body=""
+time=2026-09-06T22:28:13.336+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T22:28:13.336+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.336+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.336+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.364+03:00 level=ERROR msg="Heartbeat HTTP request failed" error="Post \"http://127.0.0.1:63768/api/v1/key-heartbeat\": dial tcp 127.0.0.1:63768: connectex: No connection could be made because the target machine actively refused it."
+time=2026-09-06T22:28:13.369+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T22:28:13.369+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.369+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.369+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.391+03:00 level=WARN msg="Heartbeat returned non-OK status" status=410 body="{\"error\":\"Gone\",\"message\":\"This agent has been removed from the DeVoid console. The agent should uninstall itself.\"}"
+time=2026-09-06T22:28:13.394+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T22:28:13.395+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.395+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.395+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.416+03:00 level=WARN msg="Heartbeat returned non-OK status" status=410 body=<html>410</html>
+time=2026-09-06T22:28:13.418+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T22:28:13.419+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.419+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.419+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.446+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"errorCode\":\"AGENT_DEREGISTERED\",\"message\":\"x\"}"
+time=2026-09-06T22:28:13.447+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T22:28:13.448+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.448+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.448+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.468+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T22:28:13.468+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=2 streakElapsed=0s requiredSpan=20ms heartbeatsRemaining=1 timeRemaining=0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:13.494+03:00 level=ERROR msg="Agent deregistered self-uninstall TRIGGERED: the backend has consistently reported this agent as removed from the DeVoid console; removing the agent from this machine via the privileged detached uninstall path" consecutive=2 requiredConsecutive=2 streakElapsed=0s requiredSpan=20ms
+time=2026-09-06T22:28:14.284+03:00 level=WARN msg="endpoint is not reporting runtime integrity; the backend will read it as unknown" reason="integrity store not open"
+time=2026-09-06T22:28:14.289+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T22:28:14.290+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:15.055+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T22:28:15.055+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:15.495+03:00 level=WARN msg="Endpoint inventory post failed" items=1 postedSoFar=0 chunks=1 error="backend status 404"
+time=2026-09-06T22:28:15.895+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T22:28:15.895+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:16.340+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T22:28:16.340+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T22:28:16.782+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T22:28:16.782+03:00 level=ERROR msg="Agent deregistered self-uninstall TRIGGERED: the backend has consistently reported this agent as removed from the DeVoid console; removing the agent from this machine via the privileged detached uninstall path" consecutive=3 requiredConsecutive=3 streakElapsed=10m0s requiredSpan=10m0s
+time=2026-09-06T22:28:17.290+03:00 level=WARN msg="endpoint is not reporting runtime integrity; the backend will read it as unknown" reason="integrity store not open"
+time=2026-09-06T22:28:17.294+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:17.588+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:17.937+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:18.257+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:18.538+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:18.796+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:19.188+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:19.469+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:19.669+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:20.039+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:20.262+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:20.517+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:20.821+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:21.243+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:21.569+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:22.083+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:22.445+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:22.946+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:23.508+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:23.988+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:24.626+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:25.409+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:26.081+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:26.497+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:26.817+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:27.228+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:27.442+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:27.807+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:28.450+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:28.939+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T22:28:29.280+03:00 level=WARN msg="endpoint evidence spool unavailable" cause=spool-held-by-another-process error="endpoint evidence spool is already open by this process (pid 16508): C:\\Users\\Owner\\AppData\\Local\\Temp\\TestSpoolHeldByAnotherProcessIsItsOwnCause980829383\\001\\evidence-spool\\550e8400-e29b-41d4-a716-446655440000"
+time=2026-09-06T22:28:29.961+03:00 level=WARN msg="endpoint evidence WAL was poisoned and has been quarantined; the endpoint emits on a new stream" cause=spool-corrupt-quarantined reason=sequence-conflict quarantinedPath=C:\Users\Owner\AppData\Local\Temp\TestQuarantinedSpoolIsAuditableAndSaysSo3312810788\001\evidence-spool\550e8400-e29b-41d4-a716-446655440000\endpoint-evidence.wal.poisoned-1788722909 previousStreamId=devoid:9a82a707-42df-46c3-9ba3-ce1355fbabb6 newStreamId=devoid:af99a469-04e9-40fc-87f0-8f6bee4253ad markerEnqueueError=""
+time=2026-09-06T22:28:30.227+03:00 level=WARN msg="endpoint evidence spool unavailable" cause=spool-open-failed error="load endpoint evidence WAL: open endpoint evidence WAL: open C:\\Users\\Owner\\AppData\\Local\\Temp\\TestSpoolOpenFailureIsNotReportedAsUnenrolled1892997598\\001\\evidence-spool\\550e8400-e29b-41d4-a716-446655440000\\endpoint-evidence.wal: is a directory"
+time=2026-09-06T22:28:31.053+03:00 level=WARN msg="endpoint inventory report refused: per-user coverage map is full" user=one-too-many users=64
+time=2026-09-06T22:28:31.687+03:00 level=WARN msg="AI prompt-check post failed" decision=allow findings=1 error="backend status 500"
+time=2026-09-06T22:28:31.687+03:00 level=WARN msg="daemon AI prompt-check: backend report failed; using local decision" decision=allow error="backend status 500" backendReconciliation=unavailable
+time=2026-09-06T22:28:31.867+03:00 level=WARN msg="AI prompt-check post failed" decision=allow findings=1 error="backend status 500"
+time=2026-09-06T22:28:31.867+03:00 level=WARN msg="daemon AI prompt-check: backend report failed; using local decision" decision=allow error="backend status 500" backendReconciliation=unavailable
+time=2026-09-06T22:28:31.903+03:00 level=WARN msg="AI prompt-check post failed" decision=allow findings=1 error="backend status 500"
+time=2026-09-06T22:28:31.903+03:00 level=WARN msg="daemon AI prompt-check: backend report failed; using local decision" decision=allow error="backend status 500" backendReconciliation=unavailable
+time=2026-09-06T22:28:32.453+03:00 level=WARN msg="AI prompt-check post failed" decision=block findings=0 error="backend status 404"
+time=2026-09-06T22:28:32.453+03:00 level=WARN msg="daemon AI prompt-check: backend report failed; using local decision" decision=block error="backend status 404" backendReconciliation=unavailable
+time=2026-09-06T22:28:33.584+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=a37f8a7d-66b1-4196-ab82-b6046f436367 error="backend status 404"
+time=2026-09-06T22:28:35.577+03:00 level=WARN msg="mediation: restricted mode; the governed mutation is refused" sink=S99-not-in-the-inventory reason=sink-not-in-inventory
+time=2026-09-06T22:28:35.579+03:00 level=WARN msg="mediation: restricted mode; the governed mutation is refused" sink=S6-human-release-allow-once reason=authority-store-unreadable
+time=2026-09-06T22:28:35.579+03:00 level=WARN msg="mediation: restricted mode; the governed mutation is refused" sink=S6-human-release-allow-once reason=policy-digest-unresolvable
+time=2026-09-06T22:28:35.579+03:00 level=WARN msg="mediation: restricted mode; the governed mutation is refused" sink=S6-human-release-allow-once reason=sink-inventory-digest-mismatch
+time=2026-09-06T22:28:35.650+03:00 level=WARN msg="mediation: restricted mode; the governed mutation is refused" sink=S99-not-in-the-inventory reason=sink-not-in-inventory
+time=2026-09-06T22:28:35.650+03:00 level=WARN msg="mediation: restricted mode; the governed mutation is refused" sink=S6-human-release-allow-once reason=policy-digest-unresolvable
+time=2026-09-06T22:28:35.653+03:00 level=WARN msg="mediation: restricted mode; the governed mutation is refused" sink=S6-human-release-allow-once reason=authority-store-unreadable
+time=2026-09-06T22:28:35.653+03:00 level=WARN msg="mediation: restricted mode; the governed mutation is refused" sink=S6-human-release-allow-once reason=sink-inventory-digest-mismatch
+time=2026-09-06T22:28:35.667+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=77b7e103-50f1-4254-967d-b09749a82d98 error="Post \"https://example.invalid/api/v1/ai/delegated-approvals/endpoint\": dial tcp: lookup example.invalid: no such host"
+time=2026-09-06T22:28:36.030+03:00 level=WARN msg="mediation: stored record claims a newer binding than the one that matched it; the hold stands" reason=binding-version-mismatch requestId=request-5de95fbe
+time=2026-09-06T22:28:36.453+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=106c2d99-5d7a-4490-8476-0edb50202d0b error="Post \"https://example.invalid/api/v1/ai/delegated-approvals/endpoint\": dial tcp: lookup example.invalid: no such host"
+time=2026-09-06T22:28:36.455+03:00 level=WARN msg="AI policy fetch failed" error="http: dial tcp: lookup example.invalid: no such host"
+time=2026-09-06T22:28:36.458+03:00 level=WARN msg="AI tool-check post failed" toolName=Bash localDecision=allow localFindings=0 error="http: dial tcp: lookup example.invalid: no such host"
+time=2026-09-06T22:28:36.458+03:00 level=WARN msg="daemon AI tool-decision: backend report failed; using local decision" toolName=Bash decision=allow error="http: dial tcp: lookup example.invalid: no such host" backendReconciliation=unavailable
+time=2026-09-06T22:28:36.464+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=864f7c68-0f06-4b35-8850-1496f0c8b309 error="Post \"https://example.invalid/api/v1/ai/delegated-approvals/endpoint\": dial tcp: lookup example.invalid: no such host"
+time=2026-09-06T22:28:36.469+03:00 level=WARN msg="AI tool-check post failed" toolName=Bash localDecision=allow localFindings=0 error="http: dial tcp: lookup example.invalid: no such host"
+time=2026-09-06T22:28:36.469+03:00 level=WARN msg="daemon AI tool-decision: backend report failed; using local decision" toolName=Bash decision=allow error="http: dial tcp: lookup example.invalid: no such host" backendReconciliation=unavailable
+time=2026-09-06T22:28:36.473+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=b7c01781-58a7-4b39-976f-940ed88d3541 error="Post \"https://example.invalid/api/v1/ai/delegated-approvals/endpoint\": dial tcp: lookup example.invalid: no such host"
+time=2026-09-06T22:28:36.476+03:00 level=WARN msg="AI tool-check post failed" toolName=Bash localDecision=allow localFindings=0 error="http: dial tcp: lookup example.invalid: no such host"
+time=2026-09-06T22:28:36.477+03:00 level=WARN msg="daemon AI tool-decision: backend report failed; using local decision" toolName=Bash decision=allow error="http: dial tcp: lookup example.invalid: no such host" backendReconciliation=unavailable
+time=2026-09-06T22:28:36.481+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=d0daa6b6-e905-476f-980b-91c8b714f1b2 error="Post \"https://example.invalid/api/v1/ai/delegated-approvals/endpoint\": dial tcp: lookup example.invalid: no such host"
+time=2026-09-06T22:28:36.483+03:00 level=WARN msg="AI tool-check post failed" toolName=Bash localDecision=allow localFindings=0 error="http: dial tcp: lookup example.invalid: no such host"
+time=2026-09-06T22:28:36.483+03:00 level=WARN msg="daemon AI tool-decision: backend report failed; using local decision" toolName=Bash decision=allow error="http: dial tcp: lookup example.invalid: no such host" backendReconciliation=unavailable
+time=2026-09-06T22:28:36.491+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=1c09c533-6277-449c-b408-45a364476994 error="Post \"https://example.invalid/api/v1/ai/delegated-approvals/endpoint\": dial tcp: lookup example.invalid: no such host"
+time=2026-09-06T22:28:36.495+03:00 level=WARN msg="AI tool-check post failed" toolName=Bash localDecision=allow localFindings=0 error="http: dial tcp: lookup example.invalid: no such host"
+time=2026-09-06T22:28:36.495+03:00 level=WARN msg="daemon AI tool-decision: backend report failed; using local decision" toolName=Bash decision=allow error="http: dial tcp: lookup example.invalid: no such host" backendReconciliation=unavailable
+time=2026-09-06T22:28:36.501+03:00 level=WARN msg="mediation: restricted mode; the governed mutation is refused" sink=S9-package-install reason=authority-store-unreadable
+time=2026-09-06T22:28:36.522+03:00 level=WARN msg="tool-hold approval: authority status unavailable; local hold stands" requestId=request-1 error="backend status 500"
+time=2026-09-06T22:28:37.743+03:00 level=WARN msg="tool-hold approval: authority status unavailable; local hold stands" requestId=request-1 error="delegated approval authority did not answer inside the hook budget"
+time=2026-09-06T22:28:38.066+03:00 level=WARN msg="tool-hold approval: authority status unavailable; local hold stands" requestId=request-1 error="invalid character '<' looking for beginning of value"
+time=2026-09-06T22:28:38.092+03:00 level=WARN msg="mediation: restricted mode; the governed mutation is refused" sink=S9-package-install reason=policy-digest-unresolvable
+time=2026-09-06T22:28:38.450+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=a56790a0-ab6d-4180-8e0f-2ec3c60ae949 error="Post \"https://example.invalid/api/v1/ai/delegated-approvals/endpoint\": dial tcp: lookup example.invalid: no such host"
+time=2026-09-06T22:28:38.515+03:00 level=WARN msg="mediation: restricted mode; the governed mutation is refused" sink=S14-session-taint-clear reason=authority-store-unreadable
+time=2026-09-06T22:28:38.553+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=c87e0ef3-2331-4086-87a6-ce57a4e9fd16 error="Post \"https://example.invalid/api/v1/ai/delegated-approvals/endpoint\": dial tcp: lookup example.invalid: no such host"
+time=2026-09-06T22:28:43.187+03:00 level=ERROR msg="daemon uninstall: watchdog fired — teardown did not complete" pid=16508 childDied=false
+time=2026-09-06T22:28:43.224+03:00 level=ERROR msg="daemon uninstall: watchdog fired — teardown did not complete" pid=16508 childDied=false
+time=2026-09-06T22:28:43.495+03:00 level=ERROR msg="daemon uninstall: watchdog fired — teardown did not complete" pid=16508 childDied=false
+time=2026-09-06T22:28:46.193+03:00 level=WARN msg="AI exception request failed" ecosystem=web name=openai error="http: dial tcp: lookup example.invalid: no such host"
+time=2026-09-06T22:28:46.227+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=9d9bb639-33ac-4106-8975-bc9a7af71d3c error="Post \"https://example.invalid/api/v1/ai/delegated-approvals/endpoint\": dial tcp: lookup example.invalid: no such host"
+time=2026-09-06T22:28:46.232+03:00 level=WARN msg="daemon AI permission: evidence enqueue failed" eventType=TOOL_CALL_REQUESTED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+time=2026-09-06T22:28:46.260+03:00 level=WARN msg="daemon AI permission: evidence enqueue failed" eventType=TOOL_CALL_BLOCKED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+time=2026-09-06T22:28:46.291+03:00 level=WARN msg="daemon AI permission: evidence enqueue failed" eventType=TOOL_CALL_REQUESTED error="endpoint evidence spool is unavailable: spool-not-enrolled"
+time=2026-09-06T22:28:46.410+03:00 level=WARN msg="AI tool-check post failed" toolName=Read localDecision=allow localFindings=0 error="http: dial tcp: lookup example.invalid: no such host"
+time=2026-09-06T22:28:46.410+03:00 level=WARN msg="daemon AI tool-decision: backend report failed; using local decision" toolName=Read decision=allow error="http: dial tcp: lookup example.invalid: no such host" backendReconciliation=unavailable
+time=2026-09-06T22:28:46.428+03:00 level=WARN msg="AI tool-check post failed" toolName=Read localDecision=allow localFindings=0 error="http: dial tcp: lookup example.invalid: no such host"
+time=2026-09-06T22:28:46.428+03:00 level=WARN msg="daemon AI tool-decision: backend report failed; using local decision" toolName=Read decision=allow error="http: dial tcp: lookup example.invalid: no such host" backendReconciliation=unavailable
+time=2026-09-06T22:28:46.447+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=ec8016c2-1b36-42f3-a0e7-6c5d73f6d9c5 error="Post \"https://example.invalid/api/v1/ai/delegated-approvals/endpoint\": dial tcp: lookup example.invalid: no such host"
+time=2026-09-06T22:28:46.784+03:00 level=ERROR msg="daemon uninstall: watchdog fired — teardown did not complete" pid=16508 childDied=false
+time=2026-09-06T22:28:46.911+03:00 level=WARN msg="openai sse: upstream routing refused; not forwarding" error="openai route: missing or non-bearer Authorization header" authMode=""
+time=2026-09-06T22:28:50.170+03:00 level=WARN msg="daemon AI: pre-load analysis lookup failed (first of this pass)" ecosystem=agent-skill error="dial tcp: connection refused"
+time=2026-09-06T22:28:51.613+03:00 level=WARN msg="daemon self-heal: restart failed to initiate; keeping current daemon running" error="could not initiate"
+time=2026-09-06T22:28:51.742+03:00 level=ERROR msg="daemon self-heal: restart failed AFTER the listener was torn down; exiting non-zero so the supervisor relaunches" error="self-heal restart: replacement daemon did not bind 127.0.0.1:19280: self-heal restart: listener already torn down"
+time=2026-09-06T22:28:51.752+03:00 level=ERROR msg="daemon self-heal: restart failed AFTER the listener was torn down; exiting non-zero so the supervisor relaunches" error="self-heal restart: spawn failed (CreateProcess denied) and scheduled task fallback failed (schtasks: Access is denied): self-heal restart: listener already torn down"
+time=2026-09-06T22:28:51.761+03:00 level=WARN msg="daemon self-heal: restart failed to initiate; keeping current daemon running" error="could not initiate"
+time=2026-09-06T22:28:52.092+03:00 level=WARN msg="Self-update: release channel check loop NOT started — this endpoint will not update itself" autoUpdate=true credentialsValid=false runningVersion=test-0.0.1
+time=2026-09-06T22:28:52.377+03:00 level=WARN msg="Self-update: release channel check loop NOT started — this endpoint will not update itself" autoUpdate=true credentialsValid=false runningVersion=test-0.0.1
+time=2026-09-06T22:28:52.520+03:00 level=WARN msg="Self-update: release channel check loop NOT started — this endpoint will not update itself" autoUpdate=true credentialsValid=false runningVersion=test-0.0.1
+time=2026-09-06T22:28:52.761+03:00 level=WARN msg="endpoint is not reporting runtime integrity; the backend will read it as unknown" reason="integrity store not open"
+time=2026-09-06T22:28:52.897+03:00 level=WARN msg="session-broker: refusing to launch an unpinned executable" session=2 exe=C:\Users\Owner\AppData\Local\Temp\TestSessionWatch_RefusesAnUnpinnedExecutableAndNeverFallsBack3043690123\002\bin\devoid-daemon.exe error="refusing to register \"Devoid AI Governance Reconcile\": command C:\\Users\\Owner\\AppData\\Local\\Temp\\TestSessionWatch_RefusesAnUnpinnedExecutableAndNeverFallsBack3043690123\\002\\bin\\devoid-daemon.exe is not an existing file"
+time=2026-09-06T22:28:52.903+03:00 level=WARN msg="session-broker: the per-session broker did not run" session=2 error="no usable token for session 2"
+time=2026-09-06T22:28:55.720+03:00 level=WARN msg="AI inventory sweep INCOMPLETE — items is a floor, not an inventory" items=0 accepted=0 reasons=inventory-walk-truncated causes=walk-reported-incomplete depthCeiling=0 depthPruned=0 unreadableDirs=0
+time=2026-09-06T22:28:55.762+03:00 level=WARN msg="ai hook undecidable outcomes observed since the last heartbeat" adapter=codex undecidable=1 normalize=1 stdinOversize=0 stdinTimeout=0 stdinError=0 other=0 daemonUnreachable=0 daemonError=0 ungoverned=0 provenanceUnverified=1 dropped=0 decided=1
+time=2026-09-06T22:28:55.763+03:00 level=WARN msg="ai hook outcomes recorded for a runtime with no enumerated instance" adapter=codex undecidable=4 decided=0 dropped=0
+time=2026-09-06T22:28:55.763+03:00 level=WARN msg="ai hook outcomes recorded for a runtime with no enumerated instance" adapter=unattributed undecidable=0 decided=0 dropped=9
+time=2026-09-06T22:28:55.781+03:00 level=WARN msg="ai hook undecidable outcomes observed since the last heartbeat" adapter=claude-code undecidable=5 normalize=0 stdinOversize=0 stdinTimeout=0 stdinError=0 other=0 daemonUnreachable=3 daemonError=2 ungoverned=5 provenanceUnverified=0 dropped=0 decided=5
+time=2026-09-06T22:28:56.028+03:00 level=ERROR msg="daemon uninstall: watchdog fired — teardown did not complete" pid=16508 childDied=false
+time=2026-09-06T22:28:56.188+03:00 level=ERROR msg="daemon uninstall: watchdog fired — teardown did not complete" pid=2147483632 childDied=true
+time=2026-09-06T22:28:56.201+03:00 level=ERROR msg="daemon uninstall: failed to launch uninstall child" error="boom: could not launch child"
+time=2026-09-06T22:28:56.201+03:00 level=ERROR msg="daemon uninstall: failed to launch uninstall child" error="boom: could not launch child"
+time=2026-09-06T22:28:56.329+03:00 level=ERROR msg="daemon uninstall: failed to launch uninstall child" error="boom: could not launch child"
+time=2026-09-06T22:28:56.346+03:00 level=ERROR msg="daemon uninstall: watchdog fired — teardown did not complete" pid=2147483632 childDied=true
+time=2026-09-06T22:28:56.906+03:00 level=ERROR msg="daemon uninstall: watchdog fired — teardown did not complete" pid=2147483632 childDied=true
+time=2026-09-06T22:28:57.063+03:00 level=ERROR msg="daemon uninstall: watchdog fired — teardown did not complete" pid=2147483632 childDied=true
+time=2026-09-06T22:28:57.063+03:00 level=ERROR msg="daemon uninstall: circuit breaker tripped — too many consecutive failures; stopping automatic retries, manual remediation required" failures=2 threshold=2
+time=2026-09-06T22:28:57.227+03:00 level=ERROR msg="daemon uninstall: watchdog fired — teardown did not complete" pid=2147483632 childDied=true
+time=2026-09-06T22:28:57.266+03:00 level=ERROR msg="daemon update: verified self-update child failed" error=boom
+time=2026-09-06T22:28:57.276+03:00 level=ERROR msg="daemon update: verified self-update child failed" error=boom
+time=2026-09-06T22:28:57.465+03:00 level=WARN msg="daemon update: refusing a verified self-update — an uninstall is in progress on this endpoint"
+time=2026-09-06T22:28:57.674+03:00 level=WARN msg="daemon update: refusing a verified self-update — an uninstall is in progress on this endpoint"
+C12CONTENTTOTAL lane=content/no-policy  corpus=133 interruptions=0
+C12CONTENTTOTAL lane=content/D4+DLP     corpus=133 interruptions=0
+C12CONTENTLIVE behaviour=allow merged=block reasons=[aws-access-key:block]
+C12TOTAL lane=LANE-A/no-policy(severity-default) corpus=123 interruptions=0
+C12TOTAL lane=LANE-B/D4-rebaseline               corpus=123 interruptions=0
+C12DANGER dd-to-disk               want=block    decision=block classes=destructive-dd/high
+C12DANGER mkfs-disk                want=block    decision=block classes=destructive-mkfs/high
+C12DANGER sudoers-append           want=block    decision=block classes=sudoers-edit/high
+C12DANGER authorized-keys          want=block    decision=block classes=authorized-keys-write/high
+C12DANGER firewall-off             want=block    decision=block classes=firewall-disable/high
+C12DANGER history-wipe-cmd         want=block    decision=block classes=history-wipe/high
+C12DANGER fork-bomb                want=block    decision=block classes=fork-bomb/high
+C12DANGER devoid-self-disable      want=block    decision=block classes=devoid-self-disable/high
+C12DANGER rm-root                  want=block    decision=block classes=destructive-rm/high
+C12DANGER ifs-chmod-broad          want=resolver-escalated decision=warn  classes=chmod-broad-777/high
+C12DANGER chmod-subtree            want=monitor  decision=allow classes=chmod-broad-777/high
+C12DANGERTOTAL probes=11 violations=0
+FAIL
+FAIL	github.com/codefense/cli-wrapper/internal/daemon	138.541s
+ok  	github.com/codefense/cli-wrapper/internal/daemonsupervise	2.010s
+?   	github.com/codefense/cli-wrapper/internal/discovery	[no test files]
+ok  	github.com/codefense/cli-wrapper/internal/dlp	5.415s
+ok  	github.com/codefense/cli-wrapper/internal/effectresolve	1.326s
+ok  	github.com/codefense/cli-wrapper/internal/egressmatrix	1.790s
+ok  	github.com/codefense/cli-wrapper/internal/endpointcontrolauth	1.629s
+?   	github.com/codefense/cli-wrapper/internal/envfallback	[no test files]
+ok  	github.com/codefense/cli-wrapper/internal/evidence	1.742s
+ok  	github.com/codefense/cli-wrapper/internal/evidencespool	9.600s
+ok  	github.com/codefense/cli-wrapper/internal/extwatch	1.633s
+ok  	github.com/codefense/cli-wrapper/internal/failureoracle	1.396s
+ok  	github.com/codefense/cli-wrapper/internal/fieldobs	1.726s
+ok  	github.com/codefense/cli-wrapper/internal/findings	1.172s
+ok  	github.com/codefense/cli-wrapper/internal/gitegress	10.506s
+ok  	github.com/codefense/cli-wrapper/internal/githook	14.226s
+ok  	github.com/codefense/cli-wrapper/internal/githook/diffmanifest	17.146s
+?   	github.com/codefense/cli-wrapper/internal/handlers/node/bun	[no test files]
+ok  	github.com/codefense/cli-wrapper/internal/handlers/node/lockfile	1.053s
+?   	github.com/codefense/cli-wrapper/internal/handlers/node/node	[no test files]
+ok  	github.com/codefense/cli-wrapper/internal/handlers/node/npm	1.647s
+ok  	github.com/codefense/cli-wrapper/internal/handlers/node/pnpm	1.565s
+?   	github.com/codefense/cli-wrapper/internal/handlers/node/yarn	[no test files]
+ok  	github.com/codefense/cli-wrapper/internal/handlers/python/pip	1.412s
+?   	github.com/codefense/cli-wrapper/internal/handlers/python/pipx	[no test files]
+ok  	github.com/codefense/cli-wrapper/internal/handlers/python/poetry	1.314s
+ok  	github.com/codefense/cli-wrapper/internal/handlers/python/python	1.474s
+ok  	github.com/codefense/cli-wrapper/internal/handlers/system/cargo	1.436s
+?   	github.com/codefense/cli-wrapper/internal/handlers/system/golang	[no test files]
+ok  	github.com/codefense/cli-wrapper/internal/hooklatency	1.585s
+ok  	github.com/codefense/cli-wrapper/internal/ingressrisk	1.813s
+ok  	github.com/codefense/cli-wrapper/internal/inventory/agentskill	7.830s
+ok  	github.com/codefense/cli-wrapper/internal/inventory/aitools	1.452s
+ok  	github.com/codefense/cli-wrapper/internal/inventory/editorext	1.226s
+ok  	github.com/codefense/cli-wrapper/internal/inventory/mcp	6.589s
+ok  	github.com/codefense/cli-wrapper/internal/inventory/model	0.971s
+ok  	github.com/codefense/cli-wrapper/internal/inventory/normalize	1.089s
+ok  	github.com/codefense/cli-wrapper/internal/inventory/plugin	3.171s
+ok  	github.com/codefense/cli-wrapper/internal/inventory/walk	1.256s
+?   	github.com/codefense/cli-wrapper/internal/laneshadowreport	[no test files]
+ok  	github.com/codefense/cli-wrapper/internal/liveproof	1.238s
+ok  	github.com/codefense/cli-wrapper/internal/localdecide	17.730s
+ok  	github.com/codefense/cli-wrapper/internal/localpack	7.521s
+ok  	github.com/codefense/cli-wrapper/internal/localreposcan	103.313s
+ok  	github.com/codefense/cli-wrapper/internal/localreposcan/allowedrepos	3.158s
+ok  	github.com/codefense/cli-wrapper/internal/localsnapshot	3.788s
+ok  	github.com/codefense/cli-wrapper/internal/logger	1.235s
+ok  	github.com/codefense/cli-wrapper/internal/mcpgov	3.855s
+ok  	github.com/codefense/cli-wrapper/internal/mcpquarantine	2.576s
+ok  	github.com/codefense/cli-wrapper/internal/mcprisk	2.007s
+ok  	github.com/codefense/cli-wrapper/internal/mcpserve	2.183s
+ok  	github.com/codefense/cli-wrapper/internal/mcpsources	1.907s
+ok  	github.com/codefense/cli-wrapper/internal/mcpwatch	3.046s
+ok  	github.com/codefense/cli-wrapper/internal/metadata	2.111s
+ok  	github.com/codefense/cli-wrapper/internal/netenforce	2.562s
+--- FAIL: TestEnforcingCasesHaveTwoLabelers (0.11s)
+    labeler_governance_test.go:201: ENFORCING-STRATUM LABELER GATE: 0 of 404 cases carry two distinct labelers.
+        404 violations across 9 stratum-A corpora, by kind: NO_GOVERNANCE_BLOCK=201 TOO_FEW_LABELERS=203.
+        First five:
+          TOO_FEW_LABELERS: stratum-A case "019d18fa-c6fb-56f2-b93f-43f1c8a17989" has 1 labeler(s); an enforcing claim needs two independent labels plus a tie-breaker
+          TOO_FEW_LABELERS: stratum-A case "01f940d5-54f2-5a1f-bf84-fb07d843d1a4" has 1 labeler(s); an enforcing claim needs two independent labels plus a tie-breaker
+          TOO_FEW_LABELERS: stratum-A case "026a25fc-2ad8-5c73-aef4-9c82792229db" has 1 labeler(s); an enforcing claim needs two independent labels plus a tie-breaker
+          TOO_FEW_LABELERS: stratum-A case "04f6cbc2-b509-566d-b6ad-35539fc6b292" has 1 labeler(s); an enforcing claim needs two independent labels plus a tie-breaker
+          TOO_FEW_LABELERS: stratum-A case "0606881d-cd90-5384-9885-19a37057a80e" has 1 labeler(s); an enforcing claim needs two independent labels plus a tie-breaker
+        This gate is RED ON ARRIVAL and stays red. The missing thing is a SECOND INDEPENDENT HUMAN, and a third to break ties — an owner staffing decision that no commit closes. Every false-positive and recall number this programme publishes over these cases rests on one person's labels, and until a second reviewer is named the honest inter-rater reliability is null (see TestReliabilityIsNullWhenNobodyIsDoublyLabelled). Do NOT make this test green by relaxing the gate: the corpus is what is unmet, not the assertion.
+FAIL
+FAIL	github.com/codefense/cli-wrapper/internal/neutraleval	55.855s
+ok  	github.com/codefense/cli-wrapper/internal/notify	1.148s
+ok  	github.com/codefense/cli-wrapper/internal/obligation	1.560s
+ok  	github.com/codefense/cli-wrapper/internal/osenforce	1.932s
+ok  	github.com/codefense/cli-wrapper/internal/osuser	0.991s
+ok  	github.com/codefense/cli-wrapper/internal/pathfix	40.845s
+ok  	github.com/codefense/cli-wrapper/internal/pathwatcher	1.755s
+ok  	github.com/codefense/cli-wrapper/internal/plugingate	15.350s
+ok  	github.com/codefense/cli-wrapper/internal/plugingatestash	10.955s
+ok  	github.com/codefense/cli-wrapper/internal/policybundle	9.184s
+ok  	github.com/codefense/cli-wrapper/internal/policyeval	2.524s
+ok  	github.com/codefense/cli-wrapper/internal/posture	2.599s
+ok  	github.com/codefense/cli-wrapper/internal/prescan	6.237s
+ok  	github.com/codefense/cli-wrapper/internal/profilepatch	6.824s
+?   	github.com/codefense/cli-wrapper/internal/project	[no test files]
+ok  	github.com/codefense/cli-wrapper/internal/promptcapture	1.764s
+ok  	github.com/codefense/cli-wrapper/internal/promptcontentspool	3.073s
+ok  	github.com/codefense/cli-wrapper/internal/promptevidence	1.569s
+ok  	github.com/codefense/cli-wrapper/internal/promptevidencegate	4.746s
+?   	github.com/codefense/cli-wrapper/internal/promptguard	[no test files]
+ok  	github.com/codefense/cli-wrapper/internal/promptrisk	5.179s
+ok  	github.com/codefense/cli-wrapper/internal/proxy	7.971s
+ok  	github.com/codefense/cli-wrapper/internal/pushgate	1.702s
+ok  	github.com/codefense/cli-wrapper/internal/pushscope	31.434s
+?   	github.com/codefense/cli-wrapper/internal/registry	[no test files]
+ok  	github.com/codefense/cli-wrapper/internal/release	2.636s
+ok  	github.com/codefense/cli-wrapper/internal/removalreport	1.571s
+ok  	github.com/codefense/cli-wrapper/internal/rulerisk	1.257s
+ok  	github.com/codefense/cli-wrapper/internal/runtimecert	1.054s
+ok  	github.com/codefense/cli-wrapper/internal/runtimecert/watch	1.457s
+ok  	github.com/codefense/cli-wrapper/internal/scandepth	1.799s
+ok  	github.com/codefense/cli-wrapper/internal/scripthygiene	2.517s
+ok  	github.com/codefense/cli-wrapper/internal/security	4.701s
+ok  	github.com/codefense/cli-wrapper/internal/session	2.161s
+ok  	github.com/codefense/cli-wrapper/internal/sessionauth	1.798s
+ok  	github.com/codefense/cli-wrapper/internal/sessiontitle	1.947s
+ok  	github.com/codefense/cli-wrapper/internal/shellast	1.524s
+?   	github.com/codefense/cli-wrapper/internal/shellast/legacyflat	[no test files]
+ok  	github.com/codefense/cli-wrapper/internal/skillgate	7.658s
+ok  	github.com/codefense/cli-wrapper/internal/sweep	6.361s
+ok  	github.com/codefense/cli-wrapper/internal/system	1.612s
+ok  	github.com/codefense/cli-wrapper/internal/textnorm	1.132s
+ok  	github.com/codefense/cli-wrapper/internal/toolrisk	9.663s
+ok  	github.com/codefense/cli-wrapper/internal/ui	1.097s
+ok  	github.com/codefense/cli-wrapper/internal/ui/icons	0.838s
+ok  	github.com/codefense/cli-wrapper/internal/ui/tea	2.129s
+ok  	github.com/codefense/cli-wrapper/internal/uninstall	13.708s
+ok  	github.com/codefense/cli-wrapper/internal/winacl	7.285s
+?   	github.com/codefense/cli-wrapper/internal/wininstall	[no test files]
+ok  	github.com/codefense/cli-wrapper/internal/winsession	0.983s
+ok  	github.com/codefense/cli-wrapper/internal/wirereadiness	1.323s
+ok  	github.com/codefense/cli-wrapper/internal/wslcodex	5.431s
+ok  	github.com/codefense/cli-wrapper/internal/wsldistro	0.905s
+ok  	github.com/codefense/cli-wrapper/packaging/browser-guard	1.657s
+ok  	github.com/codefense/cli-wrapper/packaging/scripts	0.886s
+ok  	github.com/codefense/cli-wrapper/scripts/aicontext-e2e	7.054s
+ok  	github.com/codefense/cli-wrapper/scripts/aicontext-gate	2.240s
+ok  	github.com/codefense/cli-wrapper/scripts/harddeny-stress	2.124s
+ok  	github.com/codefense/cli-wrapper/windows-installer/msi-build	1.069s
+FAIL
+go test ./... exit=1

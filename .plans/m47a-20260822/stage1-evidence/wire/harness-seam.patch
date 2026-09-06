@@ -1,0 +1,100 @@
+diff --git a/internal/daemon/server.go b/internal/daemon/server.go
+index 642aa143..9eebedee 100644
+--- a/internal/daemon/server.go
++++ b/internal/daemon/server.go
+@@ -720,7 +720,22 @@ func NewServer(daemonCfg Config, appCfg *config.Config, version string, secPaths
+ 	// is the gate. FailClosed:true is the static fallback; Wave 6 wires
+ 	// ProxyFailMode to policy.proxy.failMode so a per-site policy can flip it (only
+ 	// the literal "open" fails open).
+-	anthropicUpstream, _ := url.Parse("https://api.anthropic.com")
++	// P47 WIRE-LANE TEST SEAM (harness branch p47/wire-lane-harness only; NOT for merge).
++	// Redirects ONLY the forward destination to a loopback listener so the exact
++	// bytes this proxy puts on the wire can be captured. Loopback hosts only; any
++	// other value is ignored and the real upstream is used. No decision, scan,
++	// redaction or policy code is touched.
++	anthropicUpstreamBase := "https://api.anthropic.com"
++	if v := strings.TrimSpace(os.Getenv("DEVOID_TEST_ANTHROPIC_UPSTREAM")); v != "" {
++		if u, perr := url.Parse(v); perr == nil && u != nil {
++			hn := strings.ToLower(u.Hostname())
++			if hn == "localhost" || hn == "::1" || strings.HasPrefix(hn, "127.") {
++				anthropicUpstreamBase = v
++				logger.Warn("AI proxy: TEST upstream override in effect", "upstream", v)
++			}
++		}
++	}
++	anthropicUpstream, _ := url.Parse(anthropicUpstreamBase)
+ 	mux.Handle("/proxy/anthropic/", proxy.NewAIProxyHandler(proxy.AIProxyConfig{
+ 		Provider:   "anthropic",
+ 		Upstream:   anthropicUpstream,
+diff --git a/internal/proxy/openai_route.go b/internal/proxy/openai_route.go
+index 8a3f478c..b380e2b8 100644
+--- a/internal/proxy/openai_route.go
++++ b/internal/proxy/openai_route.go
+@@ -6,6 +6,7 @@ import (
+ 	"errors"
+ 	"net/http"
+ 	"net/url"
++	"os"
+ 	"strings"
+ )
+ 
+@@ -74,6 +75,30 @@ var (
+ 	platformResponsesWS   = httpsToWSS(platformResponsesHTTP)
+ )
+ 
++// P47 WIRE-LANE TEST SEAM (harness branch p47/wire-lane-harness only; NOT for merge).
++// Redirects ONLY the Codex wire lane forward destination to a loopback listener so
++// the exact bytes this proxy puts on the wire can be captured. Loopback hosts only.
++// No decision, scan, redaction or policy code is touched, and the managed-base
++// classifier (classifyBaseURL) is deliberately left alone.
++func init() {
++	v := strings.TrimSpace(os.Getenv("DEVOID_TEST_OPENAI_UPSTREAM"))
++	if v == "" {
++		return
++	}
++	u, err := url.Parse(v)
++	if err != nil || u == nil {
++		return
++	}
++	hn := strings.ToLower(u.Hostname())
++	if hn != "localhost" && hn != "::1" && !strings.HasPrefix(hn, "127.") {
++		return
++	}
++	chatgptResponsesHTTP = strings.TrimSuffix(v, "/") + responsesPath
++	chatgptResponsesWS = httpsToWSS(chatgptResponsesHTTP)
++	platformResponsesHTTP = strings.TrimSuffix(v, "/") + responsesPath
++	platformResponsesWS = httpsToWSS(platformResponsesHTTP)
++}
++
+ // ── Auth modes + families ───────────────────────────────────────────────────
+ 
+ // Auth-mode dimension values (certificate dimension — PRD line 96/99). Returned
+diff --git a/internal/system/info.go b/internal/system/info.go
+index 2f0f7f45..63f67f26 100644
+--- a/internal/system/info.go
++++ b/internal/system/info.go
+@@ -74,6 +74,13 @@ func MachineID() string {
+ 		}, "|")
+ 	}
+ 
++	// P47 WIRE-LANE TEST SEAM (harness branch p47/wire-lane-harness only; NOT for merge).
++	// Lets a second, throwaway daemon instance on the SAME machine enrol as its own
++	// endpoint instead of colliding with the already-enrolled one. Identity only —
++	// no scan, policy or redaction code is touched.
++	if salt := strings.TrimSpace(os.Getenv("DEVOID_TEST_FINGERPRINT_SALT")); salt != "" {
++		source += "|test-salt|" + salt
++	}
+ 	hash := sha256.Sum256([]byte(source))
+ 	return fmt.Sprintf("%x", hash)
+ }
+@@ -114,6 +121,10 @@ func LegacyMachineID() string {
+ 
+ 	parts := []string{hostname, macAddr, runtime.GOOS, runtime.GOARCH}
+ 	source := strings.Join(parts, "|")
++	// P47 WIRE-LANE TEST SEAM — see MachineID above.
++	if salt := strings.TrimSpace(os.Getenv("DEVOID_TEST_FINGERPRINT_SALT")); salt != "" {
++		source += "|test-salt|" + salt
++	}
+ 	hash := sha256.Sum256([]byte(source))
+ 	return fmt.Sprintf("%x", hash)
+ }

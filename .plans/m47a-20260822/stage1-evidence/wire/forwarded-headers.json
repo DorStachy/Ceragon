@@ -1,0 +1,9 @@
+{
+  "host": "127.0.0.1:19399",
+  "content-length": "154",
+  "anthropic-version": "2023-06-01",
+  "content-type": "application/json",
+  "x-api-key": "sk-ant-fake",
+  "x-forwarded-for": "127.0.0.1",
+  "accept-encoding": "gzip"
+}

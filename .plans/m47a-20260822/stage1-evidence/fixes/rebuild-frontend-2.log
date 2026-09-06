@@ -1,0 +1,7 @@
+[0s] == Frontend: stop :3201, then build (/c/cwt/p47-final-frontend-20260830 @ 0e8b730e) ==
+build rc=1
+6:> Build error occurred
+7:Error: EBUSY: resource busy or locked, rmdir 'C:\cwt\p47-final-frontend-20260830\.next\standalone'
+[6s] == Frontend: start :3201 ==
+[6s]    frontend /login http=200
+[6s] done

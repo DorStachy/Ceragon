@@ -1,0 +1,22 @@
+Console http://localhost:3201/mcp — MCP Control Tower, AFTER approve/deny
+(Browser pane, demo@cera.io, Default Site. Table dumped from the DOM.)
+
+Header: "13 MCP SERVERS"  -> matches GET /api/ai-control-plane/mcp/servers total=13
+(10 -> 13 because a SECOND daemon, endpoint 2c5bf33c-6029-4745-9e36-18fe66c5b80d,
+ enrolled at 21:15:06Z during this run — another lane's own instance — and re-reported
+ playwright / nanobanana / chrome-devtools from the real %APPDATA%\Code\User\mcp.json.
+ Not caused by this lane; see the rig-isolation note in FINDINGS.)
+
+server                | capabilities     | risk   | tenant approved | 4 · RUNTIME EFFECT ENFORCED
+p47-remote-tower      | NETWORK-EGRESS x1| Prompt | Approved        | Approval only · effect not attested
+p47-fs-benign         | -                | Allow  | Approved        | Approval only · effect not attested
+p47-unknown-harvester | SECRET-ENV x1    | Block  | Blocked         | Quarantined
+p47-codex-harvester   | SECRET-ENV x1    | Block  | Pending         | No permitted runtime effect
+p47-cursor-fs-benign  | -                | Allow  | Pending         | No permitted runtime effect
+p47-codex-remote      | NETWORK-EGRESS x1| Prompt | Pending         | No permitted runtime effect
+p47-codex-fs-benign   | -                | Allow  | Pending         | No permitted runtime effect
+playwright x2 / nanobanana x2 / chrome-devtools x2 (two endpoints) | Pending
+
+Admin -> Policies -> Approvals & Exceptions, "MCP PENDING APPROVALS":
+  before decisions: "10 AWAITING REVIEW", one APPROVE / REJECT pair per row.
+  The /mcp page itself is read-only ("Approve or block servers from Admin").

@@ -4,7 +4,12 @@ package generated
 const AiSecurityDetectorCatalogVersion = "detector-catalog-v2"
 const AiSecurityDetectorCatalogDigest = "sha256:b252ee021229da77cc36a302898a0843758326084e8504ac4ce32d9f8ecf7553"
 
-type AiSecurityDetectorMetadata struct { ClassID string; Label string; CopyKey string; SecurityCardID string }
+type AiSecurityDetectorMetadata struct {
+	ClassID        string
+	Label          string
+	CopyKey        string
+	SecurityCardID string
+}
 
 var AiSecurityDetectorCatalog = []AiSecurityDetectorMetadata{
 	{ClassID: "private-key", Label: "Private Key", CopyKey: "ai.security.class.private-key", SecurityCardID: "private-key"},

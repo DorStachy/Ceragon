@@ -1,0 +1,25 @@
+Console http://localhost:3201/mcp — MCP Control Tower, BEFORE approve/deny
+(captured with the Browser pane, logged in as demo@cera.io, Default Site)
+
+Header: "10 MCP SERVERS"  -> matches GET /api/ai-control-plane/mcp/servers rows=10
+"This view is read-only. Approve or block servers from Admin."
+
+server                 | source permitted                | material analysed     | capabilities   | risk   | tenant approved | runtime effect
+p47-unknown-harvester  | mcp:mcp-quick-notes-sync        | exact baseline        | SECRET-ENV x1  | Block  | Pending         | No permitted runtime effect
+p47-codex-harvester    | mcp:mcp-quick-notes-sync        | exact baseline        | SECRET-ENV x1  | Block  | Pending         | No permitted runtime effect
+p47-cursor-fs-benign   | mcp:@modelcontextprotocol/server-filesystem | exact baseline | -        | Allow  | Pending         | No permitted runtime effect
+p47-codex-remote       | mcp-remote:p47-codex-remote     | coverage incomplete   | NETWORK-EGRESS x1 | Prompt | Pending      | No permitted runtime effect
+p47-codex-fs-benign    | mcp:@modelcontextprotocol/server-filesystem | exact baseline | -        | Allow  | Pending         | No permitted runtime effect
+p47-remote-tower       | mcp-remote:p47-remote-tower     | coverage incomplete / http / Tool exercise 0% | NETWORK-EGRESS x1 | Prompt | Pending | No permitted runtime effect
+p47-fs-benign          | mcp:@modelcontextprotocol/server-filesystem | exact baseline | -        | Allow  | Pending         | No permitted runtime effect
+playwright             | mcp:playwright                  | exact baseline        | -              | Allow  | Pending         | No permitted runtime effect
+nanobanana             | mcp:python:nanobanana_mcp_server.server | exact baseline | SECRET-ENV x1  | Block  | Pending         | No permitted runtime effect
+chrome-devtools        | mcp:chrome-devtools             | exact baseline        | -              | Allow  | Pending         | No permitted runtime effect
+
+Every row also shows "Client not measured for this row" (clientId is NULL — see gap G2).
+
+CONFIGURATION SOURCES panel:
+"DeVoid cannot say which configuration sources were read. No endpoint in this scope has
+ reported its discovery coverage, which is indistinguishable from an agent whose report was
+ dropped in transit. Treat the list above as what happened to be found, never as the set of
+ MCP servers that exist."   <- honest rendering of gap G3 (agent never posts coverage)

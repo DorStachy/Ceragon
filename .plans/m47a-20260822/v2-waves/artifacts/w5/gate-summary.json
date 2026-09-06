@@ -1,0 +1,51 @@
+{
+  "selfChecks": [
+    {
+      "name": "no-such-route must be doc-status",
+      "exit": 1,
+      "asExpected": true,
+      "note": ""
+    },
+    {
+      "name": "broken-fixture must not grade a crashed page as OK",
+      "exit": 1,
+      "asExpected": true,
+      "note": ""
+    }
+  ],
+  "scenarios": [
+    {
+      "scenario": "populated",
+      "exit": 0,
+      "routes": 11,
+      "shots": 11
+    },
+    {
+      "scenario": "empty-tenant",
+      "exit": 0,
+      "routes": 11,
+      "shots": 11
+    },
+    {
+      "scenario": "absent-data",
+      "exit": 0,
+      "routes": 11,
+      "shots": 11
+    },
+    {
+      "scenario": "read-failed",
+      "exit": 0,
+      "routes": 6,
+      "shots": 6
+    }
+  ],
+  "startedAt": "2026-09-03T21:52:19.637Z",
+  "corpusProblems": [],
+  "finishedAt": "2026-09-03T22:00:24.771Z",
+  "verdict": "PASS",
+  "limits": [
+    "Nothing here talks to a real Backend; the stub answers with fixtures. A green run says the console renders honestly GIVEN THAT WIRE STATE.",
+    "No live-update channel: every shot is the no-live-socket state. Anything that appears only on a pushed update is NOT EXERCISED.",
+    "next dev, not a production build: build-time behaviour is not covered."
+  ]
+}

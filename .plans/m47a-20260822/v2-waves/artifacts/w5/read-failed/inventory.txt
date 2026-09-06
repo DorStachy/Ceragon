@@ -1,0 +1,78 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+RQ
+Render QA
+Admin
+ACCOUNT
+Render QA Org
+Render QA
+INVENTORY
+Search…
+ctrl
+K
+Inventory
+
+Everything on every machine: packages, MCP servers, extensions, and the AI agents operating on them.
+
+By Endpoint
+One row per machine
+By Item
+Who has this package?
+All Verdicts
+FLEET EXPOSURE
+0%
+PACKAGE VERDICT
+0
+FLAGGED
+
+of 2 endpoints
+
+MOST EXPOSED
+
+No flagged endpoints.
+
+AI ON FLEET
+With AI agents
+-
+With risk flags
+-
+Blocked movement
+-
+
+across recent sessions
+
+COULD NOT LOAD AI POSTURE The AI columns are unfilled because that read failed, not because no AI activity was found on these machines. The server returned an error for this read. Retry
+
+ENDPOINT INVENTORY · FLEET
+
+One row per machine: what's installed on it. The AI half of this table was not read.
+
+2 ENDPOINTS
+ENDPOINT
+	WORST ITEM
+	AI AGENTS
+	FLAGS
+	SESSIONS
+	BLOCKED
+	PKGS
+	EXT
+	MCP
+	LAST SEEN
+
+
+DESKTOP-QA01
+WINDOWS · 0 ITEMS
+	
+UNKNOWN	NOT READ	NOT READ	NOT READ	NOT READ	-	-	-	Sep 4, 12:54 AM
+
+DESKTOP-QA02
+WINDOWS · 0 ITEMS · NO AGENT
+	
+UNKNOWN	NOT READ	NOT READ	NOT READ	NOT READ	-	-	-	Sep 3, 11:59 PM

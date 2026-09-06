@@ -1,0 +1,147 @@
+# green-after — run 2026-09-06T07:35:29Z on branch p47/fix-spool-lock @ f6148c37
+
+$ go build ./... && go vet ./internal/evidencespool/ ./internal/daemon/ ./internal/controls/
+(clean)
+
+$ go test -count=1 -v -run "TestTwoHandles|TestPoisonedWAL|TestConflictingEventID|TestEveryOtherLoadError|TestConcurrentOpenYieldsExactlyOneOwner|TestSpoolCannotBeSilentlyRebound" ./internal/evidencespool/
+=== RUN   TestTwoHandlesOnOneSpoolAreRefused
+--- PASS: TestTwoHandlesOnOneSpoolAreRefused (0.03s)
+=== RUN   TestPoisonedWALIsQuarantinedAndTheStreamRotates
+--- PASS: TestPoisonedWALIsQuarantinedAndTheStreamRotates (0.25s)
+=== RUN   TestConflictingEventIDIsAlsoQuarantined
+--- PASS: TestConflictingEventIDIsAlsoQuarantined (0.24s)
+=== RUN   TestEveryOtherLoadErrorStaysStrict
+=== RUN   TestEveryOtherLoadErrorStaysStrict/unsupported_version
+=== RUN   TestEveryOtherLoadErrorStaysStrict/unknown_record_kind
+=== RUN   TestEveryOtherLoadErrorStaysStrict/stream_identity_changed
+=== RUN   TestEveryOtherLoadErrorStaysStrict/undecodable_record
+--- PASS: TestEveryOtherLoadErrorStaysStrict (0.92s)
+=== RUN   TestConcurrentOpenYieldsExactlyOneOwner
+--- PASS: TestConcurrentOpenYieldsExactlyOneOwner (0.01s)
+=== RUN   TestSpoolCannotBeSilentlyReboundToAnotherEndpoint
+--- PASS: TestSpoolCannotBeSilentlyReboundToAnotherEndpoint (0.22s)
+PASS
+ok  	github.com/codefense/cli-wrapper/internal/evidencespool	2.096s
+
+$ go test -count=1 -v -run "Spool|Quarantin|Classify|PIDHandoff|Unenrolled" ./internal/daemon/
+=== RUN   TestAIPromptCheck_UnreachableBackendStillSpoolsTheWarning
+--- PASS: TestAIPromptCheck_UnreachableBackendStillSpoolsTheWarning (0.16s)
+=== RUN   TestAIPromptCheck_ServerWarnReasonBoundedOnFallbackSpool
+--- PASS: TestAIPromptCheck_ServerWarnReasonBoundedOnFallbackSpool (0.02s)
+=== RUN   TestOneTransitionYieldsOneSpoolRecordAndNoBypassDuplicate
+--- PASS: TestOneTransitionYieldsOneSpoolRecordAndNoBypassDuplicate (0.02s)
+=== RUN   TestAPlantedOptOutStillReachesTheDaemonSpoolAsAnUngovernedWindow
+--- PASS: TestAPlantedOptOutStillReachesTheDaemonSpoolAsAnUngovernedWindow (0.11s)
+=== RUN   TestOutOfBandOptOutDeletionReachesTheDaemonSpool
+--- PASS: TestOutOfBandOptOutDeletionReachesTheDaemonSpool (0.13s)
+=== RUN   TestFinalizePromptOracleSpoolsFourAxisReceipt
+--- PASS: TestFinalizePromptOracleSpoolsFourAxisReceipt (0.01s)
+=== RUN   TestFinalizePromptOracleHealthySpoolSatisfiesAudit
+--- PASS: TestFinalizePromptOracleHealthySpoolSatisfiesAudit (0.00s)
+=== RUN   TestFinalizePromptOracleUninitializedSpoolIsNamedNotBlank
+--- PASS: TestFinalizePromptOracleUninitializedSpoolIsNamedNotBlank (0.00s)
+=== RUN   TestSpoolProxyOracleReceiptPreservesUnknownActualEffect
+--- PASS: TestSpoolProxyOracleReceiptPreservesUnknownActualEffect (0.00s)
+=== RUN   TestAIPermission_SpoolFailureNeverWedgesTheDecision
+--- PASS: TestAIPermission_SpoolFailureNeverWedgesTheDecision (0.02s)
+=== RUN   TestAnUnenrolledDaemonCannotClaimALeftoverStore
+--- PASS: TestAnUnenrolledDaemonCannotClaimALeftoverStore (0.02s)
+=== RUN   TestAIPromptCheck_BrowserLandedReportEmitsNoSpoolTwin
+--- PASS: TestAIPromptCheck_BrowserLandedReportEmitsNoSpoolTwin (0.02s)
+=== RUN   TestAIPromptCheck_BrowserFailedReportStillSpools
+--- PASS: TestAIPromptCheck_BrowserFailedReportStillSpools (0.01s)
+=== RUN   TestAIPromptCheck_LandedReportEmitsNoSpoolTwin
+--- PASS: TestAIPromptCheck_LandedReportEmitsNoSpoolTwin (0.02s)
+=== RUN   TestAIPromptCheck_FailedReportStillSpools
+--- PASS: TestAIPromptCheck_FailedReportStillSpools (0.01s)
+=== RUN   TestPromptLane_UnreachableBackendStampsTheMarkerOnTheSpoolEvent
+--- PASS: TestPromptLane_UnreachableBackendStampsTheMarkerOnTheSpoolEvent (0.02s)
+=== RUN   TestToolHoldApprovalKeysRideTheSpool
+--- PASS: TestToolHoldApprovalKeysRideTheSpool (0.00s)
+=== RUN   TestUngovernedWindowReachesTheDaemonSpool
+--- PASS: TestUngovernedWindowReachesTheDaemonSpool (0.06s)
+=== RUN   TestUngovernedWindowCloseReachesTheDaemonSpool
+--- PASS: TestUngovernedWindowCloseReachesTheDaemonSpool (0.10s)
+=== RUN   TestTheFailOpenReasonsClearTheSpoolBoundaryAllowlist
+--- PASS: TestTheFailOpenReasonsClearTheSpoolBoundaryAllowlist (0.00s)
+=== RUN   TestHealthExposesContentFreeSpoolDepth
+--- PASS: TestHealthExposesContentFreeSpoolDepth (0.02s)
+=== RUN   TestSpoolAllowlistDoesNotCarryTheEvidenceRefHomonym
+--- PASS: TestSpoolAllowlistDoesNotCarryTheEvidenceRefHomonym (0.00s)
+=== RUN   TestSpoolHeldByAnotherProcessIsItsOwnCause
+--- PASS: TestSpoolHeldByAnotherProcessIsItsOwnCause (0.02s)
+=== RUN   TestQuarantinedSpoolIsAuditableAndSaysSo
+--- PASS: TestQuarantinedSpoolIsAuditableAndSaysSo (0.45s)
+=== RUN   TestSpoolOpenFailureIsNotReportedAsUnenrolled
+--- PASS: TestSpoolOpenFailureIsNotReportedAsUnenrolled (0.21s)
+=== RUN   TestUnenrolledEndpointKeepsItsOwnCause
+--- PASS: TestUnenrolledEndpointKeepsItsOwnCause (0.00s)
+=== RUN   TestClassifySpoolOpenErrorIsAClosedMapping
+=== RUN   TestClassifySpoolOpenErrorIsAClosedMapping/nil_is_not_a_cause
+=== RUN   TestClassifySpoolOpenErrorIsAClosedMapping/typed_lock_error
+=== RUN   TestClassifySpoolOpenErrorIsAClosedMapping/wrapped_lock_error
+=== RUN   TestClassifySpoolOpenErrorIsAClosedMapping/enrolment_refusal
+=== RUN   TestClassifySpoolOpenErrorIsAClosedMapping/load_failure
+=== RUN   TestClassifySpoolOpenErrorIsAClosedMapping/anything_else
+--- PASS: TestClassifySpoolOpenErrorIsAClosedMapping (0.00s)
+=== RUN   TestShutdownReleasesTheSpoolForTheReplacement
+--- PASS: TestShutdownReleasesTheSpoolForTheReplacement (0.02s)
+=== RUN   TestPIDHandoffStillReleasesTheSpool
+--- PASS: TestPIDHandoffStillReleasesTheSpool (0.02s)
+=== RUN   TestPromptLane_FailedReportSpoolsTheTwinUnderTheSynchronousDecisionIdentity
+--- PASS: TestPromptLane_FailedReportSpoolsTheTwinUnderTheSynchronousDecisionIdentity (0.02s)
+=== RUN   TestPromptLane_LandedReportNamesTheDecisionAndSpoolsNothing
+--- PASS: TestPromptLane_LandedReportNamesTheDecisionAndSpoolsNothing (0.02s)
+=== RUN   TestMcpEventForEnforcement_Quarantined
+--- PASS: TestMcpEventForEnforcement_Quarantined (0.00s)
+=== RUN   TestMcpEventForEnforcement_BlockedNotQuarantined
+--- PASS: TestMcpEventForEnforcement_BlockedNotQuarantined (0.00s)
+=== RUN   TestMcpEventForEnforcement_QuarantineRefusedStillBlocks
+--- PASS: TestMcpEventForEnforcement_QuarantineRefusedStillBlocks (0.00s)
+=== RUN   TestShouldQuarantine_SurfaceBlock
+=== RUN   TestShouldQuarantine_SurfaceBlock/surface-block_quarantines_approved_under_enforce
+=== RUN   TestShouldQuarantine_SurfaceBlock/surface-block_quarantines_pending_under_enforce
+=== RUN   TestShouldQuarantine_SurfaceBlock/surface-block_quarantines_clean_verdicts_under_enforce
+=== RUN   TestShouldQuarantine_SurfaceBlock/surface-block_withheld_without_enforce
+=== RUN   TestShouldQuarantine_SurfaceBlock/surface-block_withheld_for_approved_without_enforce
+=== RUN   TestShouldQuarantine_SurfaceBlock/admin-block_still_quarantines_without_enforce
+--- PASS: TestShouldQuarantine_SurfaceBlock (0.00s)
+=== RUN   TestShouldQuarantine_AllowlistMode
+=== RUN   TestShouldQuarantine_AllowlistMode/allowlist_quarantines_pending-clean_under_enforce
+=== RUN   TestShouldQuarantine_AllowlistMode/allowlist_quarantines_unknown_approval_under_enforce
+=== RUN   TestShouldQuarantine_AllowlistMode/allowlist_quarantines_pending-warn_under_enforce
+=== RUN   TestShouldQuarantine_AllowlistMode/allowlist_never_quarantines_approved
+=== RUN   TestShouldQuarantine_AllowlistMode/allowlist_withheld_without_enforce
+=== RUN   TestShouldQuarantine_AllowlistMode/surface-block_+_allowlist_quarantines_approved
+--- PASS: TestShouldQuarantine_AllowlistMode (0.00s)
+=== RUN   TestScanAndEnforce_RestoresApprovedQuarantinedServerViaStash
+--- PASS: TestScanAndEnforce_RestoresApprovedQuarantinedServerViaStash (0.05s)
+=== RUN   TestAnUnenrolledEndpointIsNotRestricted
+--- PASS: TestAnUnenrolledEndpointIsNotRestricted (0.00s)
+=== RUN   TestToolWarnProceedStillReleasesOnAnUnenrolledEndpoint
+--- PASS: TestToolWarnProceedStillReleasesOnAnUnenrolledEndpoint (0.00s)
+=== RUN   TestGap3_SealedContentExistsOnlyInTheProtectedSpool
+--- PASS: TestGap3_SealedContentExistsOnlyInTheProtectedSpool (0.03s)
+=== RUN   TestUndecidableEventMetadataClearsTheSpoolAllowlist
+--- PASS: TestUndecidableEventMetadataClearsTheSpoolAllowlist (0.00s)
+=== RUN   TestHookOutcomeSpoolIsRedirectedAwayFromTheRealUserRoot
+--- PASS: TestHookOutcomeSpoolIsRedirectedAwayFromTheRealUserRoot (0.00s)
+=== RUN   TestUngovernedSpoolRecordSurvivesTheDrainRoundTrip
+--- PASS: TestUngovernedSpoolRecordSurvivesTheDrainRoundTrip (0.00s)
+PASS
+ok  	github.com/codefense/cli-wrapper/internal/daemon	1.749s
+
+$ go test -count=1 -v -run TestEvidenceSpoolCauseRidesTheWireAdditively ./internal/controls/
+=== RUN   TestEvidenceSpoolCauseRidesTheWireAdditively
+--- PASS: TestEvidenceSpoolCauseRidesTheWireAdditively (0.00s)
+PASS
+ok  	github.com/codefense/cli-wrapper/internal/controls	0.433s
+
+$ go test -count=1 ./internal/evidencespool/ ./internal/promptevidencegate/ ./internal/controls/ ./internal/daemon/
+ok  	github.com/codefense/cli-wrapper/internal/evidencespool	5.056s
+ok  	github.com/codefense/cli-wrapper/internal/promptevidencegate	1.680s
+ok  	github.com/codefense/cli-wrapper/internal/controls	0.869s
+ok  	github.com/codefense/cli-wrapper/internal/daemon	40.865s
+
+$ GOOS=linux go build ./... ; GOOS=darwin go build ./...
+(both clean)

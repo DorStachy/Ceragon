@@ -1,18 +1,22 @@
 # Rebase manifest
 
 **Generated; never hand-edit.** Run `node ci/lib/rebase-manifest.mjs` to validate and
-`node ci/lib/rebase-manifest.mjs --write` to regenerate after a required seven-repo fetch.
+`node ci/lib/rebase-manifest.mjs --write` to regenerate after the required seven-repo fetch.
 
 Every `path:line` claim in the M4.7A plan is a claim about `origin/main` at the SHA
 below. Resolve citations with `git show origin/main:<path>`, never from the working tree.
 A SHA list handed to an implementer is not evidence; the required fetch is.
 
+This file carries no generation timestamp on purpose: the wave exit requires that a
+re-run produce byte-identical output, and a clock would defeat that by construction.
+If these bytes changed, the repositories changed.
+
 | Repository | Local branch | Local HEAD | `origin/main` | Behind | Required fetch moved `origin/main`? |
 |---|---|---|---|---:|---|
-| `Backend` | `fix/remote-uninstall-command-timeout` | `15dd89bae54d273135bfe2bc0ef01f014f9fd448` | `c0b533ef7da51ca8144a0217e2455d33117c149d` | 787 | yes (fec535952d31 → c0b533ef7da5) |
-| `Frontend` | `feat/font-geist` | `1fe6e7a609de9ff1a9f63fbcfc1fd918b0e86a49` | `cac574ae063b4e91ec38ddb205ec5abe4cbc3dff` | 525 | no |
-| `Installers` | `fix/remote-uninstall-privileged-daemon` | `8e49a6251bf52283b612382ab3c5bb465ce65deb` | `657aed6ba4301fa60502435cb6b3e106723fd98f` | 1119 | yes (b7c0c1359a98 → 657aed6ba430) |
-| `Ceragon-Intelligence` | `feat/push-depth-cli-ui` | `58404e0a3db59943141af921a7e388580364a379` | `98be888ea4a8fa502c9fc9b6c8d93e3b93d54322` | 178 | yes (20b5a463b74a → 98be888ea4a8) |
-| `Static-Worker` | `feat/install-gate-scan-quality` | `a7326106e71c9a3381a3fd1686ed451d0224e04b` | `f5cddcc27d6992ee5995ad7d2348a3a221f53a4a` | 76 | no |
-| `Sandbox-Worker` | `chore/cleanup-unnecessary-files` | `1a9072538e09c63d14d133259980da9476747eb4` | `2831997dfe840d4a4313f25c3ad0ebeff35722f9` | 67 | no |
-| `GithubApp-Bot-Scanner-Worker` | `codex/m42-scanner-reliability` | `ed9209996148ab55e022e1936083b09e723d77e1` | `3d4116a5e5b1f48a9a9e33f487e490133fba47d9` | 20 | no |
+| `Backend` | `fix/cxgov-agentid-recovery-handle` | `31985b157bbd1d2f5f088694cfadf98cc9737f3f` | `8d4c3b2c569c42601ded25449727ecb1f6f8c88e` | 10 | no |
+| `Frontend` | `feat/cxgov-rollout-ring` | `8a4cc8a0cf3217fa461ff71f4f40fb23e8bc5c9e` | `7689011e10f2ea7a3ec4a426465ad3a46a325135` | 4 | no |
+| `Installers` | `main` | `521e511a01c774fcb40bb58907b99e7fc0a86cf6` | `521e511a01c774fcb40bb58907b99e7fc0a86cf6` | 0 | no |
+| `Ceragon-Intelligence` | `main` | `b7e9f27c7d030d99a45a277fd40727967799f29c` | `b7e9f27c7d030d99a45a277fd40727967799f29c` | 0 | no |
+| `Static-Worker` | `main` | `137f34f770e2c5324d0b4cde61a5fa214111dc3a` | `137f34f770e2c5324d0b4cde61a5fa214111dc3a` | 0 | no |
+| `Sandbox-Worker` | `main` | `496073fe3887e1605610798dbed9852824a8b047` | `496073fe3887e1605610798dbed9852824a8b047` | 0 | no |
+| `GithubApp-Bot-Scanner-Worker` | `main` | `c72579e8d109b37c72f41bd00a71a7a018f4f420` | `c72579e8d109b37c72f41bd00a71a7a018f4f420` | 0 | no |

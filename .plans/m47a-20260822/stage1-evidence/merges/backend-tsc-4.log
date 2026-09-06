@@ -1,0 +1,72 @@
+src/common/errors/error-code.ts(149,4): error TS1109: Expression expected.
+src/common/errors/error-code.ts(149,10): error TS1005: ',' expected.
+src/common/errors/error-code.ts(149,14): error TS1005: ',' expected.
+src/common/errors/error-code.ts(149,60): error TS1109: Expression expected.
+src/common/errors/error-code.ts(149,65): error TS1005: ',' expected.
+src/common/errors/error-code.ts(149,70): error TS1005: ',' expected.
+src/common/errors/error-code.ts(149,74): error TS1005: ',' expected.
+src/common/errors/error-code.ts(150,9): error TS1005: ',' expected.
+src/common/errors/error-code.ts(150,15): error TS1005: ',' expected.
+src/common/errors/error-code.ts(150,20): error TS1127: Invalid character.
+src/common/errors/error-code.ts(150,29): error TS1005: ',' expected.
+src/common/errors/error-code.ts(150,56): error TS1005: ',' expected.
+src/common/errors/error-code.ts(150,61): error TS1005: '(' expected.
+src/common/errors/error-code.ts(150,63): error TS1005: ')' expected.
+src/common/errors/error-code.ts(151,40): error TS1005: ';' expected.
+src/common/errors/error-code.ts(151,48): error TS1443: Module declaration names may only use ' or " quoted strings.
+src/common/errors/error-code.ts(151,60): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(151,68): error TS1228: A type predicate is only allowed in return type position for functions and methods.
+src/common/errors/error-code.ts(151,71): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(152,23): error TS1005: ';' expected.
+src/common/errors/error-code.ts(152,46): error TS1005: ';' expected.
+src/common/errors/error-code.ts(152,54): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(152,58): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(152,62): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(152,65): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(152,67): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(153,13): error TS1005: ';' expected.
+src/common/errors/error-code.ts(153,17): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(153,21): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(153,29): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(153,34): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(153,40): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(153,45): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(153,48): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(153,51): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(153,66): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(154,11): error TS1005: ';' expected.
+src/common/errors/error-code.ts(154,17): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(154,27): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(154,40): error TS1435: Unknown keyword or identifier. Did you mean 'for ever'?
+src/common/errors/error-code.ts(154,48): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(154,52): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(154,56): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(154,62): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(155,23): error TS1005: ';' expected.
+src/common/errors/error-code.ts(155,31): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(155,40): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(155,48): error TS1005: ';' expected.
+src/common/errors/error-code.ts(155,53): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(155,56): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(155,62): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(155,66): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(156,13): error TS1005: ';' expected.
+src/common/errors/error-code.ts(156,41): error TS1005: ',' expected.
+src/common/errors/error-code.ts(156,45): error TS1005: '(' expected.
+src/common/errors/error-code.ts(156,47): error TS1005: ';' expected.
+src/common/errors/error-code.ts(156,57): error TS1005: ';' expected.
+src/common/errors/error-code.ts(156,62): error TS1005: ')' expected.
+src/common/errors/error-code.ts(156,70): error TS1128: Declaration or statement expected.
+src/common/errors/error-code.ts(156,71): error TS1128: Declaration or statement expected.
+src/common/errors/error-code.ts(157,11): error TS1005: ';' expected.
+src/common/errors/error-code.ts(157,48): error TS1127: Invalid character.
+src/common/errors/error-code.ts(157,50): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(157,55): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(157,58): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(157,62): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(158,4): error TS1003: Identifier expected.
+src/common/errors/error-code.ts(158,5): error TS1161: Unterminated regular expression literal.
+src/common/errors/error-code.ts(182,1): error TS1109: Expression expected.
+src/common/errors/error-code.ts(182,3): error TS1434: Unexpected keyword or identifier.
+src/common/errors/error-code.ts(182,11): error TS1134: Variable declaration expected.
+tsc_rc=1

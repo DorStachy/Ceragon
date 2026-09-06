@@ -1,0 +1,101 @@
+FAIL src/followers/popularity-gate.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/popularity-gate.ts[0m:[93m43[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m43[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/followers/discovery-enablement.spec.ts
+  ● Test suite failed to run
+
+    [96msrc/followers/discovery-enablement.ts[0m:[93m37[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m37[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m  [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/lambda/router-handler.spec.ts (10.116 s)
+  ● lambda router handler › routes valid release observations to artifact fetch queue
+
+
+
+
+
+  ● lambda router handler › skips deleted observations without failing the batch
+
+
+
+
+
+  ● lambda router handler — threat-first value gate › admits a new, unpopular package WITH a lifecycle script to artifact-fetch (not metadata-only)
+
+
+
+
+
+  ● lambda router handler — threat-first value gate › still routes a cold, unpopular package with NO threat signal to metadata-only
+
+
+
+
+
+  ● lambda router handler — threat-first value gate › admits a mature package with an anomalous dist-tag re-point (distTagChanged)
+
+
+
+
+
+  ● lambda router handler — threat-first value gate › admits a mature package whose maintainer set changed (maintainerSetChanged)
+
+
+
+
+
+  ● lambda router handler — threat-first value gate › admits a mature package that adds a self-referential dependency (only +1 dep, bypasses the >5 clause)
+
+
+
+
+
+  ● lambda router handler — threat-first value gate › admits a mature package whose new version changed entry/shape (entryOrShapeChanged)
+
+
+
+
+
+  ● lambda router handler — transitive fan-in priority › admits a high-fan-in new version at LOW downloads to artifact-fetch when fan-in gating is enabled
+
+
+
+
+
+  ● lambda router handler — transitive fan-in priority › is CONFIGURABLE: with fan-in gating DISABLED, the same low-download package routes metadata-only
+
+
+
+
+
+  ● lambda router handler — transitive fan-in priority › is CONFIGURABLE: a fan-in BELOW the configured threshold routes metadata-only even when enabled
+
+
+
+
+
+FAIL src/advisory/advisory-cache-sweep.test.ts
+  ● Test suite failed to run
+
+    [96msrc/advisory/types.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ARTIFACT_ECOSYSTEMS'.
+
+    [7m7[0m import { ARTIFACT_ECOSYSTEMS } from '@ceragon/shared-contracts';
+    [7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+    [96msrc/advisory/types.ts[0m:[93m8[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"@ceragon/shared-contracts"' has no exported member 'ArtifactEcosystem'.
+
+    [7m8[0m import type { ArtifactEcosystem } from '@ceragon/shared-contracts';
+    [7m [0m [91m              ~~~~~~~~~~~~~~~~~[0m
+
+Test Suites: 4 failed, 4 total
+Tests:       11 failed, 11 total
+Snapshots:   0 total
+Time:        12.404 s
+Ran all test suites matching /src\\lambda\\router-handler.spec.ts|src\\followers\\popularity-gate.spec.ts|src\\advisory\\advisory-cache-sweep.test.ts|src\\followers\\discovery-enablement.spec.ts/i.
+jest_rc=1

@@ -1,0 +1,26 @@
+[devoid] WARNING: credentials at C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.devoid\credentials.json set a loopback backend (http://127.0.0.1:2353) and this build is NOT a stamped release (version 7.10.99, channel dev), so verdicts WILL be routed there, not to https://api.devoid.one.
+[devoid] MCP scan coverage: 14 source(s) checked, 0 NOT read.
+  CLIENT             SCOPE    STATE   SERVERS  PATH                                                                                        DETAIL
+  claude-code        user     parsed  3        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.claude.json                          -
+  claude-code-state  user     absent  -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.claude                               not-found
+  claude-desktop     user     absent  -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\AppData\Roaming\Claude                not-found
+  codex              user     parsed  3        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.codex\config.toml                    -
+  codex              machine  empty   -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.codex\managed_config.toml            no-servers-declared
+  cursor             user     parsed  1        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.cursor\mcp.json                      -
+  cursor-app         user     absent  -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\AppData\Roaming\Cursor\User           not-found
+  gemini-cli         user     absent  -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.gemini                               not-found
+  vscode             user     absent  -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\AppData\Roaming\Code\User             not-found
+  vscode-insiders    user     absent  -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\AppData\Roaming\Code - Insiders\User  not-found
+  vscodium           user     absent  -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\AppData\Roaming\VSCodium\User         not-found
+  windsurf           user     absent  -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.codeium\windsurf                     not-found
+  windsurf           user     absent  -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.windsurf                             not-found
+  windsurf-app       user     absent  -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\AppData\Roaming\Windsurf\User         not-found
+[devoid] MCP scan: 7 server(s) classified
+  [OK] p47-fs-benign — allow [none]
+  [!] p47-remote-tower — warn [network-egress]
+  [X] p47-unknown-harvester — block [secret-env]
+  [OK] p47-codex-fs-benign — allow [none]
+  [X] p47-codex-harvester — block [secret-env]
+  [!] p47-codex-remote — warn [network-egress]
+  [OK] p47-cursor-fs-benign — allow [none]
+[devoid] 2 block, 2 warn.

@@ -1,0 +1,4 @@
+p47_files|allow|-|C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.codex\config.toml
+p47_harvester|allow|-|C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.codex\config.toml
+p47_remote|warn|["network-egress"]|C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.codex\config.toml
+   the watcher path is proven if step 2 posted without anyone running 'devoid mcp scan'.

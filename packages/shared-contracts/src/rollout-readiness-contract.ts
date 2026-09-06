@@ -19,11 +19,16 @@
  *   - The verdict is NEVER falsely "ready".
  */
 
-import type {
-  EndpointControlKey,
-  EndpointControlReport,
-  EndpointControlState,
+import {
+  ENDPOINT_CONTROL_KEYS,
+  type EndpointControlKey,
+  type EndpointControlReport,
+  type EndpointControlState,
 } from './endpoint-controls-contract';
+import type {
+  GovernanceCapabilityId,
+  GovernanceCapabilityProjection,
+} from './governance-profile-contract';
 
 /** Endpoint-level rollout verdict. Backend drops the go/no-go framing. */
 export const ROLLOUT_READINESS_VERDICTS = [
@@ -36,15 +41,83 @@ export const ROLLOUT_READINESS_VERDICTS = [
 export type RolloutReadinessVerdict =
   (typeof ROLLOUT_READINESS_VERDICTS)[number];
 
-/** Per-control display status shown uniformly for every endpoint. */
+/**
+ * Per-control display status shown uniformly for every endpoint.
+ *
+ * F6 — `self-reported` is a DISTINCT, NON-GREEN status. It exists because
+ * `protected` used to be derived from `report.state` alone, and `report` is the
+ * endpoint's own attestation (`Installers/internal/daemon/controls_attest.go`
+ * inspects the box and says "active"). A compromised — or merely broken —
+ * endpoint could therefore declare its own protection and the console painted a
+ * green dot for it. Cross-cutting rule 6: a runtime that cannot govern must
+ * never report compliant.
+ */
 export const CONTROL_DISPLAY_STATUSES = [
   'protected',
+  'self-reported',
   'unprotected-used',
   'not-applicable',
   'unknown',
 ] as const;
 
 export type ControlDisplayStatus = (typeof CONTROL_DISPLAY_STATUSES)[number];
+
+/**
+ * F6 — which profile capability's certificate would VERIFY each control.
+ *
+ * Server-side verification of a control means the SERVER holds a bound,
+ * currently-active capability certificate for the capability that governs it —
+ * i.e. the same profile-certificate evidence the console already narrates as
+ * *"The control self-reports active, but its profile certificate is not
+ * verified."* (`self-attestation-without-profile-certificate`).
+ */
+export const CONTROL_PROFILE_CAPABILITY = {
+  proxy: 'web-ai.request-path',
+  hooks: 'runtime.claude-code',
+  packageGate: 'package.endpoint-lite',
+  push: 'code-security.full-scan',
+  webAiGuard: 'release.web-ai-guard',
+  mcp: 'mcp.live-tool-calls',
+} as const satisfies Record<EndpointControlKey, GovernanceCapabilityId>;
+
+/** The one reason code the console renders for `self-reported`. */
+export const SELF_REPORTED_CONTROL_REASON =
+  'self-attestation-without-profile-certificate';
+
+/**
+ * Derive the per-control SERVER-SIDE verification map from the governance
+ * profile projection. This is the ONE definition; both `computeReadiness`
+ * consumers read it rather than growing a second predicate.
+ *
+ * Three-valued in spirit, exactly like item A6's `metadata.monitored`: a control
+ * is `true` only on positive server-held evidence, `false` when the profile
+ * evaluated its governing capability and did NOT certify it, and the key is
+ * OMITTED when the capability is absent from the projection entirely — a `false`
+ * the server did not earn is never fabricated, and an absent key reads as
+ * unverified at the call site without pretending the server checked.
+ *
+ * `not-governed` capabilities carry `profileSatisfied: true` because they are
+ * OUTSIDE the selected profile. That is an exemption, never a verification, so
+ * `required` is part of the predicate.
+ */
+export function deriveControlVerification(
+  capabilities: readonly Pick<
+    GovernanceCapabilityProjection,
+    'id' | 'required' | 'state' | 'profileSatisfied'
+  >[],
+): Partial<Record<EndpointControlKey, boolean>> {
+  const byId = new Map(capabilities.map((c) => [c.id, c] as const));
+  const out: Partial<Record<EndpointControlKey, boolean>> = {};
+  for (const key of ENDPOINT_CONTROL_KEYS) {
+    const capability = byId.get(CONTROL_PROFILE_CAPABILITY[key]);
+    if (!capability) continue; // unresolvable → key omitted, never a false
+    out[key] =
+      capability.required &&
+      capability.profileSatisfied &&
+      capability.state === 'active';
+  }
+  return out;
+}
 
 /**
  * Universal-health signals judged independent of tool usage (PRD §4 / §A/C5).
@@ -76,6 +149,13 @@ export interface ComputeReadinessInput {
    * used → the control is not-applicable.
    */
   usage: Partial<Record<EndpointControlKey, boolean>>;
+  /**
+   * F6 — whether the SERVER can independently verify each control, derived by
+   * {@link deriveControlVerification} from the governance profile projection.
+   * Absent/false = the server holds no certificate for the governing capability,
+   * so an `active` self-report reads `self-reported`, never `protected`.
+   */
+  verification: Partial<Record<EndpointControlKey, boolean>>;
   health: EndpointHealthSignals;
   /** Server "now" as an RFC3339 instant (staleness reference). */
   nowIso: string;
@@ -119,17 +199,25 @@ function relevantKeys(input: ComputeReadinessInput): EndpointControlKey[] {
 }
 
 /**
- * Per-control display status for ONE control, given whether its tool is used
- * and its attested report. See the honesty contract at the top of this file.
+ * Per-control display status for ONE control, given whether its tool is used,
+ * its ATTESTED (endpoint self-reported) state, and whether the SERVER can
+ * independently verify it. See the honesty contract at the top of this file.
+ *
+ * F6 — `verified` is the third input and it is REQUIRED for `protected`. The
+ * endpoint's `report` is its own claim about itself; without server-side
+ * corroboration the honest reading of "active" is `self-reported`.
  */
 export function controlDisplayStatus(
   used: boolean,
   report: EndpointControlReport | undefined,
+  verified: boolean,
 ): ControlDisplayStatus {
   if (!used) return 'not-applicable';
   // Used but the platform can't host the control → not a gap.
   if (report && report.state === 'unsupported') return 'not-applicable';
-  if (report && PROTECTED_STATES.includes(report.state)) return 'protected';
+  if (report && PROTECTED_STATES.includes(report.state)) {
+    return verified ? 'protected' : 'self-reported';
+  }
   if (!report) return 'unprotected-used'; // used + never attested → red
   if (UNPROTECTED_STATES.includes(report.state)) return 'unprotected-used';
   // report.state === 'unknown'
@@ -145,7 +233,8 @@ export function controlDisplayStatus(
  *   3. stale attestation                        → 'unknown'
  *   4. any used control unprotected             → 'at-risk'
  *   5. any used control state unknown           → 'unknown'
- *   6. otherwise                                → 'ready'
+ *   6. any used control only SELF-REPORTED      → 'unknown'  (F6, never 'ready')
+ *   7. otherwise                                → 'ready'
  */
 export function computeReadiness(input: ComputeReadinessInput): ReadinessResult {
   const stalenessMs = input.stalenessMs ?? READINESS_ATTESTATION_STALE_MS;
@@ -155,16 +244,25 @@ export function computeReadiness(input: ComputeReadinessInput): ReadinessResult 
   const gaps: EndpointControlKey[] = [];
   let anyUnprotected = false;
   let anyUnknownUsed = false;
+  let anySelfReported = false;
 
   for (const key of relevantKeys(input)) {
     const used = input.usage[key] === true;
-    const status = controlDisplayStatus(used, input.controls[key]);
+    const status = controlDisplayStatus(
+      used,
+      input.controls[key],
+      input.verification[key] === true,
+    );
     controlStatuses[key] = status;
     if (status === 'unprotected-used') {
       anyUnprotected = true;
       gaps.push(key);
     } else if (status === 'unknown') {
       anyUnknownUsed = true;
+    } else if (status === 'self-reported') {
+      // NOT a gap: the control may well be doing its job. It is an unproven
+      // claim, so it can never carry a `ready` verdict.
+      anySelfReported = true;
     }
   }
 
@@ -187,7 +285,7 @@ export function computeReadiness(input: ComputeReadinessInput): ReadinessResult 
     verdict = 'unknown';
   } else if (anyUnprotected) {
     verdict = 'at-risk';
-  } else if (anyUnknownUsed) {
+  } else if (anyUnknownUsed || anySelfReported) {
     verdict = 'unknown';
   } else {
     verdict = 'ready';

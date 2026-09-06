@@ -1,0 +1,9 @@
+# endpoint_evidence_health (backend view) at 2026-09-05T21:08:54Z
+columns: id,org_id,site_id,agent_id,endpoint_id,status,chain_status,stream_count,gap_count,spool_depth,oldest_pending_at,last_event_at,last_ack_at,last_verified_at,reason,created_at,updated_at
+5c970208-4c3c-45f4-bb28-52641d2f9873|cdcde8a7-7aea-4128-be1a-6ff3dec52348|95937361-828f-4737-9c74-64defab9f5c6|9cc7bb95-78ec-4bcd-9c08-15de21a1c625|9cc7bb95-78ec-4bcd-9c08-15de21a1c625|healthy|healthy|1|0|0||2026-09-05 19:07:16.35+00|2026-09-05 19:21:20.459+00|2026-09-05 21:00:00.076+00||2026-09-05 19:04:25.063149+00|2026-09-05 21:00:00.115359+00
+
+# endpoint_control_state (endpoint_id, evidence_intact, ai_policy_evidence_stream_id, ai_policy_applied_revision, ai_policy_applied_at)
+|t|devoid:b178bf44-008b-4813-9200-69e481605fdc||
+
+# receipts
+0

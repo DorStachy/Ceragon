@@ -1,0 +1,33 @@
+=== devoid ai hooks-status codex ===
+[devoid] WARNING: credentials at C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.devoid\credentials.json set a loopback backend (http://127.0.0.1:2353) and this build is NOT a stamped release (version 7.10.99, channel dev), so verdicts WILL be routed there, not to https://api.devoid.one.
+[devoid] Codex managed-controls status (C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.codex):
+  R1-approval-lock       installed [OK]
+  R2-sandbox-lock        installed [OK]
+  R3-websearch-off       installed [OK]
+  R4-feature-lock        installed [OK]
+  R5-provider-route      installed [OK]
+  R6-mcp-audit           installed [OK]
+  R7-hook-cooperative    installed [OK] (user-hooks-superseded-machine-lane)
+                         these checkpoints are dispatched by the machine-wide hook set; the hook block in this CODEX_HOME cannot fire while the machine baseline allows managed hooks only
+  R8-hook-lifecycle      installed [OK] (user-hooks-superseded-machine-lane)
+                         these checkpoints are dispatched by the machine-wide hook set; the hook block in this CODEX_HOME cannot fire while the machine baseline allows managed hooks only
+  managed-block hash: 5c115bb8f436429859d819dad1d20fba177dac88021c4059d46e19c6d8eeda8e
+  scope: per-user cooperative layer (user-owned). Machine baseline: `devoid ai codex-machine status`.
+  [i] vendor hook fail-open: measured zero, over 51 delivered decision(s) · NOT MEASURED by this observer: hook-never-spawned (an invocation the client never spawned leaves no spawn-side trace)
+[devoid] WARNING: credentials at C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.devoid\credentials.json set a loopback backend (http://127.0.0.1:2353) and this build is NOT a stamped release (version 7.10.99, channel dev), so verdicts WILL be routed there, not to https://api.devoid.one.
+  OBSERVED (runtime artifacts recorded by the daemon):
+    PreToolUse:         last fired 2026-09-05T21:22:45Z
+    UserPromptSubmit:   last fired 2026-09-05T21:24:35Z
+    PostToolUse:        last fired 2026-09-05T21:08:30Z
+    SessionStart:       last fired 2026-09-05T21:24:31Z
+    PermissionRequest:  last fired 2026-09-05T21:08:31Z
+    SessionEnd:         NOT WIRED by DeVoid on the Codex lane (the client dispatches one; DeVoid takes session end from the daemon's own session tracking)
+    wire egress route:  no decision recorded
+  LANES (each governs independently; a verdict about one is not a verdict about the other):
+  hook lane: attested
+  wire lane: R5 provider route installed · no decision recorded
+  authority: governable (enrolled, daemon answering at 127.0.0.1:19390, agent 7.10.99)
+[devoid] [OK] Codex managed controls installed + compliant — the hook checkpoints are governed by the MACHINE baseline, not by the user-scope block · 5 of 5 checkpoints have fired · 0 invocations undecided (measured zero).
+            machine requirements pin allow_managed_hooks_only = true, so user-scope hook groups cannot fire on this endpoint, and this endpoint's machine baseline carries DeVoid's own dispatchable hook set, so the hook checkpoints are governed at MACHINE scope.
+            The lane that governs this endpoint is the MACHINE baseline — inspect it with `devoid ai codex-machine status`.
+(exit 0)

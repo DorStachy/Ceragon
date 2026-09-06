@@ -1,0 +1,25 @@
+=== RUN   TestDiscoverServersInFile_TomlAndJsonTwinsAgree
+--- PASS: TestDiscoverServersInFile_TomlAndJsonTwinsAgree (0.01s)
+=== RUN   TestDiscoverServersInFile_MachineScopeCodexToml
+--- PASS: TestDiscoverServersInFile_MachineScopeCodexToml (0.02s)
+=== RUN   TestDiscoverServersInFile_UnparseableTomlFailsClosed
+--- PASS: TestDiscoverServersInFile_UnparseableTomlFailsClosed (0.01s)
+=== RUN   TestIsAllowedConfigFile_CodexTOML
+--- PASS: TestIsAllowedConfigFile_CodexTOML (0.02s)
+=== RUN   TestDiscoverServersInFile_CodexTomlOutsideRegisteredLocation
+--- PASS: TestDiscoverServersInFile_CodexTomlOutsideRegisteredLocation (0.01s)
+=== RUN   TestDiscoverServersInFile_CodexTomlSymlinkRefused
+    mcpgov_toml_parity_test.go:338: cannot create a symlink on this box (needs privilege on Windows): symlink C:\Users\Owner\AppData\Local\Temp\TestDiscoverServersInFile_CodexTomlSymlinkRefused2229587376\002\planted.toml C:\Users\Owner\AppData\Local\Temp\TestDiscoverServersInFile_CodexTomlSymlinkRefused2229587376\001\.codex\config.toml: A required privilege is not held by the client.
+--- SKIP: TestDiscoverServersInFile_CodexTomlSymlinkRefused (0.00s)
+=== RUN   TestDiscoverServersInFile_JSONPathUnchanged
+--- PASS: TestDiscoverServersInFile_JSONPathUnchanged (0.01s)
+PASS
+ok  	github.com/codefense/cli-wrapper/internal/mcpgov	1.613s
+=== RUN   TestWatcher_DetectsWrittenCodexTOML
+--- PASS: TestWatcher_DetectsWrittenCodexTOML (0.16s)
+=== RUN   TestIsMCPConfig_CodexTOML
+--- PASS: TestIsMCPConfig_CodexTOML (0.01s)
+=== RUN   TestWatchTargets_CoverCodexHome
+--- PASS: TestWatchTargets_CoverCodexHome (0.00s)
+PASS
+ok  	github.com/codefense/cli-wrapper/internal/mcpwatch	0.961s

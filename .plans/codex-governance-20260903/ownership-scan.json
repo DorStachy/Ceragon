@@ -1,0 +1,97 @@
+{
+  "contractRowCount": 28,
+  "exact": [
+    {
+      "planPath": ".github/workflows/pr-checks.yml",
+      "row": "Installers/.github/workflows/pr-checks.yml",
+      "owner": "BOTH \u2014 \u00a73.3"
+    },
+    {
+      "planPath": "Backend/src/ai-governance/runtime-adapter-shape.ts",
+      "row": "Backend/src/ai-governance/runtime-adapter-shape.ts",
+      "owner": "P9"
+    },
+    {
+      "planPath": "Frontend/components/admin/ai-security-policy-section.tsx",
+      "row": "Frontend/components/admin/ai-security-policy-section.ts",
+      "owner": "P47"
+    },
+    {
+      "planPath": "cmd/devoid/ai.go",
+      "row": "Installers/cmd/devoid/ai.go",
+      "owner": "P9"
+    },
+    {
+      "planPath": "cmd/devoid/main.go",
+      "row": "Installers/cmd/devoid/main.go",
+      "owner": "P9"
+    },
+    {
+      "planPath": "internal/codexmanaged/hookdialect.go",
+      "row": "Installers/internal/codexmanaged/hookdialect.go",
+      "owner": "P47 \u2014 FROZEN, see \u00a72.4"
+    },
+    {
+      "planPath": "internal/codexmanaged/testdata/liveproof/ledger.json",
+      "row": "Installers/internal/codexmanaged/testdata/liveproof/ledger.json",
+      "owner": "BOTH \u2014 \u00a73.2"
+    },
+    {
+      "planPath": "internal/daemon/server.go",
+      "row": "Installers/internal/daemon/server.go",
+      "owner": "P9"
+    },
+    {
+      "planPath": "internal/liveproof/register.json",
+      "row": "Installers/internal/liveproof/register.json",
+      "owner": "BOTH \u2014 see \u00a73.2"
+    }
+  ],
+  "basenameOnly": [
+    {
+      "planPath": "ai-security-policy-section.tsx",
+      "row": "Frontend/components/admin/ai-security-policy-section.ts",
+      "owner": "P47"
+    },
+    {
+      "planPath": "ai_handlers.go",
+      "row": "Installers/internal/daemon/ai_handlers.go",
+      "owner": "P47 \u2014 SPECIAL, see \u00a72.1"
+    },
+    {
+      "planPath": "canary.go",
+      "row": "Installers/internal/codexmanaged/canary.go",
+      "owner": "P9"
+    },
+    {
+      "planPath": "hookdialect.go",
+      "row": "Installers/internal/codexmanaged/hookdialect.go",
+      "owner": "P47 \u2014 FROZEN, see \u00a72.4"
+    },
+    {
+      "planPath": "main.go",
+      "row": "Installers/cmd/devoid/main.go",
+      "owner": "P9"
+    },
+    {
+      "planPath": "pr-checks.yml",
+      "row": "Installers/.github/workflows/pr-checks.yml",
+      "owner": "BOTH \u2014 \u00a73.3"
+    },
+    {
+      "planPath": "release.yml",
+      "row": "Installers/.github/workflows/release.yml",
+      "owner": "NEITHER \u2014 \u00a73.1"
+    },
+    {
+      "planPath": "runtime-adapter-shape.ts",
+      "row": "Backend/src/ai-governance/runtime-adapter-shape.ts",
+      "owner": "P9"
+    },
+    {
+      "planPath": "server.go",
+      "row": "Installers/internal/daemon/server.go",
+      "owner": "P9"
+    }
+  ]
+}

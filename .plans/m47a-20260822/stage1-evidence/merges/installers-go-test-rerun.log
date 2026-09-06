@@ -1,0 +1,3 @@
+ok  	github.com/codefense/cli-wrapper/cmd/devoid	472.777s
+ok  	github.com/codefense/cli-wrapper/internal/core/backend	56.599s
+test_rc=0

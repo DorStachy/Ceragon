@@ -1,0 +1,9 @@
+{
+  "requestSha": "45654843ceafbbd1f05bebeba4f0a23d389f2d6b0ace10b9af52cc8156cb513f",
+  "expectedResponseSha": "fa4397020e116e085ca4d9965b2d8ffe94388a463682572f811f8d7574a4a5b4",
+  "clientResponseSha": "fa4397020e116e085ca4d9965b2d8ffe94388a463682572f811f8d7574a4a5b4",
+  "responseIdentical": true,
+  "status": 200,
+  "upstreamResponseBytes": 325,
+  "clientResponseBytes": 325
+}

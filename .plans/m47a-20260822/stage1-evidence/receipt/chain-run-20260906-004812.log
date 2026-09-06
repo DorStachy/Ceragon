@@ -1,0 +1,35 @@
+[1s] 0 state: receipts(this endpoint)=1 applied_revision=41 applied_digest=sha256:63911863c11 evidence_health=degraded/healthy/unexpected-stream-rotation
+41|1|sha256:63911863c11|CODEX|NULL|2026-09-05 21:46:40.571+00
+[2s] 1 console login (with Origin header, as the browser sends it)
+[4s]    login http=200 {"user":{"id":"cc6c4681-612e-46f6-ad70-121373b55439","email":"demo@cera.io","orgId":"cdcde8a7-7aea-4
+   original slack-token = redact
+[4s] 2 PUT slack-token -> block
+[4s]    PUT#1 http=200 {"siteId":"95937361-828f-4737-9c74-64defab9f5c6","source":"stored","config":{"dlp":{"enabled":true,"actions":{"age-secret-key":"warn","aliba
+[83s]    activations: 2 -> 3
+time=2026-09-06T00:27:55.619+03:00 level=WARN msg="signed AI policy refresh after trust convergence refused" error="signed policy activation refused (chain-discontinuity): V2 policy bundle does not chain from the endpoint's last a
+time=2026-09-06T00:46:40.624+03:00 level=INFO msg="AI policy: signed authority activated" revision=41 digest=sha256:63911863c1125f86a5a92a17a51d585eb739b1e0d4852d0ba1cc5bb1cd85ccc4 phase=ENFORCE applicationReceipt=true
+time=2026-09-06T00:49:34.749+03:00 level=INFO msg="AI policy: signed authority activated" revision=42 digest=sha256:edc19f6c7e7328374d7e50643790e7a85e6748406fe0c89a5a5f14b6784e4242 phase=ENFORCE applicationReceipt=true
+[96s]    receipts(this endpoint)=2 applied_revision=41 applied_digest=sha256:edc19f6c7e7 evidence_health=degraded/healthy/unexpected-stream-rotation
+   daemon serves slack-token = block | aws-access-key = block
+[96s] 3 restore the original policy
+[97s]    PUT#2 http=200
+[188s]    activations: 3 -> 4
+[190s]    receipts(this endpoint)=3 applied_revision=43 applied_digest=sha256:fc9201e41d2 evidence_health=degraded/healthy/unexpected-stream-rotation
+41|1|sha256:63911863c11|CODEX|NULL|2026-09-05 21:46:40.571+00
+42|6|sha256:edc19f6c7e7|CODEX|30908bd1|2026-09-05 21:49:34.271+00
+43|7|sha256:fc9201e41d2|CODEX|39b265b9|2026-09-05 21:51:15.701+00
+   daemon serves slack-token = redact | aws-access-key = block
+[191s] 4 issued-bundle chain (prev digest per revision) + canary rollup
+43|sha256:edc19f6c7e7|sha256:fc9201e41d2|ENFORCE|2026-09-05 21:51:15.607842+00
+42|sha256:63911863c11|sha256:edc19f6c7e7|ENFORCE|2026-09-05 21:49:32.969797+00
+41|NULL|sha256:63911863c11|ENFORCE|2026-09-05 21:31:31.485694+00
+40|NULL|sha256:6f7ba06e697|ENFORCE|2026-09-05 21:27:55.563301+00
+39|NULL|sha256:24da5d9863c|ENFORCE|2026-09-05 21:19:52.394429+00
+   canary-rollup http=200
+{"everRun":false,"challengesIssued":16,"challengesConsumed":0,"endpointsChallenged":2,"endpointsWithProof":0,"lastCanaryAt":null,"outcomes":[]}
+time=2026-09-05T23:31:06.622+03:00 level=WARN msg="AI policy: applying a signed bundle WITHOUT a durable application receipt" reason="no prompt-evidence ordering gate on this endpoint" consequence="no
+time=2026-09-05T23:31:06.645+03:00 level=INFO msg="AI policy: signed authority activated" revision=37 digest=sha256:717f85645795a6896f1bd68b84580dc064f4fdfbb97b8230af41360a972222cd phase=CANARY applic
+[191s] 5 probes with the restored policy
+prompt-check http 200 decision="block" reasons=["aws-access-key:block","aws-credential-pair:block"]
+benign http 200 decision="allow"
+[193s] done: receipts(this endpoint)=3 applied_revision=43 applied_digest=sha256:fc9201e41d2 evidence_health=degraded/healthy/unexpected-stream-rotation

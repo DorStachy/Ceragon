@@ -1,3 +1,11 @@
+import { AI_SECURITY_PORTABLE_ORDERED_TUPLES } from './generated/ai-security-portable.generated';
+import type {
+  EndpointAssuranceTier,
+  PolicyContainmentState,
+  PolicyIntegrityState,
+  RuntimeLaunchOrigin,
+} from './runtime-integrity-intent-contract';
+
 /**
  * M4.5 — Native AI Runtime Adapter Backbone (Gate-0 contract surface).
  *
@@ -10,10 +18,10 @@
  * Consumed by:
  *   - Installers daemon (`internal/airuntime`, Go) — conforms BY CONVENTION
  *     (no compiler link); the marshalling/attestation tests are the guard.
- *   - Backend (`src/ai-governance/*`) — mirrored via the snapshot + parity
- *     spec (`ai-governance-contract.snapshot.ts` +
- *     `ai-governance-contract.parity.spec.ts`), same inlined-with-parity
- *     pattern as the rest of the AI-governance contract.
+ *   - Backend (`src/ai-governance/*`) — consumes the repository-local generated
+ *     shared contract; its always-on parity spec binds these aliases to the
+ *     digest-pinned artifact without an optional workspace checkout or manual
+ *     enum mirror.
  *   - Frontend AI Control Plane / Protection-Depth views (`types/ai-governance.ts`).
  *
  * NOT mirrored to `Ceragon-Intelligence/packages/shared-contracts` (per PRD D9 —
@@ -22,9 +30,8 @@
  * STYLE / PARITY DISCIPLINE (Gate-0 #9, PRD D9):
  *   - Closed vocabularies (`coverageDepth` / `enforcementEffect` /
  *     `certificationState` / governance disposition / canonical hook events)
- *     are `as const` tuples — the Backend parity spec extracts them by a text
- *     regex, so the tuples MUST hold bare string literals only, with NO
- *     in-array comments, and are APPEND-ONLY (never re-ordered).
+ *     alias generated `as const` tuples. The deterministic checker enforces
+ *     exact values/order, and the tuples are APPEND-ONLY (never re-ordered).
  *   - Identity fields (`host` / `runtime` / `integration` / `executionLocation`
  *     / `agentType` / `platform` / `hookDialect` / `configSource` /
  *     `deploymentAssurance`) follow the established FREE-FORM-STRING discipline
@@ -62,15 +69,7 @@
  * the adapter enforces on the runtime's provider egress (SC provider-egress
  * control) rather than via a native hook. Appended at the tail (append-only).
  */
-export const COVERAGE_DEPTHS = [
-  'full-loop-governed',
-  'partial-native-governance',
-  'provider-traffic-governed',
-  'security-context-only',
-  'detected-only',
-  'not-endpoint-governed',
-  'provider-egress-control',
-] as const;
+export const COVERAGE_DEPTHS = AI_SECURITY_PORTABLE_ORDERED_TUPLES.COVERAGE_DEPTHS;
 
 export type CoverageDepth = (typeof COVERAGE_DEPTHS)[number];
 
@@ -94,26 +93,8 @@ export type CoverageDepth = (typeof COVERAGE_DEPTHS)[number];
  * injection), `deny-escalation` / `allow-escalation` (SC6 PermissionRequest
  * escalation branches), and `replace-tool-result-with-feedback-and-continue`
  * (SC2 deny that swaps the tool result for feedback and continues the loop).
- *
- * M4.7 (P0-E01) APPEND — `restrict-capability` is the portable V2 effect for a
- * proven capability-set reduction. Runtime adapters must return
- * `UNSUPPORTED_EFFECT` until they have a certified mapping; this token never
- * authorizes an adapter to invent one.
  */
-export const ENFORCEMENT_EFFECTS = [
-  'deny-prompt',
-  'deny-tool',
-  'rewrite-input',
-  'replace-output',
-  'stop-continuation',
-  'audit-only',
-  'none',
-  'add-developer-context',
-  'deny-escalation',
-  'allow-escalation',
-  'replace-tool-result-with-feedback-and-continue',
-  'restrict-capability',
-] as const;
+export const ENFORCEMENT_EFFECTS = AI_SECURITY_PORTABLE_ORDERED_TUPLES.ENFORCEMENT_EFFECTS;
 
 export type EnforcementEffect = (typeof ENFORCEMENT_EFFECTS)[number];
 
@@ -127,13 +108,7 @@ export type EnforcementEffect = (typeof ENFORCEMENT_EFFECTS)[number];
  * installed-unverified/unverified-version/drifted/stale/unsupported/unknown —
  * which are a Backend-derived render concern for Phase 1, not this ladder.)
  */
-export const CERTIFICATION_STATES = [
-  'documented',
-  'configured',
-  'loaded',
-  'observed',
-  'enforcement-tested',
-] as const;
+export const CERTIFICATION_STATES = AI_SECURITY_PORTABLE_ORDERED_TUPLES.CERTIFICATION_STATES;
 
 export type CertificationState = (typeof CERTIFICATION_STATES)[number];
 
@@ -152,19 +127,7 @@ export type CertificationState = (typeof CERTIFICATION_STATES)[number];
  * `PRE_COMPACT` / `POST_COMPACT` (context-compaction lifecycle), and
  * `SUBAGENT_START` (the start half of the subagent lifecycle pair).
  */
-export const CANONICAL_HOOK_EVENTS = [
-  'USER_PROMPT_SUBMIT',
-  'PRE_TOOL_USE',
-  'POST_TOOL_USE',
-  'CONFIG_CHANGE',
-  'SESSION_START',
-  'SESSION_END',
-  'SUBAGENT_STOP',
-  'PERMISSION_REQUEST',
-  'PRE_COMPACT',
-  'POST_COMPACT',
-  'SUBAGENT_START',
-] as const;
+export const CANONICAL_HOOK_EVENTS = AI_SECURITY_PORTABLE_ORDERED_TUPLES.CANONICAL_HOOK_EVENTS;
 
 export type CanonicalHookEvent = (typeof CANONICAL_HOOK_EVENTS)[number];
 
@@ -197,25 +160,8 @@ export type CanonicalHookEvent = (typeof CANONICAL_HOOK_EVENTS)[number];
  * `hook-failed-original-action-proceeded` (a native hook errored/timed out and
  * the runtime proceeded with the original action, so it was NOT mediated), and
  * `native-hook-unverified` (a native hook is claimed but not certified/attested).
- *
- * M4.7 (P0-E01) APPEND — the four-axis transition tokens keep adapter
- * expression, unsupported translation, translation failure, and authenticated
- * runtime acknowledgment distinct. They are facts, not outcome claims.
  */
-export const GOVERNANCE_DISPOSITIONS = [
-  'devoid-mediated',
-  'delegated-and-attested',
-  'restricted-intent-unverified',
-  'observed-only',
-  'not-governed',
-  'wire-observed-after-dispatch',
-  'hook-failed-original-action-proceeded',
-  'native-hook-unverified',
-  'effect-expressed-runtime-unverified',
-  'effect-unsupported-original-action-proceeded',
-  'translation-failed-original-action-proceeded',
-  'runtime-acknowledged-effect',
-] as const;
+export const GOVERNANCE_DISPOSITIONS = AI_SECURITY_PORTABLE_ORDERED_TUPLES.GOVERNANCE_DISPOSITIONS;
 
 export type GovernanceDisposition = (typeof GOVERNANCE_DISPOSITIONS)[number];
 
@@ -234,11 +180,7 @@ export type GovernanceDisposition = (typeof GOVERNANCE_DISPOSITIONS)[number];
  * {@link McpGovernanceCapability}) so the contract makes the no-inheritance
  * rule structural, not merely a UI convention.
  */
-export const MCP_GOVERNANCE_ROWS = [
-  'mcp-config-startup',
-  'mcp-runtime-hook',
-  'mcp-transport',
-] as const;
+export const MCP_GOVERNANCE_ROWS = AI_SECURITY_PORTABLE_ORDERED_TUPLES.MCP_GOVERNANCE_ROWS;
 
 export type McpGovernanceRow = (typeof MCP_GOVERNANCE_ROWS)[number];
 
@@ -322,6 +264,25 @@ export interface RuntimeBinding {
   baseUrl?: string | null;
   /** Auth mode, e.g. 'api-key' | 'oauth' | 'device-code'. */
   authMode?: string | null;
+  // ── RA-0 (§9.4) — the CANONICAL MODERN identity dimensions ───────────────
+  // These three participate in `runtimeInstanceId`. Everything above them that
+  // is mutable (runtimeVersion, providerRoute, wireApi, baseUrl, authMode)
+  // deliberately does NOT: a change there must show as DRIFT ON THE SAME
+  // instance, never as a brand-new row.
+  /**
+   * Platform-neutral principal hash. Windows derives it from the SID, Linux
+   * from the namespace-qualified UID, both through the endpoint correlation
+   * key — the raw identity NEVER leaves the endpoint.
+   */
+  principalHash?: string | null;
+  /**
+   * Closed launch origin. An automation/Dispatch path has different approval
+   * and authority semantics, so it must never inherit a direct CLI/IDE/Desktop
+   * receipt. Omitted/unknown reads as `UNKNOWN`, never `DIRECT`.
+   */
+  launchOrigin?: RuntimeLaunchOrigin | null;
+  /** Hash of the managed-config root — the identity-bearing form of `configRoot`. */
+  configRootHash?: string | null;
 }
 
 /**
@@ -415,13 +376,84 @@ export interface McpGovernanceCapability {
 }
 
 /**
+ * RA-0 (§9.4) — the MODERN per-instance identity + semantic-integrity block
+ * carried by both the in-daemon {@link RuntimeInstance} and the wire
+ * {@link RuntimeAdapterReport}.
+ *
+ * `runtimeInstanceId` is the CANONICAL GROUPING KEY. It is stable across
+ * version and provider changes:
+ *
+ *   sha256("devoid-runtime-instance/v1" NUL endpoint-scope NUL adapterId NUL
+ *          runtime NUL principalHash NUL executionHost NUL host NUL integration
+ *          NUL launchOrigin NUL configRootHash NUL executablePathHash)
+ *
+ * (see `buildRuntimeInstanceIdPreimage` in `runtime-integrity-intent-contract`).
+ *
+ * Every field is optional/nullable because a pre-RA-0 emitter omits the whole
+ * block. An omitted block does NOT mean healthy — a report with no
+ * `runtimeInstanceId` is LEGACY identity and stays non-green until a modern
+ * report arrives (see {@link legacyInstanceKey}).
+ */
+export interface RuntimeInstanceIntegrity {
+  /** sha-256 hex of the domain-separated identity preimage above. */
+  runtimeInstanceId?: string | null;
+  /**
+   * The OLD mutable key, retained ONLY as a `legacy:`-prefixed alias so an old
+   * report is still representable. It is NEVER deduped against a modern
+   * `runtimeInstanceId` and never used to merge two rows.
+   */
+  legacyInstanceKey?: string | null;
+  /**
+   * The shared writable control this instance is bound to (sha-256 hex of the
+   * `devoid-control-target/v1` preimage). MANY instances can share ONE target;
+   * the repair state machine is keyed by the target, canary proof by the
+   * instance.
+   */
+  controlTargetKey?: string | null;
+  /** Hash over the canonical DeVoid-owned semantic fields the server intends. */
+  desiredProjectionHash?: string | null;
+  /** Hash over the same fields as actually observed in the effective source. */
+  observedProjectionHash?: string | null;
+  /** §9.5 semantic integrity state for THIS instance. */
+  integrityState?: PolicyIntegrityState | null;
+  /** §9.8 containment state for THIS instance (independent of integrity). */
+  containment?: PolicyContainmentState | null;
+  /** Decision 25 assurance tier this instance can honestly claim. */
+  assuranceTier?: EndpointAssuranceTier | null;
+  lastCheckedAt?: string | null;
+  lastRepairAt?: string | null;
+  /** Last time a REAL current-version deny canary was proven for this instance. */
+  lastCanaryAt?: string | null;
+  activeEpisodeId?: string | null;
+  /** Short slug for the active episode's reason; never free-form prose. */
+  activeEpisodeReason?: string | null;
+  // ── Separate lifecycle timestamps + expiry semantics (§9.4) ──────────────
+  // `configured` is what DeVoid wrote; `loaded` is the vendor having read it;
+  // `observed` is a real firing; `enforcementTested` is a proven deny. They are
+  // DISTINCT facts — configured never implies loaded, loaded never implies
+  // observed, observed (an allow) never implies enforcement-tested.
+  configuredAt?: string | null;
+  loadedAt?: string | null;
+  observedAt?: string | null;
+  enforcementTestedAt?: string | null;
+  /**
+   * When the current enforcement proof goes stale. After this instant the
+   * instance needs a fresh canary before it may be rendered active again.
+   */
+  proofExpiresAt?: string | null;
+}
+
+/**
  * D3 — a detected runtime on the endpoint: the runtime is the subject, the host
  * is metadata on the binding (D1 — no host×runtime cross-product). Carries the
  * coverage depth + overall certification state + the per-checkpoint capability
  * rows. This is the in-daemon model; `RuntimeAdapterReport` is what crosses the
  * wire to the Backend.
+ *
+ * RA-0: also carries the {@link RuntimeInstanceIntegrity} identity/integrity
+ * block, so `ToReport` is a lossless projection in both languages.
  */
-export interface RuntimeInstance {
+export interface RuntimeInstance extends RuntimeInstanceIntegrity {
   /** Free-form adapter id, e.g. 'claude-code' — NEVER trusted as identity (Gate-0 #1). */
   adapterId: string;
   binding: RuntimeBinding;
@@ -482,7 +514,171 @@ export interface AdapterCapabilityCertificate {
  *
  * All content-free: identifiers, enums, hashes, short versions, RFC3339 stamps.
  */
-export interface RuntimeAdapterReport {
+// ── W8 T8 — the field-observation ledger on the wire ───────────────────────
+//
+// Every other block on {@link RuntimeAdapterReport} is the endpoint describing
+// ITSELF. This one is the endpoint describing what it OBSERVED, and it is the
+// half no fleet surface has ever had: the ledger existed on the box from the
+// day it was written and never left it, so an administrator could read a
+// self-reported configuration with nothing at all to weigh it against.
+//
+// Producer of record: Installers `internal/fieldobs/fieldobs.go`.
+//
+// ─── THE ORDERING IS PART OF THE CONTRACT ──────────────────────────────────
+//
+// `EndpointControlsDto.runtimeAdapters` is `unknown[]` so a forward-shaped
+// daemon report can never 400 the whole key-heartbeat. The cost of that
+// leniency is that a key the Backend does not yet rebuild is dropped SILENTLY:
+// no error, no data, `reasons: []`, the adapter still stored, and the agent's
+// own status output reading perfectly fine. So the Backend accepts this block,
+// and is DEPLOYED, before any agent emits it. W8 T5's `droppedKeyPaths` is the
+// safety net if that order is ever violated, not a licence to violate it.
+
+/** Closed adapter vocabulary — Go `fieldobs.Adapters`. */
+export const FIELD_OBSERVATION_ADAPTERS = ['claude-code', 'codex'] as const;
+export type FieldObservationAdapter = (typeof FIELD_OBSERVATION_ADAPTERS)[number];
+
+/**
+ * Closed assurance vocabulary — Go `fieldobs.Assurances`.
+ *
+ * `EMITTED` means DeVoid expressed the effect and nothing watched the runtime
+ * take it. `RUNTIME_ACKNOWLEDGED` means the runtime said it did. Only the
+ * second may raise the certification ladder to `observed`, which is why the
+ * axis is part of the record's composite key on the producer and is carried
+ * here rather than collapsed.
+ */
+export const FIELD_OBSERVATION_ASSURANCES = [
+  'EMITTED',
+  'RUNTIME_ACKNOWLEDGED',
+] as const;
+export type FieldObservationAssurance =
+  (typeof FIELD_OBSERVATION_ASSURANCES)[number];
+
+/** Closed provider vocabulary — Go `fieldobs.Providers` (the two proxy mounts). */
+export const FIELD_OBSERVATION_PROVIDERS = ['anthropic', 'openai'] as const;
+export type FieldObservationProvider =
+  (typeof FIELD_OBSERVATION_PROVIDERS)[number];
+
+/**
+ * Closed observation-method vocabulary — Go `fieldobs.ObservationMethods`.
+ *
+ * Exactly one member (`poll`) is a measurement; the other four are the several
+ * different ways a run can fail to be one. They are distinct members because an
+ * endpoint that could not look and an endpoint that looked and saw nothing
+ * produce the same count and mean opposite things.
+ */
+export const FIELD_OBSERVATION_METHODS = [
+  'poll',
+  'unsupported',
+  'unavailable',
+  'disabled',
+  'unstarted',
+] as const;
+export type FieldObservationMethod = (typeof FIELD_OBSERVATION_METHODS)[number];
+
+/** One per-(adapter × checkpoint × effect × assurance) field observation. */
+export interface FieldObservationCheckpoint {
+  adapter: FieldObservationAdapter;
+  checkpoint: CanonicalHookEvent;
+  effect: EnforcementEffect;
+  assurance: FieldObservationAssurance;
+  count: number;
+  /** `null` when the producer holds no such instant — never a fabricated one. */
+  firstAt?: string | null;
+  lastAt?: string | null;
+}
+
+/**
+ * One per-provider transport-route observation, carrying TWO counters that are
+ * never merged: `traffic` is how many requests travelled this route, `decisions`
+ * is how many of those reached a DeVoid decision. Until W8 T3 only `decisions`
+ * existed, so the status surface answered the traffic question with the decision
+ * count and printed "no request has ever travelled this route" over requests
+ * that had.
+ *
+ * `firstAt`/`lastAt` are the DECISION instants and are `null` on a route that
+ * carried traffic and reached no decision. That is the honest reading of the
+ * pair, not a gap for a consumer to fill in.
+ */
+export interface FieldObservationRoute {
+  provider: FieldObservationProvider;
+  traffic: number;
+  decisions: number;
+  firstAt?: string | null;
+  lastAt?: string | null;
+}
+
+/**
+ * The NEGATIVE witness: a certified runtime was seen holding a connection that
+ * did NOT travel the governed proxy route. {@link FieldObservationRoute} answers
+ * "did anything come through the governed route"; nothing answered "did anything
+ * go around it", so a report of zero bypasses was indistinguishable from never
+ * having looked.
+ *
+ * `observations` is a SAMPLE count, not a connection count, and the writer rate
+ * limits itself — a floor, never a total. `method` and `intervalMs` are on the
+ * row for that reason: quoting `observations` without them is quoting a number
+ * that does not mean what the reader thinks. A non-zero count establishes
+ * OFF-ROUTE EGRESS BY A CERTIFIED RUNTIME and nothing stronger — the row holds
+ * no destination address, so any consumer string claiming the runtime reached
+ * the provider is wrong.
+ */
+export interface FieldObservationDirectEgress {
+  provider: FieldObservationProvider;
+  observations: number;
+  method: FieldObservationMethod;
+  intervalMs?: number;
+  firstAt?: string | null;
+  lastAt?: string | null;
+  /**
+   * THE TRI-STATE. `false` | `null`, and never `true` from this producer.
+   *
+   *   `false` — off-route egress WAS seen, so it was definitely not denied.
+   *   `null`  — NOT MEASURED. A sample cannot prove absence, so "we sampled and
+   *             saw none" is neither "none happened" nor "it was denied".
+   *   `true`  — would mean DENIED. This producer observes; it denies nothing.
+   *             Only a direct-egress denial mechanism can author `true`, and a
+   *             `true` arriving here is refused and recorded, not believed.
+   *
+   * Explicit rather than derived from `observations` by each consumer:
+   * re-deriving a measurement on the read side is exactly how a `null` becomes
+   * a `false`.
+   */
+  directEgressDenied: boolean | null;
+  /** SERVER-DERIVED. Present when a refused `directEgressDenied: true` arrived. */
+  rejectedDirectEgressDenialClaim?: true;
+}
+
+/**
+ * The endpoint's field-observation ledger.
+ *
+ * OMITTED when the endpoint reported nothing readable. A pre-T8 agent, an
+ * unreadable block and an EMPTY ledger are one fact on the producer too —
+ * `fieldobs.Load` returns an empty ledger and a nil error for a missing file, a
+ * corrupt file AND a schema version it does not understand, deliberately,
+ * because "no observation on record" and "I cannot read the record" must both
+ * render as never-observed. Consumers render ABSENT as NOT REPORTED. A stored
+ * `{checkpoints: [], routes: [{traffic: 0, decisions: 0}]}` would say the
+ * opposite — "observed, and nothing happened" — over an endpoint that measured
+ * nothing at all.
+ *
+ * The `*Dropped` counters are SERVER-DERIVED and exist because the agent-wire
+ * drift walker compares index-for-index and cannot see a shortened list: without
+ * them a truncated ledger is indistinguishable from a complete one.
+ *
+ * Content-free: closed-vocabulary ids, non-negative integers and RFC3339
+ * instants. No paths, no prompts, no tokens.
+ */
+export interface RuntimeAdapterFieldObservation {
+  checkpoints?: FieldObservationCheckpoint[];
+  routes?: FieldObservationRoute[];
+  directEgress?: FieldObservationDirectEgress[];
+  checkpointsDropped?: number;
+  routesDropped?: number;
+  directEgressDropped?: number;
+}
+
+export interface RuntimeAdapterReport extends RuntimeInstanceIntegrity {
   adapterId: string;
   binding: RuntimeBinding;
   executionLocation: string;
@@ -511,4 +707,11 @@ export interface RuntimeAdapterReport {
    * `unverified-version` (never `active`), even with a matching certificate.
    */
   versionChurned?: boolean;
+  /**
+   * W8 T8 — what this adapter's endpoint actually OBSERVED, as distinct from
+   * what it reports about its own configuration. ABSENT means NOT REPORTED and
+   * must never render as an observed zero; see
+   * {@link RuntimeAdapterFieldObservation}.
+   */
+  fieldObservation?: RuntimeAdapterFieldObservation;
 }

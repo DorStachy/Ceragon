@@ -10,26 +10,45 @@
  * before -- a control whose path is dead reports nothing, which reads
  * identically to reporting green.
  *
- * So: every job on origin/main that a `push` or `pull_request` can trigger, and
- * every job in a workflow explicitly named by `localGateWorkflows`, must appear
- * in gates.json as either mirrored or explicitly cannot-mirror-because.
- * Anything else fails this check. Deploy-only and scheduled jobs remain exempt
- * unless the manifest deliberately declares their workflow as a local gate.
+ * So: every job on origin/main that a `push` or `pull_request` can trigger must
+ * appear in gates.json as either mirrored or explicitly cannot-mirror-because.
+ * Anything else fails this check. Deploy-only and scheduled jobs are exempt --
+ * they are not gates and never block a merge.
  *
  *   node ci/lib/drift.mjs            check every repo
  *   node ci/lib/drift.mjs Backend    check one
  *   node ci/lib/drift.mjs --cost     also print what still runs on GitHub's dime
  */
-import { readFileSync, readdirSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import { parse as parseYaml } from 'yaml';
 import { expandMatrix } from './workflow.mjs';
-import { listWorkflowPaths, resolveWorkflowText } from './wfsource.mjs';
+import { listWorkflowsOnMain } from './wfsource.mjs';
+import { workspaceRootOr } from './workspace-root.mjs';
 
 const CI_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const ROOT = resolve(CI_DIR, '..');
+
+/*
+ * WHERE THE SEVEN CHECKOUTS ARE.
+ *
+ * `resolve(CI_DIR, '..')` is the checkout this script lives in. That is the
+ * workspace when run from the workspace, and it is NOT the workspace when run
+ * from a git worktree of the meta-repo -- the component repos are separate
+ * repositories that a worktree does not clone. Run from one, this check printed
+ * seven copies of
+ *
+ *     no workflows readable on origin/main -- run: git -C Backend fetch origin
+ *
+ * which is red, so nothing was ever reported green that should not have been --
+ * but it names a cause that is not the cause, and sends the reader to fetch a
+ * repository that is not there. The workspace is derived instead, and the ROOT
+ * actually used is printed, so a surprising answer is visible rather than
+ * inferred.
+ */
+const ROOT_RESOLUTION = workspaceRootOr(resolve(CI_DIR, '..'));
+const ROOT = ROOT_RESOLUTION.root;
 const MANIFEST = JSON.parse(readFileSync(join(CI_DIR, 'gates.json'), 'utf8'));
 
 const E = String.fromCharCode(27);
@@ -117,7 +136,7 @@ function checkRepo(repoKey, wantCost) {
   const cost = [];
   const seen = new Set();
 
-  const files = listWorkflowPaths(repoPath);
+  const files = listWorkflowsOnMain(repoPath);
   if (!files.length) {
     problems.push({ level: 'error', msg: `no workflows readable on origin/main -- run: git -C ${repo.path} fetch origin` });
     return { problems, cost };
@@ -125,9 +144,8 @@ function checkRepo(repoKey, wantCost) {
 
   for (const rel of files) {
     const wfName = rel.replace(/^.*\//, '').replace(/\.ya?ml$/, '');
-    const source = resolveWorkflowText(repoPath, rel);
-    if (!source) continue;
-    const text = source.text;
+    const text = git(repoPath, ['show', `origin/main:${rel}`]);
+    if (text === null) continue;
     let wf;
     try {
       wf = parseYaml(text);
@@ -136,7 +154,6 @@ function checkRepo(repoKey, wantCost) {
       continue;
     }
     const gateTriggered = isGateTrigger(wf.on);
-    const localGateWorkflow = (repo.localGateWorkflows || []).includes(wfName);
 
     for (const [jobId, job] of Object.entries(wf.jobs || {})) {
       const id = `${wfName}:${jobId}`;
@@ -149,17 +166,29 @@ function checkRepo(repoKey, wantCost) {
           cost.push({ id, runner: rn, legs, rate: RUNNER_RATE[rn] ?? null });
         }
       }
-      if (!gateTriggered && !localGateWorkflow) continue;
+      // COVERAGE IS AUDITED FOR EVERY JOB, NOT ONLY PUSH/PR-TRIGGERED ONES.
+      // Cost is scoped to push/PR above, because that is what a push actually
+      // bills. Coverage is a different question, and it used to share that
+      // scope: `if (!gateTriggered) continue;` sat here, so a workflow whose
+      // triggers were reduced to workflow_dispatch + schedule dropped out of
+      // the audit in silence. Measured 2026-09-02: pr-checks.yml lost its push
+      // and pull_request triggers in the 2026-08-25 cost gate, and FOUR jobs
+      // across two repositories have sat in neither mirrored nor cannotMirror
+      // since -- while this script printed "No drift". The fence built to catch
+      // exactly that was structurally blind to the file it most needed to read.
 
       if (repo.mirrored[id]) continue;
       const excuse = coveredByCannotMirror(repo.cannotMirror, wfName, jobId);
       if (excuse) continue;
 
+      const trigger = gateTriggered
+        ? 'is triggered by push/pull_request on origin/main but appears in neither'
+        : 'is triggered only by ' + (Object.keys(wf.on || {}).join(' + ') || 'nothing') +
+            ', so no push runs it, and it appears in neither';
       problems.push({
         level: 'error',
         msg:
-          `${id} ${gateTriggered ? 'is triggered by push/pull_request' : 'is declared as a required local gate'} ` +
-          `but appears in neither ` +
+          `${id} ${trigger} ` +
           `mirrored nor cannotMirror.` +
           (runners.every((x) => isLinuxRunner(x.runner))
             ? `  It runs on ${runner}, so it is mirrorable -- add "${id}": {} to mirrored.`
@@ -180,38 +209,18 @@ function checkRepo(repoKey, wantCost) {
   return { problems, cost };
 }
 
-function checkWorkspaceDeclarations() {
-  const registered = new Set((MANIFEST.workspaceChecks || []).map((check) => check.id));
-  const missing = [];
-  for (const name of readdirSync(dirname(fileURLToPath(import.meta.url)))) {
-    if (!name.endsWith('.mjs')) continue;
-    const text = readFileSync(join(dirname(fileURLToPath(import.meta.url)), name), 'utf8');
-    for (const match of text.matchAll(/@workspace-check\s+([^\s]+)/g)) {
-      if (!registered.has(match[1])) missing.push(match[1]);
-    }
-  }
-  return [...new Set(missing)].sort();
-}
-
 function main() {
   const args = process.argv.slice(2);
   const wantCost = args.includes('--cost');
   const named = args.filter((a) => !a.startsWith('-'));
   const repoKeys = named.length ? named : Object.keys(MANIFEST.repos);
 
+  // Say which tree was read. A check that silently reads a different workspace
+  // than the reader assumes is worse than one that cannot find it at all.
+  process.stdout.write(`${DIM}workspace: ${ROOT} (${ROOT_RESOLUTION.how})${RESET}\n\n`);
+
   let errors = 0;
   const allCost = [];
-
-  const missingWorkspaceChecks = checkWorkspaceDeclarations();
-  if (missingWorkspaceChecks.length) {
-    process.stdout.write(`${RED}DRIFT${RESET} ${BOLD}workspaceChecks${RESET}\n`);
-    for (const id of missingWorkspaceChecks) {
-      errors += 1;
-      process.stdout.write(
-        `        declared workspace check "${id}" is not registered in ci/gates.json.\n`,
-      );
-    }
-  }
 
   for (const key of repoKeys) {
     const { problems, cost } = checkRepo(key, wantCost);

@@ -1,0 +1,17 @@
+[devoid] MCP scan coverage: 14 source(s) checked, 0 NOT read.
+  CLIENT             SCOPE    STATE   SERVERS  PATH                                                                                        DETAIL
+  claude-code        user     empty   -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.claude.json                          no-servers-declared
+  claude-code-state  user     absent  -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.claude                               not-found
+  claude-desktop     user     absent  -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\AppData\Roaming\Claude                not-found
+  codex              user     empty   -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.codex\config.toml                    no-servers-declared
+  codex              machine  empty   -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.codex\managed_config.toml            no-servers-declared
+  cursor             user     empty   -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.cursor\mcp.json                      no-servers-declared
+  cursor-app         user     absent  -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\AppData\Roaming\Cursor\User           not-found
+  gemini-cli         user     absent  -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.gemini                               not-found
+  vscode             user     absent  -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\AppData\Roaming\Code\User             not-found
+  vscode-insiders    user     absent  -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\AppData\Roaming\Code - Insiders\User  not-found
+  vscodium           user     absent  -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\AppData\Roaming\VSCodium\User         not-found
+  windsurf           user     absent  -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.codeium\windsurf                     not-found
+  windsurf           user     absent  -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\.windsurf                             not-found
+  windsurf-app       user     absent  -        C:\Users\Owner\AppData\Local\Temp\devoid-p47-iso\home\AppData\Roaming\Windsurf\User         not-found
+[devoid] MCP scan: no MCP servers configured on this machine (14 source(s) checked).

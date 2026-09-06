@@ -5,10 +5,16 @@
  * reimpl) MUST both satisfy every vector here. Split into its own file
  * (mirrors `worker-result-fixtures.ts`) so the fixtures can be imported without
  * pulling logic, and consumed by the `.cjs` golden runner + both jest suites.
+ *
+ * F6 — every vector now carries `verification`. That is the intended tripwire:
+ * the field is REQUIRED on `ComputeReadinessInput`, so a consumer that has not
+ * been taught about server-side verification fails to COMPILE rather than
+ * silently keeping the old endpoint-self-report meaning of `protected`.
  */
 
 import type {
   ComputeReadinessInput,
+  ControlDisplayStatus,
   EndpointHealthSignals,
   RolloutReadinessVerdict,
 } from './rollout-readiness-contract';
@@ -34,6 +40,8 @@ export interface ReadinessVector {
     verdict: RolloutReadinessVerdict;
     /** Optional exact gap-key assertion (order-insensitive). */
     gaps?: EndpointControlKey[];
+    /** Optional per-control display-status assertion (F6). */
+    controlStatuses?: Partial<Record<EndpointControlKey, ControlDisplayStatus>>;
   };
   note: string;
 }
@@ -44,11 +52,16 @@ export const READINESS_VECTORS: readonly ReadinessVector[] = [
       controls: { webAiGuard: { state: 'active' } },
       attestedAt: FRESH,
       usage: { webAiGuard: true },
+      verification: { webAiGuard: true },
       health: okHealth(),
       nowIso: NOW,
     },
-    expected: { verdict: 'ready', gaps: [] },
-    note: 'HR machine: browser-only, Web AI Guard active, everything else n/a → ready',
+    expected: {
+      verdict: 'ready',
+      gaps: [],
+      controlStatuses: { webAiGuard: 'protected' },
+    },
+    note: 'HR machine: browser-only, Web AI Guard active AND server-verified → ready',
   },
   {
     input: {
@@ -69,17 +82,26 @@ export const READINESS_VECTORS: readonly ReadinessVector[] = [
         webAiGuard: true,
         mcp: true,
       },
+      verification: {
+        proxy: true,
+        hooks: true,
+        packageGate: true,
+        push: true,
+        webAiGuard: true,
+        mcp: true,
+      },
       health: okHealth(),
       nowIso: NOW,
     },
     expected: { verdict: 'ready', gaps: [] },
-    note: 'all-active dev machine → ready',
+    note: 'all-active, all server-verified dev machine → ready',
   },
   {
     input: {
       controls: { packageGate: { state: 'inactive' } },
       attestedAt: FRESH,
       usage: { packageGate: true },
+      verification: {},
       health: okHealth(),
       nowIso: NOW,
     },
@@ -91,6 +113,7 @@ export const READINESS_VECTORS: readonly ReadinessVector[] = [
       controls: {},
       attestedAt: FRESH,
       usage: { hooks: true },
+      verification: {},
       health: okHealth(),
       nowIso: NOW,
     },
@@ -102,6 +125,7 @@ export const READINESS_VECTORS: readonly ReadinessVector[] = [
       controls: { webAiGuard: { state: 'active' } },
       attestedAt: STALE,
       usage: { webAiGuard: true },
+      verification: { webAiGuard: true },
       health: okHealth(),
       nowIso: NOW,
     },
@@ -113,6 +137,7 @@ export const READINESS_VECTORS: readonly ReadinessVector[] = [
       controls: { webAiGuard: { state: 'active' } },
       attestedAt: null,
       usage: { webAiGuard: true },
+      verification: { webAiGuard: true },
       health: okHealth(),
       nowIso: NOW,
     },
@@ -124,6 +149,7 @@ export const READINESS_VECTORS: readonly ReadinessVector[] = [
       controls: { proxy: { state: 'active' } },
       attestedAt: FRESH,
       usage: { proxy: true },
+      verification: { proxy: true },
       health: { ...okHealth(), online: false },
       nowIso: NOW,
     },
@@ -135,6 +161,7 @@ export const READINESS_VECTORS: readonly ReadinessVector[] = [
       controls: { proxy: { state: 'active' } },
       attestedAt: FRESH,
       usage: { proxy: true },
+      verification: { proxy: true },
       health: { ...okHealth(), evidenceIntact: false },
       nowIso: NOW,
     },
@@ -146,6 +173,7 @@ export const READINESS_VECTORS: readonly ReadinessVector[] = [
       controls: { proxy: { state: 'active' } },
       attestedAt: FRESH,
       usage: { proxy: true },
+      verification: { proxy: true },
       health: { ...okHealth(), policySynced: false },
       nowIso: NOW,
     },
@@ -157,6 +185,7 @@ export const READINESS_VECTORS: readonly ReadinessVector[] = [
       controls: { proxy: { state: 'active' } },
       attestedAt: FRESH,
       usage: { proxy: true },
+      verification: { proxy: true },
       health: { ...okHealth(), noActiveBypass: false },
       nowIso: NOW,
     },
@@ -168,6 +197,7 @@ export const READINESS_VECTORS: readonly ReadinessVector[] = [
       controls: {},
       attestedAt: null,
       usage: {},
+      verification: {},
       health: { ...okHealth(), installed: false },
       nowIso: NOW,
     },
@@ -179,10 +209,15 @@ export const READINESS_VECTORS: readonly ReadinessVector[] = [
       controls: { webAiGuard: { state: 'unsupported' } },
       attestedAt: FRESH,
       usage: { webAiGuard: true },
+      verification: {},
       health: okHealth(),
       nowIso: NOW,
     },
-    expected: { verdict: 'ready', gaps: [] },
+    expected: {
+      verdict: 'ready',
+      gaps: [],
+      controlStatuses: { webAiGuard: 'not-applicable' },
+    },
     note: 'used but platform-unsupported → not-applicable, not a gap → ready',
   },
   {
@@ -190,6 +225,7 @@ export const READINESS_VECTORS: readonly ReadinessVector[] = [
       controls: { proxy: { state: 'unknown' } },
       attestedAt: FRESH,
       usage: { proxy: true },
+      verification: {},
       health: okHealth(),
       nowIso: NOW,
     },
@@ -201,6 +237,7 @@ export const READINESS_VECTORS: readonly ReadinessVector[] = [
       controls: { packageGate: { state: 'inactive' } },
       attestedAt: FRESH,
       usage: { packageGate: false },
+      verification: {},
       health: okHealth(),
       nowIso: NOW,
     },
@@ -212,21 +249,100 @@ export const READINESS_VECTORS: readonly ReadinessVector[] = [
       controls: { proxy: { state: 'monitoring' } },
       attestedAt: FRESH,
       usage: { proxy: true },
+      verification: { proxy: true },
       health: okHealth(),
       nowIso: NOW,
     },
-    expected: { verdict: 'ready', gaps: [] },
-    note: 'monitoring (detect-mode) counts as protected → ready',
+    expected: {
+      verdict: 'ready',
+      gaps: [],
+      controlStatuses: { proxy: 'protected' },
+    },
+    note: 'monitoring (detect-mode), server-verified, counts as protected → ready',
   },
   {
     input: {
       controls: { packageGate: { state: 'inactive' } },
       attestedAt: FRESH,
       usage: { packageGate: true },
+      verification: {},
       health: { ...okHealth(), online: false },
       nowIso: NOW,
     },
     expected: { verdict: 'not-ready' },
     note: 'health failure outranks a usage gap → not-ready',
+  },
+
+  /* ── F6: the endpoint's self-report is not a verification ────────────────── */
+
+  {
+    input: {
+      controls: { mcp: { state: 'active' } },
+      attestedAt: FRESH,
+      usage: { mcp: true },
+      verification: { mcp: false },
+      health: okHealth(),
+      nowIso: NOW,
+    },
+    expected: {
+      verdict: 'unknown',
+      gaps: [],
+      controlStatuses: { mcp: 'self-reported' },
+    },
+    note: 'F6 — used + active but NOT server-verified → self-reported, verdict unknown (never ready)',
+  },
+  {
+    input: {
+      controls: { proxy: { state: 'monitoring' } },
+      attestedAt: FRESH,
+      usage: { proxy: true },
+      verification: {},
+      health: okHealth(),
+      nowIso: NOW,
+    },
+    expected: {
+      verdict: 'unknown',
+      gaps: [],
+      controlStatuses: { proxy: 'self-reported' },
+    },
+    note: 'F6 — an ABSENT verification key is unverified: monitoring reads self-reported, never protected',
+  },
+  {
+    input: {
+      controls: {
+        webAiGuard: { state: 'active' },
+        packageGate: { state: 'inactive' },
+      },
+      attestedAt: FRESH,
+      usage: { webAiGuard: true, packageGate: true },
+      verification: { webAiGuard: false },
+      health: okHealth(),
+      nowIso: NOW,
+    },
+    expected: {
+      verdict: 'at-risk',
+      gaps: ['packageGate'],
+      controlStatuses: {
+        webAiGuard: 'self-reported',
+        packageGate: 'unprotected-used',
+      },
+    },
+    note: 'F6 — a real gap still outranks a self-report, and a self-report is never itself a gap',
+  },
+  {
+    input: {
+      controls: { hooks: { state: 'active' } },
+      attestedAt: FRESH,
+      usage: { hooks: false },
+      verification: {},
+      health: okHealth(),
+      nowIso: NOW,
+    },
+    expected: {
+      verdict: 'ready',
+      gaps: [],
+      controlStatuses: { hooks: 'not-applicable' },
+    },
+    note: 'F6 — verification is irrelevant for an UNUSED tool: still not-applicable, still ready',
   },
 ];

@@ -1,0 +1,54 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+RQ
+Render QA
+Admin
+ACCOUNT
+Render QA Org
+Render QA
+ADMIN
+POLICIES
+AI SECURITY
+Search…
+ctrl
+K
+ADMINISTRATION
+Admin
+POLICIES
+AI Security
+MCP Security
+Supply Chain Security
+Code Security
+Approvals & Exceptions
+AI Security Policy
+
+One policy for every AI lane (browser AI sites, on-box coding agents, and the MCP servers they load), enforced by the browser extension and the endpoint daemon together. Organized by decision: what's allowed, what data may leave, how threats are answered, and how the runtime defends itself.
+
+Viewing policy for:
+Render QA
+›
+All teams
+
+All teams is the site baseline every team inherits. A team gets its own policy only when you pick it here and change something. Until then it follows this baseline.
+
+AI Security Policy
+
+Could not load this policy.
+
+risk groups not materialised for this site
+
+Retry
+Enforced authority
+
+The console revision above and the bundle revision below are separate sequences and are not comparable. This console cannot yet prove which console revision an endpoint is enforcing; it can prove which signed bundle it activated, and when.
+
+An edit reaches an endpoint on its next policy refresh. Measured: about 5 minutes, bounded by a 12 to 30 minute refresh cadence.
+
+No endpoint in this scope has reported a policy-integrity observation yet.

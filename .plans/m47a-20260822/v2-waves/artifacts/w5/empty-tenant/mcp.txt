@@ -1,0 +1,36 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+RQ
+Render QA
+Admin
+ACCOUNT
+Render QA Org
+Render QA
+MCP CONTROL TOWER
+Search…
+ctrl
+K
+MCP Control Tower
+
+Every MCP server detected across your agents' configurations: declared capabilities, static-analysis verdict, approval state, and enforcement. This view is read-only. Approve or block servers from Admin.
+
+Review in Admin
+Servers
+Activity
+0 MCP SERVERS · NO CONFIGURATION SOURCE WAS READ
+
+This count and Inventory's MCP count can differ. This registry is built from MCP servers found in an agent's configuration files. Inventory can also list an MCP item that reached us through the runtime shim when an agent used it. That path records the item; it does not register a server here.
+
+MCP COVERAGE NOT MEASURED
+No configuration source in this scope was read, so whether any agent declares an MCP server has not been measured. This is not a statement that there are none.
+CONFIGURATION SOURCES
+0 answered · 0 unanswered · 0 endpoints reporting
+
+Coverage was reported for this scope, but no individual source rows are stored, so the locations cannot be listed here.

@@ -1,0 +1,24 @@
+# Bricked-state evidence, captured 2026-09-05T21:42:44Z before any intervention
+
+## GET /v1/ai/policy
+policy unavailable
+
+http=502
+
+## prompt-check probes (synthetic AWS pair, then a benign prompt)
+prompt-check http 200 decision="block" reasons=["aws-access-key:warn","aws-credential-pair:warn","policy-expired:deny"]
+benign http 200 decision="block" reasons=["policy-expired:deny"]
+
+## activated floor on disk (lkg-bundle.json): revision 37 issuedAt 2026-09-05T20:31:06Z expiresAt 2026-09-05T21:31:06Z
+## latest issued bundle in the backend: revision 41, previousApprovedBundleDigest null, expires 22:31:31Z
+
+## daemon refusals (every refresh since the floor was set)
+685:time=2026-09-05T23:38:13.176+03:00 level=WARN msg="signed AI policy refresh after trust convergence refused" error="signed policy activation refused (chain-discontinuity): V2 policy bundle does not chain from the endpoint's last activated bundle: non-genesis activation requires a previous digest
+803:time=2026-09-05T23:57:55.482+03:00 level=WARN msg="signed AI policy refresh after trust convergence refused" error="signed policy activation refused (chain-discontinuity): V2 policy bundle does not chain from the endpoint's last activated bundle: non-genesis activation requires a previous digest
+1596:time=2026-09-06T00:27:55.619+03:00 level=WARN msg="signed AI policy refresh after trust convergence refused" error="signed policy activation refused (chain-discontinuity): V2 policy bundle does not chain from the endpoint's last activated bundle: non-genesis activation requires a previous diges
+
+## backend: canary requests from this endpoint
+2907:[00:35:55.093] [33mWARN[39m (7300): [36mClient error: This endpoint has not reported an applied signed bundle; there is nothing to prove[39m [90m{"req":{"method":"POST","url":"/api/v1/ai/pol
+2909:[00:35:55.118] [33mWARN[39m (7300): [36mClient error: This endpoint has not reported an applied signed bundle; there is nothing to prove[39m [90m{"req":{"method":"POST","url":"/api/v1/ai/pol
+2954:[00:37:55.061] [33mWARN[39m (7300): [36mClient error: This endpoint has not reported an applied signed bundle; there is nothing to prove[39m [90m{"req":{"method":"POST","url":"/api/v1/ai/pol
+count: 51

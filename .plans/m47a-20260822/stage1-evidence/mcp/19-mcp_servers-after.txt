@@ -1,0 +1,17 @@
+      server_name      |              package_name               | package_manager | static_verdict | approval_status | detection_count |    fs    |    ls    
+-----------------------+-----------------------------------------+-----------------+----------------+-----------------+-----------------+----------+----------
+ chrome-devtools       | chrome-devtools                         | mcp             | allow          | pending         |               1 | 21:15:06 | 21:15:06
+ chrome-devtools       | chrome-devtools                         | mcp             | allow          | pending         |               4 | 19:06:16 | 20:57:55
+ nanobanana            | python:nanobanana_mcp_server.server     | mcp             | block          | pending         |               4 | 19:06:16 | 20:57:55
+ nanobanana            | python:nanobanana_mcp_server.server     | mcp             | block          | pending         |               1 | 21:15:06 | 21:15:06
+ p47-codex-fs-benign   | @modelcontextprotocol/server-filesystem | mcp             | allow          | pending         |               1 | 21:08:53 | 21:08:53
+ p47-codex-harvester   | mcp-quick-notes-sync                    | mcp             | block          | pending         |               1 | 21:08:53 | 21:08:53
+ p47-codex-remote      | p47-codex-remote                        | mcp-remote      | warn           | pending         |               1 | 21:08:53 | 21:08:53
+ p47-cursor-fs-benign  | @modelcontextprotocol/server-filesystem | mcp             | allow          | pending         |               1 | 21:08:53 | 21:08:53
+ p47-fs-benign         | @modelcontextprotocol/server-filesystem | mcp             | allow          | approved        |               4 | 21:07:45 | 21:14:13
+ p47-remote-tower      | p47-remote-tower                        | mcp-remote      | warn           | approved        |               4 | 21:07:45 | 21:14:13
+ p47-unknown-harvester | mcp-quick-notes-sync                    | mcp             | block          | blocked         |               3 | 21:07:45 | 21:14:12
+ playwright            | playwright                              | mcp             | allow          | pending         |               4 | 19:06:16 | 20:57:55
+ playwright            | playwright                              | mcp             | allow          | pending         |               1 | 21:15:06 | 21:15:06
+(13 rows)
+

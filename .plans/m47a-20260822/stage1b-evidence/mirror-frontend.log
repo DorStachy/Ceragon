@@ -1,0 +1,22 @@
+[2mFrontend[0m on [36mp47/stage1b-revendor-engine[0m (1 ahead)
+[2m>>[0m Frontend [36mpr-checks:checks#check=Typecheck (tsc --noEmit)[0m
+   [32mPASS   [0m Frontend pr-checks:checks#check=Typecheck (tsc --noEmit) [2m53s[0m
+[2m>>[0m Frontend [36mpr-checks:checks#check=Tests (jest)[0m
+   [32mPASS   [0m Frontend pr-checks:checks#check=Tests (jest) [2m168s[0m
+[2m>>[0m Frontend [36mpr-checks:checks#check=No customer-visible em dashes (46a0c08)[0m
+   [32mPASS   [0m Frontend pr-checks:checks#check=No customer-visible em dashes (46a0c08) [2m23s[0m
+[2m>>[0m Frontend [36mpr-checks:checks#check=Detector vocabulary parity (Installers -> Frontend)[0m
+   [31mFAIL   [0m Frontend pr-checks:checks#check=Detector vocabulary parity (Installers -> Frontend) [2m19s[0m  [31m<- Detector vocabulary parity (Installers -> Frontend)[0m
+[2m>>[0m Frontend [36msecurity:audit[0m
+   [32mPASS   [0m Frontend security:audit [2m22s[0m
+
+[1m========================================================================[0m
+[31mFAIL   [0m Frontend                       pr-checks:checks#check=Detector vocabulary parity (Installers -> Frontend)
+          [2mlog: C:\cwt\p47b-ciroot\ci\.logs\Frontend\pr-checks-checks-check-Detector-vocabulary-parity--Installer.log[0m
+[32mPASS   [0m Frontend                       pr-checks:checks#check=No customer-visible em dashes (46a0c08)
+[32mPASS   [0m Frontend                       pr-checks:checks#check=Tests (jest)
+[32mPASS   [0m Frontend                       pr-checks:checks#check=Typecheck (tsc --noEmit)
+[32mPASS   [0m Frontend                       security:audit
+
+4 pass, 1 fail, 0 partial, 0 error
+frontend mirror exit=1

@@ -1,0 +1,44 @@
+time=2026-09-06T00:07:19.010+03:00 level=WARN msg="Real tool not found in PATH" tool=corepack searchedDirs=55
+time=2026-09-06T00:07:25.103+03:00 level=WARN msg="Real tool not found in PATH" tool=pipx searchedDirs=55
+time=2026-09-06T00:07:26.058+03:00 level=WARN msg="Real tool not found in PATH" tool=uv searchedDirs=55
+time=2026-09-06T00:07:29.971+03:00 level=WARN msg="Real tool not found in PATH" tool=gemini searchedDirs=55
+time=2026-09-06T00:07:30.660+03:00 level=WARN msg="Real tool not found in PATH" tool=devoid-wire searchedDirs=55
+time=2026-09-06T00:07:30.661+03:00 level=ERROR msg="Real tool not found" tool=devoid-wire error="real tool not found in PATH"
+time=2026-09-06T00:07:40.156+03:00 level=WARN msg="backend routing" detail="credentials at C:\\Users\\Owner\\AppData\\Local\\Temp\\devoid-p47-wire\\home\\.devoid\\credentials.json set a loopback backend (http://127.0.0.1:2353) and this build is NOT a stamped release (version 7.10.99, channel dev), so verdicts WILL be routed there, not to https://api.devoid.one."
+time=2026-09-06T00:07:40.221+03:00 level=WARN msg="Agent enrollment returned non-OK status" status=401 body="{\"statusCode\":401,\"timestamp\":\"2026-09-05T21:07:40.221Z\",\"path\":\"/api/v1/agents/enroll\",\"message\":\"Signed device proof is required for agent re-enrollment\",\"code\":\"SIGNED_REENROLL_REQUIRED\",\"agentId\":\"9cc7bb95-78ec-4bcd-9c08-15de21a1c625\",\"errorCode\":\"SIGNED_REENROLL_REQUIRED\",\"requestId\":\"a72d8410-ec08-497b-a9e5-3f1306427298\"}"
+time=2026-09-06T00:10:16.017+03:00 level=WARN msg="backend routing" detail="credentials at C:\\Users\\Owner\\AppData\\Local\\Temp\\devoid-p47-wire\\home\\.devoid\\credentials.json set a loopback backend (http://127.0.0.1:2353) and this build is NOT a stamped release (version 7.10.99, channel dev), so verdicts WILL be routed there, not to https://api.devoid.one."
+time=2026-09-06T00:10:16.104+03:00 level=INFO msg="Agent enrolled successfully (new)" agentId=2c5bf33c-6029-4745-9e36-18fe66c5b80d hostname=CND34521VN
+time=2026-09-06T00:10:16.108+03:00 level=INFO msg="New agent enrolled" agentId=2c5bf33c-6029-4745-9e36-18fe66c5b80d tenantId=cdcde8a7-7aea-4128-be1a-6ff3dec52348
+time=2026-09-06T00:10:16.233+03:00 level=INFO msg="AI policy trust converged at enrollment" posture=V2_ATTESTED alreadyAttested=false rootFingerprint=sha256:13532287da8519531ccf5584be4c139219253d2cba9df49fabffb4390ac6d308
+time=2026-09-06T00:10:16.268+03:00 level=INFO msg="AI policy authority boot" outcome=signed-state-missing-or-corrupt signedRequired=true contained=true revision=""
+time=2026-09-06T00:10:16.274+03:00 level=INFO msg="daemon AI: signed policy required; unsigned on-disk policy is not seeded"
+time=2026-09-06T00:10:16.310+03:00 level=WARN msg="AI proxy: TEST upstream override in effect" upstream=http://127.0.0.1:19399
+time=2026-09-06T00:10:16.312+03:00 level=INFO msg="Daemon starting" addr=127.0.0.1:19391 scheme=http version=7.10.99 pid=2884
+time=2026-09-06T00:10:16.408+03:00 level=INFO msg="daemon AI: legacy policy refresher stopping; the signed lane is authoritative"
+time=2026-09-06T00:10:16.408+03:00 level=INFO msg="Self-update: release channel check loop started" intervalSec=86400 runningVersion=7.10.99
+time=2026-09-06T00:10:16.409+03:00 level=WARN msg="AI policy: contained endpoint attempting genesis recovery fetch" reason="no activation floor on disk" constraint="only a signed genesis bundle from the pinned root can activate"
+time=2026-09-06T00:10:16.410+03:00 level=WARN msg="backend routing" detail="credentials at C:\\Users\\Owner\\AppData\\Local\\Temp\\devoid-p47-wire\\home\\.devoid\\credentials.json set a loopback backend (http://127.0.0.1:2353) and this build is NOT a stamped release (version 7.10.99, channel dev), so verdicts WILL be routed there, not to https://api.devoid.one."
+time=2026-09-06T00:10:16.411+03:00 level=INFO msg="configwatch watcher started"
+time=2026-09-06T00:10:16.429+03:00 level=INFO msg="mcpwatch: cannot watch dir yet, will retry on the next sweep" dir=C:\Users\Owner\AppData\Local\Temp\devoid-p47-wire\home\.cursor error="GetFileAttributes: The system cannot find the file specified."
+time=2026-09-06T00:10:16.431+03:00 level=INFO msg="extwatch watcher started"
+time=2026-09-06T00:10:16.431+03:00 level=INFO msg="mcpwatch: cannot watch dir yet, will retry on the next sweep" dir=C:\Users\Owner\AppData\Local\Temp\devoid-p47-wire\home\.windsurf error="GetFileAttributes: The system cannot find the file specified."
+time=2026-09-06T00:10:16.432+03:00 level=INFO msg="mcpwatch: cannot watch dir yet, will retry on the next sweep" dir=C:\Users\Owner\AppData\Local\Temp\devoid-p47-wire\home\.codeium\windsurf error="GetFileAttributes: The system cannot find the path specified."
+time=2026-09-06T00:10:16.432+03:00 level=INFO msg="mcpwatch: cannot watch dir yet, will retry on the next sweep" dir=C:\Users\Owner\AppData\Local\Temp\devoid-p47-wire\home\.gemini error="GetFileAttributes: The system cannot find the file specified."
+time=2026-09-06T00:10:16.433+03:00 level=INFO msg="mcpwatch: cannot watch dir yet, will retry on the next sweep" dir=C:\Users\Owner\AppData\Local\Temp\devoid-p47-wire\home\.claude error="GetFileAttributes: The system cannot find the file specified."
+time=2026-09-06T00:10:16.434+03:00 level=INFO msg="mcpwatch: cannot watch dir yet, will retry on the next sweep" dir="C:\\Users\\Owner\\AppData\\Roaming\\Code - Insiders\\User" error="GetFileAttributes: The system cannot find the path specified."
+time=2026-09-06T00:10:16.435+03:00 level=INFO msg="mcpwatch: cannot watch dir yet, will retry on the next sweep" dir=C:\Users\Owner\AppData\Roaming\VSCodium\User error="GetFileAttributes: The system cannot find the path specified."
+time=2026-09-06T00:10:16.438+03:00 level=INFO msg="mcpwatch: cannot watch dir yet, will retry on the next sweep" dir=C:\Users\Owner\AppData\Roaming\Windsurf\User error="GetFileAttributes: The system cannot find the path specified."
+time=2026-09-06T00:10:16.438+03:00 level=INFO msg="mcpwatch watcher started"
+time=2026-09-06T00:10:16.718+03:00 level=INFO msg="AI policy: signed authority activated" revision=1 digest=sha256:e060969964bd10450b228e8cd5f7a9c02753df59d8d9b7c3f3435b2e92d2a30e phase=ENFORCE applicationReceipt=true
+time=2026-09-06T00:10:16.735+03:00 level=INFO msg="AI policy trust converged (refresh)" posture=V2_ATTESTED alreadyAttested=true rootFingerprint=sha256:13532287da8519531ccf5584be4c139219253d2cba9df49fabffb4390ac6d308 firstBootstrap=false
+time=2026-09-06T00:10:16.738+03:00 level=WARN msg="AI policy: reporting the applied bundle from the durable activation floor" revision=1 digest=sha256:e060969964bd10450b228e8cd5f7a9c02753df59d8d9b7c3f3435b2e92d2a30e reason="no in-memory activation this process; the floor is what chain continuity is judged against"
+time=2026-09-06T00:10:16.890+03:00 level=INFO msg="AI governance auto-wired for a late-installed agent (continuous reconcile)" agent=codex
+time=2026-09-06T00:10:16.890+03:00 level=INFO msg="Codex machine-requirements lane declined to compile a baseline" reason=machine-acl-not-applied
+time=2026-09-06T00:10:16.975+03:00 level=INFO msg="configwatch: CONFIG_CHANGE observed" source=codex-config reason=MANAGED_CONFIG_MODIFIED signals=1
+time=2026-09-06T00:10:17.021+03:00 level=INFO msg="Heartbeat returned pending command" command=initial-scan
+time=2026-09-06T00:10:17.025+03:00 level=INFO msg="Daemon heartbeat received pending command" command=initial-scan
+time=2026-09-06T00:10:17.050+03:00 level=WARN msg="daemon boot-persistence reconcile failed (non-fatal)" error="re-register task: schtasks /Create /XML: exit status 1: ERROR: Access is denied."
+time=2026-09-06T00:10:17.056+03:00 level=INFO msg="Acknowledged initial-scan command with zero-count report (no prescan)"
+time=2026-09-06T00:10:46.388+03:00 level=WARN msg="backend routing" detail="credentials at C:\\Users\\Owner\\AppData\\Local\\Temp\\devoid-p47-wire\\home\\.devoid\\credentials.json set a loopback backend (http://127.0.0.1:2353) and this build is NOT a stamped release (version 7.10.99, channel dev), so verdicts WILL be routed there, not to https://api.devoid.one."
+time=2026-09-06T00:11:16.388+03:00 level=WARN msg="backend routing" detail="credentials at C:\\Users\\Owner\\AppData\\Local\\Temp\\devoid-p47-wire\\home\\.devoid\\credentials.json set a loopback backend (http://127.0.0.1:2353) and this build is NOT a stamped release (version 7.10.99, channel dev), so verdicts WILL be routed there, not to https://api.devoid.one."
+time=2026-09-06T00:11:46.388+03:00 level=WARN msg="backend routing" detail="credentials at C:\\Users\\Owner\\AppData\\Local\\Temp\\devoid-p47-wire\\home\\.devoid\\credentials.json set a loopback backend (http://127.0.0.1:2353) and this build is NOT a stamped release (version 7.10.99, channel dev), so verdicts WILL be routed there, not to https://api.devoid.one."

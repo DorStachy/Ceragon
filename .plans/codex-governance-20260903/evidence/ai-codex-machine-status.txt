@@ -1,0 +1,16 @@
+# captured 2026-09-03 11:42:51 on CND34521VN, agent 7.10.9, ENROLLMENT_MODE=deferred, unelevated
+[devoid] Codex MACHINE requirements baseline: C:\ProgramData\OpenAI\Codex\requirements.toml
+         managed hook directory:              C:\ProgramData\OpenAI\Codex\devoid-managed-hooks
+         observed client version:             0.150.0-alpha.8 (floor >= 0.134.0, no ceiling)
+         baseline present:                    false
+         winning authority tier (control-target): UNKNOWN
+[devoid] Composed effective requirements (across every active source):
+  MO1-features-hooks-pinned  UNKNOWN [requirements-source-unobserved]
+  MO2-managed-hooks-only     UNKNOWN [requirements-source-unobserved]
+  MO3-managed-hook-dir       UNKNOWN [requirements-source-unobserved]
+  MO4-managed-hook-commands  UNCONSTRAINED [machine-requirements-absent]
+[devoid] Authority tier ↔ requirements source (same object, two questions; HIGHEST→LOWEST):
+  REMOTE_MANAGED     (control-target tier)  ↔  CLOUD_REQUIREMENTS     (requirements source)
+  USER_FILE          (control-target tier)  ↔  LEGACY_MANAGED_CONFIG  (requirements source)
+  MACHINE_FILE       (control-target tier)  ↔  MACHINE_REQUIREMENTS   (requirements source)
+[devoid] [!] Obligations did not all survive composition (machine-requirements-absent).

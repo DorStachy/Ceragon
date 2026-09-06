@@ -28,14 +28,59 @@
   },
   "workspaceChecks": [
     {
-      "id": "detector-vocab-parity",
+      "id": "toolrisk-vocab-parity",
       "script": "ci/lib/vocab-parity.mjs",
-      "why": "The tool-risk and DLP detector vocabularies are two contracts, each living as three hand-copied files in Installers, Backend and Frontend. Per-repo guards compare only against their local copy, so the workspace runner is the only gate that can prove both complete three-copy comparisons (2 vocabularies x 3 copies = 6 files)."
+      "why": "The tool-risk detector vocabulary is one contract living as three hand-copied files in three repos. Each repo's own guard compares that repo against THAT REPO'S copy, so a class added in the agent and never copied leaves all three green while the class becomes ungovernable: the console cannot set a policy for a name the Backend tuple does not contain. Nothing inside a single repo's CI can see this; that is why it is here and not under 'mirrored'."
     },
     {
-      "id": "detector-vocab-parity-selftest",
+      "id": "toolrisk-vocab-parity-selftest",
       "script": "ci/lib/vocab-parity.test.mjs",
-      "why": "Mutation proof for both schemas: fabricates tool-risk and DLP producer-only classes and asserts the checker goes red naming the class and missing repos, while absent checkouts, unreadable refs and invalid JSON report NOT CHECKED rather than passing."
+      "why": "Mutation proof for the check above: fabricates divergent trios, including the historical interpreter-exec/fetch-then-exec/substitution-exfil incident, and asserts it goes red naming the class and the repos missing it -- plus that a missing checkout reports NOT CHECKED rather than passing. A drift check nobody has made go red has not been run."
+    },
+    {
+      "id": "claim-contract",
+      "script": "ci/lib/claim-contract.mjs",
+      "why": "Fifteen named sentences overstate what this programme can prove -- eight forbidden by the source material, seven by published research about this class of product -- and until this landed the only thing stopping one reaching a customer was a person remembering the list. It greps the plan's goal statement and any release note for them and fails naming the file, the line and the checklist row. It also compares the plan's prose checklist against Wave 8 Task 11's Go renderer, which is the other half of a deliberately-two-artifact design; the renderer does not exist yet and the check reports it ABSENT rather than as zero, because 0 == 0 reading as agreement is the exact defect it exists to prevent."
+    },
+    {
+      "id": "claim-contract-selftest",
+      "script": "ci/lib/claim-contract.test.mjs",
+      "why": "Mutation proof for the check above: 35 assertions over a real plan mutated on disk, including the discriminating pair that an absent renderer and a renderer encoding 15 produce different verdicts, and the case that found a real hole -- deleting ONE fence end marker merges two fences, silently exempting everything between them, and the guard passed until this case existed."
+    },
+    {
+      "id": "workspace-root-selftest",
+      "script": "ci/lib/workspace-root.test.mjs",
+      "why": "Every cross-repo check here asks one module where the other checkouts are, and a wrong answer does not raise an error -- it produces a check that compared the wrong trees, or reported a file missing that is not. 23 assertions over workspaces built on disk, including a real git worktree, cover each resolution step and the two a normal run never reaches: the upward walk, and the refusal that returns null. The discriminating case is that ci/gates.json ALONE is not a workspace -- that is true of every worktree in this programme, and mistaking one for a workspace is the defect the module was written for."
+    },
+    {
+      "id": "plan-citations",
+      "script": "ci/lib/plan-citations.mjs",
+      "why": "The M4.7A plan argues from evidence: over a thousand of its sentences point at a file and a line. Two failures of that are silent and both were present. A BARE BASENAME -- `main.ts:429`, `constants.ts:150-165`, `server.go:365` -- names four different files in this workspace, so the claim cannot be checked by a reader or by a script while looking like the most precise evidence there is; 744 citations were in that state. A LINE NUMBER THAT DRIFTED is worse, because it still resolves: the plan's own text said `internal/dlp/dlp.go` was 1510 lines and put `func Redact` at :1479, and on origin/main today the file is 1572 lines and Redact is at :1541. This check requires a repo qualifier on every `path:line` and resolves each one against that repo's origin/main, asserting the line exists. It cannot check that the line SAYS what the plan claims -- that is a reading, not a measurement -- and it prints what it did not look at rather than leaving a green run to imply coverage it does not have."
+    },
+    {
+      "id": "plan-citations-selftest",
+      "script": "ci/lib/plan-citations.test.mjs",
+      "why": "Mutation proof for the check above: 53 assertions over documents written on disk and resolved against the real checkouts, including both halves of the plan's named defeat test (an unqualified basename is a different failure from a line past EOF), the boundary case that citing the last line of a file is not past its end, and a missing checkout reporting NOT MEASURED rather than passing. It hard-codes no line count: the expected file length is measured from origin/main at run time, because the plan's own version of this defeat test pinned 1510 lines and the file has since grown to 1572 -- which would have made the specified defeat test pass, in the task whose whole subject is line numbers that drift."
+    },
+    {
+      "id": "vendored-engine-parity",
+      "script": "ci/lib/vendored-engine-parity.mjs",
+      "why": "The console's AI Security policy playground evaluates admin-typed prompts through a VERBATIM COPY of the endpoint's browser engine. Frontend's vendored-digest.test.ts compares that copy against a manifest sitting beside it -- both halves in the same repo -- so it is structurally incapable of seeing the copy and the manifest agreeing with each other while the Installers source has moved, which is exactly when the console starts demonstrating behaviour the endpoint does not have. The GitHub-side answer, vendored-upstream-drift.yml, is dispatch plus a daily cron and needs a cross-repo token; its per-PR trigger is an owner cost decision owned by Wave -1. Both checkouts are already on disk here, so this asks the question with no token, no network, and nothing a GitHub setting can switch off."
+    },
+    {
+      "id": "vendored-engine-parity-selftest",
+      "script": "ci/lib/vendored-engine-parity.test.mjs",
+      "why": "Mutation proof for the check above. Nine fabricated trios, including the blind case it exists for -- manifest and copy agreeing while upstream moved -- plus a missing checkout, a missing upstream file, unparseable JSON and an empty file map all reporting NOT CHECKED rather than a pass, and CRLF-vs-LF NOT counting as drift. If the blind case ever passes, the check has stopped doing the only job that justifies it."
+    },
+    {
+      "id": "vendored-prose",
+      "script": "ci/lib/vendored-prose.mjs",
+      "why": "Wave 8 Task 11 binds the certificate claim renderer to the plan's fenced forbidden-claims checklist and the system card's per-surface rows, and those two documents live in other repositories. Installers therefore carries a VENDORED extract of each under internal/certificate/testdata/ so that go test ./... measures the binding from a standalone checkout (ship-ledger debt item 5) -- and a vendored copy is a measurement only while it equals its source. This re-derives both extracts from the plan and the card with the Go tests' own rule and compares bytes after CRLF/LF normalisation; a missing copy or source is NOT MEASURED, never a pass."
+    },
+    {
+      "id": "vendored-prose-selftest",
+      "script": "ci/lib/vendored-prose.test.mjs",
+      "why": "Mutation proof for the check above: one edited byte in a copy is DRIFT naming the file and the offset, a changed source under an unchanged copy is DRIFT, a missing copy or an unterminated fence or a missing heading is NOT MEASURED, and the real plan in this checkout carries exactly the two fenced regions the fixture was cut from."
     },
     {
       "id": "workflow-header-truth",
@@ -54,18 +99,8 @@
     },
     {
       "id": "w-1-rebase-manifest-selftest",
-      "script": "ci/lib/rebase-manifest.test.mjs",
+      "script": "ci/lib/w-1-rebase-manifest.test.mjs",
       "why": "Mutation proof for the rebase manifest: seven real temporary Git repositories are generated, one Installers SHA is hand-edited, and validation must fail with the recorded and actual origin/main values."
-    },
-    {
-      "id": "claim-contract-guard",
-      "script": "ci/lib/claim-contract.mjs",
-      "why": "Pins the exact no-PASS statement and all 15 sourced forbidden claims."
-    },
-    {
-      "id": "claim-contract-guard-selftest",
-      "script": "ci/lib/claim-contract.test.mjs",
-      "why": "Defeat proof that removing one forbidden claim makes the contract guard red."
     },
     {
       "id": "standards-schema-declaration",
@@ -76,16 +111,6 @@
       "id": "standards-schema-declaration-selftest",
       "script": "ci/lib/standards-schema-declaration.test.mjs",
       "why": "Defeat proof for a missing standards column and blank ATLAS release."
-    },
-    {
-      "id": "plan-citation-resolver",
-      "script": "ci/lib/plan-citations.mjs",
-      "why": "Resolves qualified plan citations against each repository's origin/main and rejects past-EOF or unqualified source references."
-    },
-    {
-      "id": "plan-citation-resolver-selftest",
-      "script": "ci/lib/plan-citations.test.mjs",
-      "why": "Defeat proof that a citation beyond EOF is rejected with its exact source path and line count."
     }
   ],
   "repos": {
@@ -93,7 +118,6 @@
       "path": "Backend",
       "defaultImage": "node24",
       "volume": "devoidci-backend",
-      "localGateWorkflows": ["pr-checks"],
       "mirrored": {
         "pr-checks:typecheck": {},
         "pr-checks:lint": {},
@@ -102,12 +126,12 @@
         "pr-checks:alerts_integration": {},
         "pr-checks:migration_chain_from_empty": {},
         "pr-checks:full_test": {},
-        "pr-checks:shared-contracts-pin": {},
         "security:audit": {},
         "security:rate_limit_taskdef": {},
         "security:rds_boundary": {},
         "build:build_and_test": {},
-        "build:e2e_advisory": {}
+        "build:e2e_advisory": {},
+        "pr-checks:shared-contracts-pin": {}
       },
       "cannotMirror": {
         "build:required_checks": "Polls the GitHub Checks API for this SHA to decide whether the deploy may start. There is no local equivalent of 'what did GitHub record for this commit', and faking one would defeat the gate.",
@@ -125,9 +149,10 @@
         "security:audit": {}
       },
       "cannotMirror": {
-        "vendored-upstream-drift:drift": "Uses INSTALLERS_READ_TOKEN for two daily-and-dispatch checks: the vendored engine and both detector vocabularies, each against Installers@main. The vocabulary leg compares producer to Frontend only; Backend is invisible here. Frontend pr-checks is workflow_dispatch-only, so neither workflow gates a merge.",
+        "vendored-upstream-drift:drift": "Compares the vendored engine against Installers@main over the network with a token. Cross-repo and scheduled, not a PR gate.",
         "deploy-frontend-ecs:required_checks": "Reads GitHub check runs for the SHA, same as Backend's.",
-        "deploy-frontend-ecs:deploy": "OIDC role + ECR + ECS. Deploys stay on GitHub."
+        "deploy-frontend-ecs:deploy": "OIDC role + ECR + ECS. Deploys stay on GitHub.",
+        "render-harness:gate": "Needs three processes at once -- headless Chrome over CDP, next dev --webpack, and the fixture stub -- and takes about ten minutes for 33 shots. The CI image carries no browser, and adding Chromium to ci/images/node20.Dockerfile to run it on every PR is a cost decision nobody has taken. It is also the wrong shape for a PR gate: it produces EVIDENCE about how the console looks around absent data, against a wire state the author chose, and its own README says a green run proves nothing about whether a Backend ever produces that state. It is run deliberately, per wave, and banked -- see .plans/m47a-20260822/v2-waves/artifacts/w5/. The one part of it that IS cheap and deterministic runs per-PR through Frontend's own pretest instead: check:render-harness-markers, which pins the string the harness greps for to recognise a crashed page. Without that pin, renaming a log line in app/error.tsx silently stops the harness noticing that a page crashed at all."
       }
     },
     "Ceragon-Intelligence": {
@@ -224,7 +249,6 @@
       "path": "Installers",
       "defaultImage": "go124",
       "volume": "devoidci-installers",
-      "localGateWorkflows": ["pr-checks"],
       "mirrored": {
         "pr-checks:hot-path-audit-imports": {},
         "pr-checks:scanner-parity": {},
@@ -235,10 +259,12 @@
         "pr-checks:release-workflow-contract": {},
         "pr-checks:self-update-lane": {},
         "pr-checks:macos-legacy-identity": {},
-        "pr-checks:uninstall-honesty": {},
         "pr-checks:toolrisk-lane": {},
         "holdout-score:score": {},
-        "finding-b-e2e:shim-enforcement": {}
+        "finding-b-e2e:shim-enforcement": {},
+        "pr-checks:uninstall-honesty": {},
+        "pr-checks:hard-deny-stress": {},
+        "pr-checks:neutraleval-ratchets": {}
       },
       "cannotMirror": {
         "pr-checks:cli-entrypoint-tests": "runs-on windows-latest. cmd/devoid's entrypoint tests exercise Windows service control, ACLs and PATH resolution; a Linux container cannot stand in. Run them on this machine with `go test ./cmd/devoid/... -count=1` from a Windows shell.",

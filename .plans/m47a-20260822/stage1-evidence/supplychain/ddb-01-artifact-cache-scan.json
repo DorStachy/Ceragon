@@ -1,0 +1,631 @@
+{
+    "Items": [
+        {
+            "sk": {
+                "S": "LATEST"
+            },
+            "pk": {
+                "S": "HEALTH_CHECK#connectivity-test"
+            },
+            "ttl": {
+                "N": "1788645469"
+            },
+            "expiresAt": {
+                "N": "1788645469"
+            },
+            "timestamp": {
+                "N": "1788641869042"
+            }
+        },
+        {
+            "analyzerVersion": {
+                "S": "2.0.0"
+            },
+            "ecosystem": {
+                "S": "npm"
+            },
+            "transitiveScanStatus": {
+                "S": "COMPLETE"
+            },
+            "isUnmaintained": {
+                "BOOL": true
+            },
+            "hasHttpDependency": {
+                "BOOL": false
+            },
+            "hasNpmShrinkwrap": {
+                "BOOL": false
+            },
+            "sandboxStatus": {
+                "S": "NOT_REQUIRED"
+            },
+            "licenseFact": {
+                "S": "{\"declaredSpdx\":\"WTFPL\",\"detectedSpdx\":[\"WTFPL\"],\"effectiveSpdx\":\"WTFPL\",\"confidence\":\"HIGH\",\"category\":\"permissive\",\"evidence\":[{\"filePath\":\"package.json:license\",\"matchedSpdx\":\"WTFPL\",\"matchScore\":0.75,\"method\":\"declared_metadata\"},{\"filePath\":\"package/COPYING\",\"matchedSpdx\":\"WTFPL\",\"matchScore\":0.95,\"method\":\"file_content_match\"}]}"
+            },
+            "vulnerabilitySummary": {
+                "S": "{\"critical\":0,\"high\":0,\"medium\":0,\"low\":0,\"details\":[]}"
+            },
+            "integrity": {
+                "S": "sha256-hwwP4QliI6WNT4gy0Ip+ZR6i/K245od7L9wmtmLUgd0="
+            },
+            "vulnerabilityReasons": {
+                "S": "[]"
+            },
+            "npmManifest": {
+                "S": "{\"binCount\":0,\"hasExportsMap\":false,\"hasLifecycleScripts\":false,\"lifecycleScriptCount\":0,\"riskFactorCount\":0}"
+            },
+            "sk": {
+                "S": "1.3.0"
+            },
+            "forensicsS3Key": {
+                "S": "forensics-snapshots/npm/left-pad/1.3.0/64062be6-e0bf-4823-82da-0d6e36d28ed4.json.gz"
+            },
+            "packageName": {
+                "S": "left-pad"
+            },
+            "riskScore": {
+                "N": "0"
+            },
+            "codeReachability": {
+                "S": "{\"reachableFileCount\":1,\"unreachableFileCount\":5,\"payloadFileCount\":0,\"maxDepth\":0}"
+            },
+            "hasGitDependency": {
+                "BOOL": false
+            },
+            "hasBinaryDownload": {
+                "BOOL": false
+            },
+            "vulnerabilityScanHealth": {
+                "S": "{\"sources\":{\"osv\":0,\"ghsa\":0,\"npm\":0},\"scanComplete\":true,\"scanPartial\":false,\"failedSources\":[],\"coverageDegraded\":false,\"degradationReasons\":[],\"sourceHealth\":{\"osv\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:10:08.140Z\",\"responseValidated\":true},\"ghsa\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:10:08.140Z\",\"responseValidated\":true},\"npm\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:10:08.140Z\",\"responseValidated\":true}},\"rootSourceHealth\":{\"osv\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:10:08.140Z\",\"responseValidated\":true},\"ghsa\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:10:08.140Z\",\"responseValidated\":true},\"npm\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:10:08.140Z\",\"responseValidated\":true}},\"transitiveFailureSummary\":{\"failedSources\":[],\"degradationReasons\":[],\"coordinatesScanned\":0,\"coordinatesEligible\":0},\"dependencyGraphResolutionComplete\":true,\"unresolvedDependencies\":[]}"
+            },
+            "isDeprecated": {
+                "BOOL": true
+            },
+            "analysisConfidence": {
+                "S": "{\"overall\":0.57,\"expectedSandboxValue\":\"HIGH\",\"unresolvedQuestionCount\":1,\"unresolvedQuestions\":[\"ENCRYPTED_PAYLOAD_CONTENT\"]}"
+            },
+            "analyzedAt": {
+                "N": "1788642609"
+            },
+            "cacheVersion": {
+                "N": "10"
+            },
+            "escalateReasons": {
+                "S": "[]"
+            },
+            "escalateToDynamic": {
+                "BOOL": false
+            },
+            "vulnDataTimestamp": {
+                "N": "1788642609"
+            },
+            "dependencyGraphStatus": {
+                "S": "COMPLETE"
+            },
+            "ttl": {
+                "N": "1788901809"
+            },
+            "version": {
+                "S": "1.3.0"
+            },
+            "expiresAt": {
+                "N": "1788901809"
+            },
+            "topFindings": {
+                "S": "[]"
+            },
+            "vulnerabilityEvidenceVersion": {
+                "N": "3"
+            },
+            "license": {
+                "S": "WTFPL"
+            },
+            "sandboxAnalyzed": {
+                "BOOL": false
+            },
+            "transitiveVulnerabilities": {
+                "S": "{\"rootPackage\":\"left-pad@1.3.0\",\"totalDependencies\":1,\"vulnerableDependencies\":0,\"totalVulnerabilities\":0,\"critical\":[],\"high\":[],\"medium\":[],\"low\":[],\"aggregatedRiskScore\":0,\"summary\":\"left-pad@1.3.0: 1 dependencies, no known vulnerabilities\",\"coverageDegraded\":false,\"degradationReasons\":[],\"failedSources\":[],\"cveScanTruncated\":false,\"cveScanNodesScanned\":0,\"cveScanNodesEligible\":0}"
+            },
+            "dependencyGraph": {
+                "S": "{\"totalNodes\":1,\"maxDepthReached\":0,\"directDependencyCount\":0,\"truncated\":false}"
+            },
+            "npmSriIntegrity": {
+                "S": "sha512-XI5MPzVNApjAyhQzphX8BkmKsKUxD4LdyK24iZeQGinBN9yTQT3bFlCBy/aVx2HrNcqQGsdot8ghrjyrvMCoEA=="
+            },
+            "hasInstallScripts": {
+                "BOOL": false
+            },
+            "verdict": {
+                "S": "ALLOW"
+            },
+            "obfuscationScore": {
+                "S": "{\"score\":0,\"evidence\":[{\"ruleId\":\"HIGH_ENTROPY_STRING\",\"description\":\"High-entropy strings (potential encrypted payload)\",\"occurrences\":3,\"weight\":25,\"samples\":[\"0012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789123456789\",\"0012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789123456789\",\"0012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789123456789\"]}],\"threshold\":70,\"summary\":\"No obfuscation detected\",\"isBundledCode\":false}"
+            },
+            "hasTelemetry": {
+                "BOOL": false
+            },
+            "pk": {
+                "S": "NV#npm#left-pad"
+            },
+            "vulnDataSource": {
+                "S": "install-time"
+            },
+            "staticScanStatus": {
+                "S": "COMPLETE"
+            },
+            "vulnScanStatus": {
+                "S": "COMPLETE"
+            },
+            "binaryDetection": {
+                "S": "{\"hasBinaries\":false,\"binaries\":[],\"hasHighEntropyBlobs\":false,\"highEntropyFiles\":[]}"
+            },
+            "hasGitHubDependency": {
+                "BOOL": false
+            }
+        },
+        {
+            "generation": {
+                "N": "1"
+            },
+            "sk": {
+                "S": "LATEST"
+            },
+            "pk": {
+                "S": "INTEL_GENERATION#GLOBAL"
+            }
+        },
+        {
+            "analyzerVersion": {
+                "S": "2.0.0"
+            },
+            "ecosystem": {
+                "S": "npm"
+            },
+            "transitiveScanStatus": {
+                "S": "COMPLETE"
+            },
+            "isUnmaintained": {
+                "BOOL": true
+            },
+            "hasHttpDependency": {
+                "BOOL": false
+            },
+            "hasNpmShrinkwrap": {
+                "BOOL": false
+            },
+            "sandboxStatus": {
+                "S": "NOT_REQUIRED"
+            },
+            "licenseFact": {
+                "S": "{\"declaredSpdx\":\"WTFPL\",\"detectedSpdx\":[\"WTFPL\"],\"effectiveSpdx\":\"WTFPL\",\"confidence\":\"HIGH\",\"category\":\"permissive\",\"evidence\":[{\"filePath\":\"package.json:license\",\"matchedSpdx\":\"WTFPL\",\"matchScore\":0.75,\"method\":\"declared_metadata\"},{\"filePath\":\"package/COPYING\",\"matchedSpdx\":\"WTFPL\",\"matchScore\":0.95,\"method\":\"file_content_match\"}]}"
+            },
+            "vulnerabilitySummary": {
+                "S": "{\"critical\":0,\"high\":0,\"medium\":0,\"low\":0,\"details\":[]}"
+            },
+            "integrity": {
+                "S": "sha256-hwwP4QliI6WNT4gy0Ip+ZR6i/K245od7L9wmtmLUgd0="
+            },
+            "vulnerabilityReasons": {
+                "S": "[]"
+            },
+            "npmManifest": {
+                "S": "{\"binCount\":0,\"hasExportsMap\":false,\"hasLifecycleScripts\":false,\"lifecycleScriptCount\":0,\"riskFactorCount\":0}"
+            },
+            "sk": {
+                "S": "LATEST"
+            },
+            "forensicsS3Key": {
+                "S": "forensics-snapshots/npm/left-pad/1.3.0/64062be6-e0bf-4823-82da-0d6e36d28ed4.json.gz"
+            },
+            "packageName": {
+                "S": "left-pad"
+            },
+            "riskScore": {
+                "N": "0"
+            },
+            "codeReachability": {
+                "S": "{\"reachableFileCount\":1,\"unreachableFileCount\":5,\"payloadFileCount\":0,\"maxDepth\":0}"
+            },
+            "hasGitDependency": {
+                "BOOL": false
+            },
+            "hasBinaryDownload": {
+                "BOOL": false
+            },
+            "vulnerabilityScanHealth": {
+                "S": "{\"sources\":{\"osv\":0,\"ghsa\":0,\"npm\":0},\"scanComplete\":true,\"scanPartial\":false,\"failedSources\":[],\"coverageDegraded\":false,\"degradationReasons\":[],\"sourceHealth\":{\"osv\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:10:08.140Z\",\"responseValidated\":true},\"ghsa\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:10:08.140Z\",\"responseValidated\":true},\"npm\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:10:08.140Z\",\"responseValidated\":true}},\"rootSourceHealth\":{\"osv\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:10:08.140Z\",\"responseValidated\":true},\"ghsa\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:10:08.140Z\",\"responseValidated\":true},\"npm\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:10:08.140Z\",\"responseValidated\":true}},\"transitiveFailureSummary\":{\"failedSources\":[],\"degradationReasons\":[],\"coordinatesScanned\":0,\"coordinatesEligible\":0},\"dependencyGraphResolutionComplete\":true,\"unresolvedDependencies\":[]}"
+            },
+            "isDeprecated": {
+                "BOOL": true
+            },
+            "analysisConfidence": {
+                "S": "{\"overall\":0.57,\"expectedSandboxValue\":\"HIGH\",\"unresolvedQuestionCount\":1,\"unresolvedQuestions\":[\"ENCRYPTED_PAYLOAD_CONTENT\"]}"
+            },
+            "analyzedAt": {
+                "N": "1788642609"
+            },
+            "cacheVersion": {
+                "N": "10"
+            },
+            "escalateReasons": {
+                "S": "[]"
+            },
+            "escalateToDynamic": {
+                "BOOL": false
+            },
+            "vulnDataTimestamp": {
+                "N": "1788642609"
+            },
+            "dependencyGraphStatus": {
+                "S": "COMPLETE"
+            },
+            "ttl": {
+                "N": "1788901809"
+            },
+            "version": {
+                "S": "1.3.0"
+            },
+            "expiresAt": {
+                "N": "1788901809"
+            },
+            "topFindings": {
+                "S": "[]"
+            },
+            "vulnerabilityEvidenceVersion": {
+                "N": "3"
+            },
+            "license": {
+                "S": "WTFPL"
+            },
+            "sandboxAnalyzed": {
+                "BOOL": false
+            },
+            "transitiveVulnerabilities": {
+                "S": "{\"rootPackage\":\"left-pad@1.3.0\",\"totalDependencies\":1,\"vulnerableDependencies\":0,\"totalVulnerabilities\":0,\"critical\":[],\"high\":[],\"medium\":[],\"low\":[],\"aggregatedRiskScore\":0,\"summary\":\"left-pad@1.3.0: 1 dependencies, no known vulnerabilities\",\"coverageDegraded\":false,\"degradationReasons\":[],\"failedSources\":[],\"cveScanTruncated\":false,\"cveScanNodesScanned\":0,\"cveScanNodesEligible\":0}"
+            },
+            "dependencyGraph": {
+                "S": "{\"totalNodes\":1,\"maxDepthReached\":0,\"directDependencyCount\":0,\"truncated\":false}"
+            },
+            "npmSriIntegrity": {
+                "S": "sha512-XI5MPzVNApjAyhQzphX8BkmKsKUxD4LdyK24iZeQGinBN9yTQT3bFlCBy/aVx2HrNcqQGsdot8ghrjyrvMCoEA=="
+            },
+            "hasInstallScripts": {
+                "BOOL": false
+            },
+            "verdict": {
+                "S": "ALLOW"
+            },
+            "obfuscationScore": {
+                "S": "{\"score\":0,\"evidence\":[{\"ruleId\":\"HIGH_ENTROPY_STRING\",\"description\":\"High-entropy strings (potential encrypted payload)\",\"occurrences\":3,\"weight\":25,\"samples\":[\"0012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789123456789\",\"0012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789123456789\",\"0012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789123456789\"]}],\"threshold\":70,\"summary\":\"No obfuscation detected\",\"isBundledCode\":false}"
+            },
+            "hasTelemetry": {
+                "BOOL": false
+            },
+            "pk": {
+                "S": "npm#sha256-hwwP4QliI6WNT4gy0Ip+ZR6i/K245od7L9wmtmLUgd0="
+            },
+            "vulnDataSource": {
+                "S": "install-time"
+            },
+            "staticScanStatus": {
+                "S": "COMPLETE"
+            },
+            "vulnScanStatus": {
+                "S": "COMPLETE"
+            },
+            "binaryDetection": {
+                "S": "{\"hasBinaries\":false,\"binaries\":[],\"hasHighEntropyBlobs\":false,\"highEntropyFiles\":[]}"
+            },
+            "hasGitHubDependency": {
+                "BOOL": false
+            }
+        },
+        {
+            "ecosystem": {
+                "S": "npm"
+            },
+            "isUnmaintained": {
+                "BOOL": false
+            },
+            "hasNpmShrinkwrap": {
+                "BOOL": false
+            },
+            "sandboxStatus": {
+                "S": "NOT_REQUIRED"
+            },
+            "licenseFact": {
+                "S": "{\"declaredSpdx\":\"MIT\",\"detectedSpdx\":[\"MIT\"],\"effectiveSpdx\":\"MIT\",\"confidence\":\"HIGH\",\"category\":\"permissive\",\"evidence\":[{\"filePath\":\"package.json:license\",\"matchedSpdx\":\"MIT\",\"matchScore\":0.75,\"method\":\"declared_metadata\"},{\"filePath\":\"package/LICENSE\",\"matchedSpdx\":\"MIT\",\"matchScore\":0.62,\"method\":\"file_content_match\"}]}"
+            },
+            "integrity": {
+                "S": "sha256-8Uv6RIIr1F7GrplfjFoAZ8/dxoDnTxBbA8jiipEExZ0="
+            },
+            "vulnerabilityReasons": {
+                "S": "[\"GHSA-35jh-r3h4-6jhm: Command Injection in lodash\",\"GHSA-4xc9-xhrj-v574: Prototype Pollution in lodash\",\"GHSA-jf85-cpcp-j695: Prototype Pollution in lodash\",\"GHSA-p6mc-m468-83gw: Prototype Pollution in lodash\",\"NPMSA-1115806: lodash vulnerable to Code Injection via `_.template` imports key names\"]"
+            },
+            "npmManifest": {
+                "S": "{\"binCount\":0,\"hasExportsMap\":false,\"hasLifecycleScripts\":false,\"lifecycleScriptCount\":0,\"riskFactorCount\":0}"
+            },
+            "forensicsS3Key": {
+                "S": "forensics-snapshots/npm/lodash/4.17.4/ce42f168-1830-4f12-9470-436c0816ccee.json.gz"
+            },
+            "riskScore": {
+                "N": "0"
+            },
+            "blockReason": {
+                "S": "vulnerability"
+            },
+            "hasBinaryDownload": {
+                "BOOL": false
+            },
+            "vulnerabilityScanHealth": {
+                "S": "{\"sources\":{\"osv\":10,\"ghsa\":11,\"npm\":10},\"scanComplete\":true,\"scanPartial\":false,\"failedSources\":[],\"coverageDegraded\":false,\"degradationReasons\":[],\"sourceHealth\":{\"osv\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:11:53.988Z\",\"responseValidated\":true},\"ghsa\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:11:53.988Z\",\"responseValidated\":true},\"npm\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:11:53.988Z\",\"responseValidated\":true}},\"rootSourceHealth\":{\"osv\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:11:53.988Z\",\"responseValidated\":true},\"ghsa\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:11:53.988Z\",\"responseValidated\":true},\"npm\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:11:53.988Z\",\"responseValidated\":true}},\"transitiveFailureSummary\":{\"failedSources\":[],\"degradationReasons\":[],\"coordinatesScanned\":0,\"coordinatesEligible\":0},\"dependencyGraphResolutionComplete\":true,\"unresolvedDependencies\":[]}"
+            },
+            "analysisConfidence": {
+                "S": "{\"overall\":0.7,\"expectedSandboxValue\":\"MEDIUM\",\"unresolvedQuestionCount\":0,\"unresolvedQuestions\":[]}"
+            },
+            "escalateToDynamic": {
+                "BOOL": false
+            },
+            "vulnDataTimestamp": {
+                "N": "1788642715"
+            },
+            "version": {
+                "S": "4.17.4"
+            },
+            "topFindings": {
+                "S": "[]"
+            },
+            "license": {
+                "S": "MIT"
+            },
+            "dependencyGraph": {
+                "S": "{\"totalNodes\":1,\"maxDepthReached\":0,\"directDependencyCount\":0,\"truncated\":false}"
+            },
+            "hasInstallScripts": {
+                "BOOL": false
+            },
+            "verdict": {
+                "S": "ALLOW"
+            },
+            "vulnerabilityScore": {
+                "N": "100"
+            },
+            "vulnDataSource": {
+                "S": "install-time"
+            },
+            "staticScanStatus": {
+                "S": "COMPLETE"
+            },
+            "vulnScanStatus": {
+                "S": "COMPLETE"
+            },
+            "hasGitHubDependency": {
+                "BOOL": false
+            },
+            "analyzerVersion": {
+                "S": "2.0.0"
+            },
+            "transitiveScanStatus": {
+                "S": "COMPLETE"
+            },
+            "hasHttpDependency": {
+                "BOOL": false
+            },
+            "vulnerabilitySummary": {
+                "S": "{\"critical\":1,\"high\":4,\"medium\":5,\"low\":0,\"details\":[{\"id\":\"GHSA-29mw-wpgm-hmr9\",\"severity\":\"MEDIUM\",\"title\":\"Regular Expression Denial of Service (ReDoS) in lodash\",\"fixedIn\":\"4.17.21\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-29mw-wpgm-hmr9\",\"aliases\":[\"GHSA-29mw-wpgm-hmr9\",\"CVE-2020-28500\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\">=4.0.0 <4.17.21\",\"affectedRanges\":[\">=4.0.0 <4.17.21\"],\"fixedVersions\":[\"4.17.21\"],\"dependencyPath\":[],\"direct\":true,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},{\"id\":\"GHSA-35jh-r3h4-6jhm\",\"severity\":\"HIGH\",\"title\":\"Command Injection in lodash\",\"fixedIn\":\"4.17.21\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-35jh-r3h4-6jhm\",\"aliases\":[\"GHSA-35jh-r3h4-6jhm\",\"CVE-2021-23337\",\"CVE-2026-4800\",\"GHSA-r5fr-rjxr-66jc\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\"<4.17.21\",\"affectedRanges\":[\"<4.17.21\",\">=4.0.0 <4.18.0\"],\"fixedVersions\":[\"4.17.21\"],\"dependencyPath\":[],\"direct\":true,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},{\"id\":\"GHSA-4xc9-xhrj-v574\",\"severity\":\"HIGH\",\"title\":\"Prototype Pollution in lodash\",\"fixedIn\":\"4.17.11\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-4xc9-xhrj-v574\",\"aliases\":[\"GHSA-4xc9-xhrj-v574\",\"CVE-2018-16487\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\"<4.17.11\",\"affectedRanges\":[\"<4.17.11\"],\"fixedVersions\":[\"4.17.11\"],\"dependencyPath\":[],\"direct\":true,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},{\"id\":\"GHSA-xxjr-mmjv-4gpg\",\"severity\":\"MEDIUM\",\"title\":\"Lodash has Prototype Pollution Vulnerability in `_.unset` and `_.omit` functions\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-xxjr-mmjv-4gpg\",\"aliases\":[\"GHSA-xxjr-mmjv-4gpg\",\"CVE-2025-13465\",\"CVE-2026-2950\",\"GHSA-f23m-r3pf-42rh\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\">=4.0.0 <=4.17.22\",\"affectedRanges\":[\">=4.0.0 <=4.17.22\",\"<4.18.0\",\">=4.0.0 <4.17.23\"],\"fixedVersions\":[],\"dependencyPath\":[],\"direct\":true,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},{\"id\":\"GHSA-fvqr-27wr-82fm\",\"severity\":\"MEDIUM\",\"title\":\"Prototype Pollution in lodash\",\"fixedIn\":\"4.17.5\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-fvqr-27wr-82fm\",\"aliases\":[\"GHSA-fvqr-27wr-82fm\",\"CVE-2018-3721\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\"<4.17.5\",\"affectedRanges\":[\"<4.17.5\"],\"fixedVersions\":[\"4.17.5\"],\"dependencyPath\":[],\"direct\":true,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},{\"id\":\"GHSA-jf85-cpcp-j695\",\"severity\":\"CRITICAL\",\"title\":\"Prototype Pollution in lodash\",\"fixedIn\":\"4.17.12\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-jf85-cpcp-j695\",\"aliases\":[\"GHSA-jf85-cpcp-j695\",\"CVE-2019-10744\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\"<4.17.12\",\"affectedRanges\":[\"<4.17.12\"],\"fixedVersions\":[\"4.17.12\"],\"dependencyPath\":[],\"direct\":true,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},{\"id\":\"GHSA-p6mc-m468-83gw\",\"severity\":\"HIGH\",\"title\":\"Prototype Pollution in lodash\",\"fixedIn\":\"4.17.19\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-p6mc-m468-83gw\",\"aliases\":[\"GHSA-p6mc-m468-83gw\",\"CVE-2020-8203\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\">=3.7.0 <4.17.19\",\"affectedRanges\":[\">=3.7.0 <4.17.19\"],\"fixedVersions\":[\"4.17.19\"],\"dependencyPath\":[],\"direct\":true,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},{\"id\":\"GHSA-x5rq-j2xg-h7qm\",\"severity\":\"MEDIUM\",\"title\":\"Regular Expression Denial of Service (ReDoS) in lodash\",\"fixedIn\":\"4.17.11\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-x5rq-j2xg-h7qm\",\"aliases\":[\"GHSA-x5rq-j2xg-h7qm\",\"CVE-2019-1010266\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\">=4.7.0 <4.17.11\",\"affectedRanges\":[\">=4.7.0 <4.17.11\"],\"fixedVersions\":[\"4.17.11\"],\"dependencyPath\":[],\"direct\":true,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},{\"id\":\"NPMSA-1115806\",\"severity\":\"HIGH\",\"title\":\"lodash vulnerable to Code Injection via `_.template` imports key names\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"NPMSA-1115806\",\"aliases\":[\"CVE-2026-4800\",\"GHSA-r5fr-rjxr-66jc\"],\"source\":\"npm-audit\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\">=4.0.0 <=4.17.23\",\"affectedRanges\":[\">=4.0.0 <=4.17.23\"],\"fixedVersions\":[],\"dependencyPath\":[],\"direct\":true,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},{\"id\":\"NPMSA-1115810\",\"severity\":\"MEDIUM\",\"title\":\"lodash vulnerable to Prototype Pollution via array path bypass in `_.unset` and `_.omit`\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"NPMSA-1115810\",\"aliases\":[\"CVE-2026-2950\",\"GHSA-f23m-r3pf-42rh\"],\"source\":\"npm-audit\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\"<=4.17.23\",\"affectedRanges\":[\"<=4.17.23\"],\"fixedVersions\":[],\"dependencyPath\":[],\"direct\":true,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}}]}"
+            },
+            "sk": {
+                "S": "4.17.4"
+            },
+            "packageName": {
+                "S": "lodash"
+            },
+            "codeReachability": {
+                "S": "{\"reachableFileCount\":2,\"unreachableFileCount\":1047,\"payloadFileCount\":0,\"maxDepth\":1}"
+            },
+            "hasGitDependency": {
+                "BOOL": false
+            },
+            "isDeprecated": {
+                "BOOL": false
+            },
+            "analyzedAt": {
+                "N": "1788642715"
+            },
+            "cacheVersion": {
+                "N": "10"
+            },
+            "escalateReasons": {
+                "S": "[]"
+            },
+            "dependencyGraphStatus": {
+                "S": "COMPLETE"
+            },
+            "ttl": {
+                "N": "1788901915"
+            },
+            "expiresAt": {
+                "N": "1788901915"
+            },
+            "vulnerabilityEvidenceVersion": {
+                "N": "3"
+            },
+            "sandboxAnalyzed": {
+                "BOOL": false
+            },
+            "transitiveVulnerabilities": {
+                "S": "{\"rootPackage\":\"lodash@4.17.4\",\"totalDependencies\":1,\"vulnerableDependencies\":1,\"totalVulnerabilities\":10,\"critical\":[{\"packageName\":\"lodash\",\"packageVersion\":\"4.17.4\",\"depth\":0,\"vulnerability\":{\"id\":\"GHSA-jf85-cpcp-j695\",\"severity\":\"CRITICAL\",\"title\":\"Prototype Pollution in lodash\",\"description\":\"Versions of `lodash` before 4.17.12 are vulnerable to Prototype Pollution.  The function `defaultsDeep` allows a malicious user to modify the prototype of `Object` via `{constructor: {prototype: {...}}}` causing the addition or modification of an existing property that will exist on all objects.\\n\\n##\",\"source\":\"ghsa\",\"fixedVersion\":\"4.17.12\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-jf85-cpcp-j695\",\"aliases\":[\"GHSA-jf85-cpcp-j695\",\"CVE-2019-10744\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\"<4.17.12\",\"affectedRanges\":[\"<4.17.12\"],\"fixedVersions\":[\"4.17.12\"],\"dependencyPath\":[\"lodash\"],\"direct\":false,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},\"path\":[\"lodash\"],\"scope\":\"prod\"}],\"high\":[{\"packageName\":\"lodash\",\"packageVersion\":\"4.17.4\",\"depth\":0,\"vulnerability\":{\"id\":\"GHSA-35jh-r3h4-6jhm\",\"severity\":\"HIGH\",\"title\":\"Command Injection in lodash\",\"description\":\"### Impact\\n\\nThe fix for [CVE-2021-23337](https://github.com/advisories/GHSA-35jh-r3h4-6jhm) added validation for the `variable` option in `_.template` but did not apply the same validation to `options.imports` key names. Both paths flow into the same `Function()` constructor sink.\\n\\nWhen an applicati\",\"source\":\"ghsa\",\"fixedVersion\":\"4.17.21\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-35jh-r3h4-6jhm\",\"aliases\":[\"GHSA-35jh-r3h4-6jhm\",\"CVE-2021-23337\",\"CVE-2026-4800\",\"GHSA-r5fr-rjxr-66jc\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\"<4.17.21\",\"affectedRanges\":[\"<4.17.21\",\">=4.0.0 <4.18.0\"],\"fixedVersions\":[\"4.17.21\"],\"dependencyPath\":[\"lodash\"],\"direct\":false,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},\"path\":[\"lodash\"],\"scope\":\"prod\"},{\"packageName\":\"lodash\",\"packageVersion\":\"4.17.4\",\"depth\":0,\"vulnerability\":{\"id\":\"GHSA-4xc9-xhrj-v574\",\"severity\":\"HIGH\",\"title\":\"Prototype Pollution in lodash\",\"description\":\"Versions of `lodash` before 4.17.11 are vulnerable to prototype pollution. \\n\\nThe vulnerable functions are 'defaultsDeep', 'merge', and 'mergeWith' which allow a malicious user to modify the prototype of `Object` via `{constructor: {prototype: {...}}}` causing the addition or modification of an exist\",\"source\":\"ghsa\",\"fixedVersion\":\"4.17.11\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-4xc9-xhrj-v574\",\"aliases\":[\"GHSA-4xc9-xhrj-v574\",\"CVE-2018-16487\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\"<4.17.11\",\"affectedRanges\":[\"<4.17.11\"],\"fixedVersions\":[\"4.17.11\"],\"dependencyPath\":[\"lodash\"],\"direct\":false,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},\"path\":[\"lodash\"],\"scope\":\"prod\"},{\"packageName\":\"lodash\",\"packageVersion\":\"4.17.4\",\"depth\":0,\"vulnerability\":{\"id\":\"GHSA-p6mc-m468-83gw\",\"severity\":\"HIGH\",\"title\":\"Prototype Pollution in lodash\",\"description\":\"Versions of lodash prior to 4.17.19 are vulnerable to Prototype Pollution. The functions `pick`, `set`, `setWith`, `update`, `updateWith`, and `zipObjectDeep` allow a malicious user to modify the prototype of Object if the property identifiers are user-supplied. Being affected by this issue requires\",\"source\":\"ghsa\",\"fixedVersion\":\"4.17.19\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-p6mc-m468-83gw\",\"aliases\":[\"GHSA-p6mc-m468-83gw\",\"CVE-2020-8203\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\">=3.7.0 <4.17.19\",\"affectedRanges\":[\">=3.7.0 <4.17.19\"],\"fixedVersions\":[\"4.17.19\"],\"dependencyPath\":[\"lodash\"],\"direct\":false,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},\"path\":[\"lodash\"],\"scope\":\"prod\"},{\"packageName\":\"lodash\",\"packageVersion\":\"4.17.4\",\"depth\":0,\"vulnerability\":{\"id\":\"NPMSA-1115806\",\"severity\":\"HIGH\",\"title\":\"lodash vulnerable to Code Injection via `_.template` imports key names\",\"description\":\"### Impact\\n\\nThe fix for [CVE-2021-23337](https://github.com/advisories/GHSA-35jh-r3h4-6jhm) added validation for the `variable` option in `_.template` but did not apply the same validation to `options.imports` key names. Both paths flow into the same `Function()` constructor sink.\\n\\nWhen an applicati\",\"source\":\"npm\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"NPMSA-1115806\",\"aliases\":[\"CVE-2026-4800\",\"GHSA-r5fr-rjxr-66jc\"],\"source\":\"npm-audit\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\">=4.0.0 <=4.17.23\",\"affectedRanges\":[\">=4.0.0 <=4.17.23\"],\"fixedVersions\":[],\"dependencyPath\":[\"lodash\"],\"direct\":false,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},\"path\":[\"lodash\"],\"scope\":\"prod\"}],\"medium\":[{\"packageName\":\"lodash\",\"packageVersion\":\"4.17.4\",\"depth\":0,\"vulnerability\":{\"id\":\"GHSA-29mw-wpgm-hmr9\",\"severity\":\"MEDIUM\",\"title\":\"Regular Expression Denial of Service (ReDoS) in lodash\",\"description\":\"All versions of package lodash prior to 4.17.21 are vulnerable to Regular Expression Denial of Service (ReDoS) via the `toNumber`, `trim` and `trimEnd` functions. \\n\\nSteps to reproduce (provided by reporter Liyuan Chen):\\n```js\\nvar lo = require('lodash');\\n\\nfunction build_blank(n) {\\n    var ret = \\\"1\\\"\\n \",\"source\":\"ghsa\",\"fixedVersion\":\"4.17.21\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-29mw-wpgm-hmr9\",\"aliases\":[\"GHSA-29mw-wpgm-hmr9\",\"CVE-2020-28500\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\">=4.0.0 <4.17.21\",\"affectedRanges\":[\">=4.0.0 <4.17.21\"],\"fixedVersions\":[\"4.17.21\"],\"dependencyPath\":[\"lodash\"],\"direct\":false,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},\"path\":[\"lodash\"],\"scope\":\"prod\",\"informational\":true},{\"packageName\":\"lodash\",\"packageVersion\":\"4.17.4\",\"depth\":0,\"vulnerability\":{\"id\":\"GHSA-xxjr-mmjv-4gpg\",\"severity\":\"MEDIUM\",\"title\":\"Lodash has Prototype Pollution Vulnerability in `_.unset` and `_.omit` functions\",\"description\":\"### Impact\\n\\nLodash versions 4.0.0 through 4.17.22 are vulnerable to prototype pollution in the `_.unset` and `_.omit` functions. An attacker can pass crafted paths which cause Lodash to delete methods from global prototypes. \\n\\nThe issue permits deletion of properties but does not allow overwriting t\",\"source\":\"ghsa\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-xxjr-mmjv-4gpg\",\"aliases\":[\"GHSA-xxjr-mmjv-4gpg\",\"CVE-2025-13465\",\"CVE-2026-2950\",\"GHSA-f23m-r3pf-42rh\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\">=4.0.0 <=4.17.22\",\"affectedRanges\":[\">=4.0.0 <=4.17.22\",\"<4.18.0\",\">=4.0.0 <4.17.23\"],\"fixedVersions\":[],\"dependencyPath\":[\"lodash\"],\"direct\":false,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},\"path\":[\"lodash\"],\"scope\":\"prod\",\"informational\":true},{\"packageName\":\"lodash\",\"packageVersion\":\"4.17.4\",\"depth\":0,\"vulnerability\":{\"id\":\"GHSA-fvqr-27wr-82fm\",\"severity\":\"MEDIUM\",\"title\":\"Prototype Pollution in lodash\",\"description\":\"Versions of `lodash` before 4.17.5 are vulnerable to prototype pollution. \\n\\nThe vulnerable functions are 'defaultsDeep', 'merge', and 'mergeWith' which allow a malicious user to modify the prototype of `Object` via `__proto__` causing the addition or modification of an existing property that will ex\",\"source\":\"ghsa\",\"fixedVersion\":\"4.17.5\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-fvqr-27wr-82fm\",\"aliases\":[\"GHSA-fvqr-27wr-82fm\",\"CVE-2018-3721\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\"<4.17.5\",\"affectedRanges\":[\"<4.17.5\"],\"fixedVersions\":[\"4.17.5\"],\"dependencyPath\":[\"lodash\"],\"direct\":false,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},\"path\":[\"lodash\"],\"scope\":\"prod\",\"informational\":true},{\"packageName\":\"lodash\",\"packageVersion\":\"4.17.4\",\"depth\":0,\"vulnerability\":{\"id\":\"GHSA-x5rq-j2xg-h7qm\",\"severity\":\"MEDIUM\",\"title\":\"Regular Expression Denial of Service (ReDoS) in lodash\",\"description\":\"lodash prior to 4.7.11 is affected by: CWE-400: Uncontrolled Resource Consumption. The impact is: Denial of service. The component is: Date handler. The attack vector is: Attacker provides very long strings, which the library attempts to match using a regular expression. The fixed version is: 4.7.11\",\"source\":\"ghsa\",\"fixedVersion\":\"4.17.11\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-x5rq-j2xg-h7qm\",\"aliases\":[\"GHSA-x5rq-j2xg-h7qm\",\"CVE-2019-1010266\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\">=4.7.0 <4.17.11\",\"affectedRanges\":[\">=4.7.0 <4.17.11\"],\"fixedVersions\":[\"4.17.11\"],\"dependencyPath\":[\"lodash\"],\"direct\":false,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},\"path\":[\"lodash\"],\"scope\":\"prod\",\"informational\":true},{\"packageName\":\"lodash\",\"packageVersion\":\"4.17.4\",\"depth\":0,\"vulnerability\":{\"id\":\"NPMSA-1115810\",\"severity\":\"MEDIUM\",\"title\":\"lodash vulnerable to Prototype Pollution via array path bypass in `_.unset` and `_.omit`\",\"description\":\"### Impact\\n\\nLodash versions 4.17.23 and earlier are vulnerable to prototype pollution in the `_.unset` and `_.omit` functions. The fix for [CVE-2025-13465](https://github.com/lodash/lodash/security/advisories/GHSA-xxjr-mmjv-4gpg) only guards against string key members, so an attacker can bypass the \",\"source\":\"npm\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"NPMSA-1115810\",\"aliases\":[\"CVE-2026-2950\",\"GHSA-f23m-r3pf-42rh\"],\"source\":\"npm-audit\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\"<=4.17.23\",\"affectedRanges\":[\"<=4.17.23\"],\"fixedVersions\":[],\"dependencyPath\":[\"lodash\"],\"direct\":false,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},\"path\":[\"lodash\"],\"scope\":\"prod\",\"informational\":true}],\"low\":[],\"aggregatedRiskScore\":70,\"summary\":\"lodash@4.17.4: 1/1 deps vulnerable, 1 CRITICAL, 4 HIGH, 5 MEDIUM\",\"coverageDegraded\":false,\"degradationReasons\":[],\"failedSources\":[],\"cveScanTruncated\":false,\"cveScanNodesScanned\":0,\"cveScanNodesEligible\":0}"
+            },
+            "npmSriIntegrity": {
+                "S": "sha512-6X37Sq9KCpLSXEh8uM12AKYlviHPNNk4RxiGBn4cmKGJinbXBneWIV7iE/nXkM928O7ytHcHb6+X6Svl0f4hXg=="
+            },
+            "obfuscationScore": {
+                "S": "{\"score\":9,\"evidence\":[{\"ruleId\":\"JS_COMPUTED_PROPERTY\",\"description\":\"Computed property access with encoded strings\",\"occurrences\":34,\"weight\":15,\"samples\":[\"[\\\"']\",\"[\\\"']\",\"['abc']\"]},{\"ruleId\":\"JS_CHAR_CODES\",\"description\":\"String.fromCharCode obfuscation\",\"occurrences\":2,\"weight\":12,\"samples\":[\"String.fromCharCode(o.code)\",\"String.fromCharCode(o.code)\"]},{\"ruleId\":\"JS_HEX_ESCAPE\",\"description\":\"Hex escape sequences in strings\",\"occurrences\":402,\"weight\":10,\"samples\":[\"\\\\x00\",\"\\\\x2f\",\"\\\\x3a\"]},{\"ruleId\":\"JS_UNICODE_ESCAPE\",\"description\":\"Unicode escape sequences in strings\",\"occurrences\":761,\"weight\":10,\"samples\":[\"\\\\u2019\",\"\\\\u0100\",\"\\\\u0102\"]}],\"threshold\":70,\"summary\":\"Minimal obfuscation (bundled/minified code detected)\",\"isBundledCode\":true}"
+            },
+            "hasTelemetry": {
+                "BOOL": false
+            },
+            "pk": {
+                "S": "NV#npm#lodash"
+            },
+            "binaryDetection": {
+                "S": "{\"hasBinaries\":false,\"binaries\":[],\"hasHighEntropyBlobs\":false,\"highEntropyFiles\":[]}"
+            }
+        },
+        {
+            "ecosystem": {
+                "S": "npm"
+            },
+            "isUnmaintained": {
+                "BOOL": false
+            },
+            "hasNpmShrinkwrap": {
+                "BOOL": false
+            },
+            "sandboxStatus": {
+                "S": "NOT_REQUIRED"
+            },
+            "licenseFact": {
+                "S": "{\"declaredSpdx\":\"MIT\",\"detectedSpdx\":[\"MIT\"],\"effectiveSpdx\":\"MIT\",\"confidence\":\"HIGH\",\"category\":\"permissive\",\"evidence\":[{\"filePath\":\"package.json:license\",\"matchedSpdx\":\"MIT\",\"matchScore\":0.75,\"method\":\"declared_metadata\"},{\"filePath\":\"package/LICENSE\",\"matchedSpdx\":\"MIT\",\"matchScore\":0.62,\"method\":\"file_content_match\"}]}"
+            },
+            "integrity": {
+                "S": "sha256-8Uv6RIIr1F7GrplfjFoAZ8/dxoDnTxBbA8jiipEExZ0="
+            },
+            "vulnerabilityReasons": {
+                "S": "[\"GHSA-35jh-r3h4-6jhm: Command Injection in lodash\",\"GHSA-4xc9-xhrj-v574: Prototype Pollution in lodash\",\"GHSA-jf85-cpcp-j695: Prototype Pollution in lodash\",\"GHSA-p6mc-m468-83gw: Prototype Pollution in lodash\",\"NPMSA-1115806: lodash vulnerable to Code Injection via `_.template` imports key names\"]"
+            },
+            "npmManifest": {
+                "S": "{\"binCount\":0,\"hasExportsMap\":false,\"hasLifecycleScripts\":false,\"lifecycleScriptCount\":0,\"riskFactorCount\":0}"
+            },
+            "forensicsS3Key": {
+                "S": "forensics-snapshots/npm/lodash/4.17.4/ce42f168-1830-4f12-9470-436c0816ccee.json.gz"
+            },
+            "riskScore": {
+                "N": "0"
+            },
+            "blockReason": {
+                "S": "vulnerability"
+            },
+            "hasBinaryDownload": {
+                "BOOL": false
+            },
+            "vulnerabilityScanHealth": {
+                "S": "{\"sources\":{\"osv\":10,\"ghsa\":11,\"npm\":10},\"scanComplete\":true,\"scanPartial\":false,\"failedSources\":[],\"coverageDegraded\":false,\"degradationReasons\":[],\"sourceHealth\":{\"osv\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:11:53.988Z\",\"responseValidated\":true},\"ghsa\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:11:53.988Z\",\"responseValidated\":true},\"npm\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:11:53.988Z\",\"responseValidated\":true}},\"rootSourceHealth\":{\"osv\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:11:53.988Z\",\"responseValidated\":true},\"ghsa\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:11:53.988Z\",\"responseValidated\":true},\"npm\":{\"status\":\"succeeded\",\"queriedAt\":\"2026-09-05T21:11:53.988Z\",\"responseValidated\":true}},\"transitiveFailureSummary\":{\"failedSources\":[],\"degradationReasons\":[],\"coordinatesScanned\":0,\"coordinatesEligible\":0},\"dependencyGraphResolutionComplete\":true,\"unresolvedDependencies\":[]}"
+            },
+            "analysisConfidence": {
+                "S": "{\"overall\":0.7,\"expectedSandboxValue\":\"MEDIUM\",\"unresolvedQuestionCount\":0,\"unresolvedQuestions\":[]}"
+            },
+            "escalateToDynamic": {
+                "BOOL": false
+            },
+            "vulnDataTimestamp": {
+                "N": "1788642715"
+            },
+            "version": {
+                "S": "4.17.4"
+            },
+            "topFindings": {
+                "S": "[]"
+            },
+            "license": {
+                "S": "MIT"
+            },
+            "dependencyGraph": {
+                "S": "{\"totalNodes\":1,\"maxDepthReached\":0,\"directDependencyCount\":0,\"truncated\":false}"
+            },
+            "hasInstallScripts": {
+                "BOOL": false
+            },
+            "verdict": {
+                "S": "ALLOW"
+            },
+            "vulnerabilityScore": {
+                "N": "100"
+            },
+            "vulnDataSource": {
+                "S": "install-time"
+            },
+            "staticScanStatus": {
+                "S": "COMPLETE"
+            },
+            "vulnScanStatus": {
+                "S": "COMPLETE"
+            },
+            "hasGitHubDependency": {
+                "BOOL": false
+            },
+            "analyzerVersion": {
+                "S": "2.0.0"
+            },
+            "transitiveScanStatus": {
+                "S": "COMPLETE"
+            },
+            "hasHttpDependency": {
+                "BOOL": false
+            },
+            "vulnerabilitySummary": {
+                "S": "{\"critical\":1,\"high\":4,\"medium\":5,\"low\":0,\"details\":[{\"id\":\"GHSA-29mw-wpgm-hmr9\",\"severity\":\"MEDIUM\",\"title\":\"Regular Expression Denial of Service (ReDoS) in lodash\",\"fixedIn\":\"4.17.21\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-29mw-wpgm-hmr9\",\"aliases\":[\"GHSA-29mw-wpgm-hmr9\",\"CVE-2020-28500\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\">=4.0.0 <4.17.21\",\"affectedRanges\":[\">=4.0.0 <4.17.21\"],\"fixedVersions\":[\"4.17.21\"],\"dependencyPath\":[],\"direct\":true,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},{\"id\":\"GHSA-35jh-r3h4-6jhm\",\"severity\":\"HIGH\",\"title\":\"Command Injection in lodash\",\"fixedIn\":\"4.17.21\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-35jh-r3h4-6jhm\",\"aliases\":[\"GHSA-35jh-r3h4-6jhm\",\"CVE-2021-23337\",\"CVE-2026-4800\",\"GHSA-r5fr-rjxr-66jc\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\"<4.17.21\",\"affectedRanges\":[\"<4.17.21\",\">=4.0.0 <4.18.0\"],\"fixedVersions\":[\"4.17.21\"],\"dependencyPath\":[],\"direct\":true,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},{\"id\":\"GHSA-4xc9-xhrj-v574\",\"severity\":\"HIGH\",\"title\":\"Prototype Pollution in lodash\",\"fixedIn\":\"4.17.11\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-4xc9-xhrj-v574\",\"aliases\":[\"GHSA-4xc9-xhrj-v574\",\"CVE-2018-16487\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\"<4.17.11\",\"affectedRanges\":[\"<4.17.11\"],\"fixedVersions\":[\"4.17.11\"],\"dependencyPath\":[],\"direct\":true,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},{\"id\":\"GHSA-xxjr-mmjv-4gpg\",\"severity\":\"MEDIUM\",\"title\":\"Lodash has Prototype Pollution Vulnerability in `_.unset` and `_.omit` functions\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-xxjr-mmjv-4gpg\",\"aliases\":[\"GHSA-xxjr-mmjv-4gpg\",\"CVE-2025-13465\",\"CVE-2026-2950\",\"GHSA-f23m-r3pf-42rh\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\">=4.0.0 <=4.17.22\",\"affectedRanges\":[\">=4.0.0 <=4.17.22\",\"<4.18.0\",\">=4.0.0 <4.17.23\"],\"fixedVersions\":[],\"dependencyPath\":[],\"direct\":true,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},{\"id\":\"GHSA-fvqr-27wr-82fm\",\"severity\":\"MEDIUM\",\"title\":\"Prototype Pollution in lodash\",\"fixedIn\":\"4.17.5\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-fvqr-27wr-82fm\",\"aliases\":[\"GHSA-fvqr-27wr-82fm\",\"CVE-2018-3721\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\"<4.17.5\",\"affectedRanges\":[\"<4.17.5\"],\"fixedVersions\":[\"4.17.5\"],\"dependencyPath\":[],\"direct\":true,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},{\"id\":\"GHSA-jf85-cpcp-j695\",\"severity\":\"CRITICAL\",\"title\":\"Prototype Pollution in lodash\",\"fixedIn\":\"4.17.12\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-jf85-cpcp-j695\",\"aliases\":[\"GHSA-jf85-cpcp-j695\",\"CVE-2019-10744\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\"<4.17.12\",\"affectedRanges\":[\"<4.17.12\"],\"fixedVersions\":[\"4.17.12\"],\"dependencyPath\":[],\"direct\":true,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},{\"id\":\"GHSA-p6mc-m468-83gw\",\"severity\":\"HIGH\",\"title\":\"Prototype Pollution in lodash\",\"fixedIn\":\"4.17.19\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-p6mc-m468-83gw\",\"aliases\":[\"GHSA-p6mc-m468-83gw\",\"CVE-2020-8203\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\">=3.7.0 <4.17.19\",\"affectedRanges\":[\">=3.7.0 <4.17.19\"],\"fixedVersions\":[\"4.17.19\"],\"dependencyPath\":[],\"direct\":true,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},{\"id\":\"GHSA-x5rq-j2xg-h7qm\",\"severity\":\"MEDIUM\",\"title\":\"Regular Expression Denial of Service (ReDoS) in lodash\",\"fixedIn\":\"4.17.11\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-x5rq-j2xg-h7qm\",\"aliases\":[\"GHSA-x5rq-j2xg-h7qm\",\"CVE-2019-1010266\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\">=4.7.0 <4.17.11\",\"affectedRanges\":[\">=4.7.0 <4.17.11\"],\"fixedVersions\":[\"4.17.11\"],\"dependencyPath\":[],\"direct\":true,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},{\"id\":\"NPMSA-1115806\",\"severity\":\"HIGH\",\"title\":\"lodash vulnerable to Code Injection via `_.template` imports key names\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"NPMSA-1115806\",\"aliases\":[\"CVE-2026-4800\",\"GHSA-r5fr-rjxr-66jc\"],\"source\":\"npm-audit\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\">=4.0.0 <=4.17.23\",\"affectedRanges\":[\">=4.0.0 <=4.17.23\"],\"fixedVersions\":[],\"dependencyPath\":[],\"direct\":true,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},{\"id\":\"NPMSA-1115810\",\"severity\":\"MEDIUM\",\"title\":\"lodash vulnerable to Prototype Pollution via array path bypass in `_.unset` and `_.omit`\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"NPMSA-1115810\",\"aliases\":[\"CVE-2026-2950\",\"GHSA-f23m-r3pf-42rh\"],\"source\":\"npm-audit\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\"<=4.17.23\",\"affectedRanges\":[\"<=4.17.23\"],\"fixedVersions\":[],\"dependencyPath\":[],\"direct\":true,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}}]}"
+            },
+            "sk": {
+                "S": "LATEST"
+            },
+            "packageName": {
+                "S": "lodash"
+            },
+            "codeReachability": {
+                "S": "{\"reachableFileCount\":2,\"unreachableFileCount\":1047,\"payloadFileCount\":0,\"maxDepth\":1}"
+            },
+            "hasGitDependency": {
+                "BOOL": false
+            },
+            "isDeprecated": {
+                "BOOL": false
+            },
+            "analyzedAt": {
+                "N": "1788642715"
+            },
+            "cacheVersion": {
+                "N": "10"
+            },
+            "escalateReasons": {
+                "S": "[]"
+            },
+            "dependencyGraphStatus": {
+                "S": "COMPLETE"
+            },
+            "ttl": {
+                "N": "1788901915"
+            },
+            "expiresAt": {
+                "N": "1788901915"
+            },
+            "vulnerabilityEvidenceVersion": {
+                "N": "3"
+            },
+            "sandboxAnalyzed": {
+                "BOOL": false
+            },
+            "transitiveVulnerabilities": {
+                "S": "{\"rootPackage\":\"lodash@4.17.4\",\"totalDependencies\":1,\"vulnerableDependencies\":1,\"totalVulnerabilities\":10,\"critical\":[{\"packageName\":\"lodash\",\"packageVersion\":\"4.17.4\",\"depth\":0,\"vulnerability\":{\"id\":\"GHSA-jf85-cpcp-j695\",\"severity\":\"CRITICAL\",\"title\":\"Prototype Pollution in lodash\",\"description\":\"Versions of `lodash` before 4.17.12 are vulnerable to Prototype Pollution.  The function `defaultsDeep` allows a malicious user to modify the prototype of `Object` via `{constructor: {prototype: {...}}}` causing the addition or modification of an existing property that will exist on all objects.\\n\\n##\",\"source\":\"ghsa\",\"fixedVersion\":\"4.17.12\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-jf85-cpcp-j695\",\"aliases\":[\"GHSA-jf85-cpcp-j695\",\"CVE-2019-10744\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\"<4.17.12\",\"affectedRanges\":[\"<4.17.12\"],\"fixedVersions\":[\"4.17.12\"],\"dependencyPath\":[\"lodash\"],\"direct\":false,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},\"path\":[\"lodash\"],\"scope\":\"prod\"}],\"high\":[{\"packageName\":\"lodash\",\"packageVersion\":\"4.17.4\",\"depth\":0,\"vulnerability\":{\"id\":\"GHSA-35jh-r3h4-6jhm\",\"severity\":\"HIGH\",\"title\":\"Command Injection in lodash\",\"description\":\"### Impact\\n\\nThe fix for [CVE-2021-23337](https://github.com/advisories/GHSA-35jh-r3h4-6jhm) added validation for the `variable` option in `_.template` but did not apply the same validation to `options.imports` key names. Both paths flow into the same `Function()` constructor sink.\\n\\nWhen an applicati\",\"source\":\"ghsa\",\"fixedVersion\":\"4.17.21\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-35jh-r3h4-6jhm\",\"aliases\":[\"GHSA-35jh-r3h4-6jhm\",\"CVE-2021-23337\",\"CVE-2026-4800\",\"GHSA-r5fr-rjxr-66jc\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\"<4.17.21\",\"affectedRanges\":[\"<4.17.21\",\">=4.0.0 <4.18.0\"],\"fixedVersions\":[\"4.17.21\"],\"dependencyPath\":[\"lodash\"],\"direct\":false,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},\"path\":[\"lodash\"],\"scope\":\"prod\"},{\"packageName\":\"lodash\",\"packageVersion\":\"4.17.4\",\"depth\":0,\"vulnerability\":{\"id\":\"GHSA-4xc9-xhrj-v574\",\"severity\":\"HIGH\",\"title\":\"Prototype Pollution in lodash\",\"description\":\"Versions of `lodash` before 4.17.11 are vulnerable to prototype pollution. \\n\\nThe vulnerable functions are 'defaultsDeep', 'merge', and 'mergeWith' which allow a malicious user to modify the prototype of `Object` via `{constructor: {prototype: {...}}}` causing the addition or modification of an exist\",\"source\":\"ghsa\",\"fixedVersion\":\"4.17.11\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-4xc9-xhrj-v574\",\"aliases\":[\"GHSA-4xc9-xhrj-v574\",\"CVE-2018-16487\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\"<4.17.11\",\"affectedRanges\":[\"<4.17.11\"],\"fixedVersions\":[\"4.17.11\"],\"dependencyPath\":[\"lodash\"],\"direct\":false,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},\"path\":[\"lodash\"],\"scope\":\"prod\"},{\"packageName\":\"lodash\",\"packageVersion\":\"4.17.4\",\"depth\":0,\"vulnerability\":{\"id\":\"GHSA-p6mc-m468-83gw\",\"severity\":\"HIGH\",\"title\":\"Prototype Pollution in lodash\",\"description\":\"Versions of lodash prior to 4.17.19 are vulnerable to Prototype Pollution. The functions `pick`, `set`, `setWith`, `update`, `updateWith`, and `zipObjectDeep` allow a malicious user to modify the prototype of Object if the property identifiers are user-supplied. Being affected by this issue requires\",\"source\":\"ghsa\",\"fixedVersion\":\"4.17.19\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-p6mc-m468-83gw\",\"aliases\":[\"GHSA-p6mc-m468-83gw\",\"CVE-2020-8203\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\">=3.7.0 <4.17.19\",\"affectedRanges\":[\">=3.7.0 <4.17.19\"],\"fixedVersions\":[\"4.17.19\"],\"dependencyPath\":[\"lodash\"],\"direct\":false,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},\"path\":[\"lodash\"],\"scope\":\"prod\"},{\"packageName\":\"lodash\",\"packageVersion\":\"4.17.4\",\"depth\":0,\"vulnerability\":{\"id\":\"NPMSA-1115806\",\"severity\":\"HIGH\",\"title\":\"lodash vulnerable to Code Injection via `_.template` imports key names\",\"description\":\"### Impact\\n\\nThe fix for [CVE-2021-23337](https://github.com/advisories/GHSA-35jh-r3h4-6jhm) added validation for the `variable` option in `_.template` but did not apply the same validation to `options.imports` key names. Both paths flow into the same `Function()` constructor sink.\\n\\nWhen an applicati\",\"source\":\"npm\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"NPMSA-1115806\",\"aliases\":[\"CVE-2026-4800\",\"GHSA-r5fr-rjxr-66jc\"],\"source\":\"npm-audit\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\">=4.0.0 <=4.17.23\",\"affectedRanges\":[\">=4.0.0 <=4.17.23\"],\"fixedVersions\":[],\"dependencyPath\":[\"lodash\"],\"direct\":false,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},\"path\":[\"lodash\"],\"scope\":\"prod\"}],\"medium\":[{\"packageName\":\"lodash\",\"packageVersion\":\"4.17.4\",\"depth\":0,\"vulnerability\":{\"id\":\"GHSA-29mw-wpgm-hmr9\",\"severity\":\"MEDIUM\",\"title\":\"Regular Expression Denial of Service (ReDoS) in lodash\",\"description\":\"All versions of package lodash prior to 4.17.21 are vulnerable to Regular Expression Denial of Service (ReDoS) via the `toNumber`, `trim` and `trimEnd` functions. \\n\\nSteps to reproduce (provided by reporter Liyuan Chen):\\n```js\\nvar lo = require('lodash');\\n\\nfunction build_blank(n) {\\n    var ret = \\\"1\\\"\\n \",\"source\":\"ghsa\",\"fixedVersion\":\"4.17.21\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-29mw-wpgm-hmr9\",\"aliases\":[\"GHSA-29mw-wpgm-hmr9\",\"CVE-2020-28500\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\">=4.0.0 <4.17.21\",\"affectedRanges\":[\">=4.0.0 <4.17.21\"],\"fixedVersions\":[\"4.17.21\"],\"dependencyPath\":[\"lodash\"],\"direct\":false,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},\"path\":[\"lodash\"],\"scope\":\"prod\",\"informational\":true},{\"packageName\":\"lodash\",\"packageVersion\":\"4.17.4\",\"depth\":0,\"vulnerability\":{\"id\":\"GHSA-xxjr-mmjv-4gpg\",\"severity\":\"MEDIUM\",\"title\":\"Lodash has Prototype Pollution Vulnerability in `_.unset` and `_.omit` functions\",\"description\":\"### Impact\\n\\nLodash versions 4.0.0 through 4.17.22 are vulnerable to prototype pollution in the `_.unset` and `_.omit` functions. An attacker can pass crafted paths which cause Lodash to delete methods from global prototypes. \\n\\nThe issue permits deletion of properties but does not allow overwriting t\",\"source\":\"ghsa\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-xxjr-mmjv-4gpg\",\"aliases\":[\"GHSA-xxjr-mmjv-4gpg\",\"CVE-2025-13465\",\"CVE-2026-2950\",\"GHSA-f23m-r3pf-42rh\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\">=4.0.0 <=4.17.22\",\"affectedRanges\":[\">=4.0.0 <=4.17.22\",\"<4.18.0\",\">=4.0.0 <4.17.23\"],\"fixedVersions\":[],\"dependencyPath\":[\"lodash\"],\"direct\":false,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},\"path\":[\"lodash\"],\"scope\":\"prod\",\"informational\":true},{\"packageName\":\"lodash\",\"packageVersion\":\"4.17.4\",\"depth\":0,\"vulnerability\":{\"id\":\"GHSA-fvqr-27wr-82fm\",\"severity\":\"MEDIUM\",\"title\":\"Prototype Pollution in lodash\",\"description\":\"Versions of `lodash` before 4.17.5 are vulnerable to prototype pollution. \\n\\nThe vulnerable functions are 'defaultsDeep', 'merge', and 'mergeWith' which allow a malicious user to modify the prototype of `Object` via `__proto__` causing the addition or modification of an existing property that will ex\",\"source\":\"ghsa\",\"fixedVersion\":\"4.17.5\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-fvqr-27wr-82fm\",\"aliases\":[\"GHSA-fvqr-27wr-82fm\",\"CVE-2018-3721\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\"<4.17.5\",\"affectedRanges\":[\"<4.17.5\"],\"fixedVersions\":[\"4.17.5\"],\"dependencyPath\":[\"lodash\"],\"direct\":false,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},\"path\":[\"lodash\"],\"scope\":\"prod\",\"informational\":true},{\"packageName\":\"lodash\",\"packageVersion\":\"4.17.4\",\"depth\":0,\"vulnerability\":{\"id\":\"GHSA-x5rq-j2xg-h7qm\",\"severity\":\"MEDIUM\",\"title\":\"Regular Expression Denial of Service (ReDoS) in lodash\",\"description\":\"lodash prior to 4.7.11 is affected by: CWE-400: Uncontrolled Resource Consumption. The impact is: Denial of service. The component is: Date handler. The attack vector is: Attacker provides very long strings, which the library attempts to match using a regular expression. The fixed version is: 4.7.11\",\"source\":\"ghsa\",\"fixedVersion\":\"4.17.11\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"GHSA-x5rq-j2xg-h7qm\",\"aliases\":[\"GHSA-x5rq-j2xg-h7qm\",\"CVE-2019-1010266\"],\"source\":\"ghsa\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\">=4.7.0 <4.17.11\",\"affectedRanges\":[\">=4.7.0 <4.17.11\"],\"fixedVersions\":[\"4.17.11\"],\"dependencyPath\":[\"lodash\"],\"direct\":false,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},\"path\":[\"lodash\"],\"scope\":\"prod\",\"informational\":true},{\"packageName\":\"lodash\",\"packageVersion\":\"4.17.4\",\"depth\":0,\"vulnerability\":{\"id\":\"NPMSA-1115810\",\"severity\":\"MEDIUM\",\"title\":\"lodash vulnerable to Prototype Pollution via array path bypass in `_.unset` and `_.omit`\",\"description\":\"### Impact\\n\\nLodash versions 4.17.23 and earlier are vulnerable to prototype pollution in the `_.unset` and `_.omit` functions. The fix for [CVE-2025-13465](https://github.com/lodash/lodash/security/advisories/GHSA-xxjr-mmjv-4gpg) only guards against string key members, so an attacker can bypass the \",\"source\":\"npm\",\"vulnerabilityApplicability\":{\"state\":\"MATCHED\",\"reason\":\"EXACT_VERSION_MATCHED\",\"ecosystem\":\"npm\",\"packageName\":\"lodash\",\"installedVersion\":\"4.17.4\",\"advisoryId\":\"NPMSA-1115810\",\"aliases\":[\"CVE-2026-2950\",\"GHSA-f23m-r3pf-42rh\"],\"source\":\"npm-audit\",\"sourcePackageName\":null,\"exactVersionQuery\":true,\"versionConfirmedBySource\":true,\"matchedAffectedRange\":\"<=4.17.23\",\"affectedRanges\":[\"<=4.17.23\"],\"fixedVersions\":[],\"dependencyPath\":[\"lodash\"],\"direct\":false,\"graphStatus\":\"COMPLETE\",\"providerHealth\":\"HEALTHY\",\"sourceResponseHash\":null}},\"path\":[\"lodash\"],\"scope\":\"prod\",\"informational\":true}],\"low\":[],\"aggregatedRiskScore\":70,\"summary\":\"lodash@4.17.4: 1/1 deps vulnerable, 1 CRITICAL, 4 HIGH, 5 MEDIUM\",\"coverageDegraded\":false,\"degradationReasons\":[],\"failedSources\":[],\"cveScanTruncated\":false,\"cveScanNodesScanned\":0,\"cveScanNodesEligible\":0}"
+            },
+            "npmSriIntegrity": {
+                "S": "sha512-6X37Sq9KCpLSXEh8uM12AKYlviHPNNk4RxiGBn4cmKGJinbXBneWIV7iE/nXkM928O7ytHcHb6+X6Svl0f4hXg=="
+            },
+            "obfuscationScore": {
+                "S": "{\"score\":9,\"evidence\":[{\"ruleId\":\"JS_COMPUTED_PROPERTY\",\"description\":\"Computed property access with encoded strings\",\"occurrences\":34,\"weight\":15,\"samples\":[\"[\\\"']\",\"[\\\"']\",\"['abc']\"]},{\"ruleId\":\"JS_CHAR_CODES\",\"description\":\"String.fromCharCode obfuscation\",\"occurrences\":2,\"weight\":12,\"samples\":[\"String.fromCharCode(o.code)\",\"String.fromCharCode(o.code)\"]},{\"ruleId\":\"JS_HEX_ESCAPE\",\"description\":\"Hex escape sequences in strings\",\"occurrences\":402,\"weight\":10,\"samples\":[\"\\\\x00\",\"\\\\x2f\",\"\\\\x3a\"]},{\"ruleId\":\"JS_UNICODE_ESCAPE\",\"description\":\"Unicode escape sequences in strings\",\"occurrences\":761,\"weight\":10,\"samples\":[\"\\\\u2019\",\"\\\\u0100\",\"\\\\u0102\"]}],\"threshold\":70,\"summary\":\"Minimal obfuscation (bundled/minified code detected)\",\"isBundledCode\":true}"
+            },
+            "hasTelemetry": {
+                "BOOL": false
+            },
+            "pk": {
+                "S": "npm#sha256-8Uv6RIIr1F7GrplfjFoAZ8/dxoDnTxBbA8jiipEExZ0="
+            },
+            "binaryDetection": {
+                "S": "{\"hasBinaries\":false,\"binaries\":[],\"hasHighEntropyBlobs\":false,\"highEntropyFiles\":[]}"
+            }
+        }
+    ],
+    "Count": 6,
+    "ScannedCount": 6,
+    "ConsumedCapacity": null
+}

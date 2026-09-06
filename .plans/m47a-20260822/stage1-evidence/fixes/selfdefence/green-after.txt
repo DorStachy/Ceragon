@@ -1,0 +1,203 @@
+=== RUN   TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked
+=== RUN   TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/sc-delete-bare
+=== RUN   TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/sc-delete-exe-quoted
+=== RUN   TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/sc-delete-daemon-service
+=== RUN   TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/sc-delete-remote
+=== RUN   TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/sc-delete-mixed-case
+=== RUN   TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/remove-service-named
+=== RUN   TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/remove-service-positional
+=== RUN   TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/schtasks-delete
+=== RUN   TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/schtasks-end
+=== RUN   TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/schtasks-legacy-brand
+=== RUN   TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/unregister-scheduledtask
+=== RUN   TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/disable-scheduledtask
+--- PASS: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked (0.00s)
+    --- PASS: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/sc-delete-bare (0.00s)
+    --- PASS: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/sc-delete-exe-quoted (0.00s)
+    --- PASS: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/sc-delete-daemon-service (0.00s)
+    --- PASS: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/sc-delete-remote (0.00s)
+    --- PASS: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/sc-delete-mixed-case (0.00s)
+    --- PASS: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/remove-service-named (0.00s)
+    --- PASS: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/remove-service-positional (0.00s)
+    --- PASS: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/schtasks-delete (0.00s)
+    --- PASS: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/schtasks-end (0.00s)
+    --- PASS: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/schtasks-legacy-brand (0.00s)
+    --- PASS: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/unregister-scheduledtask (0.00s)
+    --- PASS: TestP47SelfDisable_ServiceAndTaskRemovalIsBlocked/disable-scheduledtask (0.00s)
+=== RUN   TestP47SelfDisable_ServiceInspectionStaysAllowed
+=== RUN   TestP47SelfDisable_ServiceInspectionStaysAllowed/sc-query
+=== RUN   TestP47SelfDisable_ServiceInspectionStaysAllowed/sc-queryex
+=== RUN   TestP47SelfDisable_ServiceInspectionStaysAllowed/schtasks-query
+=== RUN   TestP47SelfDisable_ServiceInspectionStaysAllowed/get-service
+=== RUN   TestP47SelfDisable_ServiceInspectionStaysAllowed/get-scheduledtask
+=== RUN   TestP47SelfDisable_ServiceInspectionStaysAllowed/taskkill-unrelated-image
+=== RUN   TestP47SelfDisable_ServiceInspectionStaysAllowed/sc-delete-unrelated-service
+--- PASS: TestP47SelfDisable_ServiceInspectionStaysAllowed (0.00s)
+    --- PASS: TestP47SelfDisable_ServiceInspectionStaysAllowed/sc-query (0.00s)
+    --- PASS: TestP47SelfDisable_ServiceInspectionStaysAllowed/sc-queryex (0.00s)
+    --- PASS: TestP47SelfDisable_ServiceInspectionStaysAllowed/schtasks-query (0.00s)
+    --- PASS: TestP47SelfDisable_ServiceInspectionStaysAllowed/get-service (0.00s)
+    --- PASS: TestP47SelfDisable_ServiceInspectionStaysAllowed/get-scheduledtask (0.00s)
+    --- PASS: TestP47SelfDisable_ServiceInspectionStaysAllowed/taskkill-unrelated-image (0.00s)
+    --- PASS: TestP47SelfDisable_ServiceInspectionStaysAllowed/sc-delete-unrelated-service (0.00s)
+=== RUN   TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked
+=== RUN   TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/del-program-files-exe
+=== RUN   TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/del-daemon-exe
+=== RUN   TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/erase-evidence-writer
+=== RUN   TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/del-env-program-files
+=== RUN   TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rd-install-dir
+=== RUN   TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rmdir-programdata
+=== RUN   TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/remove-item-programdata
+=== RUN   TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/ri-alias-programdata
+=== RUN   TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/remove-item-localappdata
+=== RUN   TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/remove-item-user-dot-dir
+=== RUN   TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rm-tilde-dot-devoid
+=== RUN   TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rm-home-dot-devoid
+=== RUN   TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rm-quoted-home-dot-devoid
+=== RUN   TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rm-braced-home-dot-devoid
+=== RUN   TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rm-opt-install
+=== RUN   TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rm-usr-local-bin
+=== RUN   TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rm-var-lib
+=== RUN   TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/sudo-rm-opt-install
+=== RUN   TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/chained-after-separator
+=== RUN   TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/mixed-case
+--- PASS: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked (0.01s)
+    --- PASS: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/del-program-files-exe (0.00s)
+    --- PASS: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/del-daemon-exe (0.00s)
+    --- PASS: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/erase-evidence-writer (0.00s)
+    --- PASS: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/del-env-program-files (0.00s)
+    --- PASS: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rd-install-dir (0.00s)
+    --- PASS: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rmdir-programdata (0.00s)
+    --- PASS: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/remove-item-programdata (0.00s)
+    --- PASS: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/ri-alias-programdata (0.00s)
+    --- PASS: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/remove-item-localappdata (0.00s)
+    --- PASS: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/remove-item-user-dot-dir (0.00s)
+    --- PASS: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rm-tilde-dot-devoid (0.00s)
+    --- PASS: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rm-home-dot-devoid (0.00s)
+    --- PASS: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rm-quoted-home-dot-devoid (0.00s)
+    --- PASS: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rm-braced-home-dot-devoid (0.00s)
+    --- PASS: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rm-opt-install (0.00s)
+    --- PASS: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rm-usr-local-bin (0.00s)
+    --- PASS: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/rm-var-lib (0.00s)
+    --- PASS: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/sudo-rm-opt-install (0.00s)
+    --- PASS: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/chained-after-separator (0.00s)
+    --- PASS: TestP47SelfDisable_DeletingTheAgentsFilesIsBlocked/mixed-case (0.00s)
+=== RUN   TestP47SelfDisable_OrdinaryDeletesStayAllowed
+=== RUN   TestP47SelfDisable_OrdinaryDeletesStayAllowed/workspace-file
+=== RUN   TestP47SelfDisable_OrdinaryDeletesStayAllowed/workspace-subtree
+=== RUN   TestP47SelfDisable_OrdinaryDeletesStayAllowed/build-objects
+=== RUN   TestP47SelfDisable_OrdinaryDeletesStayAllowed/dist
+=== RUN   TestP47SelfDisable_OrdinaryDeletesStayAllowed/ps-dist
+=== RUN   TestP47SelfDisable_OrdinaryDeletesStayAllowed/node-modules
+=== RUN   TestP47SelfDisable_OrdinaryDeletesStayAllowed/program-files-other-app
+=== RUN   TestP47SelfDisable_OrdinaryDeletesStayAllowed/usr-local-lib-other
+=== RUN   TestP47SelfDisable_OrdinaryDeletesStayAllowed/var-lib-other
+=== RUN   TestP47SelfDisable_OrdinaryDeletesStayAllowed/similarly-named-dir
+=== RUN   TestP47SelfDisable_OrdinaryDeletesStayAllowed/home-cache
+=== RUN   TestP47SelfDisable_OrdinaryDeletesStayAllowed/list-install-dir
+=== RUN   TestP47SelfDisable_OrdinaryDeletesStayAllowed/read-binary
+--- PASS: TestP47SelfDisable_OrdinaryDeletesStayAllowed (0.00s)
+    --- PASS: TestP47SelfDisable_OrdinaryDeletesStayAllowed/workspace-file (0.00s)
+    --- PASS: TestP47SelfDisable_OrdinaryDeletesStayAllowed/workspace-subtree (0.00s)
+    --- PASS: TestP47SelfDisable_OrdinaryDeletesStayAllowed/build-objects (0.00s)
+    --- PASS: TestP47SelfDisable_OrdinaryDeletesStayAllowed/dist (0.00s)
+    --- PASS: TestP47SelfDisable_OrdinaryDeletesStayAllowed/ps-dist (0.00s)
+    --- PASS: TestP47SelfDisable_OrdinaryDeletesStayAllowed/node-modules (0.00s)
+    --- PASS: TestP47SelfDisable_OrdinaryDeletesStayAllowed/program-files-other-app (0.00s)
+    --- PASS: TestP47SelfDisable_OrdinaryDeletesStayAllowed/usr-local-lib-other (0.00s)
+    --- PASS: TestP47SelfDisable_OrdinaryDeletesStayAllowed/var-lib-other (0.00s)
+    --- PASS: TestP47SelfDisable_OrdinaryDeletesStayAllowed/similarly-named-dir (0.00s)
+    --- PASS: TestP47SelfDisable_OrdinaryDeletesStayAllowed/home-cache (0.00s)
+    --- PASS: TestP47SelfDisable_OrdinaryDeletesStayAllowed/list-install-dir (0.00s)
+    --- PASS: TestP47SelfDisable_OrdinaryDeletesStayAllowed/read-binary (0.00s)
+=== RUN   TestP47SelfDisable_ProductDisableVerbsAreBlocked
+=== RUN   TestP47SelfDisable_ProductDisableVerbsAreBlocked/daemon-stop
+=== RUN   TestP47SelfDisable_ProductDisableVerbsAreBlocked/daemon-stop-exe
+=== RUN   TestP47SelfDisable_ProductDisableVerbsAreBlocked/daemon-stop-sudo
+=== RUN   TestP47SelfDisable_ProductDisableVerbsAreBlocked/daemon-stop-abs-path
+=== RUN   TestP47SelfDisable_ProductDisableVerbsAreBlocked/daemon-stop-after-separator
+=== RUN   TestP47SelfDisable_ProductDisableVerbsAreBlocked/daemon-stop-nested-shell
+=== RUN   TestP47SelfDisable_ProductDisableVerbsAreBlocked/setup-remove-daemon
+=== RUN   TestP47SelfDisable_ProductDisableVerbsAreBlocked/setup-cleanup
+=== RUN   TestP47SelfDisable_ProductDisableVerbsAreBlocked/setup-unpatch-profile
+=== RUN   TestP47SelfDisable_ProductDisableVerbsAreBlocked/mixed-case
+--- PASS: TestP47SelfDisable_ProductDisableVerbsAreBlocked (0.00s)
+    --- PASS: TestP47SelfDisable_ProductDisableVerbsAreBlocked/daemon-stop (0.00s)
+    --- PASS: TestP47SelfDisable_ProductDisableVerbsAreBlocked/daemon-stop-exe (0.00s)
+    --- PASS: TestP47SelfDisable_ProductDisableVerbsAreBlocked/daemon-stop-sudo (0.00s)
+    --- PASS: TestP47SelfDisable_ProductDisableVerbsAreBlocked/daemon-stop-abs-path (0.00s)
+    --- PASS: TestP47SelfDisable_ProductDisableVerbsAreBlocked/daemon-stop-after-separator (0.00s)
+    --- PASS: TestP47SelfDisable_ProductDisableVerbsAreBlocked/daemon-stop-nested-shell (0.00s)
+    --- PASS: TestP47SelfDisable_ProductDisableVerbsAreBlocked/setup-remove-daemon (0.00s)
+    --- PASS: TestP47SelfDisable_ProductDisableVerbsAreBlocked/setup-cleanup (0.00s)
+    --- PASS: TestP47SelfDisable_ProductDisableVerbsAreBlocked/setup-unpatch-profile (0.00s)
+    --- PASS: TestP47SelfDisable_ProductDisableVerbsAreBlocked/mixed-case (0.00s)
+=== RUN   TestP47SelfDisable_ProductVerbMentionsAndReadsStayAllowed
+=== RUN   TestP47SelfDisable_ProductVerbMentionsAndReadsStayAllowed/status
+=== RUN   TestP47SelfDisable_ProductVerbMentionsAndReadsStayAllowed/daemon-status
+=== RUN   TestP47SelfDisable_ProductVerbMentionsAndReadsStayAllowed/daemon-start
+=== RUN   TestP47SelfDisable_ProductVerbMentionsAndReadsStayAllowed/setup-enroll
+=== RUN   TestP47SelfDisable_ProductVerbMentionsAndReadsStayAllowed/doctor
+=== RUN   TestP47SelfDisable_ProductVerbMentionsAndReadsStayAllowed/commit-message
+=== RUN   TestP47SelfDisable_ProductVerbMentionsAndReadsStayAllowed/grep-for-the-verb
+=== RUN   TestP47SelfDisable_ProductVerbMentionsAndReadsStayAllowed/ripgrep-for-the-class
+=== RUN   TestP47SelfDisable_ProductVerbMentionsAndReadsStayAllowed/echo-in-a-note
+--- PASS: TestP47SelfDisable_ProductVerbMentionsAndReadsStayAllowed (0.00s)
+    --- PASS: TestP47SelfDisable_ProductVerbMentionsAndReadsStayAllowed/status (0.00s)
+    --- PASS: TestP47SelfDisable_ProductVerbMentionsAndReadsStayAllowed/daemon-status (0.00s)
+    --- PASS: TestP47SelfDisable_ProductVerbMentionsAndReadsStayAllowed/daemon-start (0.00s)
+    --- PASS: TestP47SelfDisable_ProductVerbMentionsAndReadsStayAllowed/setup-enroll (0.00s)
+    --- PASS: TestP47SelfDisable_ProductVerbMentionsAndReadsStayAllowed/doctor (0.00s)
+    --- PASS: TestP47SelfDisable_ProductVerbMentionsAndReadsStayAllowed/commit-message (0.00s)
+    --- PASS: TestP47SelfDisable_ProductVerbMentionsAndReadsStayAllowed/grep-for-the-verb (0.00s)
+    --- PASS: TestP47SelfDisable_ProductVerbMentionsAndReadsStayAllowed/ripgrep-for-the-class (0.00s)
+    --- PASS: TestP47SelfDisable_ProductVerbMentionsAndReadsStayAllowed/echo-in-a-note (0.00s)
+=== RUN   TestP47QuotedHomeRoot_IsDestructive
+=== RUN   TestP47QuotedHomeRoot_IsDestructive/dquoted-home
+=== RUN   TestP47QuotedHomeRoot_IsDestructive/dquoted-home-trailing-slash
+=== RUN   TestP47QuotedHomeRoot_IsDestructive/dquoted-braced-home
+=== RUN   TestP47QuotedHomeRoot_IsDestructive/dquoted-braced-home-trailing-slash
+=== RUN   TestP47QuotedHomeRoot_IsDestructive/dquoted-home-credential-store
+=== RUN   TestP47QuotedHomeRoot_IsDestructive/dquoted-home-aws-credentials
+=== RUN   TestP47QuotedHomeRoot_IsDestructive/unquoted-glob-outside-quotes
+=== RUN   TestP47QuotedHomeRoot_IsDestructive/separate-flags
+=== RUN   TestP47QuotedHomeRoot_IsDestructive/long-flag
+--- PASS: TestP47QuotedHomeRoot_IsDestructive (0.00s)
+    --- PASS: TestP47QuotedHomeRoot_IsDestructive/dquoted-home (0.00s)
+    --- PASS: TestP47QuotedHomeRoot_IsDestructive/dquoted-home-trailing-slash (0.00s)
+    --- PASS: TestP47QuotedHomeRoot_IsDestructive/dquoted-braced-home (0.00s)
+    --- PASS: TestP47QuotedHomeRoot_IsDestructive/dquoted-braced-home-trailing-slash (0.00s)
+    --- PASS: TestP47QuotedHomeRoot_IsDestructive/dquoted-home-credential-store (0.00s)
+    --- PASS: TestP47QuotedHomeRoot_IsDestructive/dquoted-home-aws-credentials (0.00s)
+    --- PASS: TestP47QuotedHomeRoot_IsDestructive/unquoted-glob-outside-quotes (0.00s)
+    --- PASS: TestP47QuotedHomeRoot_IsDestructive/separate-flags (0.00s)
+    --- PASS: TestP47QuotedHomeRoot_IsDestructive/long-flag (0.00s)
+=== RUN   TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed
+=== RUN   TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/pip-cache
+=== RUN   TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/named-scratch
+=== RUN   TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/braced-bounded
+=== RUN   TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/quote-inert-glob
+=== RUN   TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/quote-inert-glob-direct
+=== RUN   TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/force-only
+=== RUN   TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/final-dot-dot
+=== RUN   TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/build-dir-variable
+=== RUN   TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/destdir-variable
+=== RUN   TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/home-rebound-first
+=== RUN   TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/home-rebound-on-the-invocation
+=== RUN   TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/dist
+--- PASS: TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed (0.00s)
+    --- PASS: TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/pip-cache (0.00s)
+    --- PASS: TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/named-scratch (0.00s)
+    --- PASS: TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/braced-bounded (0.00s)
+    --- PASS: TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/quote-inert-glob (0.00s)
+    --- PASS: TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/quote-inert-glob-direct (0.00s)
+    --- PASS: TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/force-only (0.00s)
+    --- PASS: TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/final-dot-dot (0.00s)
+    --- PASS: TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/build-dir-variable (0.00s)
+    --- PASS: TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/destdir-variable (0.00s)
+    --- PASS: TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/home-rebound-first (0.00s)
+    --- PASS: TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/home-rebound-on-the-invocation (0.00s)
+    --- PASS: TestP47QuotedHomeRoot_BoundedAndInertTwinsStayAllowed/dist (0.00s)
+PASS
+ok  	github.com/codefense/cli-wrapper/internal/toolrisk	1.224s
+exit=0

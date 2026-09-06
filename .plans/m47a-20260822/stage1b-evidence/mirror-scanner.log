@@ -1,0 +1,55 @@
+[2mGithubApp-Bot-Scanner-Worker[0m on [36mp47/stage1b-scanner-signing-quality[0m (9 ahead)
+[2m>>[0m GithubApp-Bot-Scanner-Worker [36mtypecheck:typecheck#package=shared-schemas[0m
+   [32mPASS   [0m GithubApp-Bot-Scanner-Worker typecheck:typecheck#package=shared-schemas [2m8s[0m
+[2m>>[0m GithubApp-Bot-Scanner-Worker [36mtypecheck:typecheck#package=scanner-worker[0m
+   [32mPASS   [0m GithubApp-Bot-Scanner-Worker typecheck:typecheck#package=scanner-worker [2m10s[0m
+[2m>>[0m GithubApp-Bot-Scanner-Worker [36mtypecheck:typecheck#package=github-action[0m
+   [32mPASS   [0m GithubApp-Bot-Scanner-Worker typecheck:typecheck#package=github-action [2m10s[0m
+[2m>>[0m GithubApp-Bot-Scanner-Worker [36mtest:test#package=shared-schemas[0m
+      service postgres: postgres:17
+   [32mPASS   [0m GithubApp-Bot-Scanner-Worker test:test#package=shared-schemas [2m7s[0m
+[2m>>[0m GithubApp-Bot-Scanner-Worker [36mtest:test#package=github-action[0m
+      service postgres: postgres:17
+   [31mFAIL   [0m GithubApp-Bot-Scanner-Worker test:test#package=github-action [2m24s[0m  [31m<- Run Jest (github-action)[0m
+[2m>>[0m GithubApp-Bot-Scanner-Worker [36mtest:test#package=scanner-worker[0m
+      service postgres: postgres:17
+   [32mPASS   [0m GithubApp-Bot-Scanner-Worker test:test#package=scanner-worker [2m65s[0m
+[2m>>[0m GithubApp-Bot-Scanner-Worker [36mtest:github-action-clean-install[0m
+   [32mPASS   [0m GithubApp-Bot-Scanner-Worker test:github-action-clean-install [2m14s[0m
+[2m>>[0m GithubApp-Bot-Scanner-Worker [36msecurity:audit#package=shared-schemas[0m
+   [32mPASS   [0m GithubApp-Bot-Scanner-Worker security:audit#package=shared-schemas [2m4s[0m
+[2m>>[0m GithubApp-Bot-Scanner-Worker [36msecurity:audit#package=github-action[0m
+   [32mPASS   [0m GithubApp-Bot-Scanner-Worker security:audit#package=github-action [2m4s[0m
+[2m>>[0m GithubApp-Bot-Scanner-Worker [36msecurity:audit#package=scanner-worker[0m
+   [32mPASS   [0m GithubApp-Bot-Scanner-Worker security:audit#package=scanner-worker [2m4s[0m
+[2m>>[0m GithubApp-Bot-Scanner-Worker [36msecurity:rule-precision[0m
+   [31mFAIL   [0m GithubApp-Bot-Scanner-Worker security:rule-precision [2m14s[0m  [31m<- Location-based precision/recall gate (merged prod config)[0m
+[2m>>[0m GithubApp-Bot-Scanner-Worker [36mai-detection-gate:ai-detection-gate[0m
+   [32mPASS   [0m GithubApp-Bot-Scanner-Worker ai-detection-gate:ai-detection-gate [2m7s[0m
+[2m>>[0m GithubApp-Bot-Scanner-Worker [36mquality-precision-gate:quality-precision-gate[0m
+   [31mFAIL   [0m GithubApp-Bot-Scanner-Worker quality-precision-gate:quality-precision-gate [2m5s[0m  [31m<- Install gitleaks (pinned)[0m
+[2m>>[0m GithubApp-Bot-Scanner-Worker [36mai-vs-scanner-benchmark:benchmark[0m
+   [31mFAIL   [0m GithubApp-Bot-Scanner-Worker ai-vs-scanner-benchmark:benchmark [2m9s[0m  [31m<- Regenerate merged config (committed-artifact drift gate)[0m
+
+[1m========================================================================[0m
+[32mPASS   [0m GithubApp-Bot-Scanner-Worker   ai-detection-gate:ai-detection-gate
+[31mFAIL   [0m GithubApp-Bot-Scanner-Worker   ai-vs-scanner-benchmark:benchmark
+          [2mlog: C:\cwt\p47b-ciroot\ci\.logs\GithubApp-Bot-Scanner-Worker\ai-vs-scanner-benchmark-benchmark.log[0m
+[31mFAIL   [0m GithubApp-Bot-Scanner-Worker   quality-precision-gate:quality-precision-gate
+          [2mlog: C:\cwt\p47b-ciroot\ci\.logs\GithubApp-Bot-Scanner-Worker\quality-precision-gate-quality-precision-gate.log[0m
+[32mPASS   [0m GithubApp-Bot-Scanner-Worker   security:audit#package=github-action
+[32mPASS   [0m GithubApp-Bot-Scanner-Worker   security:audit#package=scanner-worker
+[32mPASS   [0m GithubApp-Bot-Scanner-Worker   security:audit#package=shared-schemas
+[31mFAIL   [0m GithubApp-Bot-Scanner-Worker   security:rule-precision
+          [2mlog: C:\cwt\p47b-ciroot\ci\.logs\GithubApp-Bot-Scanner-Worker\security-rule-precision.log[0m
+[32mPASS   [0m GithubApp-Bot-Scanner-Worker   test:github-action-clean-install
+[31mFAIL   [0m GithubApp-Bot-Scanner-Worker   test:test#package=github-action
+          [2mlog: C:\cwt\p47b-ciroot\ci\.logs\GithubApp-Bot-Scanner-Worker\test-test-package-github-action.log[0m
+[32mPASS   [0m GithubApp-Bot-Scanner-Worker   test:test#package=scanner-worker
+[32mPASS   [0m GithubApp-Bot-Scanner-Worker   test:test#package=shared-schemas
+[32mPASS   [0m GithubApp-Bot-Scanner-Worker   typecheck:typecheck#package=github-action
+[32mPASS   [0m GithubApp-Bot-Scanner-Worker   typecheck:typecheck#package=scanner-worker
+[32mPASS   [0m GithubApp-Bot-Scanner-Worker   typecheck:typecheck#package=shared-schemas
+
+10 pass, 4 fail, 0 partial, 0 error
+scanner mirror exit=1

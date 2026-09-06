@@ -1,0 +1,29 @@
+# Spool + evidence-health P0 — live end-to-end proof (2026-09-06T08:14:18Z)
+
+## Backend: the endpoint that was evidence-dark now reads degraded, with the cause
+ai_policy_evidence_spool_cause = spool-corrupt-quarantined
+endpoint_evidence_health: status=degraded reason=spool-unavailable spool_cause=spool-corrupt-quarantined
+
+## The migration column that only exists because of the backend fix
+column present: endpoint_control_state.ai_policy_evidence_spool_cause
+column present: endpoint_evidence_health.spool_cause
+
+## EVIDENCE_WAL_QUARANTINED events reached the backend
+EVIDENCE_WAL_QUARANTINED events = 0
+
+## The quarantined WAL files, bytes preserved (the fix renamed, did not delete)
+15631 bytes  11:11  
+6200 bytes  22:07  
+
+## The lock file the fix added (prevents the restart overlap that caused the original poisoning)
+/c/Users/Owner/AppData/Local/Temp/devoid-p47-iso/home/.devoid/evidence-spool/9cc7bb95-78ec-4bcd-9c08-15de21a1c625/endpoint-evidence.lock (5 bytes)
+
+## Daemon quarantine + recovery lines from its own log
+  time=2026-09-06T11:11:10.947+03:00 level=WARN msg="endpoint evidence WAL was poisoned and has been quarantined; the endpoint emits on a new stream" cause=spool-corrupt-quarantined reason=s
+
+## The daemon is NOT bricked — it keeps working after the quarantine
+  time=2026-09-06T11:11:11.997+03:00 level=INFO msg="Endpoint inventory posted" items=6 findings=0 chunks=1
+  time=2026-09-06T11:11:14.952+03:00 level=INFO msg="AI inventory posted" items=108 accepted=108 chunks=1
+  time=2026-09-06T11:11:15.028+03:00 level=INFO msg="MCP scan posted" servers=3 accepted=3
+  time=2026-09-06T11:12:15.356+03:00 level=INFO msg="MCP scan posted" servers=3 accepted=3
+applied_revision=44 applied_digest=sha256:da6f8317356 evidence_stream=devoid:5f21674b-a139-4

@@ -1,0 +1,53 @@
+# >>> devoid codex machine requirements (managed) >>>
+# DeVoid-owned obligations only. Foreign administrator keys are preserved verbatim.
+allow_managed_hooks_only = true
+# <<< devoid codex machine requirements (managed) <<<
+
+[hooks]
+windows_managed_dir = "C:/Users/Owner/AppData/Local/Temp/devoid-p47-iso/progdata/OpenAI/Codex/devoid-managed-hooks"
+
+[[hooks.PreToolUse]]
+matcher = "*"
+
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = "C:/Users/Owner/AppData/Local/Temp/devoid-p47-iso/devoid.exe ai hook --adapter codex --event PRE_TOOL_USE --provenance 5c6fff536f4863cbf9427a5209ab8292"
+commandWindows = "C:/Users/Owner/AppData/Local/Temp/devoid-p47-iso/devoid.exe ai hook --adapter codex --event PRE_TOOL_USE --provenance 5c6fff536f4863cbf9427a5209ab8292"
+timeout = 60
+
+[[hooks.UserPromptSubmit]]
+
+[[hooks.UserPromptSubmit.hooks]]
+type = "command"
+command = "C:/Users/Owner/AppData/Local/Temp/devoid-p47-iso/devoid.exe ai hook --adapter codex --event USER_PROMPT_SUBMIT --provenance f14bdf5298b5c80860671204c8f5e1b6"
+commandWindows = "C:/Users/Owner/AppData/Local/Temp/devoid-p47-iso/devoid.exe ai hook --adapter codex --event USER_PROMPT_SUBMIT --provenance f14bdf5298b5c80860671204c8f5e1b6"
+timeout = 60
+
+[[hooks.PostToolUse]]
+matcher = "*"
+
+[[hooks.PostToolUse.hooks]]
+type = "command"
+command = "C:/Users/Owner/AppData/Local/Temp/devoid-p47-iso/devoid.exe ai hook --adapter codex --event POST_TOOL_USE --provenance 011f087643642edaaff3455c6705be6f"
+commandWindows = "C:/Users/Owner/AppData/Local/Temp/devoid-p47-iso/devoid.exe ai hook --adapter codex --event POST_TOOL_USE --provenance 011f087643642edaaff3455c6705be6f"
+timeout = 60
+
+[[hooks.SessionStart]]
+
+[[hooks.SessionStart.hooks]]
+type = "command"
+command = "C:/Users/Owner/AppData/Local/Temp/devoid-p47-iso/devoid.exe ai hook --adapter codex --event SESSION_START --provenance d802840176556d0cb31147eaa9697135"
+commandWindows = "C:/Users/Owner/AppData/Local/Temp/devoid-p47-iso/devoid.exe ai hook --adapter codex --event SESSION_START --provenance d802840176556d0cb31147eaa9697135"
+timeout = 60
+
+[[hooks.PermissionRequest]]
+matcher = "*"
+
+[[hooks.PermissionRequest.hooks]]
+type = "command"
+command = "C:/Users/Owner/AppData/Local/Temp/devoid-p47-iso/devoid.exe ai hook --adapter codex --event PERMISSION_REQUEST --provenance d45319fc8b2bdee96450966ced349029"
+commandWindows = "C:/Users/Owner/AppData/Local/Temp/devoid-p47-iso/devoid.exe ai hook --adapter codex --event PERMISSION_REQUEST --provenance d45319fc8b2bdee96450966ced349029"
+timeout = 60
+
+[features]
+hooks = true

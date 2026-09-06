@@ -1,0 +1,2 @@
+sha256=bfafc2445d0cac3ae646bfdebde5272a49cdc3f8cd0a32e79d5288154452b18d
+s3key=artifacts/npm/p47-uncontainable-probe/1.0.0/p47-uncontainable-probe-1.0.0.tgz

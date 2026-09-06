@@ -1,0 +1,15 @@
+=== which codex ===
+/c/Users/Owner/AppData/Roaming/npm/codex
+=== where.exe codex ===
+C:\Users\Owner\AppData\Roaming\npm\codex
+C:\Users\Owner\AppData\Roaming\npm\codex.cmd
+=== npm global bin ===
+codex*
+codex.cmd
+codex.ps1*
+=== common install locations ===
+absent: /c/Users/Owner/AppData/Local/Programs/codex
+absent: /c/Users/Owner/.codex/bin
+absent: /c/Program Files/codex
+=== codex --version (if resolvable) ===
+codex-cli 0.147.0

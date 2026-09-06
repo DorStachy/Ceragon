@@ -1,0 +1,107 @@
+DeVoid
+Overview
+Web AI
+Coding AI
+Autonomous AI
+MCP Control Tower
+Alerts
+Inventory
+Admin
+RQ
+Render QA
+Admin
+ACCOUNT
+Render QA Org
+Render QA
+ADMIN
+POLICIES
+MCP SECURITY
+Search…
+ctrl
+K
+ADMINISTRATION
+Admin
+POLICIES
+AI Security
+MCP Security
+Supply Chain Security
+Code Security
+Approvals & Exceptions
+MCP Security Policy
+
+Govern the MCP servers configured in this site's AI coding agents: discovery, inventory, and quarantine. Enforced by the endpoint daemon.
+
+Viewing policy for:
+Render QA
+›
+All teams
+
+All teams is the site baseline every team inherits. A team gets its own policy only when you pick it here and change something. Until then it follows this baseline.
+
+MCP SECURITY
+MCP Policy
+
+Pick a baseline, or tune the individual controls. Apply publishes for this scope.
+
+RECOMMENDED DEFAULT
+
+Live provider usage across the account lives in Web AI → Sessions. This page publishes configuration for the selected scope. Endpoint and browser coverage are reported separately; this editor does not infer a completed runtime effect from a saved policy.
+
+Policy authority: Scope confirmation unavailable (legacy response)
+
+This older response does not identify the stored scope or a revision. The selected scope is shown for compatibility, but the server remains the authority for a write.
+
+BASELINE
+MCP Baseline
+
+Pick how MCP servers are governed on this site's endpoints. The rung sets the controls below; Apply publishes it.
+
+L1
+Off
+
+No MCP governance.
+
+No governance verdicts and nothing is quarantined
+Discovered servers may still appear in the inventory
+DEFAULT
+L2
+Monitor
+
+Verdicts and alerts, manual control.
+
+Servers are scanned and listed with verdicts in the console
+Only a server you explicitly block is quarantined
+L3
+Enforce
+
+Auto-quarantine risky servers.
+
+A classifier-BLOCK server is quarantined on-box, reversibly
+A server rooted at a blocked filesystem path is quarantined too
+MCP GOVERNANCE
+
+Which MCP servers an agent may load, and the filesystem paths quarantined from them.
+
+MCP Governance
+ENDPOINT DAEMON
+
+Discover and govern the MCP servers configured in this site's AI coding agents. When enforcement is on, a classifier-BLOCK server is auto-quarantined on-box (reversible); otherwise only an admin-Block quarantines.
+
+Enable MCP governance (scan + console population)
+Enforce mode: auto-quarantine classifier-BLOCK servers (not just admin-blocked)
+Allowlist mode: only explicitly approved servers may run (default-deny)
+PATH SCOPING
+Blocked Filesystem Paths
+ENDPOINT DAEMON
+
+Coarse path prefixes an MCP filesystem server must not be rooted at. Enforced by the Enforce rung: a server whose configured root overlaps a blocked path is quarantined on-box. An allowed prefix overrides a blocked one.
+
+BLOCKED PATHS
+ADD
+-
+ALLOWED PATHS (OVERRIDE)
+ADD
+-
+IN SYNC WITH LIVE POLICY
+Reset Draft
+Apply Policy

@@ -1,0 +1,149 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.81kB 0.0s done
+#1 DONE 0.1s
+
+#2 [internal] load metadata for docker.io/library/node:20-alpine
+#2 DONE 2.2s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [builder 1/7] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
+#4 resolve docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293 0.0s done
+#4 DONE 0.2s
+
+#5 [internal] load build context
+#5 transferring context: 6.29MB 0.4s done
+#5 DONE 0.4s
+
+#4 [builder 1/7] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
+#4 sha256:b2cbbfe903b0821005780971ddc5892edcc4ce74c5a48d82e1d2b382edac3122 0B / 1.26MB 0.3s
+#4 sha256:fff4e2c1b189bf87d63ad8bd07f7f4eb288d6f2b6a07a8bb44c60e8c075d2096 0B / 445B 0.2s
+#4 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 0B / 43.23MB 0.2s
+#4 sha256:b2cbbfe903b0821005780971ddc5892edcc4ce74c5a48d82e1d2b382edac3122 1.26MB / 1.26MB 0.3s done
+#4 sha256:fff4e2c1b189bf87d63ad8bd07f7f4eb288d6f2b6a07a8bb44c60e8c075d2096 445B / 445B 0.4s done
+#4 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 4.19MB / 43.23MB 0.8s
+#4 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 7.34MB / 43.23MB 0.9s
+#4 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 12.58MB / 43.23MB 1.2s
+#4 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 15.73MB / 43.23MB 1.4s
+#4 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 19.92MB / 43.23MB 1.5s
+#4 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 24.12MB / 43.23MB 1.8s
+#4 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 27.26MB / 43.23MB 2.0s
+#4 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 30.41MB / 43.23MB 2.1s
+#4 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 35.65MB / 43.23MB 2.4s
+#4 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 38.80MB / 43.23MB 2.6s
+#4 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 42.99MB / 43.23MB 2.9s
+#4 sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 43.23MB / 43.23MB 2.9s done
+#4 extracting sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287
+#4 extracting sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 1.7s done
+#4 DONE 4.9s
+
+#4 [builder 1/7] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
+#4 extracting sha256:b2cbbfe903b0821005780971ddc5892edcc4ce74c5a48d82e1d2b382edac3122
+#4 extracting sha256:b2cbbfe903b0821005780971ddc5892edcc4ce74c5a48d82e1d2b382edac3122 0.3s done
+#4 DONE 5.2s
+
+#4 [builder 1/7] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
+#4 extracting sha256:fff4e2c1b189bf87d63ad8bd07f7f4eb288d6f2b6a07a8bb44c60e8c075d2096 0.0s done
+#4 DONE 5.2s
+
+#6 [stage-1 2/7] WORKDIR /app
+#6 DONE 0.2s
+
+#7 [builder 2/7] RUN npm install -g pnpm
+#7 ...
+
+#8 [stage-1 3/7] RUN apk add --no-cache tar
+#8 1.563 (1/2) Installing acl-libs (2.3.2-r1)
+#8 1.628 (2/2) Installing tar (1.35-r4)
+#8 1.728 Executing busybox-1.37.0-r30.trigger
+#8 1.761 OK: 11.3 MiB in 20 packages
+#8 DONE 1.9s
+
+#7 [builder 2/7] RUN npm install -g pnpm
+#7 4.830 
+#7 4.830 added 2 packages in 4s
+#7 4.832 npm notice
+#7 4.832 npm notice New major version of npm available! 10.8.2 -> 12.0.2
+#7 4.832 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+#7 4.832 npm notice To update run: npm install -g npm@12.0.2
+#7 4.832 npm notice
+#7 DONE 4.9s
+
+#9 [builder 3/7] WORKDIR /app
+#9 DONE 0.1s
+
+#10 [builder 4/7] COPY package.json pnpm-lock.yaml tsconfig.json ./
+#10 DONE 0.1s
+
+#11 [builder 5/7] COPY src ./src
+#11 DONE 0.2s
+
+#12 [builder 6/7] RUN pnpm install --frozen-lockfile
+#12 0.343 ? Verifying lockfile against supply-chain policies (514 entries)...
+#12 1.080 Packages are hard linked from the content-addressable store to the virtual store.
+#12 1.080   Content-addressable store is at: /root/.local/share/pnpm/store/v11
+#12 1.080   Virtual store is at:             node_modules/.pnpm
+#12 2.087 Progress: resolved 513, reused 0, downloaded 160, added 135
+#12 3.097 Progress: resolved 513, reused 0, downloaded 308, added 288
+#12 4.103 Progress: resolved 513, reused 0, downloaded 466, added 448
+#12 5.605 ✓ Lockfile passes supply-chain policies (514 entries in 5.3s)
+#12 5.605 Lockfile is up to date, resolution step is skipped
+#12 5.626 Packages: +513
+#12 5.626 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#12 5.782 Progress: resolved 513, reused 0, downloaded 513, added 513, done
+#12 5.883 
+#12 5.883 dependencies:
+#12 5.883 + @aws-sdk/client-kms 3.1046.0
+#12 5.883 + @aws-sdk/client-s3 3.1004.0
+#12 5.883 + @aws-sdk/client-sqs 3.1004.0
+#12 5.883 + @aws-sdk/client-ssm 3.1004.0
+#12 5.883 + dotenv 17.3.1
+#12 5.883 + openai 4.104.0
+#12 5.883 + pg 8.20.0
+#12 5.883 + semver 6.3.1
+#12 5.883 + zod 3.25.76
+#12 5.883 
+#12 5.883 devDependencies:
+#12 5.883 + @types/jest 29.5.14
+#12 5.883 + @types/node 20.19.37
+#12 5.883 + jest 29.7.0
+#12 5.883 + octokit 5.0.5
+#12 5.883 + ts-jest 29.4.6
+#12 5.883 + ts-node 10.9.2
+#12 5.883 + tsconfig-paths 4.2.0
+#12 5.883 + typescript 5.9.3
+#12 5.883 
+#12 5.908 Done in 5.6s using pnpm v12.3.4
+#12 DONE 6.3s
+
+#13 [builder 7/7] RUN pnpm build
+#13 0.536 $ tsc
+#13 DONE 17.6s
+
+#14 [stage-1 4/7] COPY --from=builder /app/package.json ./
+#14 DONE 0.1s
+
+#15 [stage-1 5/7] COPY --from=builder /app/dist ./dist
+#15 DONE 0.3s
+
+#16 [stage-1 6/7] COPY --from=builder /app/node_modules ./node_modules
+#16 DONE 6.8s
+
+#17 [stage-1 7/7] RUN addgroup -g 1001 -S nodejs &&     adduser -S nodejs -u 1001 -G nodejs &&     chown -R nodejs:nodejs /app
+#17 DONE 57.5s
+
+#18 exporting to image
+#18 exporting layers
+#18 exporting layers 8.6s done
+#18 exporting manifest sha256:c90bc0852352d2559f6a04300c7b02128efcc03fc746d3cdb3f4968b17375428 0.0s done
+#18 exporting config sha256:3124bcb2198922b1b4716b2e41cb68a81ec0119657dc0dabfb387d918b30f999 0.0s done
+#18 exporting attestation manifest sha256:166b51f25e47502cdd226d9fdbd50fb953f1fee8b184cef4f299bd68019c8311 0.0s done
+#18 exporting manifest list sha256:cec10758a9ebf46510f5569bd8829473c653700b29953c9a8444d7fb0e0a6284 0.0s done
+#18 naming to docker.io/p47/static-worker:sc-lane done
+#18 unpacking to docker.io/p47/static-worker:sc-lane
+#18 unpacking to docker.io/p47/static-worker:sc-lane 14.0s done
+#18 DONE 22.7s

@@ -1,0 +1,14 @@
+      server_name      | static_verdict | approval_status | client_id | config_scope | transport | detection_count |             endpoint_id              
+-----------------------+----------------+-----------------+-----------+--------------+-----------+-----------------+--------------------------------------
+ chrome-devtools       | allow          | pending         |           |              |           |               4 | 9cc7bb95-78ec-4bcd-9c08-15de21a1c625
+ nanobanana            | block          | pending         |           |              |           |               4 | 9cc7bb95-78ec-4bcd-9c08-15de21a1c625
+ p47-codex-fs-benign   | allow          | pending         |           |              |           |               1 | 9cc7bb95-78ec-4bcd-9c08-15de21a1c625
+ p47-codex-harvester   | block          | pending         |           |              |           |               1 | 9cc7bb95-78ec-4bcd-9c08-15de21a1c625
+ p47-codex-remote      | warn           | pending         |           |              |           |               1 | 9cc7bb95-78ec-4bcd-9c08-15de21a1c625
+ p47-cursor-fs-benign  | allow          | pending         |           |              |           |               1 | 9cc7bb95-78ec-4bcd-9c08-15de21a1c625
+ p47-fs-benign         | allow          | pending         |           |              |           |               2 | 9cc7bb95-78ec-4bcd-9c08-15de21a1c625
+ p47-remote-tower      | warn           | pending         |           |              | http      |               2 | 9cc7bb95-78ec-4bcd-9c08-15de21a1c625
+ p47-unknown-harvester | block          | pending         |           |              |           |               2 | 9cc7bb95-78ec-4bcd-9c08-15de21a1c625
+ playwright            | allow          | pending         |           |              |           |               4 | 9cc7bb95-78ec-4bcd-9c08-15de21a1c625
+(10 rows)
+

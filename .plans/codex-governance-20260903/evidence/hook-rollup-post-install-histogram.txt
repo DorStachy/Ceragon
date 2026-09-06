@@ -1,0 +1,11 @@
+# hook-latency.jsonl (live rollup) on CND34521VN, agent 7.10.9 installed 2026-09-03 08:01 with ENROLLMENT_MODE=deferred
+# window: 2026-09-03 08:05:03.401000 -> 2026-09-03 11:42:42.339000
+# count  adapter       event                kind
+  1751  claude-code  POST_TOOL_USE        decided
+    58  claude-code  POST_TOOL_USE        fs:daemon-unreachable-budget-expired
+  1786  claude-code  PRE_TOOL_USE         nd:daemon-error
+    61  claude-code  PRE_TOOL_USE         decided
+    57  claude-code  PRE_TOOL_USE         fs:daemon-unreachable-budget-expired
+     4  claude-code  SESSION_END          decided
+     4  claude-code  SESSION_START        decided
+     8  claude-code  USER_PROMPT_SUBMIT   nd:daemon-error

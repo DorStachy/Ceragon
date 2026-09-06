@@ -1,0 +1,415 @@
+{
+  "siteId": "95937361-828f-4737-9c74-64defab9f5c6",
+  "source": "stored",
+  "config": {
+    "dlp": {
+      "enabled": true,
+      "actions": {
+        "age-secret-key": "warn",
+        "alibaba-key": "warn",
+        "anthropic-key": "redact",
+        "aws-access-key": "block",
+        "aws-arn": "monitor",
+        "aws-credential-pair": "block",
+        "aws-secret-key": "redact",
+        "aws-session-token": "warn",
+        "aws-unique-id": "warn",
+        "azure-client-secret": "warn",
+        "azure-connection-string": "redact",
+        "azure-key": "redact",
+        "base64-wrapped-secret": "warn",
+        "basic-auth-header": "warn",
+        "bearer-auth-token": "redact",
+        "bitbucket-token": "warn",
+        "clojars-token": "warn",
+        "cloudflare-token": "warn",
+        "cloudinary-url": "warn",
+        "credential-in-url": "warn",
+        "databricks-token": "warn",
+        "datadog-key": "warn",
+        "db-connection-string": "redact",
+        "digitalocean-token": "warn",
+        "dockerhub-token": "warn",
+        "doppler-token": "warn",
+        "duffel-token": "warn",
+        "dynatrace-token": "warn",
+        "easypost-token": "warn",
+        "flutterwave-key": "warn",
+        "frameio-token": "warn",
+        "gcp-key": "redact",
+        "gcp-service-account": "block",
+        "generic-api-key": "monitor",
+        "github-token": "redact",
+        "gitlab-token": "redact",
+        "google-oauth-secret": "redact",
+        "grafana-token": "warn",
+        "hex-credential-at-rest": "warn",
+        "high-entropy": "monitor",
+        "huggingface-token": "warn",
+        "iban": "redact",
+        "infracost-token": "warn",
+        "internal-url": "monitor",
+        "jwt": "monitor",
+        "kubeconfig": "block",
+        "linear-key": "warn",
+        "mailgun-key": "warn",
+        "national-id": "redact",
+        "newrelic-key": "warn",
+        "npm-token": "redact",
+        "openai-key": "redact",
+        "pagerduty-key": "warn",
+        "payment-card": "redact",
+        "planetscale-token": "warn",
+        "postman-token": "warn",
+        "postmark-token": "warn",
+        "prefect-token": "warn",
+        "private-key": "block",
+        "private-key-candidate": "monitor",
+        "pulumi-token": "warn",
+        "pypi-token": "redact",
+        "readme-token": "warn",
+        "replicate-token": "warn",
+        "rubygems-token": "warn",
+        "scalingo-token": "warn",
+        "sendgrid-key": "redact",
+        "sendinblue-token": "warn",
+        "sentry-dsn": "warn",
+        "shippo-token": "warn",
+        "shopify-token": "warn",
+        "slack-token": "redact",
+        "slack-webhook": "redact",
+        "stripe-key": "warn",
+        "stripe-live": "redact",
+        "stripe-publishable-key": "monitor",
+        "telegram-bot-token": "warn",
+        "terraform-cloud-token": "warn",
+        "twilio-key": "redact",
+        "vault-token": "warn",
+        "vercel-token": "warn"
+      }
+    },
+    "promptRisk": {
+      "enabled": true,
+      "actions": {
+        "injection-instruction-override": "monitor",
+        "injection-system-exfil": "monitor",
+        "injection-role-marker": "monitor",
+        "injection-obfuscation-unicode": "warn",
+        "injection-encoded-payload": "monitor",
+        "jailbreak-persona": "monitor",
+        "jailbreak-restriction-removal": "monitor",
+        "jailbreak-role-reassign": "monitor",
+        "injection-credential-exfil": "monitor",
+        "injection-authority-escalation": "monitor",
+        "injection-decoded-payload": "monitor",
+        "ingress-tool-instruction-injection": "monitor",
+        "ingress-exfil-instruction": "monitor",
+        "ingress-sensitive-path-read": "monitor",
+        "injection-override-exfil": "block",
+        "jailbreak-persona-unrestricted": "block",
+        "injection-override-credexfil": "block",
+        "ingress-secret-exfil-combo": "block"
+      }
+    },
+    "providers": {
+      "blocked": [],
+      "tolerated": []
+    },
+    "exclusions": {
+      "allow": [],
+      "block": [],
+      "patterns": []
+    },
+    "mcp": {
+      "enabled": true,
+      "autoEnforce": false
+    },
+    "ingress": {
+      "enabled": true,
+      "taintHold": true,
+      "actions": {
+        "jailbreak-persona": "redact",
+        "ingress-exfil-verb": "monitor",
+        "injection-role-marker": "redact",
+        "ingress-tool-poisoning": "redact",
+        "injection-system-exfil": "redact",
+        "jailbreak-role-reassign": "redact",
+        "injection-override-exfil": "redact",
+        "ingress-exfil-instruction": "redact",
+        "injection-decoded-payload": "redact",
+        "injection-encoded-payload": "redact",
+        "ingress-secret-exfil-combo": "redact",
+        "injection-credential-exfil": "redact",
+        "ingress-sensitive-path-read": "redact",
+        "injection-override-credexfil": "redact",
+        "injection-obfuscation-unicode": "redact",
+        "jailbreak-restriction-removal": "redact",
+        "injection-authority-escalation": "redact",
+        "injection-instruction-override": "redact",
+        "jailbreak-persona-unrestricted": "redact",
+        "ingress-tool-instruction-injection": "redact"
+      }
+    },
+    "uploads": {
+      "files": "warn",
+      "images": "warn",
+      "blockAllImages": false,
+      "maxSizeKb": 5120
+    },
+    "paths": {
+      "blocked": [],
+      "allowed": []
+    },
+    "agents": {
+      "allowed": [],
+      "mode": "",
+      "enforcementTier": "detect"
+    },
+    "egress": {
+      "mode": "",
+      "allowed": [],
+      "blocked": [],
+      "includeDefaults": true
+    },
+    "proxy": {
+      "failMode": "closed"
+    },
+    "webGuard": {
+      "driftFailMode": "open"
+    },
+    "failureOracle": {
+      "action": "block"
+    },
+    "sessionTitles": "observed",
+    "onboarding": "warn",
+    "runtimeIntegrity": {
+      "mode": "observe",
+      "assuranceFloor": "cooperative",
+      "responseStrength": "repair",
+      "targetRuntimes": [
+        "claude-code",
+        "codex"
+      ],
+      "targetHosts": [
+        "windows",
+        "wsl",
+        "linux",
+        "macos"
+      ],
+      "auditDeniedAttempts": true,
+      "claudeAuthorityModes": {},
+      "claudeSourceGovernance": {
+        "enabled": false,
+        "strictKnownMarketplaces": []
+      },
+      "codexMarketplaceGovernance": {
+        "enabled": false,
+        "allowedSources": []
+      },
+      "bounds": {
+        "sweepIntervalSec": 300,
+        "repairAttemptLimit": 3,
+        "repairWindowSec": 3600,
+        "staleAfterSec": 3600,
+        "offlineGraceSec": 86400,
+        "canaryMaxAgeSec": 86400
+      }
+    }
+  },
+  "updatedAt": "2026-09-05T21:20:17.494Z",
+  "updatedBy": "cc6c4681-612e-46f6-ad70-121373b55439",
+  "scope": {
+    "type": "site",
+    "id": "95937361-828f-4737-9c74-64defab9f5c6"
+  },
+  "revision": "3",
+  "categoryFloors": {
+    "toolRisk:base64-pipe-shell": {
+      "disposition": "block",
+      "reason": "Commands that destroy data or systems cannot be set below Block."
+    },
+    "toolRisk:content-pipe-shell": {
+      "disposition": "block",
+      "reason": "Commands that destroy data or systems cannot be set below Block."
+    },
+    "toolRisk:content-reverse-shell": {
+      "disposition": "block",
+      "reason": "Commands that destroy data or systems cannot be set below Block."
+    },
+    "toolRisk:pipe-to-shell": {
+      "disposition": "block",
+      "reason": "Commands that destroy data or systems cannot be set below Block."
+    },
+    "toolRisk:powershell-download-exec": {
+      "disposition": "block",
+      "reason": "Commands that destroy data or systems cannot be set below Block."
+    },
+    "toolRisk:reverse-shell": {
+      "disposition": "block",
+      "reason": "Commands that destroy data or systems cannot be set below Block."
+    },
+    "toolRisk:fork-bomb": {
+      "disposition": "block",
+      "reason": "Commands that destroy data or systems cannot be set below Block."
+    },
+    "toolRisk:destructive-dd": {
+      "disposition": "block",
+      "reason": "Commands that destroy data or systems cannot be set below Block."
+    },
+    "toolRisk:destructive-devwrite": {
+      "disposition": "block",
+      "reason": "Commands that destroy data or systems cannot be set below Block."
+    },
+    "toolRisk:destructive-mkfs": {
+      "disposition": "block",
+      "reason": "Commands that destroy data or systems cannot be set below Block."
+    },
+    "toolRisk:destructive-rm": {
+      "disposition": "block",
+      "reason": "Commands that destroy data or systems cannot be set below Block."
+    },
+    "toolRisk:git-history-destroy": {
+      "disposition": "block",
+      "reason": "Commands that destroy data or systems cannot be set below Block."
+    },
+    "toolRisk:history-wipe": {
+      "disposition": "block",
+      "reason": "Commands that destroy data or systems cannot be set below Block."
+    },
+    "toolRisk:cloud-cred-read": {
+      "disposition": "block",
+      "reason": "Classes that would let a secret leave in the clear cannot be relaxed."
+    },
+    "toolRisk:data-exfil": {
+      "disposition": "block",
+      "reason": "Classes that would let a secret leave in the clear cannot be relaxed."
+    },
+    "dlp:private-key": {
+      "disposition": "block",
+      "reason": "Classes that would let a secret leave in the clear cannot be relaxed."
+    },
+    "dlp:aws-secret-key": {
+      "disposition": "block",
+      "reason": "Classes that would let a secret leave in the clear cannot be relaxed."
+    },
+    "dlp:aws-access-key": {
+      "disposition": "block",
+      "reason": "Classes that would let a secret leave in the clear cannot be relaxed."
+    },
+    "dlp:gcp-key": {
+      "disposition": "block",
+      "reason": "Classes that would let a secret leave in the clear cannot be relaxed."
+    },
+    "dlp:azure-key": {
+      "disposition": "block",
+      "reason": "Classes that would let a secret leave in the clear cannot be relaxed."
+    },
+    "dlp:aws-credential-pair": {
+      "disposition": "block",
+      "reason": "Classes that would let a secret leave in the clear cannot be relaxed."
+    },
+    "dlp:gcp-service-account": {
+      "disposition": "block",
+      "reason": "Classes that would let a secret leave in the clear cannot be relaxed."
+    },
+    "dlp:azure-connection-string": {
+      "disposition": "block",
+      "reason": "Classes that would let a secret leave in the clear cannot be relaxed."
+    },
+    "dlp:kubeconfig": {
+      "disposition": "block",
+      "reason": "Classes that would let a secret leave in the clear cannot be relaxed."
+    },
+    "dlp:db-connection-string": {
+      "disposition": "block",
+      "reason": "Classes that would let a secret leave in the clear cannot be relaxed."
+    },
+    "toolRisk:devoid-self-disable": {
+      "disposition": "block",
+      "reason": "Classes that protect the agent from being disabled cannot be relaxed."
+    },
+    "toolRisk:sensitive-write-devoid": {
+      "disposition": "block",
+      "reason": "Classes that protect the agent from being disabled cannot be relaxed."
+    },
+    "toolRisk:firewall-disable": {
+      "disposition": "block",
+      "reason": "Classes that protect the agent from being disabled cannot be relaxed."
+    },
+    "toolRisk:authorized-keys-write": {
+      "disposition": "block",
+      "reason": "Classes that protect the agent from being disabled cannot be relaxed."
+    },
+    "toolRisk:sensitive-write-authkeys": {
+      "disposition": "block",
+      "reason": "Classes that protect the agent from being disabled cannot be relaxed."
+    },
+    "toolRisk:sensitive-write-sudoers": {
+      "disposition": "block",
+      "reason": "Classes that protect the agent from being disabled cannot be relaxed."
+    },
+    "toolRisk:sudoers-edit": {
+      "disposition": "block",
+      "reason": "Classes that protect the agent from being disabled cannot be relaxed."
+    },
+    "toolRisk:docker-socket-abuse": {
+      "disposition": "block",
+      "reason": "Classes that protect the agent from being disabled cannot be relaxed."
+    },
+    "promptRisk:injection-override-exfil": {
+      "disposition": "warn",
+      "reason": "Injection that causes an action cannot be set below its minimum."
+    },
+    "promptRisk:injection-override-credexfil": {
+      "disposition": "warn",
+      "reason": "Injection that causes an action cannot be set below its minimum."
+    },
+    "promptRisk:jailbreak-persona-unrestricted": {
+      "disposition": "warn",
+      "reason": "Injection that causes an action cannot be set below its minimum."
+    },
+    "promptRisk:ingress-secret-exfil-combo": {
+      "disposition": "warn",
+      "reason": "Injection that causes an action cannot be set below its minimum."
+    }
+  },
+  "floorRaised": [],
+  "promptEvidenceBounds": {
+    "orgCeiling": {
+      "schemaVersion": 1,
+      "captureMode": "SANITIZED_PREVIEW",
+      "captureScope": "ACTIONABLE_ONLY",
+      "hashRetentionDays": 90,
+      "previewMaxBytes": 4096,
+      "previewRetentionDays": 30,
+      "fullMaxBytes": 65536,
+      "fullRetentionDays": 7,
+      "endpointPendingTtlHours": 24
+    },
+    "scopedRequest": null,
+    "effectiveIntent": {
+      "schemaVersion": 1,
+      "captureMode": "SANITIZED_PREVIEW",
+      "captureScope": "ACTIONABLE_ONLY",
+      "hashRetentionDays": 90,
+      "previewMaxBytes": 4096,
+      "previewRetentionDays": 30,
+      "fullMaxBytes": 65536,
+      "fullRetentionDays": 7,
+      "endpointPendingTtlHours": 24
+    },
+    "canReduceScopedRequest": true
+  },
+  "promptEvidenceCapabilities": {
+    "canReadPromptEvidence": true,
+    "canRevealFullPromptEvidence": false
+  },
+  "promptEvidenceDeployment": {
+    "governedEvidenceAvailable": false,
+    "maskedPreviewAvailable": true,
+    "missingCapabilityKeys": [
+      "AI_CORRELATION_KEY_MASTER_KEY",
+      "AI_PROMPT_EVIDENCE_TENANT_MAC_KEY"
+    ]
+  }
+}

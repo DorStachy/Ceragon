@@ -1,0 +1,30 @@
+[2mCeragon-Intelligence[0m on [36mp47/stage1b-contracts-mirror[0m (1 ahead)
+[2m>>[0m Ceragon-Intelligence [36mvalidate:validate[0m
+   [31mFAIL   [0m Ceragon-Intelligence validate:validate [2m106s[0m  [31m<- Build container image[0m
+[2m>>[0m Ceragon-Intelligence [36mhetzner-validate-pr:shellcheck[0m
+   [32mPASS   [0m Ceragon-Intelligence hetzner-validate-pr:shellcheck [2m4s[0m
+[2m>>[0m Ceragon-Intelligence [36mhetzner-validate-pr:compose-config[0m
+   [31mFAIL   [0m Ceragon-Intelligence hetzner-validate-pr:compose-config [2m2s[0m  [31m<- Validate sandbox.compose.yml[0m
+[2m>>[0m Ceragon-Intelligence [36mhetzner-validate-pr:iam-policy-lint[0m
+   [32mPASS   [0m Ceragon-Intelligence hetzner-validate-pr:iam-policy-lint [2m3s[0m
+[2m>>[0m Ceragon-Intelligence [36mhetzner-validate-pr:env-template-lint[0m
+   [32mPASS   [0m Ceragon-Intelligence hetzner-validate-pr:env-template-lint [2m3s[0m
+[2m>>[0m Ceragon-Intelligence [36mhetzner-validate-pr:cross-reference-aws-baseline[0m
+   [31mFAIL   [0m Ceragon-Intelligence hetzner-validate-pr:cross-reference-aws-baseline [2m2s[0m  [31m<- Image SHAs in compose match snapshot of live AWS task defs[0m
+[2m>>[0m Ceragon-Intelligence [36mhetzner-validate-pr:actionlint[0m
+   [32mPASS   [0m Ceragon-Intelligence hetzner-validate-pr:actionlint [2m3s[0m
+
+[1m========================================================================[0m
+[32mPASS   [0m Ceragon-Intelligence           hetzner-validate-pr:actionlint
+[31mFAIL   [0m Ceragon-Intelligence           hetzner-validate-pr:compose-config
+          [2mlog: C:\cwt\p47b-ciroot\ci\.logs\Ceragon-Intelligence\hetzner-validate-pr-compose-config.log[0m
+[31mFAIL   [0m Ceragon-Intelligence           hetzner-validate-pr:cross-reference-aws-baseline
+          [2mlog: C:\cwt\p47b-ciroot\ci\.logs\Ceragon-Intelligence\hetzner-validate-pr-cross-reference-aws-baseline.log[0m
+[32mPASS   [0m Ceragon-Intelligence           hetzner-validate-pr:env-template-lint
+[32mPASS   [0m Ceragon-Intelligence           hetzner-validate-pr:iam-policy-lint
+[32mPASS   [0m Ceragon-Intelligence           hetzner-validate-pr:shellcheck
+[31mFAIL   [0m Ceragon-Intelligence           validate:validate
+          [2mlog: C:\cwt\p47b-ciroot\ci\.logs\Ceragon-Intelligence\validate-validate.log[0m
+
+4 pass, 3 fail, 0 partial, 0 error
+intel mirror exit=1

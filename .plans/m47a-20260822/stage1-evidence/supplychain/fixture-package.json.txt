@@ -1,0 +1,11 @@
+{
+  "name": "p47-uncontainable-probe",
+  "version": "1.0.0",
+  "description": "SYNTHETIC P47 stage-1 sandbox containment probe",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "node ./postinstall.js"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}

@@ -1,0 +1,57 @@
+[2mInstallers[0m on [36mp47/stage1b-installers[0m (30 ahead)
+[2m>>[0m Installers [36mpr-checks:hot-path-audit-imports[0m
+   [32mPASS   [0m Installers pr-checks:hot-path-audit-imports [2m8s[0m
+[2m>>[0m Installers [36mpr-checks:scanner-parity[0m
+   [31mFAIL   [0m Installers pr-checks:scanner-parity [2m31s[0m  [31m<- Prompt promotion gate defeat suite[0m
+[2m>>[0m Installers [36mpr-checks:wire-lane-tests[0m
+   [31mFAIL   [0m Installers pr-checks:wire-lane-tests [2m60s[0m  [31m<- Core config · canary · runtime integrity (unfiltered)[0m
+[2m>>[0m Installers [36mpr-checks:codex-vendor-lane[0m
+   [31mFAIL   [0m Installers pr-checks:codex-vendor-lane [2m8s[0m  [31m<- The pinned build is really installed, and is really that build[0m
+[2m>>[0m Installers [36mpr-checks:ai-checkpoint-observation[0m
+   [32mPASS   [0m Installers pr-checks:ai-checkpoint-observation [2m8s[0m
+[2m>>[0m Installers [36mpr-checks:codex-hook-lane-live-proof[0m
+   [31mFAIL   [0m Installers pr-checks:codex-hook-lane-live-proof [2m5s[0m  [31m<- The gate — has the FULL lane ever been proven live?[0m
+[2m>>[0m Installers [36mpr-checks:release-workflow-contract[0m
+   [32mPASS   [0m Installers pr-checks:release-workflow-contract [2m5s[0m
+[2m>>[0m Installers [36mpr-checks:self-update-lane[0m
+   [32mPASS   [0m Installers pr-checks:self-update-lane [2m7s[0m
+[2m>>[0m Installers [36mpr-checks:macos-legacy-identity[0m
+   [32mPASS   [0m Installers pr-checks:macos-legacy-identity [2m3s[0m
+[2m>>[0m Installers [36mpr-checks:toolrisk-lane[0m
+   [32mPASS   [0m Installers pr-checks:toolrisk-lane [2m4s[0m
+[2m>>[0m Installers [36mholdout-score:score[0m
+   [31mFAIL   [0m Installers holdout-score:score [2m8s[0m  [31m<- Publish the rates[0m
+[2m>>[0m Installers [36mfinding-b-e2e:shim-enforcement[0m
+   [32mPASS   [0m Installers finding-b-e2e:shim-enforcement [2m66s[0m
+[2m>>[0m Installers [36mpr-checks:uninstall-honesty[0m
+   [32mPASS   [0m Installers pr-checks:uninstall-honesty [2m3s[0m
+[2m>>[0m Installers [36mpr-checks:hard-deny-stress[0m
+   [32mPASS   [0m Installers pr-checks:hard-deny-stress [2m229s[0m
+[2m>>[0m Installers [36mpr-checks:neutraleval-ratchets[0m
+   [31mFAIL   [0m Installers pr-checks:neutraleval-ratchets [2m3s[0m  [31m<- Labeller governance ratchet (expected red — needs a second human, not a commit)[0m
+
+[1m========================================================================[0m
+[32mPASS   [0m Installers                     finding-b-e2e:shim-enforcement
+[31mFAIL   [0m Installers                     holdout-score:score
+          [2mlog: C:\cwt\p47b-ciroot\ci\.logs\Installers\holdout-score-score.log[0m
+[32mPASS   [0m Installers                     pr-checks:ai-checkpoint-observation
+[31mFAIL   [0m Installers                     pr-checks:codex-hook-lane-live-proof
+          [2mlog: C:\cwt\p47b-ciroot\ci\.logs\Installers\pr-checks-codex-hook-lane-live-proof.log[0m
+[31mFAIL   [0m Installers                     pr-checks:codex-vendor-lane
+          [2mlog: C:\cwt\p47b-ciroot\ci\.logs\Installers\pr-checks-codex-vendor-lane.log[0m
+[32mPASS   [0m Installers                     pr-checks:hard-deny-stress
+[32mPASS   [0m Installers                     pr-checks:hot-path-audit-imports
+[32mPASS   [0m Installers                     pr-checks:macos-legacy-identity
+[31mFAIL   [0m Installers                     pr-checks:neutraleval-ratchets
+          [2mlog: C:\cwt\p47b-ciroot\ci\.logs\Installers\pr-checks-neutraleval-ratchets.log[0m
+[32mPASS   [0m Installers                     pr-checks:release-workflow-contract
+[31mFAIL   [0m Installers                     pr-checks:scanner-parity
+          [2mlog: C:\cwt\p47b-ciroot\ci\.logs\Installers\pr-checks-scanner-parity.log[0m
+[32mPASS   [0m Installers                     pr-checks:self-update-lane
+[32mPASS   [0m Installers                     pr-checks:toolrisk-lane
+[32mPASS   [0m Installers                     pr-checks:uninstall-honesty
+[31mFAIL   [0m Installers                     pr-checks:wire-lane-tests
+          [2mlog: C:\cwt\p47b-ciroot\ci\.logs\Installers\pr-checks-wire-lane-tests.log[0m
+
+9 pass, 6 fail, 0 partial, 0 error
+installers mirror exit=1

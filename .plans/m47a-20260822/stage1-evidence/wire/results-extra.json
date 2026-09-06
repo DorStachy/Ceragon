@@ -1,0 +1,62 @@
+[
+  {
+    "probe": "count_tokens-aws-block",
+    "path": "/proxy/anthropic/v1/messages/count_tokens",
+    "sentSha256": "7ad1fc6fa87709c2345b59586101cbd716a149377439366a96527a35ffa4608c",
+    "sentBody": "{\"model\":\"claude-sonnet-4-5-20260929\",\"max_tokens\":1024,\"system\":\"You are a helpful coding assistant.\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"Staging upload keeps failing. Here is the config block:\\nAWS_ACCESS_KEY_ID=[SYNTHETIC-SECRET-REDACTED]\\nAWS_SECRET_ACCESS_KEY=nmfH4el1dT5cLi4Uch2vF2hvQI2RmD4KC00h9BPn\\nWhat is wrong?\"}]}]}",
+    "clientStatus": 200,
+    "clientMs": 113,
+    "clientBody": "{\"input_tokens\":0}",
+    "upstreamHits": 0,
+    "upstream": [],
+    "byteIdentical": false
+  },
+  {
+    "probe": "count_tokens-benign",
+    "path": "/proxy/anthropic/v1/messages/count_tokens",
+    "sentSha256": "45654843ceafbbd1f05bebeba4f0a23d389f2d6b0ace10b9af52cc8156cb513f",
+    "sentBody": "{\"model\":\"claude-sonnet-4-5-20260929\",\"max_tokens\":1024,\"system\":\"You are a helpful coding assistant.\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"Refactor the pagination hook so the page number survives a reload.\"}]}]}",
+    "clientStatus": 200,
+    "clientMs": 29,
+    "clientBody": "{\"input_tokens\":42}",
+    "upstreamHits": 1,
+    "upstream": [
+      {
+        "url": "/v1/messages/count_tokens",
+        "bodySha256": "45654843ceafbbd1f05bebeba4f0a23d389f2d6b0ace10b9af52cc8156cb513f",
+        "body": "{\"model\":\"claude-sonnet-4-5-20260929\",\"max_tokens\":1024,\"system\":\"You are a helpful coding assistant.\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"Refactor the pagination hook so the page number survives a reload.\"}]}]}"
+      }
+    ],
+    "byteIdentical": true
+  },
+  {
+    "probe": "warn-tier-noninteractive",
+    "path": "/proxy/anthropic/v1/messages",
+    "sentSha256": "58451a68f8bf5fa99a1cb982d42b487d372ba34a365f3515e4da4e43a36a69f5",
+    "sentBody": "{\"model\":\"claude-sonnet-4-5-20260929\",\"max_tokens\":1024,\"system\":\"You are a helpful coding assistant.\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"CI is failing on the billing tests. The test key is [SYNTHETIC-SECRET-REDACTED] — what mock should I use?\"}]}]}",
+    "clientStatus": 200,
+    "clientMs": 141,
+    "clientBody": "{\"id\":\"msg_fake\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"claude-sonnet-4-5-20260929\",\"content\":[{\"type\":\"text\",\"text\":\"Pagination hooks usually lose state because the page number lives in component state. Put it in the URL query string instead.\"}],\"stop_reason\":\"end_turn\",\"usage\":{\"input_tokens\":12,\"output_tokens\":20}}",
+    "upstreamHits": 1,
+    "upstream": [
+      {
+        "url": "/v1/messages",
+        "bodySha256": "58451a68f8bf5fa99a1cb982d42b487d372ba34a365f3515e4da4e43a36a69f5",
+        "body": "{\"model\":\"claude-sonnet-4-5-20260929\",\"max_tokens\":1024,\"system\":\"You are a helpful coding assistant.\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"CI is failing on the billing tests. The test key is [SYNTHETIC-SECRET-REDACTED] — what mock should I use?\"}]}]}"
+      }
+    ],
+    "byteIdentical": true
+  },
+  {
+    "probe": "warn-tier-interactive",
+    "path": "/proxy/anthropic/v1/messages",
+    "sentSha256": "58451a68f8bf5fa99a1cb982d42b487d372ba34a365f3515e4da4e43a36a69f5",
+    "sentBody": "{\"model\":\"claude-sonnet-4-5-20260929\",\"max_tokens\":1024,\"system\":\"You are a helpful coding assistant.\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"CI is failing on the billing tests. The test key is [SYNTHETIC-SECRET-REDACTED] — what mock should I use?\"}]}]}",
+    "clientStatus": 200,
+    "clientMs": 87,
+    "clientBody": "{\"content\":[{\"text\":\"⚠ devoid HELD this request — stripe key detected in this conversation (it may be from an earlier message). Policy: WARN. Nothing was sent to the AI provider.\\nFlagged text: CI is failing on the billing tests. The test key is [REDACTED:stripe-key] — what mock should I use?\\nSafe alternative: Remove or replace the flagged portion of this request before resending. If this was blocked in error, request a scoped policy exception rather than bypassing the control.\\nRequest fingerprint: b133b2ddd7743759\\nTo send it anyway, run this YOURSELF in your own interactive terminal (not through the agent):\\n    devoid ai allow-once b133b2ddd7743759 --reason \\u003cfalse_positive|test_data|approved_use\\u003e\\nthen resend the SAME message.\\nIf this is a FALSE POSITIVE, report it and proceed in one step:\\n    devoid ai report-fp --class stripe-key b133b2ddd7743759\\nThe bypass is single-use, expires in 5 minutes, and releases only this exact request.\",\"type\":\"text\"}],\"id\":\"msg_devoid_synth\",\"model\":\"devoid\",\"role\":\"assistant\",\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0}}\n",
+    "upstreamHits": 0,
+    "upstream": [],
+    "byteIdentical": false
+  }
+]

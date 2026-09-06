@@ -1,0 +1,10 @@
+[0s] == Backend: build (/c/cwt/p47-w4b-be @ a14f7c72) ==
+build rc=1
+[55s] == Backend: migrations ==
+query: INSERT INTO "migrations"("timestamp", "name") VALUES ($1, $2) -- PARAMETERS: [1793600000000,"AddEvidenceSpoolCause1793600000000"]
+Migration AddEvidenceSpoolCause1793600000000 has been executed successfully.
+migration rc=0
+[105s] == Backend: restart :2353 ==
+[107s]    backend /health http=200
+/c/Users/Owner/Documents/Ceragon/.codesec-e2e/rebuild-p47.sh: line 49: syntax error near unexpected token `('
+/c/Users/Owner/Documents/Ceragon/.codesec-e2e/rebuild-p47.sh: line 49: `  say "== Frontend: stop :3201, then build ($FE @ $(git -C $FE rev-parse --short HEAD)) =="'

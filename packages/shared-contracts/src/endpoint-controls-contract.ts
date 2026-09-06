@@ -26,6 +26,7 @@
  */
 
 import type { RuntimeAdapterReport } from './runtime-adapter-contract';
+import type { EndpointPolicyIntegrityReport } from './endpoint-policy-integrity-contract';
 
 /**
  * The attestable control set. Each key is one protection the daemon can report
@@ -120,6 +121,20 @@ export interface EndpointControlsAttestation {
    * yet promote it (older + newer consumers stay byte-valid either way).
    */
   runtimeAdapters?: RuntimeAdapterReport[];
+  /**
+   * RA-0 (§9.4) — ADDITIVE, OPTIONAL: the ONE bounded endpoint-level policy-
+   * integrity block. GLOBAL: present even when no runtime is installed, so
+   * "no runtime" is an honest zero rather than a silent omission.
+   *
+   * Like `runtimeAdapters`, this field is NOT promoted by
+   * {@link normalizeControls}: the ingest path validates it separately through
+   * `normalizeEndpointPolicyIntegrityReport` (which fails closed on an unknown
+   * enum, a non-canonical uint64, an incomplete applied tuple, an oversize
+   * block, or a `MATCHED` claim without VALID + applied tuple + verifiedAt) and
+   * then applies the server-side sequence/watermark rules. A legacy daemon
+   * omits the block entirely; omission NEVER reads as healthy.
+   */
+  policyIntegrity?: EndpointPolicyIntegrityReport;
   /** RFC3339 timestamp the daemon computed the attestation at. */
   attestedAt: string;
 }

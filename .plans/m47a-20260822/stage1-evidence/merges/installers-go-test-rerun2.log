@@ -1,0 +1,572 @@
+--- FAIL: TestInspectEffectiveNamesTheSelectedSourceWhenStatusAgrees (0.01s)
+    ai_claude_status_probe_test.go:384: apply: write C:\Users\Owner\AppData\Local\Temp\TestInspectEffectiveNamesTheSelectedSourceWhenStatusAgrees37853417\002\managed-settings.d\.90-devoid.json.devoid-2327489935.tmp: There is not enough space on the disk. (reason="write-failed")
+--- FAIL: TestInspectEffectiveOpensDriftWhenStatusNamesADifferentSource (0.01s)
+    ai_claude_status_probe_test.go:418: apply: write C:\Users\Owner\AppData\Local\Temp\TestInspectEffectiveOpensDriftWhenStatusNamesADifferentSource2289851192\002\managed-settings.d\.90-devoid.json.devoid-3093072939.tmp: There is not enough space on the disk. (reason="write-failed")
+--- FAIL: TestInspectEffectiveStaysUnverifiedWhenTheStatusProbeTimesOut (0.01s)
+    ai_claude_status_probe_test.go:443: apply: write C:\Users\Owner\AppData\Local\Temp\TestInspectEffectiveStaysUnverifiedWhenTheStatusProbeTimesOut2088702539\002\managed-settings.d\.90-devoid.json.devoid-1098858710.tmp: There is not enough space on the disk. (reason="write-failed")
+--- FAIL: TestInspectEffectiveOnAnUnparseableStatusPayload (0.03s)
+    --- FAIL: TestInspectEffectiveOnAnUnparseableStatusPayload/a_tier_that_is_a_number (0.01s)
+        ai_claude_status_probe_test.go:484: apply: write C:\Users\Owner\AppData\Local\Temp\TestInspectEffectiveOnAnUnparseableStatusPayloada_tier_that_is_593523980\002\managed-settings.d\.90-devoid.json.devoid-4186834842.tmp: There is not enough space on the disk. (reason="write-failed")
+    --- FAIL: TestInspectEffectiveOnAnUnparseableStatusPayload/observed_with_no_tier_at_all (0.01s)
+        ai_claude_status_probe_test.go:484: apply: write C:\Users\Owner\AppData\Local\Temp\TestInspectEffectiveOnAnUnparseableStatusPayloadobserved_with_n2121471771\002\managed-settings.d\.90-devoid.json.devoid-884565466.tmp: There is not enough space on the disk. (reason="write-failed")
+    --- FAIL: TestInspectEffectiveOnAnUnparseableStatusPayload/not_JSON (0.01s)
+        ai_claude_status_probe_test.go:484: apply: write C:\Users\Owner\AppData\Local\Temp\TestInspectEffectiveOnAnUnparseableStatusPayloadnot_JSON2325614101\002\managed-settings.d\.90-devoid.json.devoid-4036525272.tmp: There is not enough space on the disk. (reason="write-failed")
+    --- FAIL: TestInspectEffectiveOnAnUnparseableStatusPayload/an_entry_with_no_field (0.01s)
+        ai_claude_status_probe_test.go:484: apply: write C:\Users\Owner\AppData\Local\Temp\TestInspectEffectiveOnAnUnparseableStatusPayloadan_entry_with_n441387336\002\managed-settings.d\.90-devoid.json.devoid-116696147.tmp: There is not enough space on the disk. (reason="write-failed")
+    --- FAIL: TestInspectEffectiveOnAnUnparseableStatusPayload/a_tier_no_build_has_ever_emitted (0.01s)
+        ai_claude_status_probe_test.go:484: apply: write C:\Users\Owner\AppData\Local\Temp\TestInspectEffectiveOnAnUnparseableStatusPayloada_tier_no_build1692411662\002\managed-settings.d\.90-devoid.json.devoid-2445298805.tmp: There is not enough space on the disk. (reason="write-failed")
+--- FAIL: TestDoctorStrippedEntriesAreReportedNotSwallowed (0.02s)
+    --- FAIL: TestDoctorStrippedEntriesAreReportedNotSwallowed/a_DeVoid-owned_entry_is_named (0.01s)
+        ai_claude_status_probe_test.go:512: apply: write C:\Users\Owner\AppData\Local\Temp\TestDoctorStrippedEntriesAreReportedNotSwalloweda_DeVoid-owned_120960335\002\managed-settings.d\.90-devoid.json.devoid-4084839792.tmp: There is not enough space on the disk. (reason="write-failed")
+    --- FAIL: TestDoctorStrippedEntriesAreReportedNotSwallowed/a_foreign_admin's_rejected_entry_is_not_ours (0.01s)
+        ai_claude_status_probe_test.go:526: apply: write C:\Users\Owner\AppData\Local\Temp\TestDoctorStrippedEntriesAreReportedNotSwalloweda_foreign_admin1823122641\002\managed-settings.d\.90-devoid.json.devoid-1499499613.tmp: There is not enough space on the disk. (reason="write-failed")
+    --- FAIL: TestDoctorStrippedEntriesAreReportedNotSwallowed/an_unread_doctor_half_is_not_a_clean_one (0.01s)
+        ai_claude_status_probe_test.go:539: apply: write C:\Users\Owner\AppData\Local\Temp\TestDoctorStrippedEntriesAreReportedNotSwallowedan_unread_docto919534684\002\managed-settings.d\.90-devoid.json.devoid-22466536.tmp: There is not enough space on the disk. (reason="write-failed")
+--- FAIL: TestDirectEgressWitnessThrottlesLedgerWrites (0.01s)
+    ai_direct_egress_witness_test.go:175: a sample past the throttle window wrote 1 observations, want 2
+--- FAIL: TestAIPolicy_PersistsAndSeedsAcrossRestart (0.01s)
+    ai_handlers_test.go:966: policy must be persisted after a fresh fetch: parse ai policy: unexpected end of JSON input
+time=2026-09-06T01:17:51.696+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=cb37707c-10ef-4322-aa56-367e330751a3 error="backend status 404"
+time=2026-09-06T01:17:51.770+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=4d3ce197-eeca-4989-9daf-12edfcee7cdf error="backend status 404"
+time=2026-09-06T01:17:51.801+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=32f7348e-e9c5-408e-9598-38804bdd76c9 error="backend status 404"
+time=2026-09-06T01:17:51.927+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=45s retryAfterFromServer=true backingOffFor=45s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T01:17:51.927+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode="(absent — not from the app throttler)" retryAfter=0s retryAfterFromServer=false backingOffFor=5s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T01:17:51.928+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=30s retryAfterFromServer=true backingOffFor=30s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T01:17:51.928+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=30s retryAfterFromServer=true backingOffFor=33s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T01:17:51.948+03:00 level=WARN msg="AI tool-check post failed" toolName=Bash localDecision=block localFindings=2 error="backend status 429: ThrottlerException: Too Many Requests"
+time=2026-09-06T01:17:51.949+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=30s retryAfterFromServer=true backingOffFor=35s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T01:17:51.949+03:00 level=WARN msg="daemon AI tool-decision: control plane THROTTLED this report; using local decision" toolName=Bash decision=block backendReconciliation=unavailable
+time=2026-09-06T01:17:51.964+03:00 level=WARN msg="AI tool-check post failed" toolName=Read localDecision=allow localFindings=0 error="backend status 429: ThrottlerException: Too Many Requests"
+time=2026-09-06T01:17:51.964+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=30s retryAfterFromServer=true backingOffFor=34s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T01:17:51.964+03:00 level=WARN msg="daemon AI tool-decision: control plane THROTTLED this report; using local decision" toolName=Read decision=allow backendReconciliation=unavailable
+time=2026-09-06T01:17:51.991+03:00 level=WARN msg="AI tool-check post failed" toolName=Bash localDecision=block localFindings=2 error="backend status 429: ThrottlerException: Too Many Requests"
+time=2026-09-06T01:17:51.991+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=1m0s retryAfterFromServer=true backingOffFor=1m10s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T01:17:51.991+03:00 level=WARN msg="daemon AI tool-decision: control plane THROTTLED this report; using local decision" toolName=Bash decision=block backendReconciliation=unavailable
+time=2026-09-06T01:17:52.005+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=30s retryAfterFromServer=true backingOffFor=31s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T01:17:52.021+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=30s retryAfterFromServer=true backingOffFor=32s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T01:17:52.047+03:00 level=WARN msg="AI tool-check post failed" toolName=Read localDecision=allow localFindings=0 error="backend status 429: ThrottlerException: Too Many Requests"
+time=2026-09-06T01:17:52.048+03:00 level=WARN msg="daemon AI: THROTTLED BY THE CONTROL PLANE — backing off. The LOCAL decision stands unchanged; governed-action reports are being delayed, not decisions" surface=ai/tool/check errorCode=AGENT_THROTTLED retryAfter=1m30s retryAfterFromServer=true backingOffFor=1m41s throttlesThisRun=1 throttlesOnThisSurface=1
+time=2026-09-06T01:17:52.048+03:00 level=WARN msg="daemon AI tool-decision: control plane THROTTLED this report; using local decision" toolName=Read decision=allow backendReconciliation=unavailable
+time=2026-09-06T01:17:52.320+03:00 level=WARN msg="AI policy fetch failed" error="http: dial tcp 127.0.0.1:64511: connectex: No connection could be made because the target machine actively refused it."
+time=2026-09-06T01:17:52.328+03:00 level=WARN msg="AI tool-check post failed" toolName=Bash localDecision=block localFindings=2 error="http: dial tcp 127.0.0.1:64511: connectex: No connection could be made because the target machine actively refused it."
+time=2026-09-06T01:17:52.328+03:00 level=WARN msg="daemon AI tool-decision: backend report failed; using local decision" toolName=Bash decision=block error="http: dial tcp 127.0.0.1:64511: connectex: No connection could be made because the target machine actively refused it." backendReconciliation=unavailable
+time=2026-09-06T01:17:52.453+03:00 level=WARN msg="tool-hold approval: the effect of this action could not be determined; the hold stands" reason=effect-inspection-incomplete requestId=22222222-2222-4222-8222-222222222222
+time=2026-09-06T01:17:52.771+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=de5497d8-f9ba-4d51-a673-9a518f5c419c error="backend status 503: no reviewer available for this org"
+time=2026-09-06T01:17:52.790+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=57708d0c-3301-4fa0-8117-6804cd13cbc3 error="backend status 503: no reviewer available for this org"
+time=2026-09-06T01:17:53.851+03:00 level=WARN msg="tool-hold approval: the stored record's resolved effect does not match this invocation; the hold stands" reason=normalized-effect-mismatch requestId=22222222-2222-4222-8222-222222222222
+time=2026-09-06T01:17:54.308+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=cd542f52-6a3c-4d24-8792-5af078c7c009 error="backend status 404"
+time=2026-09-06T01:17:54.530+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=a68d515b-783e-4e20-a962-8156d421b40b error="backend status 404"
+time=2026-09-06T01:17:54.560+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=b4ed1963-fca2-4cd9-a9af-5718a4d2cce4 error="backend status 404"
+time=2026-09-06T01:17:54.641+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=b47597b3-dd56-467c-865d-5b84c210de29 error="backend status 404"
+time=2026-09-06T01:17:55.387+03:00 level=ERROR msg="AI policy trust convergence refused: this daemon process may not write the machine-scoped endpoint signing key" posture=V1_DEGRADED issue=unprivileged-converge-actor
+time=2026-09-06T01:17:55.387+03:00 level=ERROR msg="AI policy trust convergence refused: this daemon process may not write the machine-scoped endpoint signing key" posture=V1_DEGRADED issue=unprivileged-converge-actor
+time=2026-09-06T01:17:55.391+03:00 level=ERROR msg="AI policy trust refresh did not converge; endpoint remains truthful V1/degraded" error="AI trust endpoint returned HTTP 409 (errorCode=AI_TRUST_ANCHOR_KEY_SUBSTITUTION)" posture=V1_DEGRADED firstBootstrap=true
+time=2026-09-06T01:17:55.391+03:00 level=ERROR msg="AI policy trust refresh did not converge; endpoint remains truthful V1/degraded" error="ack endpoint unreachable" posture=V1_DEGRADED firstBootstrap=false
+time=2026-09-06T01:17:55.391+03:00 level=ERROR msg="AI policy trust refresh did not converge; endpoint remains truthful V1/degraded" error="empty result" posture=V1_DEGRADED firstBootstrap=false
+time=2026-09-06T01:17:55.816+03:00 level=WARN msg="DEVOID_SKIP_AI_HOOKS HONORED — this endpoint is cooperative, so the local opt-out applies and DeVoid AI controls are NOT being reconciled. Recorded as a local disablement." surface=daemon-reconcile control=SIGNED_POLICY reason=LOCAL_OPTOUT_ATTEMPT allowed=true
+time=2026-09-06T01:17:56.023+03:00 level=WARN msg="non-interactive profile coverage not recorded: the per-user map is reserved for reporting users beyond this point" profile=dormant32 budget=32
+time=2026-09-06T01:17:56.025+03:00 level=WARN msg="non-interactive profile coverage not recorded: the per-user map is reserved for reporting users beyond this point" profile=dormant33 budget=32
+time=2026-09-06T01:17:56.027+03:00 level=WARN msg="non-interactive profile coverage not recorded: the per-user map is reserved for reporting users beyond this point" profile=dormant34 budget=32
+time=2026-09-06T01:17:56.029+03:00 level=WARN msg="non-interactive profile coverage not recorded: the per-user map is reserved for reporting users beyond this point" profile=dormant35 budget=32
+time=2026-09-06T01:17:56.065+03:00 level=WARN msg="endpoint inventory: profile stamp refused, path exceeds the bound" bytes=4105 max=4096
+time=2026-09-06T01:17:56.147+03:00 level=ERROR msg="Daemon cannot start: loopback port already in use" addr=127.0.0.1:64627 port=64627 hint="another process is holding this port (e.g. a stale devoid daemon, or a WSL/Docker port forward); stop that process or set DEVOID_DAEMON_PORT to a free port"
+time=2026-09-06T01:17:56.321+03:00 level=WARN msg="codex vendor hook fail-open observed since the last heartbeat" discarded=1 delivered=9 unobservedTier=hook-never-spawned detail="vendor hook fail-open: 1 invocation(s) were spawned and delivered no decision — those actions ran ungoverned (over 9 delivered decision(s)) · NOT MEASURED by this observer: hook-never-spawned (an invocation the client never spawned leaves no spawn-side trace)"
+time=2026-09-06T01:17:56.342+03:00 level=WARN msg="codex vendor hook fail-open is NOT MEASURED while hooks are running on this endpoint" reason=vendor-fail-open-not-measured delivered=31 detail="vendor hook fail-open: NOT MEASURED (no hook invocation has ever been observed on this endpoint) — no count is available from this endpoint; this is not a zero · 1 user profile(s) NOT MEASURED: their invocations are outside every count above · NOT MEASURED by this observer: hook-never-spawned (an invocation the client never spawned leaves no spawn-side trace)"
+time=2026-09-06T01:17:56.372+03:00 level=WARN msg="codex vendor hook fail-open observed since the last heartbeat" discarded=1 delivered=2 unobservedTier=hook-never-spawned detail="vendor hook fail-open: 1 invocation(s) were spawned and delivered no decision — those actions ran ungoverned (over 2 delivered decision(s)) · NOT MEASURED by this observer: hook-never-spawned (an invocation the client never spawned leaves no spawn-side trace)"
+time=2026-09-06T01:17:56.382+03:00 level=WARN msg="codex vendor hook fail-open is NOT MEASURED while hooks are running on this endpoint" reason=vendor-fail-open-not-measured delivered=100 detail="vendor hook fail-open: NOT MEASURED (no hook invocation has ever been observed on this endpoint) — no count is available from this endpoint; this is not a zero · 1 user profile(s) NOT MEASURED: their invocations are outside every count above · NOT MEASURED by this observer: hook-never-spawned (an invocation the client never spawned leaves no spawn-side trace)"
+time=2026-09-06T01:17:56.488+03:00 level=WARN msg="codex machine baseline: hook commands were migrated but the machine-owner DACL did NOT land — the baseline that pins allow_managed_hooks_only is left with the ACL it inherited from %ProgramData%, which grants BUILTIN\\Users write. Re-run 'devoid ai codex-machine install' from an elevated shell" repaired_commands=5
+time=2026-09-06T01:17:56.489+03:00 level=WARN msg="Self-update: release channel check loop NOT started — this endpoint will not update itself" autoUpdate=true credentialsValid=false runningVersion=test-cx3
+time=2026-09-06T01:17:56.931+03:00 level=WARN msg="AI prompt-check post failed" decision=allow findings=0 error="http: unsupported protocol scheme \"\""
+time=2026-09-06T01:17:56.931+03:00 level=WARN msg="daemon AI prompt-check: backend report failed; using local decision" decision=allow error="http: unsupported protocol scheme \"\"" backendReconciliation=unavailable
+time=2026-09-06T01:17:56.959+03:00 level=WARN msg="AI tool-check post failed" toolName=unnamed-tool localDecision=allow localFindings=0 error="http: unsupported protocol scheme \"\""
+time=2026-09-06T01:17:56.959+03:00 level=WARN msg="daemon AI tool-decision: backend report failed; using local decision" toolName="" decision=allow error="http: unsupported protocol scheme \"\"" backendReconciliation=unavailable
+time=2026-09-06T01:17:57.201+03:00 level=ERROR msg="daemon: machine capability-token hardening failed; mutating IPC is locked" error="injected ACL failure" path=C:\Users\Owner\AppData\Local\Temp\TestLoadOrCreateDaemonTokenLocksClosedWhenExistingMachineTokenCa223040767\001\machine\daemon-token
+time=2026-09-06T01:17:57.205+03:00 level=ERROR msg="daemon: machine capability-token hardening failed after creation; mutating IPC is locked" error="injected ACL failure" path=C:\Users\Owner\AppData\Local\Temp\TestLoadOrCreateDaemonTokenRemovesFreshMachineTokenWhenHardening3556867389\001\machine\daemon-token
+time=2026-09-06T01:17:57.269+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:17:57.270+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.270+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.270+03:00 level=ERROR msg="Agent deregistered self-uninstall TRIGGERED: the backend has consistently reported this agent as removed from the DeVoid console; removing the agent from this machine via the privileged detached uninstall path" consecutive=3 requiredConsecutive=3 streakElapsed=10m0s requiredSpan=10m0s
+time=2026-09-06T01:17:57.270+03:00 level=WARN msg="Agent deregistered self-uninstall: already launched; waiting for the detached uninstall child to stop this daemon" consecutive=4 streakElapsed=11m0s
+time=2026-09-06T01:17:57.271+03:00 level=WARN msg="Agent deregistered self-uninstall: already launched; waiting for the detached uninstall child to stop this daemon" consecutive=5 streakElapsed=12m0s
+time=2026-09-06T01:17:57.280+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:17:57.280+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.280+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=1m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=9m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.280+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=3 requiredConsecutive=3 streakElapsed=2m0s requiredSpan=10m0s heartbeatsRemaining=0 timeRemaining=8m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.280+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=4 requiredConsecutive=3 streakElapsed=3m0s requiredSpan=10m0s heartbeatsRemaining=0 timeRemaining=7m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.280+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=5 requiredConsecutive=3 streakElapsed=4m0s requiredSpan=10m0s heartbeatsRemaining=0 timeRemaining=6m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.280+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=6 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=0 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.280+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=7 requiredConsecutive=3 streakElapsed=6m0s requiredSpan=10m0s heartbeatsRemaining=0 timeRemaining=4m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.280+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=8 requiredConsecutive=3 streakElapsed=7m0s requiredSpan=10m0s heartbeatsRemaining=0 timeRemaining=3m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.280+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=9 requiredConsecutive=3 streakElapsed=8m0s requiredSpan=10m0s heartbeatsRemaining=0 timeRemaining=2m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.280+03:00 level=ERROR msg="Agent deregistered self-uninstall TRIGGERED: the backend has consistently reported this agent as removed from the DeVoid console; removing the agent from this machine via the privileged detached uninstall path" consecutive=10 requiredConsecutive=3 streakElapsed=10m0s requiredSpan=10m0s
+time=2026-09-06T01:17:57.290+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:17:57.291+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.291+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.291+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.291+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.300+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:57.301+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:17:57.301+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.301+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.301+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.310+03:00 level=WARN msg="Heartbeat returned non-OK status" status=500 body="{\"message\":\"boom\"}"
+time=2026-09-06T01:17:57.311+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:17:57.311+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.311+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.311+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.322+03:00 level=WARN msg="Heartbeat returned non-OK status" status=503 body=""
+time=2026-09-06T01:17:57.323+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:17:57.323+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.323+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.323+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.330+03:00 level=ERROR msg="Heartbeat HTTP request failed" error="Post \"http://127.0.0.1:64652/api/v1/key-heartbeat\": dial tcp 127.0.0.1:64652: connectex: No connection could be made because the target machine actively refused it."
+time=2026-09-06T01:17:57.331+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:17:57.331+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.331+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.331+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.341+03:00 level=WARN msg="Heartbeat returned non-OK status" status=410 body="{\"error\":\"Gone\",\"message\":\"This agent has been removed from the DeVoid console. The agent should uninstall itself.\"}"
+time=2026-09-06T01:17:57.342+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:17:57.342+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.342+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.342+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.352+03:00 level=WARN msg="Heartbeat returned non-OK status" status=410 body=<html>410</html>
+time=2026-09-06T01:17:57.353+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:17:57.353+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.353+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.353+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.363+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"errorCode\":\"AGENT_DEREGISTERED\",\"message\":\"x\"}"
+time=2026-09-06T01:17:57.364+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:17:57.364+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.364+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.364+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.373+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:17:57.373+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=2 streakElapsed=0s requiredSpan=20ms heartbeatsRemaining=1 timeRemaining=0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.399+03:00 level=ERROR msg="Agent deregistered self-uninstall TRIGGERED: the backend has consistently reported this agent as removed from the DeVoid console; removing the agent from this machine via the privileged detached uninstall path" consecutive=2 requiredConsecutive=2 streakElapsed=0s requiredSpan=20ms
+time=2026-09-06T01:17:57.533+03:00 level=WARN msg="endpoint is not reporting runtime integrity; the backend will read it as unknown" reason="integrity store not open"
+time=2026-09-06T01:17:57.535+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:17:57.535+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.609+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:17:57.609+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.686+03:00 level=WARN msg="Endpoint inventory post failed" items=1 postedSoFar=0 chunks=1 error="backend status 404"
+time=2026-09-06T01:17:57.760+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:17:57.760+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=1 requiredConsecutive=3 streakElapsed=0s requiredSpan=10m0s heartbeatsRemaining=2 timeRemaining=10m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.834+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:17:57.834+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent was REMOVED from the DeVoid console (AGENT_DEREGISTERED); self-uninstall is armed but NOT yet triggered" consecutive=2 requiredConsecutive=3 streakElapsed=5m0s requiredSpan=10m0s heartbeatsRemaining=1 timeRemaining=5m0s note="a single successful heartbeat, or any other error, resets this streak"
+time=2026-09-06T01:17:57.905+03:00 level=WARN msg="Heartbeat rejected: the backend reports this agent has been deregistered (record removed from the console)" status=410 errorCode=AGENT_DEREGISTERED
+time=2026-09-06T01:17:57.905+03:00 level=ERROR msg="Agent deregistered self-uninstall TRIGGERED: the backend has consistently reported this agent as removed from the DeVoid console; removing the agent from this machine via the privileged detached uninstall path" consecutive=3 requiredConsecutive=3 streakElapsed=10m0s requiredSpan=10m0s
+time=2026-09-06T01:17:57.987+03:00 level=WARN msg="endpoint is not reporting runtime integrity; the backend will read it as unknown" reason="integrity store not open"
+time=2026-09-06T01:17:57.988+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:58.063+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:58.135+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:58.208+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:58.281+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:58.352+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:58.424+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:58.511+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:58.642+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:58.737+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:58.809+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:58.881+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:58.952+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:59.022+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:59.092+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:59.165+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:59.237+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:59.311+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:59.390+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:59.460+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:59.533+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:59.608+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:59.688+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:59.759+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:59.833+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:59.906+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:17:59.978+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:18:00.059+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:18:00.140+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:18:00.216+03:00 level=WARN msg="Heartbeat returned non-OK status" status=401 body="{\"message\":\"Invalid CLI request signature: unknown-agent\",\"errorCode\":\"UNAUTHORIZED_EXCEPTION\"}"
+time=2026-09-06T01:18:00.521+03:00 level=WARN msg="endpoint inventory report refused: per-user coverage map is full" user=one-too-many users=64
+time=2026-09-06T01:18:00.647+03:00 level=WARN msg="AI prompt-check post failed" decision=allow findings=1 error="backend status 500"
+time=2026-09-06T01:18:00.647+03:00 level=WARN msg="daemon AI prompt-check: backend report failed; using local decision" decision=allow error="backend status 500" backendReconciliation=unavailable
+time=2026-09-06T01:18:00.678+03:00 level=WARN msg="AI prompt-check post failed" decision=allow findings=1 error="backend status 500"
+time=2026-09-06T01:18:00.678+03:00 level=WARN msg="daemon AI prompt-check: backend report failed; using local decision" decision=allow error="backend status 500" backendReconciliation=unavailable
+time=2026-09-06T01:18:00.684+03:00 level=WARN msg="AI prompt-check post failed" decision=allow findings=1 error="backend status 500"
+time=2026-09-06T01:18:00.684+03:00 level=WARN msg="daemon AI prompt-check: backend report failed; using local decision" decision=allow error="backend status 500" backendReconciliation=unavailable
+time=2026-09-06T01:18:00.789+03:00 level=WARN msg="AI prompt-check post failed" decision=block findings=0 error="backend status 404"
+time=2026-09-06T01:18:00.789+03:00 level=WARN msg="daemon AI prompt-check: backend report failed; using local decision" decision=block error="backend status 404" backendReconciliation=unavailable
+time=2026-09-06T01:18:01.037+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=96e70d89-1279-4ce8-9ec8-14172b2fd847 error="backend status 404"
+time=2026-09-06T01:18:01.589+03:00 level=WARN msg="mediation: restricted mode; the governed mutation is refused" sink=S99-not-in-the-inventory reason=sink-not-in-inventory
+time=2026-09-06T01:18:01.590+03:00 level=WARN msg="mediation: restricted mode; the governed mutation is refused" sink=S6-human-release-allow-once reason=authority-store-unreadable
+time=2026-09-06T01:18:01.611+03:00 level=WARN msg="mediation: stored record claims a newer binding than the one that matched it; the hold stands" reason=binding-version-mismatch requestId=request-5de95fbe
+time=2026-09-06T01:18:01.694+03:00 level=WARN msg="tool-hold approval: no approval row could be created; this hold is UNACTIONABLE" actionId=d478a23d-6938-431d-8ee0-ea0f3ad7da16 error="Post \"https://example.invalid/api/v1/ai/delegated-approvals/endpoint\": dial tcp: lookup example.invalid: no such host"
+time=2026-09-06T01:18:01.725+03:00 level=WARN msg="mediation: restricted mode; the governed mutation is refused" sink=S14-session-taint-clear reason=authority-store-unreadable
+time=2026-09-06T01:18:01.949+03:00 level=WARN msg="openai sse: upstream routing refused; not forwarding" error="openai route: missing or non-bearer Authorization header" authMode=""
+--- FAIL: TestPIDFileImageIdentity (0.04s)
+    --- FAIL: TestPIDFileImageIdentity/devoid-named_live_process_detected_as_running (0.02s)
+        pidfile_reclaim_test.go:74: copy test binary to C:\Users\Owner\AppData\Local\Temp\TestPIDFileImageIdentitydevoid-named_live_process_detected_as_r3496868198\001\devoid.exe: write C:\Users\Owner\AppData\Local\Temp\TestPIDFileImageIdentitydevoid-named_live_process_detected_as_r3496868198\001\devoid.exe: There is not enough space on the disk.
+    --- FAIL: TestPIDFileImageIdentity/foreign_live_process_reclaimed (0.02s)
+        pidfile_reclaim_test.go:89: copy test binary to C:\Users\Owner\AppData\Local\Temp\TestPIDFileImageIdentityforeign_live_process_reclaimed1043641851\001\not-devoid.exe: write C:\Users\Owner\AppData\Local\Temp\TestPIDFileImageIdentityforeign_live_process_reclaimed1043641851\001\not-devoid.exe: There is not enough space on the disk.
+time=2026-09-06T01:18:04.463+03:00 level=WARN msg="daemon AI: pre-load analysis lookup failed (first of this pass)" ecosystem=agent-skill error="dial tcp: connection refused"
+time=2026-09-06T01:18:05.518+03:00 level=WARN msg="daemon self-heal: restart failed to initiate; keeping current daemon running" error="could not initiate"
+time=2026-09-06T01:18:05.592+03:00 level=ERROR msg="daemon self-heal: restart failed AFTER the listener was torn down; exiting non-zero so the supervisor relaunches" error="self-heal restart: replacement daemon did not bind 127.0.0.1:19280: self-heal restart: listener already torn down"
+time=2026-09-06T01:18:05.598+03:00 level=ERROR msg="daemon self-heal: restart failed AFTER the listener was torn down; exiting non-zero so the supervisor relaunches" error="self-heal restart: spawn failed (CreateProcess denied) and scheduled task fallback failed (schtasks: Access is denied): self-heal restart: listener already torn down"
+time=2026-09-06T01:18:05.603+03:00 level=WARN msg="daemon self-heal: restart failed to initiate; keeping current daemon running" error="could not initiate"
+time=2026-09-06T01:18:05.782+03:00 level=WARN msg="Self-update: release channel check loop NOT started — this endpoint will not update itself" autoUpdate=true credentialsValid=false runningVersion=test-0.0.1
+time=2026-09-06T01:18:05.889+03:00 level=WARN msg="Self-update: release channel check loop NOT started — this endpoint will not update itself" autoUpdate=true credentialsValid=false runningVersion=test-0.0.1
+time=2026-09-06T01:18:06.000+03:00 level=WARN msg="Self-update: release channel check loop NOT started — this endpoint will not update itself" autoUpdate=true credentialsValid=false runningVersion=test-0.0.1
+time=2026-09-06T01:18:06.151+03:00 level=WARN msg="endpoint is not reporting runtime integrity; the backend will read it as unknown" reason="integrity store not open"
+time=2026-09-06T01:18:06.232+03:00 level=WARN msg="session-broker: refusing to launch an unpinned executable" session=2 exe=C:\Users\Owner\AppData\Local\Temp\TestSessionWatch_RefusesAnUnpinnedExecutableAndNeverFallsBack27277140\002\bin\devoid-daemon.exe error="refusing to register \"Devoid AI Governance Reconcile\": command C:\\Users\\Owner\\AppData\\Local\\Temp\\TestSessionWatch_RefusesAnUnpinnedExecutableAndNeverFallsBack27277140\\002\\bin\\devoid-daemon.exe is not an existing file"
+time=2026-09-06T01:18:06.235+03:00 level=WARN msg="session-broker: the per-session broker did not run" session=2 error="no usable token for session 2"
+time=2026-09-06T01:18:09.744+03:00 level=WARN msg="AI inventory sweep INCOMPLETE — items is a floor, not an inventory" items=0 accepted=0 reasons=inventory-walk-truncated causes=walk-reported-incomplete depthCeiling=0 depthPruned=0 unreadableDirs=0
+time=2026-09-06T01:18:09.774+03:00 level=WARN msg="ai hook undecidable outcomes observed since the last heartbeat" adapter=codex undecidable=1 normalize=1 stdinOversize=0 stdinTimeout=0 stdinError=0 other=0 daemonUnreachable=0 daemonError=0 ungoverned=0 provenanceUnverified=1 dropped=0 decided=1
+time=2026-09-06T01:18:09.775+03:00 level=WARN msg="ai hook outcomes recorded for a runtime with no enumerated instance" adapter=codex undecidable=4 decided=0 dropped=0
+time=2026-09-06T01:18:09.775+03:00 level=WARN msg="ai hook outcomes recorded for a runtime with no enumerated instance" adapter=unattributed undecidable=0 decided=0 dropped=9
+time=2026-09-06T01:18:09.790+03:00 level=WARN msg="ai hook undecidable outcomes observed since the last heartbeat" adapter=claude-code undecidable=5 normalize=0 stdinOversize=0 stdinTimeout=0 stdinError=0 other=0 daemonUnreachable=3 daemonError=2 ungoverned=5 provenanceUnverified=0 dropped=0 decided=5
+time=2026-09-06T01:18:10.083+03:00 level=ERROR msg="daemon uninstall: watchdog fired — teardown did not complete" pid=19192 childDied=false
+time=2026-09-06T01:18:10.215+03:00 level=ERROR msg="daemon uninstall: watchdog fired — teardown did not complete" pid=2147483632 childDied=true
+time=2026-09-06T01:18:10.229+03:00 level=ERROR msg="daemon uninstall: failed to launch uninstall child" error="boom: could not launch child"
+time=2026-09-06T01:18:10.230+03:00 level=ERROR msg="daemon uninstall: failed to launch uninstall child" error="boom: could not launch child"
+time=2026-09-06T01:18:10.350+03:00 level=ERROR msg="daemon uninstall: failed to launch uninstall child" error="boom: could not launch child"
+time=2026-09-06T01:18:10.359+03:00 level=ERROR msg="daemon uninstall: watchdog fired — teardown did not complete" pid=2147483632 childDied=true
+time=2026-09-06T01:18:10.905+03:00 level=ERROR msg="daemon uninstall: watchdog fired — teardown did not complete" pid=2147483632 childDied=true
+time=2026-09-06T01:18:11.058+03:00 level=ERROR msg="daemon uninstall: watchdog fired — teardown did not complete" pid=2147483632 childDied=true
+time=2026-09-06T01:18:11.058+03:00 level=ERROR msg="daemon uninstall: circuit breaker tripped — too many consecutive failures; stopping automatic retries, manual remediation required" failures=2 threshold=2
+time=2026-09-06T01:18:11.215+03:00 level=ERROR msg="daemon uninstall: watchdog fired — teardown did not complete" pid=2147483632 childDied=true
+time=2026-09-06T01:18:11.260+03:00 level=ERROR msg="daemon update: verified self-update child failed" error=boom
+time=2026-09-06T01:18:11.271+03:00 level=ERROR msg="daemon update: verified self-update child failed" error=boom
+time=2026-09-06T01:18:11.461+03:00 level=WARN msg="daemon update: refusing a verified self-update — an uninstall is in progress on this endpoint"
+time=2026-09-06T01:18:11.668+03:00 level=WARN msg="daemon update: refusing a verified self-update — an uninstall is in progress on this endpoint"
+C12CONTENTTOTAL lane=content/no-policy  corpus=133 interruptions=0
+C12CONTENTTOTAL lane=content/D4+DLP     corpus=133 interruptions=0
+C12CONTENTLIVE behaviour=allow merged=block reasons=[aws-access-key:block]
+C12TOTAL lane=LANE-A/no-policy(severity-default) corpus=123 interruptions=0
+C12TOTAL lane=LANE-B/D4-rebaseline               corpus=123 interruptions=0
+C12DANGER dd-to-disk               want=block    decision=block classes=destructive-dd/high
+C12DANGER mkfs-disk                want=block    decision=block classes=destructive-mkfs/high
+C12DANGER sudoers-append           want=block    decision=block classes=sudoers-edit/high
+C12DANGER authorized-keys          want=block    decision=block classes=authorized-keys-write/high
+C12DANGER firewall-off             want=block    decision=block classes=firewall-disable/high
+C12DANGER history-wipe-cmd         want=block    decision=block classes=history-wipe/high
+C12DANGER fork-bomb                want=block    decision=block classes=fork-bomb/high
+C12DANGER devoid-self-disable      want=block    decision=block classes=devoid-self-disable/high
+C12DANGER rm-root                  want=block    decision=block classes=destructive-rm/high
+C12DANGER ifs-chmod-broad          want=resolver-escalated decision=warn  classes=chmod-broad-777/high
+C12DANGER chmod-subtree            want=monitor  decision=allow classes=chmod-broad-777/high
+C12DANGERTOTAL probes=11 violations=0
+FAIL
+FAIL	github.com/codefense/cli-wrapper/internal/daemon	57.163s
+--- FAIL: TestClientIgnoresLegacyManagedConfig (0.01s)
+    client_legacy_managed_config_test.go:16: write C:\Users\Owner\AppData\Local\Temp\TestClientIgnoresLegacyManagedConfig2694038772\001\codex-0153.exe: There is not enough space on the disk.
+--- FAIL: TestInnerQuotedExecutableIsUnspawnableOn0148 (0.00s)
+    machine_hook_spawn_windows_test.go:123: write C:\Users\Owner\AppData\Local\Temp\TestInnerQuotedExecutableIsUnspawnableOn01481913720204\001\devoid.exe: There is not enough space on the disk.
+--- FAIL: TestSpawnSafeExe_CarriesASpaceViaShortPath (0.00s)
+    machine_hook_spawn_windows_test.go:145: write C:\Users\Owner\AppData\Local\Temp\TestSpawnSafeExe_CarriesASpaceViaShortPath1324837234\001\Program Files\devoid.exe: There is not enough space on the disk.
+--- FAIL: TestProfileScopedPointerIsForeign (0.01s)
+    machine_route_test.go:490: ApplyAtomic: open C:\Users\Owner\AppData\Local\Temp\TestProfileScopedPointerIsForeign1565298067\002\.requirements.toml.devoid-3279119879.tmp: There is not enough space on the disk.
+--- FAIL: TestRepointedAfterDisplacementKeepsOneLivePointer (0.01s)
+    machine_route_test.go:511: ApplyAtomic: open C:\Users\Owner\AppData\Local\Temp\TestRepointedAfterDisplacementKeepsOneLivePointer1566159209\002\.requirements.toml.devoid-2878378458.tmp: There is not enough space on the disk.
+--- FAIL: TestDevoidPointerBesideAnAdministratorPointer (0.01s)
+    machine_route_test.go:531: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestDevoidPointerBesideAnAdministratorPointer2235396938\002\.requirements.toml.devoid-3694178335.tmp: There is not enough space on the disk.
+--- FAIL: TestDisplacedPointerRestoredWithCommentAndEOL (0.01s)
+    machine_route_test.go:582: ApplyAtomic: open C:\Users\Owner\AppData\Local\Temp\TestDisplacedPointerRestoredWithCommentAndEOL773102713\002\.requirements.toml.devoid-1543875052.tmp: There is not enough space on the disk.
+--- FAIL: TestObservedRouteEdgeShapes (0.01s)
+    machine_route_test.go:602: ApplyAtomic: open C:\Users\Owner\AppData\Local\Temp\TestObservedRouteEdgeShapes956432233\002\.requirements.toml.devoid-3653584376.tmp: There is not enough space on the disk.
+--- FAIL: TestBannersInsideAForeignTableAreExcised (0.01s)
+    machine_route_test.go:624: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestBannersInsideAForeignTableAreExcised1510409502\002\.requirements.toml.devoid-1889571298.tmp: There is not enough space on the disk.
+--- FAIL: TestExcisionKeepsTheRootTableSeparator (0.01s)
+    machine_route_test.go:654: ApplyAtomic: open C:\Users\Owner\AppData\Local\Temp\TestExcisionKeepsTheRootTableSeparator1326310052\002\.requirements.toml.devoid-2270924857.tmp: There is not enough space on the disk.
+--- FAIL: TestProfilePinShadowsTheMachineRoute (0.01s)
+    machine_route_test.go:688: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestProfilePinShadowsTheMachineRoute2902498477\003\.requirements.toml.devoid-1008196094.tmp: There is not enough space on the disk.
+--- FAIL: TestDesktopProfileReportsWhatItCanReachAndWhy (0.00s)
+    machine_sandbox_allowlist_test.go:299: desktop install: write desktop managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestDesktopProfileReportsWhatItCanReachAndWhy4292858159\001\.managed_config.toml.devoid-1231591807.tmp: There is not enough space on the disk.
+--- FAIL: TestManagedHooksAreDeclaredInlineNotInADirectory (0.00s)
+    machine_schema_test.go:120: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestManagedHooksAreDeclaredInlineNotInADirectory2907814609\001\.requirements.toml.devoid-2624533658.tmp: There is not enough space on the disk.
+--- FAIL: TestUserAuthoredManagedConfigHooksAreDriftNotGreen (0.01s)
+    machine_schema_test.go:266: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestUserAuthoredManagedConfigHooksAreDriftNotGreen2371582300\002\.requirements.toml.devoid-2699797750.tmp: There is not enough space on the disk.
+--- FAIL: TestHardenMachineObjectSeparatesDaclAndSaclFailures (0.00s)
+    machine_test.go:307: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestHardenMachineObjectSeparatesDaclAndSaclFailures1849173724\001\.requirements.toml.devoid-3732481514.tmp: There is not enough space on the disk.
+--- FAIL: TestForeignFieldsPreserved (0.02s)
+    machine_test.go:353: ApplyAtomic: open C:\Users\Owner\AppData\Local\Temp\TestForeignFieldsPreserved4286529578\001\.requirements.toml.devoid-1251195842.tmp: There is not enough space on the disk.
+--- FAIL: TestForeignRootScalarsAreNotRescoped (0.01s)
+    machine_test.go:397: ApplyAtomic: open C:\Users\Owner\AppData\Local\Temp\TestForeignRootScalarsAreNotRescoped2922789779\001\.requirements.toml.devoid-2248484431.tmp: There is not enough space on the disk.
+--- FAIL: TestProjectionHashIgnoresForeignFields (0.01s)
+    machine_test.go:416: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestProjectionHashIgnoresForeignFields3035707783\001\.requirements.toml.devoid-3035251134.tmp: There is not enough space on the disk.
+--- FAIL: TestApplyIsIdempotent (0.00s)
+    machine_test.go:440: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestApplyIsIdempotent1687058903\001\.requirements.toml.devoid-1285254482.tmp: There is not enough space on the disk.
+--- FAIL: TestApplyReReadCatchesDeleteReplaceAndParentSwap (0.02s)
+    --- FAIL: TestApplyReReadCatchesDeleteReplaceAndParentSwap/delete (0.00s)
+        machine_test.go:508: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestApplyReReadCatchesDeleteReplaceAndParentSwapdelete1230544447\001\.requirements.toml.devoid-718772699.tmp: There is not enough space on the disk.
+    --- FAIL: TestApplyReReadCatchesDeleteReplaceAndParentSwap/rename (0.00s)
+        machine_test.go:508: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestApplyReReadCatchesDeleteReplaceAndParentSwaprename120954452\001\.requirements.toml.devoid-4255485175.tmp: There is not enough space on the disk.
+    --- FAIL: TestApplyReReadCatchesDeleteReplaceAndParentSwap/replace (0.00s)
+        machine_test.go:508: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestApplyReReadCatchesDeleteReplaceAndParentSwapreplace3541124999\001\.requirements.toml.devoid-1241303689.tmp: There is not enough space on the disk.
+    --- FAIL: TestApplyReReadCatchesDeleteReplaceAndParentSwap/hook-dir-removed (0.01s)
+        machine_test.go:508: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestApplyReReadCatchesDeleteReplaceAndParentSwaphook-dir-remove3740943870\001\.requirements.toml.devoid-1726308708.tmp: There is not enough space on the disk.
+    --- FAIL: TestApplyReReadCatchesDeleteReplaceAndParentSwap/parent-swap (0.00s)
+        machine_test.go:508: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestApplyReReadCatchesDeleteReplaceAndParentSwapparent-swap431038150\001\.requirements.toml.devoid-3236823953.tmp: There is not enough space on the disk.
+--- FAIL: TestMachineRootRedirectIsReported (0.01s)
+    machine_test.go:626: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestMachineRootRedirectIsReported3553482783\001\.requirements.toml.devoid-797593137.tmp: There is not enough space on the disk.
+--- FAIL: TestEveryUserManagedConfigIsInspectedAsAnEffectiveSource (0.01s)
+    machine_test.go:717: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestEveryUserManagedConfigIsInspectedAsAnEffectiveSource310275709\003\.requirements.toml.devoid-2107985350.tmp: There is not enough space on the disk.
+--- FAIL: TestLoadedFreshNeverInferredFromFilePresence (0.01s)
+    machine_test.go:1030: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestLoadedFreshNeverInferredFromFilePresence3784151083\001\.managed_config.toml.devoid-2715961953.tmp: There is not enough space on the disk.
+--- FAIL: TestOnlyAProvenFreshCanaryEarnsEnforcementTested (0.00s)
+    machine_test.go:1060: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestOnlyAProvenFreshCanaryEarnsEnforcementTested1259853693\001\.managed_config.toml.devoid-578270975.tmp: There is not enough space on the disk.
+--- FAIL: TestRemoveOwnedPreservesForeignAndKeepsTheVendorRoot (0.01s)
+    machine_test.go:1125: ApplyAtomic: open C:\Users\Owner\AppData\Local\Temp\TestRemoveOwnedPreservesForeignAndKeepsTheVendorRoot1460011621\001\.requirements.toml.devoid-1380247204.tmp: There is not enough space on the disk.
+--- FAIL: TestRemoveOwnedLeavesForeignHookFiles (0.00s)
+    machine_test.go:1149: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestRemoveOwnedLeavesForeignHookFiles1385877681\001\.requirements.toml.devoid-1131160528.tmp: There is not enough space on the disk.
+--- FAIL: TestCodexMarketplaceGovernanceRendersExactOfficialRequirementsAndDetectsDefeat (0.00s)
+    marketplace_governance_test.go:45: write C:\Users\Owner\AppData\Local\Temp\TestCodexMarketplaceGovernanceRendersExactOfficialRequirementsAn1688277792\001\requirements.toml: There is not enough space on the disk.
+--- FAIL: TestMergeUserHookPreservesForeignConfigAndIsIdempotent (0.01s)
+    merge_cas_test.go:188: first merge: write C:\Users\Owner\AppData\Local\Temp\TestMergeUserHookPreservesForeignConfigAndIsIdempotent1639160587\001\.config.toml.devoid-3603961606.tmp: There is not enough space on the disk.
+--- FAIL: TestWriteManagedConfig_DetectAllInstalled (0.00s)
+    merge_test.go:139: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestWriteManagedConfig_DetectAllInstalled3076617429\001\.managed_config.toml.devoid-3549519510.tmp: There is not enough space on the disk.
+--- FAIL: TestMergeUserHook_PreservesForeignAndIdempotent (0.01s)
+    merge_test.go:169: first merge: changed=false err=write C:\Users\Owner\AppData\Local\Temp\TestMergeUserHook_PreservesForeignAndIdempotent2251937160\001\.config.toml.devoid-295602284.tmp: There is not enough space on the disk.; want changed,nil
+--- FAIL: TestMergeUserHook_RepairsInPlace (0.00s)
+    merge_test.go:210: write C:\Users\Owner\AppData\Local\Temp\TestMergeUserHook_RepairsInPlace4007787268\001\.config.toml.devoid-2812218433.tmp: There is not enough space on the disk.
+--- FAIL: TestMigrationRehardensEveryObjectItRewrote (0.00s)
+    migrate_argv_harden_test.go:65: write legacy baseline: write C:\Users\Owner\AppData\Local\Temp\TestMigrationRehardensEveryObjectItRewrote2788866188\001\requirements.toml: There is not enough space on the disk.
+--- FAIL: TestMigrationHardensEveryTargetAndNotJustTheFirst (0.00s)
+    migrate_argv_harden_test.go:199: write legacy baseline: write C:\Users\Owner\AppData\Local\Temp\TestMigrationHardensEveryTargetAndNotJustTheFirst537531896\001\requirements.toml: There is not enough space on the disk.
+--- FAIL: TestMigrateRepairsADeployedLegacyBaseline (0.00s)
+    migrate_argv_test.go:41: write legacy baseline: write C:\Users\Owner\AppData\Local\Temp\TestMigrateRepairsADeployedLegacyBaseline1214954966\001\requirements.toml: There is not enough space on the disk.
+--- FAIL: TestMigrationPreservesForeignBytes (0.00s)
+    migrate_argv_test.go:78: write legacy baseline: write C:\Users\Owner\AppData\Local\Temp\TestMigrationPreservesForeignBytes3612388937\001\requirements.toml: There is not enough space on the disk.
+--- FAIL: TestMigrationRefusesACommandItCannotStandBehind (0.00s)
+    --- FAIL: TestMigrationRefusesACommandItCannotStandBehind/the_launcher_does_not_exist (0.00s)
+        migrate_argv_test.go:154: write legacy baseline: write C:\Users\Owner\AppData\Local\Temp\TestMigrationRefusesACommandItCannotStandBehindthe_launcher_doe3122011578\001\requirements.toml: There is not enough space on the disk.
+    --- FAIL: TestMigrationRefusesACommandItCannotStandBehind/the_launcher_is_unattested (0.00s)
+        migrate_argv_test.go:154: write legacy baseline: write C:\Users\Owner\AppData\Local\Temp\TestMigrationRefusesACommandItCannotStandBehindthe_launcher_is_4087852385\001\requirements.toml: There is not enough space on the disk.
+--- FAIL: TestMigrationRunsWithoutAnObservedClientVersion (0.00s)
+    migrate_argv_test.go:185: write legacy baseline: write C:\Users\Owner\AppData\Local\Temp\TestMigrationRunsWithoutAnObservedClientVersion1909470602\001\requirements.toml: There is not enough space on the disk.
+--- FAIL: TestMigrationIsIdempotent (0.00s)
+    migrate_argv_test.go:210: write legacy baseline: write C:\Users\Owner\AppData\Local\Temp\TestMigrationIsIdempotent2334434733\001\requirements.toml: There is not enough space on the disk.
+--- FAIL: TestDeniedPrivilegedWriteLeavesTheEndpointLegacyNotGreen (0.00s)
+    migrate_argv_test.go:236: write legacy baseline: write C:\Users\Owner\AppData\Local\Temp\TestDeniedPrivilegedWriteLeavesTheEndpointLegacyNotGreen3650227287\001\requirements.toml: There is not enough space on the disk.
+--- FAIL: TestManagedLayerInstalledButUnattestable_UnverifiedDialect (0.01s)
+    nochurn_test.go:50: InstallDesktopSafe: write desktop managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestManagedLayerInstalledButUnattestable_UnverifiedDialect2924330228\001\.managed_config.toml.devoid-3929323401.tmp: There is not enough space on the disk.
+--- FAIL: TestManagedLayerInstalledButUnattestable_ConfirmedDialectIsFalse (0.01s)
+    nochurn_test.go:74: InstallDesktopSafe: write desktop managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestManagedLayerInstalledButUnattestable_ConfirmedDialectIsFalse2048464411\001\.managed_config.toml.devoid-3642421243.tmp: There is not enough space on the disk.
+--- FAIL: TestManagedLayerInstalledButUnattestable_UnknownBinaryIsNotAbsorbed (0.01s)
+    nochurn_test.go:92: InstallDesktopSafe: write desktop managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestManagedLayerInstalledButUnattestable_UnknownBinaryIsNotAbsor3038560648\001\.managed_config.toml.devoid-4240581914.tmp: There is not enough space on the disk.
+--- FAIL: TestManagedLayerInstalledButUnattestable_MissingRouteIsNotAbsorbed (0.01s)
+    nochurn_test.go:113: InstallDesktopSafe: write desktop managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestManagedLayerInstalledButUnattestable_MissingRouteIsNotAbsorb4262137845\001\.managed_config.toml.devoid-2900605632.tmp: There is not enough space on the disk.
+--- FAIL: TestManagedLayerInstalledButUnattestable_RedirectedHomeIsNotAbsorbed (0.01s)
+    nochurn_test.go:135: InstallDesktopSafe: write desktop managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestManagedLayerInstalledButUnattestable_RedirectedHomeIsNotAbso1577737957\001\.managed_config.toml.devoid-2114448388.tmp: There is not enough space on the disk.
+--- FAIL: TestManagedLayerInstalledButUnattestable_DriftedHardControlIsNotAbsorbed (0.01s)
+    nochurn_test.go:165: Install (full profile): write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestManagedLayerInstalledButUnattestable_DriftedHardControlIsNot1290644132\001\.managed_config.toml.devoid-4283361245.tmp: There is not enough space on the disk.
+--- FAIL: TestManagedLayerInstalledButUserConfigOpaque_UnreadableTrustLevel (0.01s)
+    opaque_nochurn_test.go:35: InstallDesktopSafe: write desktop managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestManagedLayerInstalledButUserConfigOpaque_UnreadableTrustLeve2752396955\001\.managed_config.toml.devoid-2143896638.tmp: There is not enough space on the disk.
+--- FAIL: TestManagedLayerInstalledButUserConfigOpaque_ReadableConfigIsFalse (0.01s)
+    opaque_nochurn_test.go:63: InstallDesktopSafe: write desktop managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestManagedLayerInstalledButUserConfigOpaque_ReadableConfigIsFal3689624389\001\.managed_config.toml.devoid-749182127.tmp: There is not enough space on the disk.
+--- FAIL: TestManagedLayerInstalledButUserConfigOpaque_PlainDriftIsNotAbsorbed (0.01s)
+    opaque_nochurn_test.go:78: InstallDesktopSafe: write desktop managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestManagedLayerInstalledButUserConfigOpaque_PlainDriftIsNotAbso1890085472\001\.managed_config.toml.devoid-1315970739.tmp: There is not enough space on the disk.
+--- FAIL: TestOpaqueOverlay_StillStampsACleanHookRow (0.01s)
+    opaque_nochurn_test.go:102: InstallDesktopSafe: write desktop managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestOpaqueOverlay_StillStampsACleanHookRow1549869562\001\.managed_config.toml.devoid-2250388761.tmp: There is not enough space on the disk.
+--- FAIL: TestOpaqueOverlay_DoesNotEraseAnAlreadyFailingHookRow (0.01s)
+    opaque_nochurn_test.go:129: InstallDesktopSafe: write desktop managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestOpaqueOverlay_DoesNotEraseAnAlreadyFailingHookRow1234041735\001\.managed_config.toml.devoid-1632447777.tmp: There is not enough space on the disk.
+--- FAIL: TestEffectiveRequirementsStillReportsMO4SatisfiedAfterAWrite (0.01s)
+    p3_mo4_observed_winner_test.go:36: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestEffectiveRequirementsStillReportsMO4SatisfiedAfterAWrite404973919\001\.requirements.toml.devoid-1105516327.tmp: There is not enough space on the disk.
+--- FAIL: TestMO4NamesOnlyAnObservedWinner (0.00s)
+    p3_mo4_observed_winner_test.go:55: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestMO4NamesOnlyAnObservedWinner2597373682\001\.requirements.toml.devoid-3283678624.tmp: There is not enough space on the disk.
+--- FAIL: TestCompiledProjectionHashDoesNotMatchWhatInspectObserves (0.01s)
+    p3_projection_hash_divergence_test.go:77: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestCompiledProjectionHashDoesNotMatchWhatInspectObserves3107893392\002\.requirements.toml.devoid-1939020610.tmp: There is not enough space on the disk.
+--- FAIL: TestInspectEffectiveGradesTheResolvedHookObligation (0.00s)
+    p3_unverifiable_vs_failed_test.go:319: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestInspectEffectiveGradesTheResolvedHookObligation1662246155\002\.requirements.toml.devoid-2776194255.tmp: There is not enough space on the disk.
+--- FAIL: TestInspectEffectiveReportsAProjectionMismatchItCanNowReach (0.01s)
+    p3_unverifiable_vs_failed_test.go:355: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestInspectEffectiveReportsAProjectionMismatchItCanNowReach1415038840\002\.requirements.toml.devoid-1227417055.tmp: There is not enough space on the disk.
+--- FAIL: TestInstall_StampsMarkerAndKeepsLedgerCoherent (0.01s)
+    provenance_test.go:245: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestInstall_StampsMarkerAndKeepsLedgerCoherent2834533781\001\.managed_config.toml.devoid-1691677624.tmp: There is not enough space on the disk.
+--- FAIL: TestInstall_NoTrustStoreRendersPreProvenanceCommand (0.00s)
+    provenance_test.go:327: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestInstall_NoTrustStoreRendersPreProvenanceCommand89973391\001\.managed_config.toml.devoid-447900456.tmp: There is not enough space on the disk.
+--- FAIL: TestClassify_SingleKeyRemoved (0.00s)
+    requirements_test.go:28: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestClassify_SingleKeyRemoved3329085299\001\.managed_config.toml.devoid-3545431920.tmp: There is not enough space on the disk.
+--- FAIL: TestClassify_ValueDriftIsNotFileMalformed (0.02s)
+    --- FAIL: TestClassify_ValueDriftIsNotFileMalformed/R1_approval_value_drift (0.00s)
+        requirements_test.go:152: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestClassify_ValueDriftIsNotFileMalformedR1_approval_value_drif2180045641\002\.managed_config.toml.devoid-538470492.tmp: There is not enough space on the disk.
+    --- FAIL: TestClassify_ValueDriftIsNotFileMalformed/R2_sandbox_unlocked (0.00s)
+        requirements_test.go:152: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestClassify_ValueDriftIsNotFileMalformedR2_sandbox_unlocked1690499431\002\.managed_config.toml.devoid-251877443.tmp: There is not enough space on the disk.
+    --- FAIL: TestClassify_ValueDriftIsNotFileMalformed/R2_network_egress_reopened (0.00s)
+        requirements_test.go:152: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestClassify_ValueDriftIsNotFileMalformedR2_network_egress_reop3007069713\002\.managed_config.toml.devoid-3344609985.tmp: There is not enough space on the disk.
+    --- FAIL: TestClassify_ValueDriftIsNotFileMalformed/R3_web_search_reopened (0.00s)
+        requirements_test.go:152: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestClassify_ValueDriftIsNotFileMalformedR3_web_search_reopened65381682\002\.managed_config.toml.devoid-4042778411.tmp: There is not enough space on the disk.
+    --- FAIL: TestClassify_ValueDriftIsNotFileMalformed/R4_computer_use_reopened (0.00s)
+        requirements_test.go:152: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestClassify_ValueDriftIsNotFileMalformedR4_computer_use_reopen2909737235\002\.managed_config.toml.devoid-666829732.tmp: There is not enough space on the disk.
+    --- FAIL: TestClassify_ValueDriftIsNotFileMalformed/R5_route_removal_keeps_its_own_reason (0.00s)
+        requirements_test.go:172: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestClassify_ValueDriftIsNotFileMalformedR5_route_removal_keeps1494935162\002\.managed_config.toml.devoid-3854664685.tmp: There is not enough space on the disk.
+--- FAIL: TestClassify_UserFileMalformedIsNotManagedFileMalformed (0.00s)
+    requirements_test.go:189: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestClassify_UserFileMalformedIsNotManagedFileMalformed1080768267\001\.managed_config.toml.devoid-2628536667.tmp: There is not enough space on the disk.
+--- FAIL: TestForeignKeys_B9_TrustEgressAndFeature (0.02s)
+    requirements_test.go:291: TempDir: mkdir C:\Users\Owner\AppData\Local\Temp\TestForeignKeys_B9_TrustEgressAndFeature520228561\006: There is not enough space on the disk.
+--- FAIL: TestForeignKeys_B9_EgressEffectIsHonestUnderTheManagedLock (0.00s)
+    requirements_test.go:367: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestForeignKeys_B9_EgressEffectIsHonestUnderTheManagedLock2284685351\001\.managed_config.toml.devoid-1795888617.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_B9_UnreadableGovernanceTableFails (0.03s)
+    --- FAIL: TestVerify_B9_UnreadableGovernanceTableFails/projects-as-inline-table//bare (0.00s)
+        requirements_test.go:439: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestVerify_B9_UnreadableGovernanceTableFailsprojects-as-inline-3502096352\001\.managed_config.toml.devoid-2673785091.tmp: There is not enough space on the disk.
+    --- FAIL: TestVerify_B9_UnreadableGovernanceTableFails/projects-as-inline-table//wired (0.00s)
+        requirements_test.go:439: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestVerify_B9_UnreadableGovernanceTableFailsprojects-as-inline-1579605222\001\.managed_config.toml.devoid-606335681.tmp: There is not enough space on the disk.
+    --- FAIL: TestVerify_B9_UnreadableGovernanceTableFails/projects-as-inline-table/desktop/bare (0.00s)
+        requirements_test.go:439: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestVerify_B9_UnreadableGovernanceTableFailsprojects-as-inline-1055969877\001\.managed_config.toml.devoid-1599137145.tmp: There is not enough space on the disk.
+    --- FAIL: TestVerify_B9_UnreadableGovernanceTableFails/projects-as-inline-table/desktop/wired (0.00s)
+        requirements_test.go:439: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestVerify_B9_UnreadableGovernanceTableFailsprojects-as-inline-1688171383\001\.managed_config.toml.devoid-1127969922.tmp: There is not enough space on the disk.
+    --- FAIL: TestVerify_B9_UnreadableGovernanceTableFails/unmodelled-trust-vocabulary//bare (0.00s)
+        requirements_test.go:439: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestVerify_B9_UnreadableGovernanceTableFailsunmodelled-trust-vo4075209536\001\.managed_config.toml.devoid-861359695.tmp: There is not enough space on the disk.
+    --- FAIL: TestVerify_B9_UnreadableGovernanceTableFails/unmodelled-trust-vocabulary//wired (0.00s)
+        requirements_test.go:439: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestVerify_B9_UnreadableGovernanceTableFailsunmodelled-trust-vo1384636395\001\.managed_config.toml.devoid-2411575699.tmp: There is not enough space on the disk.
+    --- FAIL: TestVerify_B9_UnreadableGovernanceTableFails/unmodelled-trust-vocabulary/desktop/bare (0.00s)
+        requirements_test.go:439: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestVerify_B9_UnreadableGovernanceTableFailsunmodelled-trust-vo4210872647\001\.managed_config.toml.devoid-2207676115.tmp: There is not enough space on the disk.
+    --- FAIL: TestVerify_B9_UnreadableGovernanceTableFails/unmodelled-trust-vocabulary/desktop/wired (0.00s)
+        requirements_test.go:439: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestVerify_B9_UnreadableGovernanceTableFailsunmodelled-trust-vo3996773791\001\.managed_config.toml.devoid-2184073333.tmp: There is not enough space on the disk.
+    --- FAIL: TestVerify_B9_UnreadableGovernanceTableFails/network-access-not-a-bool//bare (0.00s)
+        requirements_test.go:439: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestVerify_B9_UnreadableGovernanceTableFailsnetwork-access-not-4077263412\001\.managed_config.toml.devoid-703531616.tmp: There is not enough space on the disk.
+    --- FAIL: TestVerify_B9_UnreadableGovernanceTableFails/network-access-not-a-bool//wired (0.00s)
+        requirements_test.go:439: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestVerify_B9_UnreadableGovernanceTableFailsnetwork-access-not-4192587075\001\.managed_config.toml.devoid-3260711893.tmp: There is not enough space on the disk.
+    --- FAIL: TestVerify_B9_UnreadableGovernanceTableFails/network-access-not-a-bool/desktop/bare (0.00s)
+        requirements_test.go:439: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestVerify_B9_UnreadableGovernanceTableFailsnetwork-access-not-1992822106\001\.managed_config.toml.devoid-1744748357.tmp: There is not enough space on the disk.
+    --- FAIL: TestVerify_B9_UnreadableGovernanceTableFails/network-access-not-a-bool/desktop/wired (0.00s)
+        requirements_test.go:439: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestVerify_B9_UnreadableGovernanceTableFailsnetwork-access-not-3076733431\001\.managed_config.toml.devoid-56207628.tmp: There is not enough space on the disk.
+    --- FAIL: TestVerify_B9_UnreadableGovernanceTableFails/features-as-scalar//bare (0.00s)
+        requirements_test.go:439: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestVerify_B9_UnreadableGovernanceTableFailsfeatures-as-scalar2813257694\001\.managed_config.toml.devoid-3415572174.tmp: There is not enough space on the disk.
+    --- FAIL: TestVerify_B9_UnreadableGovernanceTableFails/features-as-scalar//wired (0.00s)
+        requirements_test.go:439: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestVerify_B9_UnreadableGovernanceTableFailsfeatures-as-scalar4269964334\001\.managed_config.toml.devoid-2886893231.tmp: There is not enough space on the disk.
+    --- FAIL: TestVerify_B9_UnreadableGovernanceTableFails/features-as-scalar/desktop/bare (0.00s)
+        requirements_test.go:439: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestVerify_B9_UnreadableGovernanceTableFailsfeatures-as-scalar1759370264\001\.managed_config.toml.devoid-750417738.tmp: There is not enough space on the disk.
+    --- FAIL: TestVerify_B9_UnreadableGovernanceTableFails/features-as-scalar/desktop/wired (0.00s)
+        requirements_test.go:439: write managed config: write C:\Users\Owner\AppData\Local\Temp\TestVerify_B9_UnreadableGovernanceTableFailsfeatures-as-scalar3398725091\001\.managed_config.toml.devoid-2260396625.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_B9_TrustAndEgressStayDivergedNotDrifted (0.01s)
+    requirements_test.go:647: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_B9_TrustAndEgressStayDivergedNotDrifted2152722185\001\.managed_config.toml.devoid-2464712361.tmp: There is not enough space on the disk.
+--- FAIL: TestScriptExec_ForwardsEventAndProvenance (0.02s)
+    --- FAIL: TestScriptExec_ForwardsEventAndProvenance/two-args-forwards-provenance (0.01s)
+        script_exec_test.go:108: distribute: write C:\Users\Owner\AppData\Local\Temp\TestScriptExec_ForwardsEventAndProvenancetwo-args-forwards-prov3523048099\001\.devoid-codex-hook.cmd.devoid-137233957.tmp: There is not enough space on the disk.
+    --- FAIL: TestScriptExec_ForwardsEventAndProvenance/one-arg-legacy-block-omits-the-flag (0.00s)
+        script_exec_test.go:118: distribute: write C:\Users\Owner\AppData\Local\Temp\TestScriptExec_ForwardsEventAndProvenanceone-arg-legacy-block-o850748893\001\.devoid-codex-hook.cmd.devoid-2453809956.tmp: There is not enough space on the disk.
+    --- FAIL: TestScriptExec_ForwardsEventAndProvenance/no-args-defaults-to-pre-tool-use (0.00s)
+        script_exec_test.go:127: distribute: write C:\Users\Owner\AppData\Local\Temp\TestScriptExec_ForwardsEventAndProvenanceno-args-defaults-to-pr3296209456\001\.devoid-codex-hook.cmd.devoid-2892333213.tmp: There is not enough space on the disk.
+--- FAIL: TestScriptExec_EveryEmittableMarkerSurvivesTheShell (0.07s)
+    script_exec_test.go:164: distribute: write C:\Users\Owner\AppData\Local\Temp\TestScriptExec_EveryEmittableMarkerSurvivesTheShell1952844534\002\.devoid-codex-hook.cmd.devoid-3901805137.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_TamperedRouteReadsAsDrift (0.01s)
+    transport_route_test.go:96: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_TamperedRouteReadsAsDrift3371510415\001\.managed_config.toml.devoid-2558631670.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_StalePortRouteReadsAsDrift (0.01s)
+    transport_route_test.go:124: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_StalePortRouteReadsAsDrift1822992802\001\.managed_config.toml.devoid-1228411801.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_AbsentBaseURLReadsAsMissing (0.01s)
+    transport_route_test.go:141: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_AbsentBaseURLReadsAsMissing1162758026\001\.managed_config.toml.devoid-1244666024.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_RouteOverlaySteadyStateAndReassert (0.01s)
+    transport_route_test.go:158: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_RouteOverlaySteadyStateAndReassert2750125609\001\.managed_config.toml.devoid-1586877034.tmp: There is not enough space on the disk.
+--- FAIL: TestVerifyDesktop_TamperedRouteReadsAsDrift (0.01s)
+    transport_route_test.go:188: desktop install: write desktop managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerifyDesktop_TamperedRouteReadsAsDrift1091360651\001\.managed_config.toml.devoid-171719629.tmp: There is not enough space on the disk.
+--- FAIL: TestRoute_UserOwnProviderConfigPreserved (0.01s)
+    transport_route_test.go:225: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestRoute_UserOwnProviderConfigPreserved2992920018\001\.managed_config.toml.devoid-1392619963.tmp: There is not enough space on the disk.
+--- FAIL: TestUnassessedSourcesNamesTheCloudTier (0.00s)
+    unassessed_tier_test.go:61: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestUnassessedSourcesNamesTheCloudTier965782134\001\.requirements.toml.devoid-945032658.tmp: There is not enough space on the disk.
+--- FAIL: TestNamingTheUnassessedTierDoesNotMakeTheCompositionClean (0.00s)
+    unassessed_tier_test.go:91: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestNamingTheUnassessedTierDoesNotMakeTheCompositionClean838225582\001\.requirements.toml.devoid-2442739659.tmp: There is not enough space on the disk.
+--- FAIL: TestUnverifiedSourceIsNotTheWinningSource (0.01s)
+    unassessed_tier_test.go:132: ApplyAtomic: write C:\Users\Owner\AppData\Local\Temp\TestUnverifiedSourceIsNotTheWinningSource3278570352\001\.requirements.toml.devoid-624817184.tmp: There is not enough space on the disk.
+--- FAIL: TestUninstall_ForeignConfigPreservedByteExact (0.01s)
+    uninstall_test.go:39: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestUninstall_ForeignConfigPreservedByteExact1165093377\001\.managed_config.toml.devoid-3471760023.tmp: There is not enough space on the disk.
+--- FAIL: TestUninstall_Idempotent (0.01s)
+    uninstall_test.go:88: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestUninstall_Idempotent1650111270\001\.managed_config.toml.devoid-3079009557.tmp: There is not enough space on the disk.
+--- FAIL: TestUninstall_TrustAnchorRemoved (0.01s)
+    uninstall_test.go:118: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestUninstall_TrustAnchorRemoved733219605\001\.managed_config.toml.devoid-1202694594.tmp: There is not enough space on the disk.
+--- FAIL: TestUninstall_ConfigCreatedByInstallIsRemoved (0.01s)
+    uninstall_test.go:141: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestUninstall_ConfigCreatedByInstallIsRemoved397294759\001\.managed_config.toml.devoid-631928193.tmp: There is not enough space on the disk.
+--- FAIL: TestCleanEnumerationIsAMeasuredZeroNotNil (0.02s)
+    --- FAIL: TestCleanEnumerationIsAMeasuredZeroNotNil/a_fully_enumerable_user_config (0.01s)
+        unreadable_governance_wire_test.go:51: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestCleanEnumerationIsAMeasuredZeroNotNila_fully_enumerable_use2829268410\001\.managed_config.toml.devoid-2973115271.tmp: There is not enough space on the disk.
+--- FAIL: TestUnreadableTablesReachTheWireReport (0.01s)
+    unreadable_governance_wire_test.go:92: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestUnreadableTablesReachTheWireReport399496751\001\.managed_config.toml.devoid-1554261764.tmp: There is not enough space on the disk.
+--- FAIL: TestCleanEndpointRidesAMeasuredZeroOnTheWire (0.01s)
+    unreadable_governance_wire_test.go:134: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestCleanEndpointRidesAMeasuredZeroOnTheWire1038779872\001\.managed_config.toml.devoid-3562414715.tmp: There is not enough space on the disk.
+--- FAIL: TestUnenumeratedPathsStillReportAbsence (0.01s)
+    --- FAIL: TestUnenumeratedPathsStillReportAbsence/unknown_binary:_no_config_parse_was_performed (0.01s)
+        unreadable_governance_wire_test.go:160: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestUnenumeratedPathsStillReportAbsenceunknown_binary_no_confi3059159628\001\.managed_config.toml.devoid-4291134116.tmp: There is not enough space on the disk.
+--- FAIL: TestEveryWrittenVendorKeyIsAdjudicated (0.01s)
+    vendor_key_provenance_test.go:905: install (to render config.toml): write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestEveryWrittenVendorKeyIsAdjudicated1965996807\003\.managed_config.toml.devoid-2153349781.tmp: There is not enough space on the disk.
+--- FAIL: TestWrittenVendorKeysAreSourceBacked (0.00s)
+    vendor_key_provenance_test.go:980: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestWrittenVendorKeysAreSourceBacked648272864\001\.managed_config.toml.devoid-1643482605.tmp: There is not enough space on the disk.
+--- FAIL: TestOmittedVendorKeysAreActuallyOmitted (0.01s)
+    vendor_key_provenance_test.go:1039: install (to render config.toml): write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestOmittedVendorKeysAreActuallyOmitted2964231872\003\.managed_config.toml.devoid-2024623423.tmp: There is not enough space on the disk.
+--- FAIL: TestVendorKeyGateBitesOnAContradictedOmission (0.00s)
+    vendor_key_provenance_test.go:1251: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVendorKeyGateBitesOnAContradictedOmission4218353288\001\.managed_config.toml.devoid-1762787756.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_MachineHookSetDoesNotDefeatTheDialectGateBelowTheRuntimeFloor (0.01s)
+    verify_dialect_floor_test.go:52: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_MachineHookSetDoesNotDefeatTheDialectGateBelowTheRunt1887594340\001\.managed_config.toml.devoid-307226647.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_MachineHookSetStillDefeatsTheDialectGateAtTheRuntimeFloor (0.01s)
+    verify_dialect_floor_test.go:90: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_MachineHookSetStillDefeatsTheDialectGateAtTheRuntimeF3679120710\001\.managed_config.toml.devoid-2285188727.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_UnreadablePinDoesNotSwapOneUnknownForAnother (0.01s)
+    verify_dialect_floor_test.go:123: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_UnreadablePinDoesNotSwapOneUnknownForAnother262657168\001\.managed_config.toml.devoid-1251771126.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_ConfirmedPinStillOverwritesTheDialectUnknown (0.01s)
+    verify_dialect_floor_test.go:153: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_ConfirmedPinStillOverwritesTheDialectUnknown2033833147\001\.managed_config.toml.devoid-766905481.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_UnpinnedMachineHookSetAttributesTheLaneOnTheRow (0.01s)
+    verify_dialect_floor_test.go:176: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_UnpinnedMachineHookSetAttributesTheLaneOnTheRow1911899421\001\.managed_config.toml.devoid-2240312741.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_UnmodelledPinShapeNamesTheLaneOnTheRow (0.01s)
+    verify_dialect_floor_test.go:207: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_UnmodelledPinShapeNamesTheLaneOnTheRow2447869126\001\.managed_config.toml.devoid-1007200218.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_NoMachineBaselineLeavesTheRowUnattributed (0.01s)
+    verify_dialect_floor_test.go:230: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_NoMachineBaselineLeavesTheRowUnattributed4022102340\001\.managed_config.toml.devoid-1594881652.tmp: There is not enough space on the disk.
+--- FAIL: TestFixtureVersionIsGenuinelyOutsideEveryDialect (0.01s)
+    verify_dialect_precedence_test.go:70: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestFixtureVersionIsGenuinelyOutsideEveryDialect982685247\001\.managed_config.toml.devoid-1177395983.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_MachineGovernedHookLaneSurvivesAnUnverifiedDialect (0.01s)
+    verify_dialect_precedence_test.go:86: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_MachineGovernedHookLaneSurvivesAnUnverifiedDialect3580074060\001\.managed_config.toml.devoid-2178660120.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_MachineHookSetWithoutThePinStillDefeatsTheDialectGate (0.01s)
+    verify_dialect_precedence_test.go:133: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_MachineHookSetWithoutThePinStillDefeatsTheDialectGate961137140\001\.managed_config.toml.devoid-2266146471.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_UnverifiedDialectWithNoMachineHookSetStaysRed (0.01s)
+    verify_dialect_precedence_test.go:175: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_UnverifiedDialectWithNoMachineHookSetStaysRed11031644\001\.managed_config.toml.devoid-1894791004.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_UnresolvableMachineHookSetDoesNotRescueTheDialect (0.01s)
+    verify_dialect_precedence_test.go:198: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_UnresolvableMachineHookSetDoesNotRescueTheDialect462443280\001\.managed_config.toml.devoid-3328023354.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_SuppressedRowIsAdmittedEvenAfterTheDialectGateTouchedIt (0.01s)
+    verify_dialect_precedence_test.go:229: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_SuppressedRowIsAdmittedEvenAfterTheDialectGateTouched3194824375\001\.managed_config.toml.devoid-4017342087.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_UnmodelledPinShapeDoesNotClaimTheUserLaneIsSuperseded (0.01s)
+    verify_dialect_precedence_test.go:268: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_UnmodelledPinShapeDoesNotClaimTheUserLaneIsSuperseded3346121324\001\.managed_config.toml.devoid-847625564.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_MachineLaneDoesNotAbsorbABrokenUserLedger (0.01s)
+    verify_dialect_precedence_test.go:315: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_MachineLaneDoesNotAbsorbABrokenUserLedger3029595735\001\.managed_config.toml.devoid-2336256426.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_MachineBaselineWithDeVoidHookSet_HookLaneIsGovernedNotDrifted (0.01s)
+    verify_machine_hook_lane_test.go:66: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_MachineBaselineWithDeVoidHookSet_HookLaneIsGovernedNo3914583452\001\.managed_config.toml.devoid-3892247971.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_PinWithNoMachineHookSet_StaysSuppressed (0.01s)
+    verify_machine_hook_lane_test.go:98: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_PinWithNoMachineHookSet_StaysSuppressed664793234\001\.managed_config.toml.devoid-797767054.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_PinWithLegacyArgvMachineHookSet_StaysSuppressed (0.01s)
+    verify_machine_hook_lane_test.go:119: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_PinWithLegacyArgvMachineHookSet_StaysSuppressed722732090\001\.managed_config.toml.devoid-564062072.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_PinWithUnresolvableMachineHookSet_StaysSuppressed (0.01s)
+    verify_machine_hook_lane_test.go:156: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_PinWithUnresolvableMachineHookSet_StaysSuppressed3528164716\001\.managed_config.toml.devoid-2439195211.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_PinWithPartialMachineHookSet_GovernsOnlyTheCoveredRequirement (0.01s)
+    verify_machine_hook_lane_test.go:178: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_PinWithPartialMachineHookSet_GovernsOnlyTheCoveredReq547637909\001\.managed_config.toml.devoid-102748210.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_MachineBaselineManagedOnly_UserScopeHookLaneIsNotGoverned (0.01s)
+    verify_managed_only_test.go:82: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_MachineBaselineManagedOnly_UserScopeHookLaneIsNotGove417520077\001\.managed_config.toml.devoid-4210946844.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_MachineBaselineWithoutTheePin_UserScopeHookLaneStaysGoverned (0.01s)
+    verify_managed_only_test.go:117: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_MachineBaselineWithoutTheePin_UserScopeHookLaneStaysG2490285642\001\.managed_config.toml.devoid-64246425.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_NoMachineLayout_UserScopeHookLaneStaysGoverned (0.01s)
+    verify_managed_only_test.go:157: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_NoMachineLayout_UserScopeHookLaneStaysGoverned4047830590\001\.managed_config.toml.devoid-3491625660.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_MachineRootWithNoBaseline_UserScopeHookLaneStaysGoverned (0.01s)
+    verify_managed_only_test.go:173: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_MachineRootWithNoBaseline_UserScopeHookLaneStaysGover2668895715\001\.managed_config.toml.devoid-2863187851.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_UnreadableMachineBaseline_DoesNotClaimTheUserLaneRuns (0.02s)
+    --- FAIL: TestVerify_UnreadableMachineBaseline_DoesNotClaimTheUserLaneRuns/requirements.toml_is_a_DIRECTORY (0.01s)
+        verify_managed_only_test.go:213: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_UnreadableMachineBaseline_DoesNotClaimTheUserLaneRuns1265860099\001\.managed_config.toml.devoid-3980203684.tmp: There is not enough space on the disk.
+    --- FAIL: TestVerify_UnreadableMachineBaseline_DoesNotClaimTheUserLaneRuns/requirements.toml_will_not_parse (0.01s)
+        verify_managed_only_test.go:213: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_UnreadableMachineBaseline_DoesNotClaimTheUserLaneRuns2940380362\001\.managed_config.toml.devoid-256568400.tmp: There is not enough space on the disk.
+    --- FAIL: TestVerify_UnreadableMachineBaseline_DoesNotClaimTheUserLaneRuns/allow_managed_hooks_only_present_but_not_a_bool (0.01s)
+        verify_managed_only_test.go:213: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_UnreadableMachineBaseline_DoesNotClaimTheUserLaneRuns4255445495\001\.managed_config.toml.devoid-1508936913.tmp: There is not enough space on the disk.
+--- FAIL: TestUnverifiedDialectIsNotCoverage (0.01s)
+    verify_safeguards_coverage_test.go:138: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestUnverifiedDialectIsNotCoverage3989515203\001\.managed_config.toml.devoid-3418312935.tmp: There is not enough space on the disk.
+--- FAIL: TestShippedScenarioIndexRecordsWhatTheClassifierProduces (0.02s)
+    verify_safeguards_coverage_test.go:236: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestShippedScenarioIndexRecordsWhatTheClassifierProduces3286719981\001\.managed_config.toml.devoid-933463123.tmp: There is not enough space on the disk.
+--- FAIL: TestConfirmedDialectIsCoverage (0.01s)
+    verify_safeguards_coverage_test.go:272: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestConfirmedDialectIsCoverage1797538718\001\.managed_config.toml.devoid-2991919580.tmp: There is not enough space on the disk.
+--- FAIL: TestInstallTimeIsNeverCoverage (0.01s)
+    verify_safeguards_coverage_test.go:308: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestInstallTimeIsNeverCoverage373432109\001\.managed_config.toml.devoid-3642450521.tmp: There is not enough space on the disk.
+--- FAIL: TestSafeguardsCoverageIDSetIsTheClassifiersOwn (0.01s)
+    verify_safeguards_coverage_test.go:368: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestSafeguardsCoverageIDSetIsTheClassifiersOwn1331951273\001\.managed_config.toml.devoid-148722075.tmp: There is not enough space on the disk.
+--- FAIL: TestSafeguardsCoverageAdmitsTheClientVersionsTheProbeReturns (0.01s)
+    verify_safeguards_coverage_test.go:397: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestSafeguardsCoverageAdmitsTheClientVersionsTheProbeReturns1201850986\001\.managed_config.toml.devoid-3780522669.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_W4CompleteHomeCompliant (0.01s)
+    verify_test.go:125: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_W4CompleteHomeCompliant1260790708\001\.managed_config.toml.devoid-4107647339.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_DivergedOnW4CompleteHome (0.01s)
+    verify_test.go:184: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_DivergedOnW4CompleteHome1903481527\001\.managed_config.toml.devoid-3228003504.tmp: There is not enough space on the disk.
+--- FAIL: TestVerify_TrustHashOverlay (0.01s)
+    verify_test.go:225: install: write managed_config.toml: write C:\Users\Owner\AppData\Local\Temp\TestVerify_TrustHashOverlay3554048032\001\.managed_config.toml.devoid-1138973418.tmp: There is not enough space on the disk.
+--- FAIL: TestDiscoveryRefusesAMalformedOrOversizeManifest (0.07s)
+    --- FAIL: TestDiscoveryRefusesAMalformedOrOversizeManifest/oversize (0.00s)
+        version_discovery_test.go:171: write C:\Users\Owner\AppData\Local\Temp\TestDiscoveryRefusesAMalformedOrOversizeManifestoversize4271296476\001\package.json: There is not enough space on the disk.
+FAIL
+FAIL	github.com/codefense/cli-wrapper/internal/codexmanaged	19.855s
+FAIL
+test_rc=1
