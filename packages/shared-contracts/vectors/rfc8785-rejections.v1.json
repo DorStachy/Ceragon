@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "profile": "Ceragon strict UTF-8 JCS ingestion: RFC 8785/I-JSON plus mandatory safe-integral-value policy",
+  "cases": [
+    { "name": "literal duplicate property", "utf8": "{\"a\":1,\"a\":2}", "code": "DUPLICATE_PROPERTY" },
+    { "name": "escape-equivalent duplicate property", "utf8": "{\"a\":1,\"\\u0061\":2}", "code": "DUPLICATE_PROPERTY" },
+    { "name": "surrogate-pair-equivalent duplicate property", "utf8": "{\"😀\":1,\"\\ud83d\\ude00\":2}", "code": "DUPLICATE_PROPERTY" },
+    { "name": "raw minus zero", "utf8": "-0", "code": "NEGATIVE_ZERO" },
+    { "name": "fractional spelling of minus zero", "utf8": "-0.0", "code": "NEGATIVE_ZERO" },
+    { "name": "exponent spelling of minus zero", "utf8": "-0e+10", "code": "NEGATIVE_ZERO" },
+    { "name": "unsafe positive integer", "utf8": "9007199254740992", "code": "UNSAFE_INTEGER", "basis": "CERAGON_SAFE_INTEGER_POLICY" },
+    { "name": "unsafe negative integer", "utf8": "-9007199254740992", "code": "UNSAFE_INTEGER", "basis": "CERAGON_SAFE_INTEGER_POLICY" },
+    { "name": "unsafe integral exponent", "utf8": "9.007199254740992e15", "code": "UNSAFE_INTEGER", "basis": "CERAGON_SAFE_INTEGER_POLICY" },
+    { "name": "number outside binary64 range", "utf8": "1e400", "code": "NON_FINITE_NUMBER" },
+    { "name": "lone high surrogate escape", "utf8": "{\"x\":\"\\ud800\"}", "code": "LONE_SURROGATE" },
+    { "name": "lone low surrogate escape", "utf8": "{\"x\":\"\\udc00\"}", "code": "LONE_SURROGATE" },
+    { "name": "reversed surrogate escapes", "utf8": "{\"x\":\"\\udc00\\ud800\"}", "code": "LONE_SURROGATE" },
+    { "name": "raw BMP noncharacter", "hex": "7b2278223a22efb790227d", "code": "NONCHARACTER" },
+    { "name": "escaped BMP plane-end noncharacter", "utf8": "{\"x\":\"\\uffff\"}", "code": "NONCHARACTER" },
+    { "name": "escaped supplementary plane-end noncharacter", "utf8": "{\"x\":\"\\ud83f\\udffe\"}", "code": "NONCHARACTER" },
+    { "name": "escaped noncharacter member name", "utf8": "{\"\\ufdd0\":true}", "code": "NONCHARACTER" },
+    { "name": "leading BOM", "hex": "efbbbf7b7d", "code": "BOM_NOT_ALLOWED" },
+    { "name": "invalid UTF-8 continuation", "hex": "7b2278223a22c328227d", "code": "INVALID_UTF8" },
+    { "name": "overlong UTF-8", "hex": "7b2278223a22c0af227d", "code": "INVALID_UTF8" },
+    { "name": "UTF-8 encoded surrogate", "hex": "7b2278223a22eda080227d", "code": "INVALID_UTF8" },
+    { "name": "trailing token", "utf8": "{}[]", "code": "SYNTAX_ERROR" },
+    { "name": "unescaped control", "hex": "7b2278223a220a227d", "code": "SYNTAX_ERROR" }
+  ]
+}

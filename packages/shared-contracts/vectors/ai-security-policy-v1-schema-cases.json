@@ -1,0 +1,511 @@
+{
+  "contractVersion": 1,
+  "baseDocuments": {
+    "legacy": {
+      "evidenceMode": "HASH_ONLY",
+      "blockedProviders": ["openai"],
+      "toleratedProviders": ["anthropic"],
+      "dlp": {
+        "enabled": true,
+        "blockClasses": ["private-key", "aws-secret-key"],
+        "redactClasses": ["aws-access-key"],
+        "warnClasses": ["high-entropy"]
+      },
+      "updatedAt": "2026-07-16T00:00:00.000Z"
+    },
+    "effective": {
+      "evidenceMode": "HASH_ONLY",
+      "siteId": "site-1",
+      "blockedProviders": ["openai"],
+      "toleratedProviders": ["anthropic"],
+      "providers": {
+        "blocked": ["openai"],
+        "tolerated": ["anthropic"]
+      },
+      "dlp": {
+        "enabled": true,
+        "actions": {
+          "private-key": "block",
+          "aws-secret-key": "warn",
+          "aws-access-key": "redact",
+          "gcp-key": "redact",
+          "azure-key": "warn",
+          "generic-api-key": "redact",
+          "jwt": "redact",
+          "slack-token": "redact",
+          "github-token": "redact",
+          "internal-url": "redact",
+          "openai-key": "redact",
+          "anthropic-key": "redact",
+          "stripe-live": "redact",
+          "slack-webhook": "redact",
+          "sendgrid-key": "redact",
+          "twilio-key": "redact",
+          "npm-token": "redact",
+          "pypi-token": "redact",
+          "gitlab-token": "redact",
+          "google-oauth-secret": "redact",
+          "high-entropy": "warn",
+          "kubeconfig": "warn",
+          "db-connection-string": "redact",
+          "aws-credential-pair": "block",
+          "gcp-service-account": "block",
+          "azure-connection-string": "redact",
+          "bearer-auth-token": "warn",
+          "payment-card": "redact",
+          "iban": "redact",
+          "national-id": "warn"
+        },
+        "blockClasses": ["private-key", "aws-secret-key"],
+        "redactClasses": ["aws-access-key"],
+        "warnClasses": ["high-entropy"]
+      },
+      "promptRisk": {
+        "enabled": true,
+        "actions": {
+          "injection-instruction-override": "warn",
+          "injection-system-exfil": "warn",
+          "injection-role-marker": "warn",
+          "injection-obfuscation-unicode": "warn",
+          "injection-encoded-payload": "warn",
+          "jailbreak-persona": "warn",
+          "jailbreak-restriction-removal": "warn",
+          "jailbreak-role-reassign": "warn",
+          "injection-credential-exfil": "warn",
+          "injection-authority-escalation": "warn",
+          "injection-decoded-payload": "warn",
+          "ingress-tool-instruction-injection": "warn",
+          "ingress-exfil-instruction": "warn",
+          "ingress-sensitive-path-read": "warn",
+          "injection-override-exfil": "block",
+          "jailbreak-persona-unrestricted": "block",
+          "injection-override-credexfil": "block",
+          "ingress-secret-exfil-combo": "block"
+        }
+      },
+      "exclusions": {
+        "allow": [],
+        "block": [],
+        "patterns": []
+      },
+      "mcp": {
+        "enabled": true,
+        "autoEnforce": false
+      },
+      "uploads": {
+        "files": "warn",
+        "images": "warn",
+        "blockAllImages": false,
+        "maxSizeKb": 5120
+      },
+      "paths": {
+        "blocked": [],
+        "allowed": []
+      },
+      "agents": {
+        "allowed": [],
+        "mode": "",
+        "enforcementTier": "detect"
+      },
+      "egress": {
+        "mode": "",
+        "allowed": [],
+        "blocked": [],
+        "includeDefaults": true
+      },
+      "proxy": {
+        "failMode": "closed"
+      },
+      "ingress": {
+        "enabled": true,
+        "actions": {
+          "ingress-exfil-instruction": "redact"
+        },
+        "taintHold": true
+      },
+      "updatedAt": "2026-07-16T00:00:00.000Z"
+    }
+  },
+  "validationCases": [
+    {
+      "id": "STRICT-V1-EMPTY-UPDATE",
+      "schema": "strict-write",
+      "valid": true,
+      "document": {}
+    },
+    {
+      "id": "STRICT-V1-COMPLETE-SECTIONS-WITH-DRIFT-FIELDS",
+      "schema": "strict-write",
+      "valid": true,
+      "document": {
+        "dlp": {
+          "enabled": true,
+          "actions": {
+            "private-key": "block",
+            "aws-credential-pair": "block"
+          }
+        },
+        "promptRisk": {
+          "enabled": true,
+          "actions": {
+            "injection-override-exfil": "block",
+            "injection-authority-escalation": "warn"
+          },
+          "obfuscationEscalates": false
+        },
+        "providers": {
+          "blocked": ["openai"],
+          "tolerated": ["anthropic"]
+        },
+        "exclusions": {
+          "allow": ["test-key"],
+          "block": ["prod-key"],
+          "patterns": [
+            {
+              "prefix": "sk-test-",
+              "suffix": "",
+              "action": "allow"
+            }
+          ]
+        },
+        "mcp": {
+          "enabled": true,
+          "autoEnforce": false
+        },
+        "uploads": {
+          "files": "warn",
+          "images": "block",
+          "blockAllImages": true,
+          "maxSizeKb": 1048576
+        },
+        "paths": {
+          "blocked": [".env"],
+          "allowed": ["README.md"]
+        },
+        "agents": {
+          "allowed": ["codex"],
+          "mode": "enforce",
+          "enforcementTier": "strict"
+        },
+        "egress": {
+          "mode": "monitor",
+          "allowed": ["api.openai.com"],
+          "blocked": ["example.invalid"],
+          "includeDefaults": true
+        },
+        "proxy": {
+          "failMode": "closed"
+        },
+        "ingress": {
+          "enabled": true,
+          "actions": {
+            "future-ingress-class": "hold",
+            "ingress-secret-exfil-combo": "redact"
+          },
+          "taintHold": true
+        }
+      }
+    },
+    {
+      "id": "STRICT-V1-EMPTY-INGRESS-DELETES-OVERRIDE",
+      "schema": "strict-write",
+      "valid": true,
+      "document": {
+        "ingress": {}
+      }
+    },
+    {
+      "id": "STRICT-V1-EXPLICIT-NULL-SECTION",
+      "schema": "strict-write",
+      "valid": false,
+      "document": {
+        "ingress": null
+      }
+    },
+    {
+      "id": "STRICT-V1-INCOMPLETE-SUPPLIED-SECTION",
+      "schema": "strict-write",
+      "valid": false,
+      "document": {
+        "providers": {
+          "blocked": []
+        }
+      }
+    },
+    {
+      "id": "STRICT-V1-UNKNOWN-DLP-CLASS",
+      "schema": "strict-write",
+      "valid": false,
+      "document": {
+        "dlp": {
+          "enabled": true,
+          "actions": {
+            "future-secret": "block"
+          }
+        }
+      }
+    },
+    {
+      "id": "STRICT-V1-UNKNOWN-PROMPT-CLASS",
+      "schema": "strict-write",
+      "valid": false,
+      "document": {
+        "promptRisk": {
+          "enabled": true,
+          "actions": {
+            "future-prompt-class": "block"
+          }
+        }
+      }
+    },
+    {
+      "id": "STRICT-V1-UNKNOWN-NESTED-FIELD",
+      "schema": "strict-write",
+      "valid": false,
+      "document": {
+        "proxy": {
+          "failMode": "closed",
+          "futureField": true
+        }
+      }
+    },
+    {
+      "id": "TOLERANT-V1-LEGACY-BRANCH",
+      "schema": "tolerant-read",
+      "valid": true,
+      "documentRef": "legacy"
+    },
+    {
+      "id": "TOLERANT-V1-LEGACY-FORWARD-ADDITION",
+      "schema": "tolerant-read",
+      "valid": true,
+      "documentRef": "legacy",
+      "operations": [
+        {
+          "op": "replace",
+          "path": "/evidenceMode",
+          "value": "FUTURE_EVIDENCE_MODE"
+        },
+        {
+          "op": "add",
+          "path": "/futureTopLevel",
+          "value": {
+            "enabled": true
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dlp/futureNested",
+          "value": 7
+        },
+        {
+          "op": "add",
+          "path": "/dlp/blockClasses/-",
+          "value": "future-dlp-class"
+        }
+      ]
+    },
+    {
+      "id": "TOLERANT-V1-EFFECTIVE-BRANCH",
+      "schema": "tolerant-read",
+      "valid": true,
+      "documentRef": "effective"
+    },
+    {
+      "id": "TOLERANT-V1-TEAM-METADATA-ATOMIC",
+      "schema": "tolerant-read",
+      "valid": true,
+      "documentRef": "effective",
+      "operations": [
+        { "op": "add", "path": "/resolvedScope", "value": "team" },
+        { "op": "add", "path": "/teamId", "value": "team-1" },
+        { "op": "add", "path": "/appliedProfileId", "value": null },
+        { "op": "add", "path": "/effective", "value": true }
+      ]
+    },
+    {
+      "id": "TOLERANT-V1-FORWARD-ADDITIVE-AND-ENUM-DEGRADED",
+      "schema": "tolerant-read",
+      "valid": true,
+      "documentRef": "effective",
+      "operations": [
+        { "op": "replace", "path": "/evidenceMode", "value": "FUTURE_MODE" },
+        { "op": "replace", "path": "/dlp/actions/private-key", "value": "future-action" },
+        { "op": "add", "path": "/dlp/actions/future-secret-class", "value": "future-action" },
+        { "op": "add", "path": "/dlp/futureNested", "value": { "v": 2 } },
+        { "op": "replace", "path": "/promptRisk/actions/injection-system-exfil", "value": "future-action" },
+        { "op": "add", "path": "/promptRisk/actions/future-prompt-class", "value": "future-action" },
+        { "op": "replace", "path": "/uploads/files", "value": "future-upload-action" },
+        { "op": "replace", "path": "/agents/mode", "value": "future-mode" },
+        { "op": "replace", "path": "/agents/enforcementTier", "value": "future-tier" },
+        { "op": "replace", "path": "/proxy/failMode", "value": "future-fail-mode" },
+        { "op": "add", "path": "/ingress/actions/future-ingress-class", "value": "future-action" },
+        { "op": "add", "path": "/futureTopLevel", "value": [1, 2, 3] }
+      ]
+    },
+    {
+      "id": "TOLERANT-V1-PARTIAL-TEAM-METADATA",
+      "schema": "tolerant-read",
+      "valid": false,
+      "documentRef": "effective",
+      "operations": [
+        { "op": "add", "path": "/resolvedScope", "value": "team" }
+      ]
+    },
+    {
+      "id": "TOLERANT-V1-EFFECTIVE-MUST-BE-TRUE",
+      "schema": "tolerant-read",
+      "valid": false,
+      "documentRef": "effective",
+      "operations": [
+        { "op": "add", "path": "/resolvedScope", "value": "team" },
+        { "op": "add", "path": "/teamId", "value": null },
+        { "op": "add", "path": "/appliedProfileId", "value": null },
+        { "op": "add", "path": "/effective", "value": false }
+      ]
+    },
+    {
+      "id": "TOLERANT-V1-KNOWN-FIELD-WRONG-TYPE",
+      "schema": "tolerant-read",
+      "valid": false,
+      "documentRef": "effective",
+      "operations": [
+        { "op": "replace", "path": "/agents/enforcementTier", "value": 3 }
+      ]
+    },
+    {
+      "id": "TOLERANT-V1-MISSING-FULL-SECTION",
+      "schema": "tolerant-read",
+      "valid": false,
+      "documentRef": "effective",
+      "operations": [
+        { "op": "remove", "path": "/proxy" }
+      ]
+    },
+    {
+      "id": "TOLERANT-V1-MISSING-CURRENT-ACTION-KEY",
+      "schema": "tolerant-read",
+      "valid": false,
+      "documentRef": "effective",
+      "operations": [
+        { "op": "remove", "path": "/dlp/actions/private-key" }
+      ]
+    }
+  ],
+  "semanticOnlyRules": [
+    {
+      "id": "SEM-V1-PROVIDERS-DISJOINT",
+      "schemaDisposition": "valid-requires-service-semantic-check",
+      "serviceOutcome": "reject",
+      "reason": "Draft-07 cannot compare values across sibling arrays without non-portable extensions.",
+      "fixture": {
+        "update": {
+          "providers": {
+            "blocked": ["openai"],
+            "tolerated": ["openai"]
+          }
+        }
+      }
+    },
+    {
+      "id": "SEM-V1-EXCLUSIONS-DISJOINT",
+      "schemaDisposition": "valid-requires-service-semantic-check",
+      "serviceOutcome": "reject",
+      "reason": "Draft-07 cannot compare literals across the allow and block arrays.",
+      "fixture": {
+        "update": {
+          "exclusions": {
+            "allow": ["same-literal"],
+            "block": ["same-literal"],
+            "patterns": []
+          }
+        }
+      }
+    },
+    {
+      "id": "SEM-V1-PATTERN-ACTION-UNIQUE",
+      "schemaDisposition": "valid-requires-service-semantic-check",
+      "serviceOutcome": "reject-conflicting-actions",
+      "reason": "Uniqueness is over the prefix/suffix projection, not complete JSON item equality.",
+      "fixture": {
+        "update": {
+          "exclusions": {
+            "allow": [],
+            "block": [],
+            "patterns": [
+              { "prefix": "sk-", "suffix": "-test", "action": "allow" },
+              { "prefix": "sk-", "suffix": "-test", "action": "block" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "SEM-V1-SECTION-MERGE",
+      "schemaDisposition": "valid-requires-service-semantic-check",
+      "serviceOutcome": "merge-dlp-actions-retain-omitted-sections",
+      "reason": "A schema validates one document and cannot apply the deployed merge algorithm to a base policy.",
+      "fixture": {
+        "baseExcerpt": {
+          "dlp": {
+            "enabled": true,
+            "actions": {
+              "private-key": "block",
+              "aws-secret-key": "block"
+            }
+          },
+          "proxy": {
+            "failMode": "closed"
+          }
+        },
+        "update": {
+          "dlp": {
+            "enabled": false,
+            "actions": {
+              "private-key": "warn"
+            }
+          }
+        },
+        "expectedExcerpt": {
+          "dlp": {
+            "enabled": false,
+            "actions": {
+              "private-key": "warn",
+              "aws-secret-key": "block"
+            }
+          },
+          "proxy": {
+            "failMode": "closed"
+          }
+        }
+      }
+    },
+    {
+      "id": "SEM-V1-OMISSION-DEFAULTS",
+      "schemaDisposition": "valid-requires-service-semantic-check",
+      "serviceOutcome": "normalize-default-on-and-detect",
+      "reason": "Defaulting and empty-ingress deletion are evaluator/write semantics, not structural validation.",
+      "fixture": {
+        "update": {
+          "promptRisk": {
+            "enabled": true,
+            "actions": {}
+          },
+          "agents": {
+            "allowed": [],
+            "mode": "monitor"
+          },
+          "ingress": {}
+        },
+        "expectedSemantics": {
+          "promptRisk.obfuscationEscalates": true,
+          "agents.enforcementTier": "detect",
+          "ingress.enabled": true,
+          "ingress.taintHold": true,
+          "ingress.actionForUnlistedClass": "redact",
+          "ingress.builtInClassOverrides.ingress-exfil-verb": "warn"
+        }
+      }
+    }
+  ]
+}

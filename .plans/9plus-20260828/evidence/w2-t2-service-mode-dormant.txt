@@ -1,0 +1,191 @@
+W2 Task 2 — "Give devoid-daemon.exe an SCM service mode that is dormant until registered"
+Branch p9/w2-t2-scm-service-mode, off Installers origin/main 65838b91 (W2 T1 / PR #196 edc1db07 is an ancestor).
+Captured 2026-08-29 on the owner's Windows 11 box. Times are local.
+
+================================================================================
+1. THE DORMANCY PROOF — the built binaries, run outside SCM, behave identically
+================================================================================
+
+Built the PRE-change launcher from the base commit (65838b91:cmd/devoid-daemon/main_windows.go,
+stdlib-only, built in a scratch module) and the POST-change binary from HEAD, both with the
+shipping ldflags:
+
+    GOOS=windows go build -ldflags "-s -w -H windowsgui -X main.version=7.10.9-w2t2" \
+      -o devoid-daemon.exe ./cmd/devoid-daemon
+
+Both were placed in a directory containing NO devoid.exe, so the launcher's exec target is
+absent by design and no daemon can start. Every argument shape, both binaries:
+
+    args=[]                   old_exit=1 new_exit=1  SAME
+    args=[service]            old_exit=2 new_exit=2  SAME
+    args=[doctor]             old_exit=2 new_exit=2  SAME
+    args=[ai reconcile]       old_exit=1 new_exit=1  SAME
+    args=[ai reconcile extra] old_exit=2 new_exit=2  SAME
+    args=[--help]             old_exit=2 new_exit=2  SAME
+
+Reading: exit 1 on the two ACCEPTED shapes means both binaries reached runLauncher and tried to
+exec the absent devoid.exe. Exit 2 on the rejected shapes means childArgs rejected them
+identically. `service` is exit 2 on BOTH — the marker argument is not a detector and a process
+SCM did not start is still refused.
+
+WHY THE NEW CODE PATH CANNOT BE REACHED ON AN ENDPOINT (three independent reasons):
+
+  1. svc.IsWindowsService() is the only detector. Its implementation
+     (golang.org/x/sys@v0.38.0/windows/svc/security.go:66-98) returns true only when the
+     process's OWN parent has SessionID == 0 AND is named services.exe. The fleet launches this
+     binary from an ONSTART scheduled task, whose parent is the Task Scheduler's svchost.exe —
+     it fails the name test. No argument, environment variable or registry value participates.
+  2. ANY detector error takes the launcher path (chooseStartupMode).
+  3. Even a wrong "yes" cannot stop the daemon: if svc.Run returns
+     ERROR_FAILED_SERVICE_CONTROLLER_CONNECT (1063), main() falls through to runLauncher instead
+     of exiting. This is defence in depth beyond what the task asked for, and it exists because
+     the failure it covers is a silent fleet-wide daemon outage.
+
+Live assertion in-process (go test, whose parent is not services.exe):
+
+    --- PASS: TestServiceModeIsDormantWithoutSCM (0.03s)     # not skipped: the detector
+                                                             # returned (false, nil) here
+
+NOTHING WAS REGISTERED, STARTED, STOPPED OR DELETED AS A SERVICE ON THIS MACHINE. No sc.exe,
+no mgr.CreateService, no psexec. Nothing was written under %ProgramData%.
+
+================================================================================
+2. THE CI LANDMINE (defeat test 3), measured
+================================================================================
+
+cmd/devoid-daemon holds only _windows.go files today, so `go build ./...` on ubuntu SKIPS the
+package. The first build-tag-free file added to it turns that skip into a link failure. Measured
+by adding a scratch untagged file to the package:
+
+    WITH cmd/devoid-daemon/main_other.go:
+      $ GOOS=linux go build ./...        -> silent, EXIT=0
+    WITHOUT it (same scratch file present):
+      $ GOOS=linux go build ./...
+      # github.com/codefense/cli-wrapper/cmd/devoid-daemon
+      runtime.main_main*f: function main is undeclared in the main package
+      EXIT=1
+
+DEVIATION FROM THE SPEC, stated plainly: the spec's defeat test 3 is `git rm main_other.go` and
+then `GOOS=linux go build ./...`. With the prescribed final file layout that mutation does NOT
+reproduce the error, because the pure decision lives in internal/daemonsupervise and
+cmd/devoid-daemon therefore has no other untagged file — removing main_other.go just returns the
+package to being skipped, and the build stays green. The scratch untagged file above is what makes
+the mutation meaningful, and it reproduces the exact predicted string.
+
+================================================================================
+3. DEFEAT TESTS — every one went RED with its designed string, then GREEN on revert
+================================================================================
+
+DEFEAT 1 (spec) — an unclear detector must never take the service path.
+  Mutation: chooseStartupMode -> `isService, _ := detectWindowsService()`, error arm removed.
+  (The spec's one-line mutation alone is a compile error — `err` becomes undefined — so the
+  now-dead error arm has to go with it.)
+    --- FAIL: TestServiceModeDetectionFallsBackToLauncherOnError/service,_but_the_detector_errored
+        main_windows_test.go:163: detectWindowsService()=(true,NtQuerySystemInformation: access denied):
+        detector error must take the launcher path, got service path
+
+DEFEAT 1a (the DORMANCY defeat) — chooseStartupMode -> unconditional `return modeService`.
+    --- FAIL: TestServiceModeIsDormantWithoutSCM (0.11s)
+        main_windows_test.go:116: chooseStartupMode() = 1 for a process SCM did not start,
+        want modeLauncher — service mode is not dormant
+
+DEFEAT 1b (LANDMINE 2) — detector swapped for an env-var reader. The dormancy test cannot see
+this, because the substituted detector agrees by accident in a test process. The seam pin does:
+    --- PASS: TestServiceModeIsDormantWithoutSCM
+    --- FAIL: TestDetectWindowsServiceSeamIsTheSCMDetector
+        main_windows_test.go:131: detectWindowsService is not svc.IsWindowsService — service mode
+        must be decided by the SCM's own signal, never by an argument, env var or registry value
+
+DEFEAT 2 (spec) — the no-second-listener invariant. Delete the `HealthyProbes > 0` arm from
+NextSupervisorAction.
+    --- FAIL: TestSupervisor_NeverSpawnsWhileAHealthyDaemonAnswers (0.02s)
+        supervise_test.go:91: healthyProbes=1 consecutiveFailures=2 portHeldByForeigner=false
+        childOwned=false restartsInWindow=0 nowZero=false: want Adopt|Wait, got Spawn
+
+DEFEAT — the foreign-holder rule. Delete the `PortHeldByForeigner` arm.
+    --- FAIL: TestSupervisor_DoesNotSpawnIntoAHeldPort (0.00s)
+        supervise_test.go:127: ... want GiveUpAndReport, never Spawn, got Wait
+
+DEFEAT — the restart cap. MaxSpawnsPerWindow 5 -> 50.
+    --- FAIL: TestSupervisor_StopsSpawningAfterCap (0.00s)
+        supervise_test.go:167: supervisor spawned 10 times inside 10m0s, cap is 50
+
+DEFEAT — the loop ignores the healthy verdict.
+    --- FAIL: TestServiceExecute_StopNeverTerminatesAnAdoptedDaemon
+        supervisor spawned 1 daemons beside a healthy one, want 0
+
+DEFEAT — the deferred stopChild disabled.
+    --- FAIL: TestServiceExecute_SpawnsOnceAndStopsOnlyItsOwnChild
+        supervisor stopped 0 children on STOP, want exactly 1 (the one it owns)
+
+DEFEAT — the give-up de-duplication removed.
+    --- FAIL: TestServiceExecute_NeverSpawnsIntoAHeldPort
+        supervisor emitted 8 give-up events over 8 ticks, want exactly 1
+
+Every mutation reverted; each file diffed IDENTICAL against its pre-mutation copy and both
+suites returned to ok.
+
+================================================================================
+4. SUITES RUN
+================================================================================
+
+  GOOS=linux go build ./...                                              EXIT 0  (pr-checks.yml:201)
+  go build ./...            (windows)                                    EXIT 0
+  go vet ./cmd/devoid-daemon/... ./internal/daemonsupervise/...           EXIT 0
+  GOOS=linux go vet ./internal/daemonsupervise/...                        EXIT 0
+  go test ./cmd/devoid-daemon/... -count=1                                ok 1.754s
+  go test ./internal/daemonsupervise/... -count=1                         ok 2.385s
+  go test ./internal/security/... -count=1                                ok 5.366s   (reached: RecordEvents)
+  go test ./internal/daemon/... -run 'OpenAI|Wire|Persistence|TaskInfo'   ok 3.439s   (pr-checks.yml:213, unwidened)
+  internal/envfallback                                                    no test files
+
+CI COVERAGE OF THE NEW TESTS:
+  - internal/daemonsupervise has NO build tag, so internal-candidate.yml's `go test ./...`
+    (ubuntu) runs all of it. Covered.
+  - cmd/devoid-daemon's tests are //go:build windows and cli-entrypoint-tests runs only
+    `go test ./cmd/devoid/...`. **Every test in cmd/devoid-daemon runs in NO CI job**, including
+    the dormancy proof. Green locally is their only signal. No leg was appended to pr-checks.yml
+    (contract: BOTH-owned, append-only, parent consolidates).
+  - `gh pr checks` reports nothing on this account — Actions is blocked org-wide.
+
+================================================================================
+5. THE PIDFILE DISCOVERY STEP — the premise does not hold, and it does not need to
+================================================================================
+
+The task asks whether a service-launched SYSTEM daemon and a task-launched SYSTEM daemon resolve
+secPaths.DaemonPIDPath to the same file, and says the whole no-second-listener argument rests on it.
+
+STATIC ANSWER: security.DefaultPaths (internal/security/paths.go:27-46) computes
+  DaemonPIDPath = os.UserHomeDir() + "/.devoid/daemon.pid"
+and on Windows os.UserHomeDir() reads %USERPROFILE%. Both launch contexts run as LocalSystem, whose
+profile is C:\Windows\system32\config\systemprofile, and a Windows service inherits the SYSTEM
+environment block just as an ONSTART SYSTEM task does. So they should resolve to the same file.
+
+NOT EXERCISED: proving it needs a process under LocalSystem in each context. The suggested method
+(psexec -s) INSTALLS A WINDOWS SERVICE, which this task is explicitly forbidden from doing on this
+machine, and registering the real service is Task 3. Left for Task 3, which is registering the
+service anyway.
+
+MORE IMPORTANT: the premise that the argument rests on the pidfile is wrong, and the source says
+so. internal/daemon/pidfile.go:24-31 — "The authoritative single-instance guard remains
+net.Listen(127.0.0.1:19280) in RunWithContext; this check merely gives a clean 'already running'
+message"; and again at :98 — "net.Listen(:19280) is the real mutex for a genuine double-start."
+The port bind is process- and profile-agnostic and cannot diverge between launch contexts, so
+even a diverged pidfile path could not produce two listeners. The supervisor adds two more
+barriers above it: it never spawns while a healthy daemon answers, and never spawns into a held
+port. A Global\ named mutex is therefore not required by this task.
+
+================================================================================
+6. NOT EXERCISED
+================================================================================
+
+- The named EXIT artifact (install the built devoid-daemon.exe over an existing endpoint, run
+  `schtasks /Run /TN "Devoid Daemon"`, diff /health before and after). Not run: it requires
+  installing over a real enrolled endpoint and starting the real daemon on this box. Section 1
+  is the strongest substitute available inside this task's prohibitions — the same two binaries,
+  the same argument shapes, identical exit codes, no daemon started.
+- Service mode itself has never run: nothing registers a devoid-daemon service (Task 3). svc.Run
+  has not been executed on this or any machine. The svc.Handler is exercised only through
+  Execute() driven with injected seams.
+- The 5 liveness keys and the uptime-only diff: not captured, same reason.
+- Cross-context DaemonPIDPath resolution under LocalSystem: see section 5.

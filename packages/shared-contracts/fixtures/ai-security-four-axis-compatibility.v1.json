@@ -1,0 +1,60 @@
+{
+  "format": "ceragon.ai-security.four-axis-compatibility",
+  "formatVersion": 1,
+  "productionV2WriterEnabled": false,
+  "productionHmacWriterEnabled": false,
+  "cases": [
+    {
+      "id": "adapter-expressed-runtime-unverified",
+      "wire": {
+        "requestedEffect": "deny-tool",
+        "adapterExpressedEffect": "deny-tool",
+        "translationDisposition": "EXPRESSED",
+        "observedActualEffect": null,
+        "actualEffectObserver": "NONE",
+        "governanceDisposition": "effect-expressed-runtime-unverified",
+        "securityOutcome": "UNKNOWN"
+      },
+      "receiptAssurance": "UNVERIFIED_LEGACY"
+    },
+    {
+      "id": "unsupported-original-action-proceeded",
+      "wire": {
+        "requestedEffect": "stop-continuation",
+        "adapterExpressedEffect": null,
+        "translationDisposition": "UNSUPPORTED_EFFECT",
+        "observedActualEffect": null,
+        "actualEffectObserver": "NONE",
+        "governanceDisposition": "effect-unsupported-original-action-proceeded",
+        "securityOutcome": "UNKNOWN"
+      },
+      "receiptAssurance": "UNVERIFIED_LEGACY"
+    },
+    {
+      "id": "translation-failed-original-action-proceeded",
+      "wire": {
+        "requestedEffect": "deny-tool",
+        "adapterExpressedEffect": null,
+        "translationDisposition": "TRANSLATION_FAILED",
+        "observedActualEffect": null,
+        "actualEffectObserver": "NONE",
+        "governanceDisposition": "translation-failed-original-action-proceeded",
+        "securityOutcome": "UNKNOWN"
+      },
+      "receiptAssurance": "UNVERIFIED_LEGACY"
+    },
+    {
+      "id": "runtime-acknowledged-outcome-still-unknown",
+      "wire": {
+        "requestedEffect": "deny-tool",
+        "adapterExpressedEffect": "deny-tool",
+        "translationDisposition": "EXPRESSED",
+        "observedActualEffect": "deny-tool",
+        "actualEffectObserver": "RUNTIME_ACK",
+        "governanceDisposition": "runtime-acknowledged-effect",
+        "securityOutcome": "UNKNOWN"
+      },
+      "receiptAssurance": "VERIFIED_ENDPOINT_REPORT"
+    }
+  ]
+}

@@ -42,31 +42,16 @@ finding against current `origin/main` and found **17 substantive errors in the r
 
 ## Rebase manifest
 
-Every line-level instruction in this plan was verified against these revisions. **If your `git fetch`
-disagrees with this table, the instructions below are invalid until revalidated** — that is a standing
-rule, not a courtesy. The 2026-08-27 disposition pass was handed a SHA list built from local
-checkouts and four of seven were stale; it caught the error by fetching first. Do the same.
+The generated authority is
+[`v2-waves/REBASE_MANIFEST.md`](v2-waves/REBASE_MANIFEST.md). Every `path:line` in this plan is a
+claim about `origin/main` at the SHA recorded there. Resolve citations with
+`git show origin/main:<path>`, never from the working tree. A SHA list handed to you by a task brief
+is not evidence; fetch all seven repositories first, regenerate the manifest, and re-resolve every
+citation in a repository whose `origin/main` moved.
 
-| Repository | `origin/main` @ 2026-08-27 | Moved since the review? |
-|---|---|---|
-| Backend | `0cf9021e` — **deployed as ECS task definition 322** | yes, from `787b71dc` |
-| Frontend | `cac574ae` — deployed as task definition 378 | yes, from `471658a7` |
-| Installers | `5b129523` — **agent 7.10.6 stable**, built from `9503094e` | yes, from `f29d6644` |
-| Static-Worker | `44d7aabb` | yes, from `e4c6069f` |
-| Sandbox-Worker | `2831997d` | yes, from `d68ee58d` |
-| GithubApp-Bot-Scanner-Worker | `3d4116a5` | **no — review findings are current** |
-| Ceragon-Intelligence | `deb70e64` | yes, from `08a58981` |
-
-`lastRebasedAt: 2026-08-28`
-
-⚠️ **This table drifted inside a single working session, and that is the point of the rule.** It was
-written on 2026-08-27 pinning Ceragon-Intelligence at `486d937b`. By 2026-08-28 `origin/main` was
-`deb70e64` — **5 commits, 36 files, +12,372 insertions, 31 of them under `fp-agent/`**, all marked
-`[skip ci]`. That is a coworker actively building an autonomous false-positive-review agent: the exact
-subject of Wave 6 Task 13, moving faster than the plan that inventories it.
-
-Their commits are theirs and are not held for this packet. But **anyone starting a wave re-runs the
-fetch and re-reads their own wave's citations first.** A wave file is a set of claims about a tree.
+`node ci/lib/rebase-manifest.mjs` is the standing guard. It fails if any manifest row differs from
+the live remote-tracking ref, branch, HEAD, or behind count. The manifest is generated and must never
+be hand-edited.
 
 ---
 
@@ -101,7 +86,8 @@ unavailable to us at any sample size.
 
 ### Which risk lanes this packet can certify
 
-**None of the five.** That belongs here in the goal statement, not in a footnote.
+**None of the five risk lanes can reach PASS from this packet.** That belongs here in the goal
+statement, not in a footnote.
 
 | Risk | State after this packet | The blocker that keeps it there |
 |---|---|---|
@@ -167,6 +153,30 @@ good value.
 `docs/superpowers/plans/2026-07-15-ai-security-detection-enforcement-master-plan.md:695-829`. Do not
 create a second table. Every budget quoted anywhere in this packet resolves there or it is not a
 budget.
+<!-- CLAIM-CONTRACT:FORBIDDEN:BEGIN -->
+### Claims this packet forbids
+
+The sole authority for a numeric product claim is a signed evidence certificate produced from a
+named build and corpus, reviewed under the release rubric, and no older than **90 days**.
+
+| ID | Forbidden claim | Named authority for removing the prohibition |
+|---|---|---|
+| FC-01 | Universal zero false positives | Signed precision certificate + release rubric |
+| FC-02 | All detections are high quality | Per-class recall/precision certificate |
+| FC-03 | Evasive attacks are comprehensively detected | Adaptive-evasion corpus certificate |
+| FC-04 | Prompt injection is high-assurance | Prompt-injection evaluation certificate |
+| FC-05 | All DLP classes are governed | Governed-vocabulary totality certificate |
+| FC-06 | A green scan proves no vulnerability exists | Scanner coverage/limitations statement |
+| FC-07 | Dangerous actions are prevented | Authoritative-checkpoint effectiveness certificate |
+| FC-08 | M4.7A is complete or Risks 1, 2, 4, and 5 are 9+/10 | Release rubric signed by the accountable reviewer |
+| FC-09 | A static corpus proves prompt-injection resistance | Adaptive-evaluation protocol |
+| FC-10 | One prompt-injection number represents every surface | Per-surface prompt certificate |
+| FC-11 | Safeguards exist merely because installation completed | Runtime safeguard-attestation certificate |
+| FC-12 | A canary result proves the evaluation was uncontaminated | Corpus custody and contamination audit |
+| FC-13 | Production false-positive performance is certified without independent review | Independent production-window adjudication |
+| FC-14 | A lexical or ML score alone is an enforcing decision | Enforcing-tier eligibility review |
+| FC-15 | Third-party validation exists without a named external assessor and report | Named external assessment report |
+<!-- CLAIM-CONTRACT:FORBIDDEN:END -->
 
 ---
 
@@ -489,7 +499,7 @@ is not a coverage fix, and this wave must not describe it as one.
 **The DLP catalog is generated, but from the wrong side.**
 `Backend/packages/shared-contracts/src/generated/ai-security-portable.generated.ts:54` holds
 `AI_DLP_CLASSES` — **30** entries, counted, from `private-key` to `national-id`. It is re-exported at
-`packages/shared-contracts/src/ai-governance-contract.ts:262`. Its header says
+`Backend/packages/shared-contracts/src/ai-governance-contract.ts:262`. Its header says
 `Regenerate with: npm run generate:ai-security-backend-consumer` and pins
 `AI_SECURITY_PORTABLE_SOURCE_COMMIT = "d366f5f8c76fac253d9adf7914873e97a955a16d"`.
 The producer registers **81**: `Installers/internal/dlp/registry.go:133` `classRegistry` = **33**
@@ -2184,8 +2194,9 @@ checker.
 `codeSecurityParityClasses` without regenerating. Expected failure text: the vector-stale message,
 naming `parity-vectors/dlp-classes.v1.json` and printing on-disk vs from-the-tables bodies, exactly as
 `Installers/internal/toolrisk/class_catalog_test.go:219-223` does for tool-risk.
-**Exit:** `parity-vectors/dlp-classes.v1.json` exists on `origin/main` with `classCount: 81` and a
-recorded `sha256`. Record the digest in this plan when it is generated — it is the value Task 6 and
+**Exit:** `parity-vectors/dlp-classes.v1.json` exists on `origin/main` with `classCount: 81` and
+`sha256:6dd17f98d86eac0260e03abba61a06532d1a9c69c2ff81b059e4500ac2aebac6` (generated and locally
+green on 2026-08-29). This is the value Task 6 and
 the certificate's `system.detectorCatalogDigest` compare against.
 
 ---
@@ -2904,7 +2915,7 @@ Backend does not degrade, it 400s; and an info-banded INSERT violates a live CHE
 | Gate | Location (origin/main `0cf9021e`) | Failure today |
 |---|---|---|
 | Query DTO | `Backend/src/ai-governance/dto/list-ai-detections.dto.ts:86` — `@IsIn([...AI_EVENT_SEVERITIES], { each: true })` | `?severity=info` 400s the **whole** request |
-| Vocabulary | `packages/shared-contracts/src/ai-governance-contract.ts:165` | four-member tuple |
+| Vocabulary | `Backend/packages/shared-contracts/src/ai-governance-contract.ts:165` | four-member tuple |
 | DB CHECK | `Backend/src/migrations/1787100000000-AddAiEventSeverity.ts:45-52` — `CHK_ai_events_severity` | an info-banded INSERT fails |
 | Sort rank | `Backend/src/ai-governance/services/ai-query.service.ts:756-758` — `DETECTION_SEVERITY_RANK_SQL` | info ranks `NULL`, sorting with the unassessed |
 | Counts | `Backend/src/ai-governance/services/ai-query.service.ts:6577` (`detectionSeverityCounts`) + `Backend/src/ai-governance/dto/ai-response.dto.ts:2598-2603` (`AiDetectionSeverityCountsDto`) | exactly four members |
@@ -3132,9 +3143,10 @@ Measured, the enforcing ones are:
 
 **These are fallback lanes and they cannot simply be deleted.** Rule 5 says the local rulebook must
 always reach a verdict, and `decideTool:3745-3752` documents deliberately keeping the legacy lane so
-an agent that outlives its backend still governs. The fix is to make the fallback read the
-**catalog's declared capability impact and evidence strength** — data that ships in the pinned
-contract and is available offline — instead of the detector's syntactic tier. Nothing relaxes.
+an agent that outlives its backend still governs. The fix is to read an **explicit reviewed per-class
+offline posture**, apply rule-level safeguards, and cap that posture with the catalog's capability
+impact × evidence ceiling instead of deriving policy from the detector's syntactic tier. The
+40-class migration proof requires exact equality: neither a relaxation nor an unapproved hardening.
 
 **The replay site is not an independent judgement — it is a second copy of the floor, and Task 10
 must move it in lockstep.** Verified at `origin/main 5b129523`: `enforcingPromptFindings`'
@@ -3153,7 +3165,9 @@ correct on the day it is written and wrong on the day the other wave lands. Both
 defer here by name. **This is the only place in the packet where that order is written. Cite a rung
 number; never count branches.**
 
-Measured at `origin/main 5b129523`, in evaluation order:
+Rungs 1–6 were measured at `origin/main 5b129523`. Rung 7 below is the authoritative
+post-Task-10 replacement; the baseline row was `Finding.Severity` high→`block`,
+medium→`warn`, else `allow`.
 
 | Rung | Line | Condition | Result |
 |---:|---|---|---|
@@ -3163,7 +3177,7 @@ Measured at `origin/main 5b129523`, in evaluation order:
 | **4** | `:528` | policy present, DLP enabled, class in legacy `DLP.BlockClasses` | `block` |
 | **5** | `:530` | policy present, DLP enabled, class in legacy `DLP.WarnClasses` | `warn` |
 | **6** | `:541` | policy present **and** `PromptRisk.Enabled == false` | `allow` + MONITOR marker |
-| **7** | `:544-551` | built-in floor on `severity` | high→`block`, medium→`warn`, else `allow` |
+| **7** | `PromptRiskFallbackDecision` | no earlier rung resolved: read the class's declared offline posture, then cap it with `baseCapabilityImpact × evidenceStrength`; unknown class/posture → `warn` | the declared posture at or below the grade ceiling; rule-level quote/decode-budget safeguards apply before the cap |
 
 Rung 1 sits above every policy-dependent branch on purpose, and the comment at `:512-513` says why: a
 nil policy (backend unreachable) falls through to rung 7, and rung 7 can `warn`, which is an
@@ -3191,9 +3205,12 @@ This is the same rule Wave 4A already states for obfuscation — *"anything obfu
 (`NormalizedOnly`) is never released"* — extended to derived origin, and it relaxes nothing.
 
 **Rung 7 is rewritten in place by Task 10 of this wave.** Same position, same precedence, different
-input: it stops reading `Finding.Severity` and reads `baseCapabilityImpact` + `evidenceStrength` from
-the catalog grades. No wave may delete it — rule 5 requires the local rulebook to reach a verdict
-with no backend.
+inputs. `baseCapabilityImpact` + `evidenceStrength` define a maximum justified intervention; they do
+not author the disposition by themselves. The engine first reads an explicit per-class offline
+posture, applies the quoted-finding/decode-budget rule adjustment, and caps that posture with the
+grade matrix in Task 10. This distinction is load-bearing: a normal `git push` has high potential
+impact but remains an observation, while a weak or unknown signal can never block on its own. No wave
+may delete rung 7 — rule 5 requires the local rulebook to reach a verdict with no backend.
 
 **Standing rules for anyone inserting a rung.**
 
@@ -3824,72 +3841,134 @@ either has already landed when you get here, the floor you are rewriting is stil
 position is unchanged.
 
 **Files:**
-- `Installers/internal/localdecide/tool.go` (`decideToolRisk`, `DefaultToolDecision`, and the
-  self-defense floor; P9 PR #187 moved the authoritative bodies out of `daemon/ai_handlers.go`)
-- `Installers/internal/policyeval/policyeval.go:544-551` (rung 7 only — the ladder's other rungs are
-  out of scope for this task)
-- `Installers/browser-extension/src/policyeval.js:317-319` (the JS twin of rung 7 — §8 rule 4)
-- `Installers/internal/proxy/ai_replay_promptrisk.go:265-272`
-- `Installers/internal/localdecide/ai_fallback_grades_test.go` (create)
+- Create `Installers/internal/aigrade/fallback.go` and `fallback_test.go` — the shared grade
+  vocabulary, 25-cell intervention ceiling and unknown-value behavior.
+- Create `Installers/internal/toolrisk/fallback_posture.go` and `fallback_posture_test.go` — the
+  explicit offline posture for all 40 tool classes and the separately authored taint projection.
+- Create `Installers/internal/promptrisk/class_grades.go` and `class_grades_test.go` — the explicit
+  impact and offline posture for all 14 prompt classes plus per-finding evidence projection.
+- `Installers/internal/localdecide/tool.go` and `ai_fallback_grades_test.go` (`decideToolRisk`,
+  `DefaultToolDecision`, and the self-defense floor; P9 PR #187 moved the authoritative bodies out
+  of `daemon/ai_handlers.go`).
 - `Installers/internal/localdecide/decision_golden_test.go` and
-  `Installers/internal/localdecide/testdata/decision-golden.json` (verification/regeneration protocol;
-  never regenerate from the changed tree)
+  `Installers/internal/localdecide/testdata/decision-golden.json` (the latter is immutable in this
+  task; never regenerate or bless it from the changed tree).
+- `Installers/internal/daemon/ai_taint.go` and `ai_taint_test.go` — replace the fifth severity switch
+  with the dedicated taint projection without narrowing the six behaviors Task 9 pinned.
+- `Installers/internal/policyeval/policyeval.go` (rung 7 only — the ladder's other rungs are out of
+  scope), `ai_fallback_grades_test.go`, and `prompt_grade_parity_test.go`.
+- `Installers/internal/proxy/ai_replay_promptrisk.go` and `ai_replay_promptrisk_test.go` — replay must
+  use the same rung-7 predicate and must evaluate the SHADOW gate first.
+- `Installers/browser-extension/src/policyeval.js`, `src/promptrisk.js`, their tests, and all five
+  browser-extension version sources.
+- Create `Installers/parity-vectors/prompt-grade-fallback.v1.json` — the Go/JavaScript contract for
+  every prompt class and rule-level adjustment.
+- `Installers/browser-extension/consumers.lock.json` and the exact vendored copies plus
+  `Frontend/lib/ai-security/vendored/MANIFEST.json` — updated only after the source commit exists.
 
 These are the **offline fallback** lanes and they may not be deleted: `decideTool:3745-3752` documents
 keeping the legacy lane deliberately, because an agent in the field can outlive its backend and rule 5
 says the local rulebook must always reach a verdict.
 
-- [ ] Test first: for **all 40** tool-risk classes, assert the fallback verdict computed from
-      `class_grades.go` (`baseCapabilityImpact` + `evidenceStrength`) is **greater than or equal to**
-      today's `defaultToolDecision` verdict. **0 of 40 may relax.** This is the non-weakening proof and
-      it must be written before the change.
-- [ ] Repoint `defaultToolDecision` and ladder rung 7 (`Installers/internal/policyeval/policyeval.go:544-551`) at the catalog grades.
-      A `weak`-or-`unknown` evidenceStrength may never reach `block` on its own — that is D7's
-      substance and the reason the axis exists.
-- [ ] Move the JS twin's rung 7 (`Installers/browser-extension/src/policyeval.js:317-319`) in the same commit and
-      extend the cross-engine parity assertion. A floor changed on one engine and not the other means
-      the Codex and Claude lanes reach different verdicts on the same finding.
-- [ ] **Move `enforcingPromptFindings` (`Installers/internal/proxy/ai_replay_promptrisk.go:265-272`) in lockstep — the earlier
-      open question is answered.** It is not an independent judgement. Its own docblock at `:262-264`
-      says it *"returns the findings at or above the WARN floor — the set that actually gates under
-      the built-in severity default (prClassAction: high→block, medium→warn, low→allow)"*, i.e. it is
-      a second copy of rung 7 written as a severity test at `:268`. Once rung 7 reads grades, that
-      docblock is false and the replay lane selects a different set than the resolver it claims to
-      mirror. Repoint it at the same grade predicate and keep the docblock true; do **not** relax the
-      set it returns — the non-relaxation proof in step 1 covers this site too.
-- [ ] **Correct the self-defense floor's ordering without weakening its explicit floor.** Current
-      `internal/localdecide/tool.go` changes an *unspecified* HIGH `devoid-self-disable` or
-      `sensitive-write-devoid` finding from the severity fallback's `block` to `warn`, even though the
-      comment says the floor only raises. An empty disposition must join `unspecified` and flow through
-      the same non-weakening fallback as every other class; the floor applies only to an explicit
-      `allow` or `monitor`. The required matrix, for **both** classes, is: unspecified → fallback
-      (currently `block`); explicit allow → `warn`; explicit monitor → `warn`; explicit warn → `warn`;
-      explicit block → `block`. This is a correction to the existing self-defense exception, not a new
-      hardening rule and not permission to move any other branch.
-- [ ] Run P9 PR #188's
-      `TestExtractedCoreReproducesTheDaemonDecisionsExactly` after the change. The committed capture
-      currently exposes **20 empty-or-unrelated-policy rows** affected by the unspecified-floor bug.
-      Read every named row as the behavioral changelog. If regeneration is necessary, generate from a
-      pristine worktree at the commit immediately before this change, record matched/skipped and
-      row-count deltas in `.plans/PARALLEL_HANDSHAKE.md`, and never bless output generated from the
-      changed tree. `TestGoldenStillDiscriminates` must retain its ≥70% matched floor.
+### Task 10 adjudication: grades are a ceiling, not a complete policy
 
-**Defeat test:** `ai_fallback_grades_test.go::TestFallbackNeverRelaxes` — lower any class's
-`baseCapabilityImpact` below its current fallback verdict and it goes red with
-`class "x": fallback relaxed from block to warn`. `TestWeakEvidenceCannotBlock` — set a class to
-`evidenceStrength: weak, baseCapabilityImpact: critical` and assert the fallback is at most `warn`;
-reverting the guard yields `block`. Add
-`TestSelfDefenseFloorDoesNotRelaxUnspecifiedHighFindings`: table-drive both self-defense classes and
-all five disposition states above. Restore the current `disposition == ""` floor arm and the two
-unspecified rows go red (`got warn, want block`); remove the explicit allow/monitor floor and those
-rows go red (`got allow/monitor, want warn`).
+The earlier wording was under-specified. A naïve `impact × evidence → disposition` matrix hardened
+**14 of 40** ordinary tool observations, including turning a normal `git push` into a block. It also
+lost the detector's quoted-text and decode-budget safeguards. That design is rejected. Capability
+answers *how bad the represented capability could be*; evidence answers *how strongly this finding
+supports the claim*. Neither says whether ordinary intended use should interrupt.
 
-**Exit:** the §7 grep returns **0** enforcing severity switches (today **5**, all five in scope —
-the fifth, the replay site, is confirmed above to be a copy of rung 7 rather than an independent
-filter). **0 of 40** tool classes relax relative to the pre-change fallback. Rung 7 in
-`policyeval.go`, its JS twin at `Installers/browser-extension/src/policyeval.js:317-319` and `enforcingPromptFindings` all read the
-same grade predicate, and the §8 ladder table records rung 7's new input. Both self-defense classes
-pass the five-state matrix, and the #188 golden reports its exact matched/skipped row counts.
+The normative resolver is therefore:
+
+1. Read the class's explicit, reviewed offline posture.
+2. Apply any rule-level finding safeguard before grading.
+3. Compute the maximum intervention justified by `evidenceStrength × baseCapabilityImpact`.
+4. Return the less restrictive of the declared posture and that ceiling.
+5. Resolve an unknown class, impact or declared posture to `warn`: reviewable, but neither silently
+   allowed nor hard-blocked without an authored contract. An unknown or future evidence value follows
+   the frozen `unknown` matrix row below, so known `info`/`low` impact remains `allow` and known
+   `medium`/`high`/`critical` impact becomes `warn`.
+
+The complete grade ceiling is frozen here:
+
+| Evidence \ impact | `info` | `low` | `medium` | `high` | `critical` |
+|---|---|---|---|---|---|
+| `validated` | allow | warn | warn | block | block |
+| `corroborated` | allow | warn | warn | block | block |
+| `probable` | allow | warn | warn | block | block |
+| `weak` | allow | allow | warn | warn | warn |
+| `unknown` or future value | allow | allow | warn | warn | warn |
+
+An unknown impact resolves to `warn` for every evidence value. A weak or unknown signal can ask for
+review but cannot deny on its own.
+
+### Behavior-preserving migration contracts
+
+- **Tool fallback:** all **40 of 40** classes have explicit postures: **3 allow, 12 warn, 25 block**.
+  The migration must be exactly equal to the pre-Task-10 decision for every class — **0 relaxations
+  and 0 unapproved hardenings**. `chmod-broad-777` is the sole named compatibility floor: its authored
+  impact remains `medium`, while its reviewed legacy posture remains `block`. Keep this exception
+  visible and class-specific; do not distort the shared matrix to hide it.
+- **Prompt fallback:** all **14 of 14** classes have explicit postures. The three corroborated combo
+  classes `injection-override-credexfil`, `injection-override-exfil`, and
+  `jailbreak-persona-unrestricted` declare `block`; the other 11 declare `warn`. A quoted finding
+  demotes that declared posture one step before the ceiling. A `decoded-payload-budget-exceeded`
+  finding declares `allow` and carries weak evidence. These are detector contracts, not incidental
+  severity behavior.
+- **Taint is a distinct decision.** It must not be derived from the offline intervention posture.
+  Exactly `action-git-commit`, `action-git-push`, and `action-pr-create` are ineligible; every other
+  current class and every unknown/future class remains taint-eligible. Preserve Task 9's six existing
+  taint behaviors and its structured class/disposition/arm attribution.
+- **SHADOW always wins first.** DLP, prompt policy, tool policy, taint and replay must skip a SHADOW
+  class before consulting a grade, posture, policy floor or acknowledgement key.
+- **Go and JavaScript are one contract.** The 14-class parity vector includes grades, declared
+  postures, evidence projection, quoted adjustment, budget-exceeded adjustment and final decisions.
+  Browser source, its version contract, the Installers consumer lock and the Frontend vendored
+  manifest must move through the source-commit/consumer-copy choreography; never hand-edit a digest
+  before its source commit exists.
+
+### Required implementation and proof
+
+- [x] Pin all 25 matrix cells and unknown-value behavior before changing a caller.
+- [x] Pin exact equality with the legacy fallback for all 40 tool classes; fail on a relaxation **or**
+      an unapproved hardening, and separately pin the sole `chmod-broad-777` compatibility floor.
+- [x] Repoint `DefaultToolDecision`, Go `prClassAction` rung 7, the JavaScript twin, and proxy replay
+      to the shared grade-backed resolver. Replay must first apply `IsShadowClass` and then select
+      exactly `warn`/`block` outcomes from that resolver.
+- [x] Replace the daemon taint severity switch with `ClassTaintEligible`; prove the three exclusions,
+      unknown-class fail-safe behavior, severity-mutation independence, and all six Task 9 cases.
+- [x] Correct the self-defense floor without weakening it. For both `devoid-self-disable` and
+      `sensitive-write-devoid`: unspecified → fallback (`block`), explicit allow → `warn`, explicit
+      monitor → `warn`, explicit warn → `warn`, explicit block → `block`.
+- [x] Prove Go/JavaScript equality over the whole prompt parity vector and bump every browser version
+      source together.
+- [x] Run P9's `TestExtractedCoreReproducesTheDaemonDecisionsExactly`. Keep
+      `decision-golden.json` byte-identical at **2,842 rows**, SHA-256
+      `5d520495e7abb64db521d6bf6ae446d5bf5a9d7ab4e9b4e4de92d9e8a76f20d8`. Record the expected
+      self-defense correction as an explicit set of exactly **20 named pristine-warn → reviewed-block
+      rows** in the test harness. Every name must exist and match the asserted before/after shape.
+      Do not regenerate or bless the frozen JSON from the changed tree. Keep
+      `TestGoldenStillDiscriminates` above its ≥70% matched floor.
+- [x] After the Installers source commit exists, copy the exact browser sources into Frontend,
+      recompute the manifest, run the consumer tests, then update the Installers consumer lock to the
+      exact consumer file digests. Record the source and consumer commit SHAs in
+      `PARALLEL_HANDSHAKE.md`.
+
+**Defeat tests:** mutate any of the 25 matrix cells; mutate a tool class's grade or posture; remove the
+`chmod-broad-777` floor; turn a quoted combo back into a block; make decode-budget exhaustion warn;
+mix one SHADOW and one current prompt finding in replay; derive taint from disposition or change one
+of the three action tags; restore the self-defense empty-disposition floor arm; change one of the 20
+golden overlay rows; or make either engine disagree with the parity vector. Each mutation must make a
+named test red.
+
+**Exit:** the §7 grep returns **0** enforcing severity switches in the five migrated lanes. Tool
+fallback is exactly equal for **40 of 40** classes. Go and JavaScript agree for **14 of 14** prompt
+classes and every vector case. SHADOW remains non-interrupting on all Task 9 lanes, including mixed
+replay input. Both self-defense classes pass the five-state matrix. The extraction golden reports
+`strict=2717 drifted=0 tool=125`, its JSON hash and row count are unchanged, and exactly 20 reviewed
+rows carry the explicit overlay. Task-10-local Go and browser tests have zero failures; pre-existing
+baseline failures, if any, are reported separately and may not be hidden. The Frontend vendored
+sources, manifest and Installers consumer lock identify and hash the exact same source commit.
 
 ---
 
@@ -3965,8 +4044,13 @@ Each is a number or a named artifact, and each names the test that goes red on r
     exist until Wave 3 and whose sequence corpora do not exist until Suite 4.** Risk 4 and Risk 5 stay
     non-green on this line, and the certificate carries it as a named `downgradeTrigger`.
 15. **No enforcing disposition is a pure function of `Finding.Severity`.** The §7 grep returns **0**
-    enforcing severity switches (today 5, all five in scope). **0 of 40** tool classes relax.
-    Defeat: `TestFallbackNeverRelaxes`, `TestWeakEvidenceCannotBlock`.
+    enforcing severity switches (today 5, all five in scope). All **25** ceiling cells are pinned;
+    **40 of 40** tool classes are exactly equal to the legacy fallback (0 relaxations and 0 unapproved
+    hardenings); all **14** prompt classes plus the **3** quote/budget cases agree across Go and JS;
+    the sole `chmod-broad-777` compatibility floor is explicit; and replay applies SHADOW before the
+    grade floor. Defeat: `TestFallbackCeilingPinsAllTwentyFiveCells`,
+    `TestFallbackNeverRelaxes`, `TestPromptGradeFallbackCrossEngineVector`,
+    `TestEnforcingPromptFindingsSkipsShadowBeforeTheGradeFloor`.
 16. **The `prClassAction` precedence is written down exactly once.** §8 carries all **7** rungs with
     their measured line numbers, the **2** reserved positions (6a Wave 4C Task 4, 6b Wave 4A Task 2)
     and the 6a-before-6b tie-break; the Go ladder and its JS twin
@@ -4009,6 +4093,13 @@ Each is a number or a named artifact, and each names the test that goes red on r
 ---
 
 # Wave 3 — Repair the measurement instrument, then give every lane a denominator
+
+> **Implementation checkpoint (2026-08-30):** the engineering tasks in this wave are implemented as
+> the stacked Installers PRs #251–#256, but remain unmerged behind the approved Wave 2 / Frontend
+> dependency chain. Tasks 4–5 and 11 remain with their explicitly moved owners. Exact candidates,
+> tests, blockers, and the no-certification boundary are recorded in
+> [`v2-waves/W3_RUN_LOG.md`](./v2-waves/W3_RUN_LOG.md). Source completion is not deployment and does
+> not make current degraded/zero-denominator evidence claimable.
 
 **Depends on:** Wave −1 (rebase, citation repair, the `ScanAll` correction), Wave 2 (the evidence-grade
 fields on `toolrisk.Finding`, which Task 7 carries onto the wire). Wave 0A and Wave 1 may run in
@@ -8978,7 +9069,7 @@ The old plan's W6 premises all still hold. Line numbers re-measured:
 4. **No pivots, and the triggering command is never in the drawer.** `row.metadata.commandShape` exists
    and this screen already reads it for the list's asset line (`Frontend/app/ai-control-plane/detections/detections-content.tsx:894`); the drawer
    does not render it. The house rule to honour is
-   `app/ai-control-plane/ai-sessions/[id]/investigation-links.ts:11`: **"A PIVOT THAT SILENTLY DROPS ITS
+   `Frontend/app/ai-control-plane/ai-sessions/[id]/investigation-links.ts:11`: **"A PIVOT THAT SILENTLY DROPS ITS
    FILTER IS WORSE THAN AN ABSENT ONE."**
 5. **`scope` is an inert prop.** `DetectionsContent` declares `{ scope }: { scope?: AiStreamScope }` at
    `Frontend/app/ai-control-plane/detections/detections-content.tsx:2978` and never reads it. The Backend accepts `channel`
@@ -10215,7 +10306,7 @@ return null`). So the push blocks while naming an **empty verdict and an empty r
 
 The canonical customer-safe string already exists and is already exported —
 `Backend/src/github-app/services/results-ingestion.service.ts:41-42` `CUSTOMER_SCAN_FAILED_REASON = "We couldn't complete a full scan
-of this code."`, mirrored at `github-read.service.ts:431-432` and used at `:1697`, `:1711`, `:1733`.
+of this code."`, mirrored at `Backend/src/github-app/services/github-read.service.ts:431-432` and used at `:1697`, `:1711`, `:1733`.
 **Reuse it; do not mint a second string.**
 
 - [ ] Confirm the existing suite is green before touching anything:

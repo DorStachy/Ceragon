@@ -1,0 +1,70 @@
+# Safe M4.1 local-stack overlay. The reset script populates the two root
+# variables with resolved isolated-worktree paths. External LLM credentials are
+# explicitly blanked so local release verification cannot spend money or send
+# repository content outside the emulator stack.
+services:
+  backend:
+    command: sh -lc "node dist/main.js"
+    environment:
+      CERA_GOVERNANCE_PROFILE: cera-pilot-windows-web-code-security-v1
+      CLI_REQUEST_SIGNING_MODE: enforce
+      CLI_AGENT_SIGNING_ACTIVE_KEY_ID: local-m41
+      CLI_AGENT_SIGNING_KEYS: '{"local-m41":"base64:bG9jYWwtbTQxLXRlc3Qtc2lnbmluZy1tYXN0ZXIta2V5IQ=="}'
+      CLI_SIGNATURE_SINGLE_INSTANCE_MODE: "false"
+      CODEFENCE_SIGNED_POLICY: "1"
+      # Local-only deterministic Ed25519 envelope key. Production injects this
+      # from its managed secret; without it the trust-anchor and signed-policy
+      # paths correctly remain V1/degraded and cannot be validated locally.
+      CODEFENCE_SIGNING_MASTER_KEY: "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+      # ElasticMQ has no KMS-HMAC API. Keep this explicit and local-only so
+      # package E2E can exercise queues without pretending KMS was verified.
+      SQS_SIGNER_LEGACY_FALLBACK: "true"
+    volumes:
+      - ${CERAGON_E2E_BACKEND_ROOT:?set by local-e2e-reset.ps1}:/app
+      - ${CERAGON_E2E_BACKEND_ROOT:?set by local-e2e-reset.ps1}/packages/shared-contracts:/app/node_modules/@ceragon/shared-contracts
+
+  frontend:
+    image: node:24-bookworm-slim
+    command: sh -lc "npm ci --include=dev --no-audit --no-fund && npm run build && ./node_modules/.bin/next start -p 8080"
+    volumes:
+      - ${CERAGON_E2E_FRONTEND_ROOT:?set by local-e2e-reset.ps1}:/app
+      - frontend_m41_node_modules:/app/node_modules
+      - frontend_m41_next:/app/.next
+
+  scanner-worker:
+    environment:
+      EGRESS_MODE: strict
+      INPUT_EGRESS_MODE: strict
+      ENABLE_AI_ANALYSIS: "false"
+      ENABLE_LLM_GATE: "false"
+      ENABLE_LLM_SAST: "false"
+      ENABLE_LLM_DETECTION: "false"
+      GEMINI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      CODEFENCE_LLM_API_KEY: ""
+
+  scanner-worker-fullrepo:
+    environment:
+      EGRESS_MODE: strict
+      INPUT_EGRESS_MODE: strict
+      ENABLE_AI_ANALYSIS: "false"
+      ENABLE_LLM_GATE: "false"
+      ENABLE_LLM_SAST: "false"
+      ENABLE_LLM_DETECTION: "false"
+      GEMINI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      CODEFENCE_LLM_API_KEY: ""
+
+  static-worker:
+    environment:
+      ENABLE_AI_ANALYSIS: "false"
+      ENABLE_LLM_GATE: "false"
+      GEMINI_API_KEY: ""
+
+  sandbox-worker:
+    environment:
+      GEMINI_API_KEY: ""
+
+volumes:
+  frontend_m41_node_modules:
+  frontend_m41_next:

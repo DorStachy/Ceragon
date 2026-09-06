@@ -1,0 +1,191 @@
+W2 T7 — a per-session authentication pipe with an explicit DACL and
+kernel-verified client identity.
+
+Branch  p9/w2-t7-session-auth-pipe   off Installers origin/main 3a3cf09e
+Box     Windows 11 Education 10.0.26200, 2026-08-29
+Token   S-1-5-21-3617880237-3964932292-1325496512-1001, elevated=false, session 1
+
+================================================================================
+1. THE ACE LIST — what the pipe's DACL actually grants
+================================================================================
+
+Pinned constant (internal/sessionauth/protocol.go, PipeSDDL):
+
+    O:SY G:SY D:P (A;;GA;;;SY) (A;;GA;;;BA) (A;;0x0012019b;;;AU)
+
+    O:SY / G:SY   owner and group LocalSystem. An owner can rewrite a DACL, so
+                  the daemon's own identity owns the object and nobody else can
+                  take it over by owning it.
+    D:P           PROTECTED. No inherited ACE can widen this.
+    (A;;GA;;;SY)  LocalSystem            GENERIC_ALL   — the server itself.
+    (A;;GA;;;BA)  BUILTIN\Administrators GENERIC_ALL   — already able to replace
+                  the daemon binary; withholding it would buy nothing and would
+                  make the pipe undebuggable.
+    (A;;0x0012019b;;;AU)  Authenticated Users, decomposed bit by bit:
+                  0x00100000 SYNCHRONIZE
+                  0x00020000 READ_CONTROL
+                  0x00000001 FILE_READ_DATA
+                  0x00000002 FILE_WRITE_DATA
+                  0x00000008 FILE_READ_EA
+                  0x00000010 FILE_WRITE_EA
+                  0x00000080 FILE_READ_ATTRIBUTES
+                  0x00000100 FILE_WRITE_ATTRIBUTES
+
+    WHAT AU DOES NOT GET, and why each one matters:
+                  0x00000004 FILE_CREATE_PIPE_INSTANCE — add an instance of the
+                             NAME and answer a connection meant for the daemon.
+                  0x00040000 WRITE_DAC   — rewrite this list.
+                  0x00080000 WRITE_OWNER — become the owner and then rewrite it.
+                  0x00010000 DELETE.
+
+    AU rather than BU is deliberate: AU excludes ANONYMOUS LOGON and the null
+    session, and this pipe hands out an identity assertion.
+
+Paired with FILE_FLAG_FIRST_PIPE_INSTANCE and PIPE_REJECT_REMOTE_CLIENTS on the
+first CreateNamedPipe call, with the descriptor passed in SECURITY_ATTRIBUTES —
+never applied afterwards, which would leave a window in which the name existed
+carrying the default descriptor.
+
+================================================================================
+2. WHAT THE KERNEL TELLS US THAT THE PEER COULD NOT HAVE FORGED
+================================================================================
+
+Read from the client's own access token, placed on the server thread by
+ImpersonateNamedPipeClient and opened with OpenThreadToken(openAsSelf=true):
+
+    user SID     GetTokenUser
+    logon SID    the token group carrying SE_GROUP_LOGON_ID (S-1-5-5-X-Y) — the
+                 identity of the LOGON, not of the account, which is what makes
+                 the credential per-SESSION rather than per-user
+    session id   GetTokenInformation(TokenSessionId)
+
+Read from NPFS, not from the peer:
+
+    client PID   GetNamedPipeClientProcessId
+    image path   QueryFullProcessImageName on that PID, resolved BEFORE the
+                 impersonation while the thread still holds the server's token
+
+None of those five values is on the wire. The request schema is
+{"v":1,"op":"session-token"} and has no identity field at all; an attempt to add
+one is refused (TestProtocol_RefusesUnknownFieldsAndUnknownOps).
+
+The image path is the value W2 T11 (#237) had to OMIT from a security event
+rather than stub, because an unauthenticated caller's self-declared name is
+attacker-chosen text. It is now a name the kernel supplied.
+
+================================================================================
+3. PROVEN LIVE ON THIS BOX (go test ./internal/sessionauth/... -v)
+================================================================================
+
+TestPipeServerReportsTheKernelsIdentityNotTheClients  PASS
+    The server's reported user SID, session id, client PID and client image path
+    each equal this process's own values, read independently of the pipe
+    (GetCurrentProcessToken / os.Getpid / os.Executable). The issued token's
+    sessionId equals the kernel's session id.
+
+TestPipeDACLRefusesAnotherInstanceFromAnUnprivilegedToken  PASS
+    PROVEN as S-1-5-21-3617880237-3964932292-1325496512-1001 (elevated=false):
+    adding an instance of a pipe carrying the pinned DACL returned
+    ERROR_ACCESS_DENIED. FILE_CREATE_PIPE_INSTANCE is genuinely withheld from
+    Authenticated Users.
+    THIS IS THE WRONG-PRINCIPAL REFUSAL, from a standard token — not an
+    "it works for me" on an elevated shell.
+
+TestPipeFirstInstanceFlagRefusesASquatter  PASS
+    A second FILE_FLAG_FIRST_PIPE_INSTANCE create on an existing name fails.
+
+TestPipeLiveDescriptorMatchesThePin  PASS
+    The descriptor read back off the LIVE object with GetSecurityInfo parses to
+    the pinned AU mask 0x0012019b, three ACEs, DACL flag P.
+    Observed live SDDL on this run:
+      O:S-1-5-21-...-1001 G:S-1-5-21-...-513
+      D:P(A;;FA;;;SY)(A;;FA;;;BA)(A;;0x12019b;;;AU)
+    NOTE: the kernel renders GENERIC_ALL as the object-specific FILE_ALL_ACCESS
+    (FA) on a pipe object, and strips the AU mask's leading zeros. Same bits.
+
+TestPipeServerRevertsImpersonationOnEveryPath  PASS (4 rows)
+TestPipeListenReturnsOnContextCancelAndLeavesNoName  PASS
+Plus 11 pure tests: bounds, framing, fuzz-shaped input, Authorize, the SDDL pin.
+
+================================================================================
+4. DEFEAT TESTS — all three, exact strings
+================================================================================
+
+DEFEAT 1  AU mask 0x0012019b -> 0x0012019f
+  RED: protocol_test.go:285: AU mask grants FILE_CREATE_PIPE_INSTANCE (0x4); a
+       standard user could squat the pipe name (mask=0x0012019f)
+  Reverted -> GREEN.
+
+DEFEAT 2  the defer windows.RevertToSelf() deleted from serveConnection
+  RED: pipe_windows_test.go:232: thread is still impersonating after handler
+       return (row "success")
+       ... (row "parse error")
+       ... (row "write error")
+  The "deadline" row stayed GREEN and correctly so — it never reaches the
+  impersonation. That is why every row asserts whether its branch was REACHED.
+  Reverted -> GREEN.
+
+DEFEAT 3  the 4 KiB cap deleted from ParseRequest
+  RED: protocol_test.go:41: 4 KiB cap removed; a standard user can drive
+       unbounded allocation in the SYSTEM daemon (ParseRequest on 4636 bytes
+       returned err=<nil>)
+  Reverted -> GREEN.
+
+Each mutation script asserted its anchor before editing. This repo's Go files are
+CRLF and an LF-anchored replace silently changes nothing and reports success.
+
+================================================================================
+5. MEASURED FINDING THAT CHANGES THE LANE'S SCOPE
+================================================================================
+
+A non-SYSTEM process CANNOT apply the pinned descriptor. SetSecurityDescriptorOwner
+refuses a SID the calling token may not assign, so O:SY returns
+
+    ERROR_INVALID_OWNER (1307)
+    "This security ID may not be assigned as the owner of this object."
+
+The constant was NOT changed to accommodate that. Consequences, both implemented:
+  * the daemon lane is gated to machine-scope installs (the same gate
+    sessionBrokerWatchLoop uses), and the reason is recorded in code;
+  * the Windows tests fall back to the DACL half — derived from PipeSDDL so it
+    cannot drift — and log NOT PROVEN for the owner clause on every run that had
+    to fall back, naming the token they ran as.
+
+================================================================================
+6. NOT EXERCISED — the exit criterion this run could not meet
+================================================================================
+
+The spec's named artefact is two SIMULTANEOUS interactive sessions (users A and
+B) each handshaking against the PRODUCTION pipe name, with 2 distinct tokens and
+0 cross-attribution, plus (Get-Acl \\.\pipe\devoid-session-auth).Sddl.
+
+NOT DONE, and deliberately not attempted. It requires creating a second local
+user and a second interactive logon on this box, running the daemon as
+LocalSystem so the owner clause applies, and creating the PRODUCTION pipe name on
+this machine. The task brief forbids the third outright and the first two are
+machine-state changes an agent must not make here.
+
+What stands in for it, and what it does not cover:
+  * cross-attribution for ONE session is proven by
+    TestPipeServerReportsTheKernelsIdentityNotTheClients — the reported session
+    and SID are this caller's, verified against an independent read.
+  * the SECOND session is NOT proven. Nothing here demonstrates that two
+    concurrent handshakes from different logons get different logon SIDs and
+    different session ids. The mechanism (per-token TokenSessionId and
+    SE_GROUP_LOGON_ID) makes it structural rather than incidental, but it is
+    unmeasured and must be stated as such.
+  * the live descriptor is asserted from Go on a TEST-named pipe, unelevated, so
+    the owner half of the pinned SDDL is unproven on this box.
+
+Also NOT EXERCISED: no CI job runs internal/sessionauth. pr-checks.yml's
+wire-lane-tests filters internal/daemon by -run OpenAI|Wire|Persistence|TaskInfo
+and does not name the package; internal-candidate.yml's ubuntu go test ./... would
+compile the pure half but is workflow_dispatch only, so no push or PR triggers it.
+GitHub Actions is additionally blocked org-wide on this plan. The local runs above
+are the only signal these tests have. Per the batch brief, no leg was appended to
+pr-checks.yml — the parent session adds one consolidated leg.
+
+No test creates the production pipe name. Every instance was built under a
+per-process, per-test name and closed; an NPFS name exists only while a handle to
+it is open, so nothing was left behind on this box. Nothing was written under
+%ProgramData%. No service was registered or started.

@@ -1,0 +1,5 @@
+services:
+  frontend:
+    image: ${CERAGON_E2E_FRONTEND_IMAGE:?set by local-e2e-reset.ps1}
+    command: ["node", "server.js"]
+    volumes: !reset []

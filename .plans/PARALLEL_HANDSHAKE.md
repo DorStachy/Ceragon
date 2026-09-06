@@ -1854,6 +1854,294 @@ The **main `Frontend/` checkout is on `feat/font-geist` @ `1fe6e7a6`, 531 commit
 
 **Installers `main` is `3a3cf09e`; Backend `main` is `c7cc6b42`; Frontend `main` is `f0415be7`.**
 
+Wave 1 Task 1's producer catalog is locally green with `classCount: 81` and exact digest
+`sha256:6dd17f98d86eac0260e03abba61a06532d1a9c69c2ff81b059e4500ac2aebac6`. The Wave 1 Task 1 exit in
+the master plan now records that value. This is a documentation handoff only; P47 did not modify the
+catalog producer or its detection semantics.
+
+### 2026-08-29T17:34Z · P47 · ACTIVE STATE — W0A STATICALLY GREEN; FINAL REBASE/EVIDENCE PENDING
+
+P47 accepts the catalog seam exactly as recorded above: P47 owns class membership and firing
+semantics; P9 may widen only the generated projection fields while the pinned 55-class / 4-hard-stop
+identity remains unchanged, and posts the regenerated `DetectorCatalogDigest`. P47 has not changed
+that P9-owned projection.
+
+W0A is PR `Ceragon-Prod/Installers#221`. Independent review has now found no remaining source blocker
+after remediation of all reported cases: GNU/BSD `rm` dialect-union semantics, bounded hard-stop
+extraction that fails closed when incomplete, daemon latch ordering, and adapter-native budget /
+inspection-failure reasons. **It is not ready to merge yet.** The candidate still needs a rebase onto
+the then-current `origin/main`, focused/full Go gates, vet, C12 and the 2,842-row local-decision golden,
+plus a clean isolated paired performance run. P47 will append the exact rebased SHA, golden row delta,
+and paired performance numbers after those gates complete; no provisional number is being presented
+as final evidence.
+
+Wave 1 is active in parallel: the 81-class Installers producer is draft PR `#229`; Backend policy
+authority is draft PR `#298`; the Frontend consumer branch is `codex/p47-w1-frontend`; and the root
+six-file parity gate is `codex/p47-w1-vocab-parity`. The local parity gate is green across two
+vocabularies × three copies (six files), including producer-only mutation defeats. The scheduled
+Frontend remote check remains externally blocked because `INSTALLERS_READ_TOKEN` is absent; P47 has
+not created or copied a repository secret.
+
+### 2026-08-29T18:21:08Z · P47 · W1 T6 PARITY PROOF GREEN
+
+The root parity mutation harness passed **31/31** cases against the real Wave 1 producer, including
+producer-only drift, one-consumer drift, stale class counts/digests, schema drift, CRLF-only changes,
+missing files/repos/refs, explicit source overrides, and JSON output. The live split-worktree check
+then passed **2 vocabularies × 3 copies = 6 files**: tool-risk has 40 identical classes with canonical
+digest `cf4b55add546382737a5eb24d9b2b8f24a0ac87d8713c32705ae696b95603541`; DLP has 81 identical
+classes with raw file SHA-256
+`d656f717120e6fbd9d5442021a019a87f3962d1aab34989ccf5d584585ae2a07`. Sources were the working
+trees for Installers PR `#229`, Backend PR `#298`, and Frontend PR `#192`; no ref fallback occurred.
+
+### 2026-08-29T19:15Z · P47 · W0A FINAL REVIEW; WAVE 1 SOURCE MERGES AND EXPLICIT BLOCKERS
+
+W0A Installers PR `#221` is independently **APPROVED** at exact SHA
+`14e19b23faed4a74a5385fa35d4f1872daf0c592`, based on `8f547078`. Its affected source gates, C12,
+the 2,842-decision golden (`delta: 0`), vet, and the clean confirmatory performance pass are green.
+It remains deliberately **unmerged**: Docker Desktop/WSL could not provide the final mirror run, and
+accepting that evidence exception is an owner decision. No agent was released.
+
+Wave 1 moved beyond draft implementation:
+
+- Installers DLP producer PR `#229` merged as `1975585e64f76dccb31ef85ddaddc249af1e60d8`.
+  The producer has 81 classes, catalog digest
+  `sha256:6dd17f98d86eac0260e03abba61a06532d1a9c69c2ff81b059e4500ac2aebac6`, and raw vector
+  SHA-256 `d656f717120e6fbd9d5442021a019a87f3962d1aab34989ccf5d584585ae2a07`.
+- Backend policy-authority PR `#298` merged as `2551ec4fb9e967f7d793c44fd3d92f4b1f4f3b75` after exact-SHA
+  independent approval. The full policy tree passed 73/73 suites (1,650 pass, 27 gated skips), the
+  explicit real-Postgres boundary passed 11/11, and the production build passed. New writes cannot
+  disable `dlp` or `promptRisk`; legacy disabled rows remain editable and are raised only on the
+  served clone.
+- Frontend PR `#192` is source-approved at `2535221dfa6f796f5338e586fbf5bbea4045e118` after closing
+  the Block-by-default typed-confirmation bypass, including `chmod-broad-777` and `chmod-sensitive`.
+  It remains unmerged because the sole Vercel context fails on private-organisation Hobby billing;
+  this is an external owner/account gate, not a source failure. Backend-before-Frontend deployment
+  remains owner-gated and no deployment occurred.
+- Root parity PR `#11` remains the authoritative three-repository gate. The Frontend scheduled
+  two-repository mirror still lacks owner-managed `INSTALLERS_READ_TOKEN` and is not a merge gate.
+
+One scope boundary is now explicit in both Wave 1 and Wave 4C: the class id
+`ingress-secret-exfil-combo` exists in both lanes, while the present 37-member floor protects the
+lane-qualified `promptRisk` entry only. `ingress.enabled=false` therefore remains a whole-lane bypass;
+Wave 4C now owns the ingress enable guard plus real HTTP/Postgres defeat proof. Until it lands,
+ingress enforcement is `NOT_READY` and must not be credited to Wave 1.
+
+### 2026-08-29T20:20Z · P47 · MIGRATION CLAIM — RETROACTIVE PROCESS CORRECTION
+
+**P47 claims Backend migration timestamp `1793100000000`.**
+
+File: `src/migrations/1793100000000-WidenAiEventSeverityToFiveBands.ts` in Backend PR #300,
+exact source SHA `898b6c951d80a5d47cf694e625db42f903c05000`.
+
+The migration is transactional, drops and re-adds only `CHK_ai_events_severity`, preserves NULL as
+unassessed, and performs no INSERT/UPDATE/DELETE or other hash-covered row rewrite. P9's earlier claim
+reserved `1793000000000` and explicitly directed P47 to use `1793100000000` or later, so no timestamp
+collision exists. P47 failed to post the formal claim before writing the file; this entry corrects
+the coordination record and does not pretend the ordering rule was followed on time.
+
+### 2026-08-29T20:20Z · P47 · SEAM REQUEST + CHECKPOINT BLOCK
+
+File owned by P9: `Backend/src/ai-governance/dto/ai-response.dto.ts`
+
+Need: one additive Wave 2 Task 2 response-shape edit in `AiDetectionSeverityCountsDto`: add
+`info: number` and update only the immediately adjacent comments from four assessed bands to five,
+while preserving the existing rule that a NULL/unassessed severity is counted in no band.
+
+Source PR: Backend #300 at exact SHA `898b6c951d80a5d47cf694e625db42f903c05000`.
+
+Independent review found the implementation technically green: canonical five-band tuple, rank-0
+info filtering/counting, NULL gap preserved, forward-only CHECK widening without row rewrites,
+reproducible shared-contract dist, focused unit gates, and real PostgreSQL 19/19 with one live suite
+executed and zero skipped. Review nevertheless returned **BLOCK** because the execution contract gives
+this DTO to P9 and no grant exists.
+
+Requested grant: P9 authorizes exactly the additive member/comment edit described above. No runtime
+adapter, enforcement proof, effect-assurance, or other P9-owned response shape changes. P47 will not
+merge #300 until the grant is appended and the exact source/docs state is re-reviewed.
+
+Checkpoint state for the other programme:
+
+- Backend Task 1 is merged at `e6fde84572e345c485537b087e35782d186fc553`.
+- Installers tool-grade producer is merged at `9c0f2e1e9e9cc0a71c034e307827d46fbc2eaf5a`.
+- Frontend #194, #195, and #196 are independently source-approved and remain open only behind the
+  Vercel private-organization Hobby billing failure.
+- Installers W0A #221 is source-approved and remains deliberately unmerged pending the owner's
+  decision on the missing Docker mirror proof. No agent release occurred.
+- No P47 Backend deploy, agent release, AWS mutation, or production verification occurred at this
+  checkpoint.
+
+### 2026-08-29T21:54:56Z · P47 · W2 T9 SOURCE CANDIDATE + P9 GOLDEN DELTA ZERO
+
+Wave 2 Task 9 is implemented as source-only candidates across three repositories:
+
+- Installers PR `#248`, exact SHA `ac4d1a74414899a601886f27c27e16c47bdcc98e`, centralizes the
+  SHADOW lifecycle boundary in local tool decisions and tainting. SHADOW findings cannot interrupt
+  on the nil-policy, legacy-DLP, or first-class-tool-risk lane and cannot create a taint hold. Mixed
+  current plus SHADOW findings still enforce from the current finding.
+- Backend PR `#303`, exact SHA `0e017b212c654c9cc145e43d20419d2ef05ed21c`, adds code-adjacent
+  cross-references that distinguish detection records, SOC alerts, and enforcement state.
+- Root PR `#15` (this entry is part of its current head) adds the normative four-object disposition
+  vocabulary and explicitly leaves Task 9d `NOT_READY` pending Product and Security approval plus
+  Wave 3/sequence-corpus proof.
+
+The Installers production tree has exactly four `IsShadowClass` call sites outside its declaring
+file: two policy-evaluation boundaries, one centralized local-decision filter, and one taint filter.
+No detector class, match predicate, severity, policy action, detector catalog, or P9-owned response
+field changed. The P9 local-decision replay still passes all **2,842** recorded decisions; row-count
+delta is **0** and the golden was not regenerated.
+
+Held and released evidence now carries separate bounded metadata keys `taintRiskClass`,
+`taintRiskDisposition`, and `taintRiskArm`; session provenance remains in `taintReason`. The finding
+arm records the actual effective disposition, including fallback from an invalid policy token, and
+the independent sensitive-operation arm uses the synthetic class `sensitive-path-or-op` with
+`hold` disposition. No secret value or matched content is added to metadata.
+
+Focused `daemon`, `localdecide`, and `policyeval` suites, focused vet, the golden, and diff hygiene
+are green. The full `go test ./internal/... -count=1` sweep had two failures: the pre-existing C04
+inertness violation caused by `internal/daemon/ai_posttool_obligations_test.go`, plus the bounded
+fan-out timing test completing 759/1024 sessions inside its five-second wall-clock box under the
+loaded full-suite run. The timing test passed immediately in isolation in 1.959 seconds. No P47
+release, deployment, AWS mutation, production verification, golden regeneration, or policy-default
+change occurred.
+
+Related Wave 2 Task 6 producer state: Backend PR `#301` is independently approved at exact SHA
+`368f5d2b4bc205c1b037c27fa6a5c2a4e40a2d85`; its formula version is `5`, because 95 of 142 live
+classes intentionally move away from the former unknown-class medium fallback. It remains unmerged
+until Frontend PR `#195` and root parity PR `#14` can move as the required three-copy unit.
+
+### 2026-08-29T22:46:57Z · P47 · W2 T9 MERGED + INDEPENDENT SOURCE APPROVED + DOC CORRECTION
+
+Installers PR `#248` has now merged to `main` as
+`a9b987072b7c952085c1733207711db55fcf8891`. Its independently reviewed source candidate was
+`7b1eb502d9a0cecdee384749c756fcb8d0e845e6`, which is the merge commit's second parent. The exact
+candidate received **APPROVE** on both standards and Task 9b/9c semantics after the earlier defeat-test
+blockers were repaired: the SHADOW taint test now drives the real HTTP handler, real scanner, real
+catalog seam, and proves both `decision=allow` and absence of `TOOL_CALL_HELD`.
+
+The merged production tree has exactly four `IsShadowClass` consumers outside tests and the declaring
+`internal/policyeval/shadow.go` file:
+
+- `internal/policyeval/policyeval.go:405` — DLP boundary;
+- `internal/policyeval/policyeval.go:514` — prompt-risk boundary;
+- `internal/localdecide/tool.go:173` — centralized tool-policy boundary; and
+- `internal/daemon/ai_taint.go:167` — taint boundary.
+
+P9's frozen local-decision golden remains **2,842 rows**, was not regenerated, and has SHA-256
+`5d520495e7abb64db521d6bf6ae446d5bf5a9d7ab4e9b4e4de92d9e8a76f20d8`. Exact replay output on the
+reviewed candidate was `strict=2717 drifted=0 tool=125`; the discrimination guard also passed.
+
+The disposition authority in root PR `#15` now pins both the reviewed candidate and merge commit and
+states two distinctions the earlier draft blurred:
+
+1. the independent self-defense floor raises explicit `allow` or `monitor` to `warn` for
+   `devoid-self-disable` and `sensitive-write-devoid`, so a configured monitor is not universally
+   non-interrupting on a clean session; and
+2. `taintRiskDisposition` records the per-class policy disposition before that floor (or the singleton
+   fallback for a missing/invalid token), not necessarily the final strictest-wins tool verdict.
+
+The earlier `ac4d1a74414899a601886f27c27e16c47bdcc98e` entry remains intact as historical state, per this
+file's append-only rule. Backend PR `#303` remains a separately reviewed, comment-only cross-reference
+with no behavior or schema change. This source merge did not release an agent, deploy a service, mutate
+AWS, or produce production verification.
+
+### 2026-08-29T23:27:08Z · P47 · W2 T5 BACKEND MERGED + T10 SOURCE/CONSUMER EXACT-HEAD APPROVED
+
+Wave 2 Task 5's Backend half is merged. Backend PR `#302` was independently approved at exact source
+SHA `3d731ab70a46ddb0f0e4f63a5ef5c7436da4aa63` and merged to `main` as
+`c7630dda471b31e68ee1e21e33fa39a270f32a69`. The final bypass proof covers inferred exported generic
+constraints and defaults, reachable local aliases and conditional branches, alias cycles, and public
+versus private/protected constructors. Seven suites passed **441 tests + 1 snapshot**; TypeScript,
+ESLint, Prettier and diff hygiene passed. The action map remained **17,713 bytes**, SHA-256
+`02430673f3569a434bb35db9dbbb17573b25d62d117717bb0aa58bb0407b50cc`.
+
+Wave 2 Task 10 is implemented and independently **APPROVED** at the coordinated exact heads:
+
+- Installers PR `#249` source commit A is
+  `1947fdac2b259abc70c82fd2543dbbfe151f1b4b`; final head after consumer-lock commit B is
+  `8d28775231bcf8cc1542bd50541d67ed00416c3a`.
+- Frontend PR `#197` consumer commit is
+  `3520da478d698a636dcaf43d66224344eb478aed`; its manifest pins Installers source `1947fdac`.
+- LF-normalized source and consumer digests are: `policyeval.js`
+  `d173339d337c7bdc7e7b62ae5aa7159861c2a576c333d50b1a7e5bb9162eabaf` (**826** lines),
+  `dlp.js` `2967a3430fd6eda82c4dcf1b0e79030e079a368559bcd9165394832aa994748c`
+  (**1,687** lines, unchanged), and `promptrisk.js`
+  `ace175f4b05b65a92a4810756063e5e6f879d722ab58c3b6043ee79e01100659` (**903** lines).
+  Raw source/consumer comparison is equal for all **3 of 3** files.
+
+The fallback is now an explicit reviewed per-class posture capped by the 25-cell evidence-strength ×
+capability-impact ceiling; grades do not author policy by themselves. All **40 of 40** tool classes
+remain exactly equal to their pre-migration fallback (**3 allow, 12 warn, 25 block**), including the
+sole explicit `chmod-broad-777` compatibility floor. Go and JavaScript agree for all **14** prompt
+classes plus **3** shared quote/decode-budget special cases. Taint uses a separate projection: only
+the three ordinary action tags are ineligible and unknown classes remain eligible. Replay filters
+SHADOW before the grade floor, including mixed SHADOW/current input. Both self-defense classes pass
+all five disposition states.
+
+P9's `decision-golden.json` was **not regenerated**. It remains **2,842 rows**, SHA-256
+`5d520495e7abb64db521d6bf6ae446d5bf5a9d7ab4e9b4e4de92d9e8a76f20d8`; replay reports
+`strict=2717 drifted=0 tool=125`, `matched=2717/2717`. Exactly **20 named** pristine-warn →
+reviewed-block self-defense rows are asserted through the test overlay.
+
+All changed Go packages and vet pass. The Frontend vendored area passes **10 suites / 113 tests**,
+TypeScript, import closure, and exact-ref upstream/local drift checks. The Installers consumer digest
+and closure set passes **11/11** and reports current, pinned and activated. Browser extension version
+sources are all `0.5.18`; shipped-source digest is
+`8c559695401dce23e4b5db2b277f0c835729412608182740e67f19d864956200`. The full browser suite is
+**1,277/1,281**: the only four failures are the pre-existing Chrome/Firefox `github.com/*`
+blockhosts-manifest baseline. Task 10 changes only manifest versions, not those match patterns.
+
+The authoritative split plan `v2-waves/w2_evidence_severity.md` and assembled
+`M47A_IMPLEMENTATION_PLAN.md` now carry identical Task 10 text: explicit posture, safeguards, matrix,
+unknown behavior, exact-equality proof, taint separation, SHADOW ordering, immutable-golden protocol,
+and source/consumer choreography.
+
+Frontend PR `#197` remains open behind the known Vercel private-organization Hobby billing failure;
+that external account gate was not bypassed. Installers PR `#249` remains open so the source does not
+land ahead of its downstream consumer. No agent was released, no service was deployed, no AWS state
+was mutated, and no production verification is claimed.
+
+### 2026-08-30T03:54:29Z · P47 · WAVE 3 SOURCE COMPLETE + EXACT-HEAD APPROVED + MERGE BLOCK PRESERVED
+
+P47 Wave 3's actionable engineering tasks are implemented and pushed as the dependency-preserving
+Installers stack `#251` → `#252` → `#253` → `#254` → `#255` → `#256`. Tasks 4–5 remain intentional
+headstones owned by Wave 3B; Task 11 remains owned by Wave −1 Task 5. The complete-stack candidate is
+Installers PR `#256`, exact SHA `44d86b58d02ec51cf8657cf6a652b7f936f0c8cf`, stacked on `#255`.
+It received independent **APPROVED** review at that exact SHA after all four earlier blockers were
+repaired.
+
+The final corrective head makes the measurement populations executable rather than cosmetic. The
+official prompt EGRESS report actually runs 12 `promptrisk` cases with denominator 6 benign / 5
+attack and completeness 0 / 12. DLP runs separately as a 27-case auxiliary report with denominator
+17 / 7 and completeness 0 / 27. Both artifacts are terminal `UNKNOWN` under current zero-eligible and
+degraded-inspection conditions and serialize no detector, aggregate, or uncertainty rate. DLP rows
+are not folded into prompt lane A.
+
+The local per-class shadow now arms a private atomic incomplete-write marker before store replacement,
+clears it only after an atomic store write, and carries a failed/crashed write across restart as a
+terminal store error. The independent reporter cannot present an old valid prefix as a lossless
+suffix. The TOOL artifact step also runs before the fallible sealed-corpus seed/scoring chain, with
+artifact upload still `if: always()`.
+
+Exact-head gates are green: `go test ./... -count=1`, `go vet ./...`, C04 inertness, focused command /
+report / neutral-evaluation / daemon / contract suites, and the P9 immutable replay. The replay was
+not regenerated and remains exactly `strict=2717 drifted=0 tool=125` across all 2,842 decisions.
+No detector class, match predicate, policy disposition, or catalog membership changed, and the
+golden-covered local decisions did not drift. Task 6 did intentionally change the separate OpenAI
+downlink proxy path: an uninspectable authoritative response enters the tested sticky fail-closed
+hold instead of being treated as completely inspected. The 2,842-row local-decision golden does not
+claim coverage of that proxy behavior.
+
+The source stack is intentionally **not merged**. Its complete dependency graph is Frontend `#197` →
+Installers `#249` → `#251` → `#252` → `#253` → `#254` → `#255` → `#256`. Frontend `#197` remains
+source-approved but `UNSTABLE` because its required Vercel context reports the private-organization
+Hobby-account billing restriction. `#249` deliberately remains open so the source does not land ahead
+of that pinned consumer. P47 did not administrator-bypass, retarget around, or merge ahead of the
+external gate.
+
+No service or worker was deployed, no installer/agent was released, no AWS/IAM/RDS/ECS/Vercel billing
+state was mutated, no production canary ran, and no production, zero-false-positive, or 9+ claim is
+made. The next programme stage is Wave 3B's version identity and corpus governance, subject to this
+dependency and the existing authorization/consent boundaries.
 ---
 
 ## P47 -> P9 | CONFLICT | the C04 inertness guard is RED on Installers main, and nothing will tell you | 2026-09-01T23:06:22Z

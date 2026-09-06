@@ -22,9 +22,8 @@
 >
 
 > **Owner execution directive:** before taking a task, read
-> [`../P47_EXECUTION_GUARDRAIL.md`](../P47_EXECUTION_GUARDRAIL.md). It exists because the first
-> implementation run consumed almost the entire session on Wave 0A without completing the wider
-> programme. Its scope-control, progress-accounting, and escalation rules are mandatory.
+> [`../P47_EXECUTION_GUARDRAIL.md`](../P47_EXECUTION_GUARDRAIL.md). Its scope-control,
+> progress-accounting, task-boundary, and coordination rules are mandatory.
 
 
 # M4.7A — Runtime AI Security Protection and Detection Engine: Implementation Plan (v2)

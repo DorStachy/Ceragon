@@ -13,10 +13,10 @@ If these bytes changed, the repositories changed.
 
 | Repository | Local branch | Local HEAD | `origin/main` | Behind | Required fetch moved `origin/main`? |
 |---|---|---|---|---:|---|
-| `Backend` | `main` | `eb5e2ef870e0274301733c24ed8ad287853aaf0b` | `eb5e2ef870e0274301733c24ed8ad287853aaf0b` | 0 | no |
-| `Frontend` | `main` | `3e6b739ba15c30d5b67818b8d360cb5f66519014` | `3e6b739ba15c30d5b67818b8d360cb5f66519014` | 0 | no |
-| `Installers` | `main` | `48c3d2eb36a73c53aec17fbbfe03ae667fffcd18` | `48c3d2eb36a73c53aec17fbbfe03ae667fffcd18` | 0 | no |
-| `Ceragon-Intelligence` | `main` | `ce28c62b8f3cb4cc228be8ae096b4204ceeaaeb5` | `ce28c62b8f3cb4cc228be8ae096b4204ceeaaeb5` | 0 | no |
-| `Static-Worker` | `main` | `bc96695c941a6a6328fcc8ad9c2959089acbba37` | `bc96695c941a6a6328fcc8ad9c2959089acbba37` | 0 | no |
+| `Backend` | `fix/cxgov-agentid-recovery-handle` | `31985b157bbd1d2f5f088694cfadf98cc9737f3f` | `8d4c3b2c569c42601ded25449727ecb1f6f8c88e` | 10 | no |
+| `Frontend` | `feat/cxgov-rollout-ring` | `8a4cc8a0cf3217fa461ff71f4f40fb23e8bc5c9e` | `7689011e10f2ea7a3ec4a426465ad3a46a325135` | 4 | no |
+| `Installers` | `main` | `521e511a01c774fcb40bb58907b99e7fc0a86cf6` | `521e511a01c774fcb40bb58907b99e7fc0a86cf6` | 0 | no |
+| `Ceragon-Intelligence` | `main` | `b7e9f27c7d030d99a45a277fd40727967799f29c` | `b7e9f27c7d030d99a45a277fd40727967799f29c` | 0 | no |
+| `Static-Worker` | `main` | `137f34f770e2c5324d0b4cde61a5fa214111dc3a` | `137f34f770e2c5324d0b4cde61a5fa214111dc3a` | 0 | no |
 | `Sandbox-Worker` | `main` | `496073fe3887e1605610798dbed9852824a8b047` | `496073fe3887e1605610798dbed9852824a8b047` | 0 | no |
 | `GithubApp-Bot-Scanner-Worker` | `main` | `c72579e8d109b37c72f41bd00a71a7a018f4f420` | `c72579e8d109b37c72f41bd00a71a7a018f4f420` | 0 | no |

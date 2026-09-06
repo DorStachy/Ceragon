@@ -81,6 +81,46 @@
       "id": "vendored-prose-selftest",
       "script": "ci/lib/vendored-prose.test.mjs",
       "why": "Mutation proof for the check above: one edited byte in a copy is DRIFT naming the file and the offset, a changed source under an unchanged copy is DRIFT, a missing copy or an unterminated fence or a missing heading is NOT MEASURED, and the real plan in this checkout carries exactly the two fenced regions the fixture was cut from."
+    },
+    {
+      "id": "workflow-header-truth",
+      "script": "ci/lib/workflow-header-truth.mjs",
+      "why": "Workflow headers are operational claims. This check compares present-tense trigger claims in the first 20 header comments with the real on: keys across all seven repositories, while preserving conditional future instructions as instructions rather than misclassifying them as current claims."
+    },
+    {
+      "id": "workflow-header-truth-selftest",
+      "script": "ci/lib/workflow-header-truth.test.mjs",
+      "why": "Defeat proof for workflow-header-truth: a stale PUSH TO MAIN claim over a manual-plus-nightly workflow must fail with the file and line, while the conditional WHEN T-M2 LANDS instruction must remain valid."
+    },
+    {
+      "id": "w-1-rebase-manifest",
+      "script": "ci/lib/rebase-manifest.mjs",
+      "why": "The plan's line-level claims are meaningful only against the seven fetched origin/main revisions recorded in its generated manifest. This check refuses a stale SHA, local HEAD, branch, or behind count rather than trusting a handed-down list."
+    },
+    {
+      "id": "w-1-rebase-manifest-selftest",
+      "script": "ci/lib/rebase-manifest.test.mjs",
+      "why": "Mutation proof for the rebase manifest: seven real temporary Git repositories are generated, one Installers SHA is hand-edited, and validation must fail with the recorded and actual origin/main values."
+    },
+    {
+      "id": "claim-contract-guard",
+      "script": "ci/lib/claim-contract-guard.mjs",
+      "why": "Pins the exact no-PASS statement and all 15 sourced forbidden claims."
+    },
+    {
+      "id": "claim-contract-guard-selftest",
+      "script": "ci/lib/claim-contract-guard.test.mjs",
+      "why": "Defeat proof that removing one forbidden claim makes the contract guard red."
+    },
+    {
+      "id": "standards-schema-declaration",
+      "script": "ci/lib/standards-schema-declaration.mjs",
+      "why": "Pins the required per-class standards columns, accepted editions, and ATLAS release."
+    },
+    {
+      "id": "standards-schema-declaration-selftest",
+      "script": "ci/lib/standards-schema-declaration.test.mjs",
+      "why": "Defeat proof for a missing standards column and blank ATLAS release."
     }
   ],
   "repos": {
