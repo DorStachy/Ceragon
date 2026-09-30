@@ -53,6 +53,21 @@ other 73 come down only by changing what triggers them.
 The first run of each image takes a few minutes and then never again. Images are named
 `devoid-ci/node20`, `devoid-ci/node24`, `devoid-ci/go124`, `devoid-ci/scanner`, `devoid-ci/ops`.
 
+For an isolated meta-repository worktree, set `CERAGON_WORKSPACE_ROOT` to the
+directory containing the candidate component checkouts. The rebase manifest and
+its fetch receipt are written together in the meta worktree, including when
+`--manifest` selects another output path. A sparse checkout must also include
+the historical files cited by the plan. For the current non-cone checkout:
+
+```bash
+git sparse-checkout add '/.plans/m47a-20260822/M47A_IMPLEMENTATION_PLAN_V1_20260822.md' '/.plans/verify-prod-20260808/fix-specs/CREDS.md' '/.plans/verify-prod-20260808/IMPLEMENTATION_PLAN.md'
+node ci/lib/rebase-manifest.mjs --write
+```
+
+This materializes tracked evidence without editing it. Historical source links
+pinned to a removed component's commit remain historical evidence; they do not
+attest the current component or fall within the current-file citation resolver.
+
 ---
 
 ## Commands

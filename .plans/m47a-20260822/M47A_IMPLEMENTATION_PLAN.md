@@ -2630,9 +2630,11 @@ no way out through the console. That is the same shape as the outage the read pa
 - [ ] **Step 4: populate `category.floor` in the Frontend.** The board's refusal logic is already
   correct and already unreachable: `moveRefusalReason` (`Frontend/components/admin/policy/category-bucket-board.tsx:689-690`) returns
   `null` whenever `category.floor == null`, and `floor?:` (`:222`) is set by **no production code** —
-  `git grep -n "floor:" origin/main -- components app lib` returns only
-  `Frontend/components/overview/ai-activity-region.tsx:242, 258, 277, 293, 321`, where `floor: !deltasExact` is
-  an unrelated boolean on an unrelated component. Verified 2026-08-28.
+  The 2026-08-28 observation of `git grep -n "floor:" origin/main -- components app lib`
+  found only the unrelated `floor: !deltasExact` boolean in the overview component.
+  Its [immutable historical source](https://github.com/Ceragon-Prod/Frontend/blob/8f4f88d6851f49e9781178b4679f56dc9e965926/components/overview/ai-activity-region.tsx)
+  preserves that evidence; commit `8a01b243007ad71e7a59dc5228a968a324a7fcce` subsequently
+  removed the component. This dated observation does not attest current floor wiring.
 - [ ] **Step 5: fix `isProtected`, the consequence lookup, and the fixture that hides both.**
   Production member keys are lane-qualified — `boardMemberKey` is `` `${lane}:${cls}` `` at
   `Frontend/components/admin/ai-security-policy-section.tsx:3478`, applied at `:3508` — while the two tables keyed against them
