@@ -1,33 +1,33 @@
 {
-  "fetchedAt": "2026-09-05",
+  "fetchedAt": "2026-09-30",
   "repos": {
     "Backend": {
-      "before": "8d4c3b2c569c42601ded25449727ecb1f6f8c88e",
-      "after": "8d4c3b2c569c42601ded25449727ecb1f6f8c88e"
+      "before": "fc7834eef50df6469d63f2cd7606f6c4388a574c",
+      "after": "fc7834eef50df6469d63f2cd7606f6c4388a574c"
     },
     "Frontend": {
-      "before": "7689011e10f2ea7a3ec4a426465ad3a46a325135",
-      "after": "7689011e10f2ea7a3ec4a426465ad3a46a325135"
+      "before": "ee94fbb8e11d56b76bd95b9a2dbcca95ec0a1973",
+      "after": "ee94fbb8e11d56b76bd95b9a2dbcca95ec0a1973"
     },
     "Installers": {
-      "before": "521e511a01c774fcb40bb58907b99e7fc0a86cf6",
-      "after": "521e511a01c774fcb40bb58907b99e7fc0a86cf6"
+      "before": "52b5cb2a0f7c14eb1d7644e60b6fe0c4cb94a1ac",
+      "after": "52b5cb2a0f7c14eb1d7644e60b6fe0c4cb94a1ac"
     },
     "Ceragon-Intelligence": {
-      "before": "b7e9f27c7d030d99a45a277fd40727967799f29c",
-      "after": "b7e9f27c7d030d99a45a277fd40727967799f29c"
+      "before": "70786d19878ce18644d8f0c9da5ab4624458f67d",
+      "after": "70786d19878ce18644d8f0c9da5ab4624458f67d"
     },
     "Static-Worker": {
-      "before": "137f34f770e2c5324d0b4cde61a5fa214111dc3a",
-      "after": "137f34f770e2c5324d0b4cde61a5fa214111dc3a"
+      "before": "d9804a8058e71962686d72e13229c553876db720",
+      "after": "d9804a8058e71962686d72e13229c553876db720"
     },
     "Sandbox-Worker": {
-      "before": "496073fe3887e1605610798dbed9852824a8b047",
-      "after": "496073fe3887e1605610798dbed9852824a8b047"
+      "before": "4164a560e400b2b9c6a729a69960647724685b74",
+      "after": "4164a560e400b2b9c6a729a69960647724685b74"
     },
     "GithubApp-Bot-Scanner-Worker": {
-      "before": "c72579e8d109b37c72f41bd00a71a7a018f4f420",
-      "after": "c72579e8d109b37c72f41bd00a71a7a018f4f420"
+      "before": "5c642a167f1e14ba50449513ee841629c50c687d",
+      "after": "5c642a167f1e14ba50449513ee841629c50c687d"
     }
   }
 }

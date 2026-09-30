@@ -168,7 +168,7 @@ export function evaluateIf(cond, ctx) {
   let s = String(cond).trim();
   const wrapped = s.match(/^\$\{\{(.*)\}\}$/s);
   if (wrapped) s = wrapped[1].trim();
-  if (s === 'always()' || s === 'true') return true;
+  if (s === 'always()' || s === '!cancelled()' || s === 'true') return true;
   if (s === 'success()') return true;
   if (s === 'false' || s === 'cancelled()' || s === 'failure()') return false;
 

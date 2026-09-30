@@ -98,6 +98,7 @@ export interface AnalysisDynamicMessage {
 }
 
 export interface VerdictWriteMessage {
+  provenance?: 'verified-public-registry';
   messageType: 'verdict-write.v1';
   idempotencyKey: string;
   artifactSha256: string;

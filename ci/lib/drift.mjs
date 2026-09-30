@@ -10,10 +10,11 @@
  * before -- a control whose path is dead reports nothing, which reads
  * identically to reporting green.
  *
- * So: every job on origin/main that a `push` or `pull_request` can trigger must
+ * So: every job on origin/main, including manual/scheduled jobs, must
  * appear in gates.json as either mirrored or explicitly cannot-mirror-because.
- * Anything else fails this check. Deploy-only and scheduled jobs are exempt --
- * they are not gates and never block a merge.
+ * Anything else fails this check. A new mirrored job may exist only in the
+ * selected candidate workflow; report that explicitly without reducing the
+ * independent origin/main coverage audit.
  *
  *   node ci/lib/drift.mjs            check every repo
  *   node ci/lib/drift.mjs Backend    check one
@@ -25,7 +26,7 @@ import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import { parse as parseYaml } from 'yaml';
 import { expandMatrix } from './workflow.mjs';
-import { listWorkflowsOnMain } from './wfsource.mjs';
+import { listWorkflowsOnMain, resolveWorkflowText } from './wfsource.mjs';
 import { workspaceRootOr } from './workspace-root.mjs';
 
 const CI_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -129,17 +130,18 @@ function coveredByCannotMirror(cannotMirror, wfName, jobId) {
   return null;
 }
 
-function checkRepo(repoKey, wantCost) {
-  const repo = MANIFEST.repos[repoKey];
-  const repoPath = join(ROOT, repo.path);
+export function checkRepo(repoKey, wantCost, { root = ROOT, manifest = MANIFEST } = {}) {
+  const repo = manifest.repos[repoKey];
+  const repoPath = join(root, repo.path);
   const problems = [];
   const cost = [];
+  const candidateOnly = [];
   const seen = new Set();
 
   const files = listWorkflowsOnMain(repoPath);
   if (!files.length) {
     problems.push({ level: 'error', msg: `no workflows readable on origin/main -- run: git -C ${repo.path} fetch origin` });
-    return { problems, cost };
+    return { problems, cost, candidateOnly };
   }
 
   for (const rel of files) {
@@ -199,14 +201,35 @@ function checkRepo(repoKey, wantCost) {
 
   for (const id of Object.keys(repo.mirrored)) {
     if (!seen.has(id)) {
+      // Match the runner's selected workflow, including uncommitted candidate
+      // edits. An old untouched checkout must not resurrect a job removed on
+      // main: resolveWorkflowText selects origin/main in that case.
+      const [wfName, jobId] = id.split(':');
+      const candidate = resolveWorkflowText(repoPath, `.github/workflows/${wfName}.yml`);
+      if (candidate?.source === 'working-tree') {
+        try {
+          const workflow = parseYaml(candidate.text);
+          const job = workflow?.jobs?.[jobId];
+          if (job && typeof job === 'object' && !Array.isArray(job)) {
+            candidateOnly.push({ id, source: candidate.source, note: candidate.note });
+            continue;
+          }
+        } catch (error) {
+          problems.push({
+            level: 'error',
+            msg: `mirrored gate "${id}" is absent on origin/main and its selected candidate workflow does not parse: ${error.message}`,
+          });
+          continue;
+        }
+      }
       problems.push({
         level: 'error',
-        msg: `mirrored gate "${id}" no longer exists on origin/main -- the job was renamed or removed.`,
+        msg: `mirrored gate "${id}" exists on neither origin/main nor the selected candidate workflow -- the job was renamed, removed, or never added.`,
       });
     }
   }
 
-  return { problems, cost };
+  return { problems, cost, candidateOnly };
 }
 
 function main() {
@@ -223,8 +246,11 @@ function main() {
   const allCost = [];
 
   for (const key of repoKeys) {
-    const { problems, cost } = checkRepo(key, wantCost);
+    const { problems, cost, candidateOnly } = checkRepo(key, wantCost);
     allCost.push(...cost.map((c) => ({ ...c, repo: key })));
+    for (const candidate of candidateOnly) {
+      process.stdout.write(`${YELLOW}candidate-only${RESET} ${key} ${candidate.id}: selected working-tree workflow (${candidate.note}); absent on origin/main\n`);
+    }
     if (!problems.length) {
       process.stdout.write(`${GREEN}ok${RESET}    ${key}\n`);
       continue;
@@ -276,7 +302,7 @@ function main() {
     process.stdout.write(`\n${RED}${errors} drift problem(s).${RESET} Fix ci/gates.json, then re-run.\n`);
     process.exit(1);
   }
-  process.stdout.write(`\n${GREEN}No drift: every push/PR-triggered job is mirrored or has a stated reason it is not.${RESET}\n`);
+  process.stdout.write(`\n${GREEN}No drift: every origin/main job is mirrored or has a stated reason it is not; candidate-only mirrored jobs are reported above.${RESET}\n`);
 }
 
-main();
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();

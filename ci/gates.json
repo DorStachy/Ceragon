@@ -28,6 +28,29 @@
   },
   "workspaceChecks": [
     {
+      "id": "workflow-drift-selftest",
+      "script": "ci/lib/drift.test.mjs",
+      "nodeArgs": ["--test"],
+      "why": "Proves that candidate-only workflow jobs can be registered without hiding missing jobs or weakening complete origin/main coverage. Uses isolated real Git fixture repositories."
+    },
+    {
+      "id": "privacy-pipeline-cell-selftest",
+      "script": "scripts/privacy-pipeline-cell.test.mjs",
+      "nodeArgs": ["--test"],
+      "why": "Runs the isolated pipeline benchmark driver's regression tests without starting a provider or pipeline."
+    },
+    {
+      "id": "static-validation-wiring-selftest",
+      "script": "ci/lib/static-validation-wiring.test.mjs",
+      "nodeArgs": ["--test"],
+      "why": "Checks that manual Static validation uses the exact pre-deploy checks, removes deployment/token privileges, isolates cancellation from deployments, and keeps deploy jobs closed for checks-only requests. Also verifies Sandbox ends its checks with actual frozen production preparation."
+    },
+    {
+      "id": "privacy-fixture-wiring-selftest",
+      "script": "ci/lib/privacy-fixture-wiring.test.mjs",
+      "why": "Checks that Backend's mandatory semantic PR/deploy suites enable real privacy store fixtures, retain the isolated PostgreSQL guard, execute the suite-summary assertion, and are routed through the local mirror's reviewed fixture commands. This spans Backend workflows and the workspace mirror."
+    },
+    {
       "id": "toolrisk-vocab-parity",
       "script": "ci/lib/vocab-parity.mjs",
       "why": "The tool-risk detector vocabulary is one contract living as three hand-copied files in three repos. Each repo's own guard compares that repo against THAT REPO'S copy, so a class added in the agent and never copied leaves all three green while the class becomes ungovernable: the console cannot set a policy for a name the Backend tuple does not contain. Nothing inside a single repo's CI can see this; that is why it is here and not under 'mirrored'."
@@ -40,12 +63,12 @@
     {
       "id": "claim-contract",
       "script": "ci/lib/claim-contract.mjs",
-      "why": "Fifteen named sentences overstate what this programme can prove -- eight forbidden by the source material, seven by published research about this class of product -- and until this landed the only thing stopping one reaching a customer was a person remembering the list. It greps the plan's goal statement and any release note for them and fails naming the file, the line and the checklist row. It also compares the plan's prose checklist against Wave 8 Task 11's Go renderer, which is the other half of a deliberately-two-artifact design; the renderer does not exist yet and the check reports it ABSENT rather than as zero, because 0 == 0 reading as agreement is the exact defect it exists to prevent."
+      "why": "Fifteen named sentences overstate what this programme can prove -- eight forbidden by the source material, seven by published research about this class of product -- and until this landed the only thing stopping one reaching a customer was a person remembering the list. It greps the plan's goal statement and any release note for them and fails naming the file, the line and the checklist row. It also compares the plan's prose checklist against Wave 8 Task 11's Go renderer, which is the other half of a deliberately-two-artifact design. When present, the renderer is measured against the checklist; when missing, the check reports ABSENT and NOT MEASURED rather than zero or agreement."
     },
     {
       "id": "claim-contract-selftest",
       "script": "ci/lib/claim-contract.test.mjs",
-      "why": "Mutation proof for the check above: 35 assertions over a real plan mutated on disk, including the discriminating pair that an absent renderer and a renderer encoding 15 produce different verdicts, and the case that found a real hole -- deleting ONE fence end marker merges two fences, silently exempting everything between them, and the guard passed until this case existed."
+      "why": "Mutation proof for the check above: assertions over a real plan mutated on disk and an isolated CLI fixture repository, including the discriminating pair that an absent renderer and a measured equal renderer produce different verdicts, and the case that found a real hole -- deleting ONE fence end marker merges two fences, silently exempting everything between them, and the guard passed until this case existed. The real workspace renderer is measured when present; absence cases do not depend on deleting or hiding it."
     },
     {
       "id": "workspace-root-selftest",
@@ -125,11 +148,11 @@
         "pr-checks:licenses_integration": {},
         "pr-checks:alerts_integration": {},
         "pr-checks:migration_chain_from_empty": {},
-        "pr-checks:full_test": {},
+        "pr-checks:full_test": { "privacyStoreFixtures": { "helperSha256": "184bbdfeac76d7f592afff86e19dc9eebb9de47ade56f9ab8daa3fb5fbf6773e" } },
         "security:audit": {},
         "security:rate_limit_taskdef": {},
         "security:rds_boundary": {},
-        "build:build_and_test": {},
+        "build:build_and_test": { "privacyStoreFixtures": { "helperSha256": "184bbdfeac76d7f592afff86e19dc9eebb9de47ade56f9ab8daa3fb5fbf6773e" } },
         "build:e2e_advisory": {},
         "pr-checks:shared-contracts-pin": {}
       },
@@ -137,7 +160,8 @@
         "build:required_checks": "Polls the GitHub Checks API for this SHA to decide whether the deploy may start. There is no local equivalent of 'what did GitHub record for this commit', and faking one would defeat the gate.",
         "build:deploy": "Assumes an OIDC role, pushes to ECR and rolls the ECS service. Deploys stay on GitHub deliberately: they need the cloud identity, and a deploy that can be triggered from a laptop is a deploy with no audit trail.",
         "security:rate_limit_taskdef (AWS leg)": "The offline self-test IS mirrored; the step that reads the live task definition needs the github-runner-backend role and is reported PARTIAL.",
-        "security:rds_boundary (AWS leg)": "Same shape: the fixture self-test runs locally, the live security-group read does not."
+        "security:rds_boundary (AWS leg)": "Same shape: the fixture self-test runs locally, the live security-group read does not.",
+        "publish-release-manifest:publish": "Assumes the github-runner-backend OIDC role before every substantive step, reads the live stable channel and ECS/ECR state, writes the release manifest to production S3, then checks the public health endpoint. Even dry_run needs live AWS facts. There is no offline code-validation step before the credential boundary; do not mirror publication or substitute fixture facts for release provenance."
       }
     },
     "Frontend": {
@@ -216,6 +240,7 @@
         }
       },
       "cannotMirror": {
+        "test:candidate-runtime-image": "Manual-only production Docker runtime build on a fresh GitHub runner. This job performs runner-specific disk cleanup and uses docker/build-push-action with GitHub cache; the local workflow interpreter does not execute that image-build action. Its exact-candidate cloud result is required separately; no image readiness is inferred from local Jest/typecheck.",
         "deploy-scanner-workers:deploy": "OIDC role + ECR + ECS. Deploys stay on GitHub."
       }
     },
@@ -224,11 +249,12 @@
       "defaultImage": "node20",
       "volume": "devoidci-sandbox",
       "mirrored": {
+        "pr-checks:checks": {},
         "build-and-deploy:build_and_deploy": {}
       },
       "cannotMirror": {
         "build-and-deploy:dispatch_intel_bump": "Mints a GitHub App installation token and POSTs repository_dispatch into Ceragon-Intelligence.",
-        "build-and-deploy (deploy leg)": "This repo has no separate PR-checks workflow: audit, build, test, the task-definition policy gate and the worker-result contract all live in the same job as the deploy. Everything up to the OIDC step runs locally and the gate reports PARTIAL, which is accurate -- the deploy half genuinely did not run."
+        "build-and-deploy (deploy leg)": "The audit/build/test/policy/contract steps before OIDC run locally; the cloud deploy half remains PARTIAL. The separate pr-checks:checks job contains those validation steps without AWS credentials and is mirrored as a complete local gate."
       }
     },
     "Static-Worker": {
@@ -237,6 +263,7 @@
       "volume": "devoidci-static",
       "copyGit": true,
       "mirrored": {
+        "build-and-deploy:checks_only": { "inputs": { "checks_only": true } },
         "build-and-deploy:build_and_deploy": {}
       },
       "cannotMirror": {
@@ -282,7 +309,8 @@
         "finding-b-e2e:anti-tamper": "same.",
         "finding-b-e2e:linux-package-uninstall": "same.",
         "release:*": "Cuts and signs a real agent release. Stays on GitHub: the signing keys live there and a release built on a laptop has no provenance.",
-        "internal-candidate:*": "Builds and publishes a prerelease, including the Windows installer on windows-latest."
+        "internal-candidate:*": "Builds and publishes a prerelease, including the Windows installer on windows-latest.",
+        "stable-drift-check:drift": "Assumes the installation-version OIDC role, reads the live signed stable channel and versioned release-manifest partial from installer-binaries-prod, then compares the released commit with fetched origin/main history. The result is a live fleet/release-state observation, not a code-only check; a local fixture or stale channel snapshot cannot attest current deployment drift."
       }
     }
   }

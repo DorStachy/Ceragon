@@ -13,14 +13,16 @@
  * ran reached PASS. PARTIAL (a job whose remaining steps needed cloud
  * credentials) is NOT a pass and does not exit 0 unless --allow-partial.
  */
-import { mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmdirSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
 import { parse as parseYaml } from 'yaml';
 import { expandMatrix, planJob } from './workflow.mjs';
 import { resolveWorkflowText, branchState, mergedTree } from './wfsource.mjs';
+import { assertTrustedPrivacyFixtureSource, privacyFixtureHostEnvironment } from './privacy-fixture-trust.mjs';
 import {
   daemonUp,
   docker,
@@ -308,6 +310,7 @@ async function runGate(gate, flags, log) {
   const started = Date.now();
   const services = [];
   const result = { ...gate, steps: [], status: 'pass', logFile };
+  let privacyFixtures = null;
 
   try {
     await ensurePod(pod);
@@ -387,6 +390,36 @@ async function runGate(gate, flags, log) {
       if (pc.code !== 0) throw new Error(`postCheckout failed:` + pc.err);
     }
 
+    if (gate.cfg.privacyStoreFixtures) {
+      // Only these two reviewed orchestration commands run on the Docker host.
+      // Copy from the actual checked-out snapshot (also correct for --merged),
+      // never from a sibling checkout or the host's dependency junctions.
+      for (const action of ['start', 'stop']) {
+        if (!plan.steps.some(step => step.kind === 'run' &&
+          step.run.trim() === `node scripts/privacy-store-fixtures.cjs ${action}`)) {
+          throw new Error(`Privacy fixture ${action} step is missing from the workflow`);
+        }
+      }
+      const directory = mkdtempSync(join(tmpdir(), 'devoidci-privacy-fixtures-'));
+      const script = join(directory, 'privacy-store-fixtures.cjs');
+      const scope = `${gate.repoKey}-${gate.legId}-${process.pid}-${Date.now()}`;
+      privacyFixtures = { directory, script, run(action) {
+        try {
+          assertTrustedPrivacyFixtureSource(readFileSync(script), gate.cfg.privacyStoreFixtures.helperSha256);
+          const out = execFileSync(process.execPath, ['--max-old-space-size=128', script, action], {
+            encoding: 'utf8', windowsHide: true, timeout: action === 'start' ? 1200000 : 180000, maxBuffer: 8 * 1024 * 1024,
+            env: privacyFixtureHostEnvironment(process.env, scope, `container:${pod}`),
+          });
+          cap(out);
+          return { code: 0 };
+        } catch (error) {
+          cap(String(error.stdout || '') + String(error.stderr || error.message));
+          return { code: Number.isInteger(error.status) ? error.status : 1 };
+        }
+      } };
+      await dockerOk(['cp', `${container}:${WORKDIR}/scripts/privacy-store-fixtures.cjs`, script]);
+    }
+
     // --- steps ---
     const carried = {}; // what steps wrote to $GITHUB_ENV, as GitHub carries it forward
     for (const step of plan.steps) {
@@ -423,7 +456,10 @@ async function runGate(gate, flags, log) {
 
       cap(`\n=== STEP  ${step.name}\n`);
       const t0 = Date.now();
-      const r = await docker(args, { onStdout: cap, onStderr: cap });
+      const fixtureAction = step.run.trim().match(/^node scripts\/privacy-store-fixtures\.cjs (start|stop)$/)?.[1];
+      const r = privacyFixtures && fixtureAction
+        ? privacyFixtures.run(fixtureAction)
+        : await docker(args, { onStdout: cap, onStderr: cap });
       const ms = Date.now() - t0;
 
       // GitHub carries `KEY=value` lines written to $GITHUB_ENV into later steps.
@@ -446,6 +482,18 @@ async function runGate(gate, flags, log) {
     result.error = e.message;
     cap(`\n!!! RUNNER ERROR\n${e.stack || e.message}\n`);
   } finally {
+    // The normal mirror stops at the first failed step. Always clean these
+    // owned fixtures anyway, matching the workflow's `if: always()` cleanup.
+    if (privacyFixtures) {
+      const cleanup = privacyFixtures.run('stop');
+      if (cleanup.code !== 0) {
+        result.status = 'error';
+        result.error = `${result.error || ''} Privacy fixture cleanup failed; see ${privacyFixtures.directory}`.trim();
+      } else {
+        if (existsSync(privacyFixtures.script)) unlinkSync(privacyFixtures.script);
+        rmdirSync(privacyFixtures.directory);
+      }
+    }
     if (!flags.keep) {
       await rmContainer(container);
       await stopServices(services);
@@ -477,7 +525,7 @@ async function runWorkspaceChecks(list, flags, log) {
     let code;
     let out = '';
     try {
-      out = execFileSync(process.execPath, [join(ROOT, check.script), ...(check.args || [])], {
+      out = execFileSync(process.execPath, [...(check.nodeArgs || []), join(ROOT, check.script), ...(check.args || [])], {
         cwd: ROOT,
         encoding: 'utf8',
         stdio: ['ignore', 'pipe', 'pipe'],
