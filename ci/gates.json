@@ -111,6 +111,58 @@
       "id": "standards-schema-declaration-selftest",
       "script": "ci/lib/standards-schema-declaration.test.mjs",
       "why": "Defeat proof for a missing standards column and blank ATLAS release."
+    },
+    {
+      "id": "coordination-selftest",
+      "script": "ci/lib/coordination.test.mjs",
+      "why": "Proof for the module the three COORD-01 audits share: it validates the real ownership table, roster, freeze windows and gates sections, refuses each mutated shape, computes the same canonical digest as Go's DigestJSONBytes for the same bytes (pinned on both sides), and shows the signed path says YES only for a matching digest from every required signer."
+    },
+    {
+      "id": "roster-audit",
+      "script": "ci/lib/roster-audit.mjs",
+      "repos": [
+        "Installers",
+        "Backend",
+        "Frontend",
+        "Static-Worker",
+        "Sandbox-Worker"
+      ],
+      "why": "Plan rule 3 (C2, C11): 38 of 41 detector-package commits since 09-11 were authored by `unknown` and 3 by `Owner`, so no one could say who wrote the code a sealed result was read against. Every non-merge commit to a detector path since the programme base must come from a builder on that round's roster; `unknown` and `Owner` fail by name. Also red while the roster or the ownership table is unsigned. A missing checkout or base is NOT CHECKED."
+    },
+    {
+      "id": "roster-audit-selftest",
+      "script": "ci/lib/roster-audit.test.mjs",
+      "why": "Mutation proof for the roster audit over fabricated repositories: an `unknown` commit to internal/promptrisk fails, a roster builder passes, a non-builder and an off-roster identity fail, a missing repository is NOT CHECKED, and an unsigned roster keeps the CLI red."
+    },
+    {
+      "id": "ratchet-audit",
+      "script": "ci/lib/ratchet-audit.mjs",
+      "repos": [
+        "Installers",
+        "Backend",
+        "Frontend",
+        "Static-Worker",
+        "Sandbox-Worker"
+      ],
+      "why": "Plan section 10 rules 2 and 5, KC-44: GitHub Free cannot refuse a merge, so the shared ratchet is enforced after the push. Every detector commit needs a passing record from the leg this manifest marks requiredFor its repository, and no commit to a detector path or a frozen ownership row may land inside a freeze window. Red while freeze.v1.json is unsigned."
+    },
+    {
+      "id": "ratchet-audit-selftest",
+      "script": "ci/lib/ratchet-audit.test.mjs",
+      "why": "Mutation proof for the ratchet audit: a detector commit with no record fails, a passing record from the marked leg passes, a recorded regression and a record from an unmarked leg fail, a commit inside a freeze window fails, deleting the requiredFor marker fails, and --record runs a stub scoreboard in a temporary worktree and appends the record."
+    },
+    {
+      "id": "lexicon-counter",
+      "script": "ci/lib/lexicon-counter.mjs",
+      "repos": [
+        "Installers"
+      ],
+      "why": "Plan rule 6, KC-43: the prompt lane grew from 38 to 147 regexes while the unseen miss rate stayed flat. Net growth per round is capped at 8 regexes and 75 lexicon forms per engine (promptrisk and its browser twin), whoever commits, against the round's recorded baseline, and every net-new entry needs a provenance line."
+    },
+    {
+      "id": "lexicon-counter-selftest",
+      "script": "ci/lib/lexicon-counter.test.mjs",
+      "why": "Mutation proof for the lexicon counter: nine new regexes fail the cap, a form without provenance fails, a provenanced form passes, a moved regex is not new, the recorded baseline is re-verified, and the Go and JS lexers are held to the plan's 147/1,471 counts and to a regex-versus-division corpus."
     }
   ],
   "repos": {
@@ -265,7 +317,19 @@
         "pr-checks:uninstall-honesty": {},
         "pr-checks:hard-deny-stress": {},
         "pr-checks:neutraleval-ratchets": {},
-        "pr-checks:scoreboard": {},
+        "pr-checks:scoreboard": {
+          "requiredFor": {
+            "detectorPackages": "Installers/scoreboard/gates.v1.json#detectorPackages",
+            "repos": [
+              "Installers"
+            ],
+            "gates": [
+              "ratchet",
+              "parity-ratchet"
+            ],
+            "why": "COORD-01 shared ratchet (plan section 10 rule 2): any commit touching a detector path, whoever makes it, needs a passing record of this leg's ratchet gates in Installers/scoreboard/ratchet-ledger.v1.jsonl. ci/lib/ratchet-audit.mjs checks it after the push and --record produces it. The leg measures only the Installers engines, so it is marked for Installers alone; detector commits in the other repos report NOT CHECKED until a leg is marked for them."
+          }
+        },
         "pr-checks:scoreboard-absolute": {}
       },
       "cannotMirror": {

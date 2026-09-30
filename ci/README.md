@@ -185,6 +185,28 @@ validates it.
 | `toolrisk-vocab-parity-selftest` | The mutation proof for the check above. |
 | `claim-contract` | Fifteen sentences overstate what this programme can prove. The list lives in the plan's goal statement and, by design, a second time as data in Wave 8 Task 11's Go renderer -- two artifacts so neither can be edited silently. No single repo can compare them, and no repo's CI reads the plan at all. It also scans any release note passed to it. |
 | `claim-contract-selftest` | The mutation proof for the check above. It is also the reason the guard is correct: its sixth case found that deleting one fence end marker merges two fences and exempts everything between them, which the guard had been passing. |
+| `roster-audit` | Plan rule 3: every non-merge commit to a detector path (`Installers/scoreboard/gates.v1.json` `detectorPackages`, five repos) since the programme base must come from a builder on that round's `roster.v1.json`; `unknown` and `Owner` fail by name. Red while the roster or `ownership.json` is unsigned. |
+| `ratchet-audit` | The shared ratchet after the push (plan section 10): each detector commit needs a passing record in `scoreboard/ratchet-ledger.v1.jsonl` from the leg marked `requiredFor` below (`pr-checks:scoreboard`), and no commit to a frozen path may land inside a `freeze.v1.json` window (KC-44). `--record` produces the records. |
+| `lexicon-counter` | Plan rule 6 / KC-43: net growth per round of at most 8 regexes and 75 lexicon forms per engine (promptrisk and its browser twin), whoever commits, and a provenance line for every new entry. |
+| `coordination-selftest`, `*-audit-selftest`, `lexicon-counter-selftest` | Mutation proofs for the four above, over fabricated repositories seeded with the real coordination files. |
+
+### The programme-integrity audits (COORD-01)
+
+The three audits above declare `repos` in `gates.json`, so they also run in a single-repo run of any
+repository that holds detector code (`node ci/lib/run.mjs Installers` runs them before the Docker
+gates). They read the coordination data from the Installers checkout's `scoreboard/` directory and
+are **red by design** until the owner signs `ownership.json`, `roster.v1.json` and `freeze.v1.json`
+(and the coworker the first and last) in `scoreboard/coordination-ledger.v1.jsonl`. A missing
+checkout or a base commit the checkout does not have is `NOT CHECKED`.
+
+```bash
+node ci/lib/roster-audit.mjs --ref origin/main          # the post-push form, after a read-only fetch
+node ci/lib/ratchet-audit.mjs --record --ref origin/main # score each new Installers detector commit, append its record
+node ci/lib/lexicon-counter.mjs --repo Installers=/c/cwt/d9/int/Installers
+```
+
+`--repo Name=path[@ref]` points any repository at another checkout (a worktree). The self-tests read
+the real coordination files from `COORD_INSTALLERS_DIR`, else from the workspace's Installers.
 
 ### Why the per-repo guards cannot cover it
 
