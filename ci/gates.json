@@ -240,6 +240,7 @@
         }
       },
       "cannotMirror": {
+        "test:candidate-runtime-image": "Manual-only production Docker runtime build on a fresh GitHub runner. This job performs runner-specific disk cleanup and uses docker/build-push-action with GitHub cache; the local workflow interpreter does not execute that image-build action. Its exact-candidate cloud result is required separately; no image readiness is inferred from local Jest/typecheck.",
         "deploy-scanner-workers:deploy": "OIDC role + ECR + ECS. Deploys stay on GitHub."
       }
     },
