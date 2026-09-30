@@ -2650,3 +2650,51 @@ exactly the mode our W3 T1 needs).
 
 Until this is answered, **we write nothing under `internal/codexmanaged/`** beyond those append-only
 files.
+
+---
+
+### 2026-09-30 · D9 (detection to 9) · SEAM REQUEST — one ownership table, one shared ratchet, freeze windows, a builder roster (COORD-01)
+
+To: the runtime / customer-readiness programme (the coworker), and the owner.
+
+Where: `Installers/scoreboard/ownership.json`, `roster.v1.json`, `freeze.v1.json` and the new sections of
+`Installers/scoreboard/gates.v1.json` (`detectorPackages`, `rounds`, `lexicon`), on the d9 integration branch
+`feat/detect9`. **Not merged to any `main`, not pushed.** The audits are `ci/lib/roster-audit.mjs`,
+`ci/lib/ratchet-audit.mjs` and `ci/lib/lexicon-counter.mjs` in this repo.
+
+What the table proposes (plan §10, K5 §5, ledger row C11):
+- **Coworker-owned, sign-off required** before a d9 unit edits them: `internal/promptrisk`, `toolrisk`,
+  `shellast` (detector code: owner runtime, reviewer detection), `airuntime` plus `airuntimeintegrity` and
+  `airuntimeinventory`, `aicanary`, `proxy`. Proposed: ownership of promptrisk/toolrisk/shellast stays with
+  you, and every change there goes through detection review; the alternative is a transfer for the
+  programme's duration. Signing the table decides it.
+- **Named seams, one owner each:** `ai_taint.go` (detection), `ai_proxy.go` masking (detection, inside your
+  package, so under sign-off), wire `tools[]` and the wire session key (runtime), Backend preset contents
+  (detection; a handshake item, never moved inside a freeze window; the console redesign's four presets fall
+  here), vocabulary files (detection).
+- **Rows that did not exist:** `policyeval`, `localdecide`, `browser-extension/src`, `cmd/rc4-holdout-eval`.
+- **Your engine-residual batch** (HTML-escaped `<`, ensure_ascii escapes, lone-CR parity, ANSI conceal, from
+  the 2026-09-29 handover) is recorded as **folded into SC1-01**: please do not start it separately.
+
+What binds both programmes' commits, whoever makes them:
+- **Shared ratchet:** every commit to a detector path (`gates.v1.json` `detectorPackages`, five repos) needs a
+  passing record from `Installers/pr-checks:scoreboard` in `scoreboard/ratchet-ledger.v1.jsonl`. It is checked
+  after the push (GitHub Free cannot refuse a merge); `ratchet-audit.mjs --record` scores each new commit in a
+  temporary worktree and proposes a revert on a regression. It never pushes.
+- **Freeze windows** (2-4 days per round, KC-44): no commit to a detector path or a frozen row inside one. One
+  window is proposed, R0's exit, 2026-10-25 to 2026-10-27; move it before signing if the round runs differently.
+- **Roster** (rule 3): a detector commit authored as `unknown`, `Owner`, or by anyone not on that round's roster
+  as a builder fails the round. Your git identity goes on the roster as a builder if you commit detector code.
+- **Lexicon cap** (rule 6): at most 8 regexes and 75 lexicon forms net per round per engine, every new entry with
+  a provenance line (`scoreboard/lexicon-provenance.v1.jsonl`).
+- **Two series, never merged:** your report carries "Scenario readiness %", the scoreboard carries "Detection
+  score /10" only; the scoreboard refuses to write a report that carries both.
+
+Asked of the signers:
+- Sign `ownership.json` (owner and coworker), `roster.v1.json` (owner), `freeze.v1.json` (owner and coworker):
+  one line each in `Installers/scoreboard/coordination-ledger.v1.jsonl`,
+  `{"date":…,"file":…,"digest":<its JCS digest, printed by the audits>,"signer":"human:owner"|"human:coworker"}`.
+- Give every builder agent and each person a distinct git identity for the roster.
+
+Blocking: every d9 unit that edits a coworker-owned path waits for the signed table and its own handshake entry.
+Until then the three audits are red by design.

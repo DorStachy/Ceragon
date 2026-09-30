@@ -531,8 +531,12 @@ async function main() {
   // asked for by name. They are skipped for a single-repo run for the same
   // reason a single-repo run does not build the other repos' images -- but that
   // is exactly why `node ci/lib/run.mjs all` has to include them, and does.
-  let workspaceChecks = allRepos || workspaceOnly ? WORKSPACE_CHECKS : [];
-  if (workspaceOnly && wanted.length) {
+  // A check that declares `repos` also runs in a single-repo run of one of
+  // them: the COORD-01 audits gate commit acceptance for every repository that
+  // holds detector code, not only when someone thinks to run the whole set.
+  let workspaceChecks =
+    allRepos || workspaceOnly ? WORKSPACE_CHECKS : WORKSPACE_CHECKS.filter((c) => (c.repos || []).includes(positional[0]));
+  if ((workspaceOnly || !allRepos) && wanted.length) {
     workspaceChecks = workspaceChecks.filter((c) => wanted.includes(c.id));
   }
   if (flags.only) workspaceChecks = workspaceChecks.filter((c) => c.id.includes(flags.only));
