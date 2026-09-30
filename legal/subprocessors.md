@@ -1,68 +1,26 @@
-# Ceragon Subprocessor Schedule
+# Service provider processing inventory
 
-**Last updated:** 2026-05-22
+Reviewed: 2026-09-30. Review due: 2026-10-30. Owner: Security / Legal.
 
-This document lists the third-party subprocessors Ceragon uses to deliver the
-CodeFence security platform. Customers signing a DPA receive notice when this
-list changes per the standard 30-day notice clause.
+**Implementation review draft; contractual and deployed status unverified.** This replaces the May 2026 inventory's unsupported statements about activated providers, notification delivery, fixed retention, and per-organization opt-out. It is not a representation that every provider below is currently receiving customer data or is approved under a signed customer agreement.
 
----
+The authoritative claim status is [the processing and claims register](../docs/customer-claims/processing-claims-register.json), especially CP-003, CP-012, and CP-013. Before a customer deployment, record the actual processor entity, purpose, data categories, processing locations, agreement, transfer mechanism where applicable, retention/training terms, selected account settings, and notice obligations. These are release gates, not values inferred from public vendor marketing.
 
-## Active subprocessors
-
-| Subprocessor | Service | Data categories processed | Hosting region(s) | Added |
-|---|---|---|---|---|
-| Amazon Web Services, Inc. (AWS) | Infrastructure hosting — compute, storage, queues, secrets, observability | All platform data | EU (eu-north-1 primary), US on request | initial |
-| Google LLC | Gemini API — AI-assisted code analysis for diff / push / pull-request scans (Pass-2 LLM enrichment of incremental changes) | Source code snippets (≤500 chars per finding), file paths, deterministic scanner findings | US | initial |
-| **Anthropic PBC** | **Claude API — AI-assisted code analysis for baseline-candidate scans only (first-ever security baseline per repository, OR admin-initiated re-baseline). Produces both findings and a one-time Security Posture Narrative.** | **Filtered repository source code (no node_modules / dist / lockfiles / binaries / tests), deterministic scanner findings JSON, Phase-1 Semantic Context Bundles. NOT included: git history, PR descriptions, customer secrets in deploy-env variables.** | **US (default), EU on customer request via DPA** | **2026-05-22** |
-
----
-
-## Recently added (within 30-day notice window)
-
-### 2026-05-22 — Anthropic PBC
-
-Added to support the Opus 4.7 onboarding scan capability. Routing details:
-
-- **What triggers Anthropic processing:** Only `baseline-candidate` scans
-  (first-ever scan per onboarded repo OR admin-initiated re-baseline scan).
-  Diff / push / pull-request scans continue to use Google Gemini.
-- **What data is sent:** Same filtered repository surface our deterministic
-  scanners already process — source code in `.ts/.tsx/.js/.jsx/.mjs/.cjs/.py/.go/.rs`,
-  config files (`*.json/*.yml/*.yaml/*.toml`), infrastructure-as-code
-  (`Dockerfile`, `*.tf`, ECS task definitions, CI workflows), SQL migrations,
-  and the `README.md`. Test code, lockfiles, binaries, `node_modules/`, `dist/`,
-  `__snapshots__/`, and similar are excluded.
-- **What data is NOT sent:** Git history, commit messages, PR descriptions,
-  CI/CD secrets, customer environment variables, customer database contents,
-  customer end-user data.
-- **Opt-out path:** Customers may request Gemini-only baselines (no narrative)
-  by contacting support before signing the DPA. Setting
-  `OPUS_ONBOARDING_ENABLED=false` per-org reverts the platform to the prior
-  Gemini-3-Flash-Preview-only baseline flow for that org.
-- **Anthropic's DPA:** https://www.anthropic.com/legal/dpa
-- **Anthropic's security & compliance:** https://trust.anthropic.com
-- **Notice window:** Active customers were notified 2026-05-22; subprocessor
-  becomes effective 2026-06-21 (30 days from notice).
-
----
-
-## Subprocessor change policy
-
-When Ceragon adds, removes, or materially changes a subprocessor:
-
-1. We update this document.
-2. We send a notice email to each customer with an active DPA, at least
-   30 calendar days before the change takes effect.
-3. Customers may object during the notice window. Objections trigger a
-   reasonable-alternative-arrangement conversation (typically: opt out of the
-   new subprocessor's feature scope, or terminate the contract per DPA terms).
-4. After the notice window closes, the new processing is operational.
-
----
-
-## Audit trail
-
-| Date | Change | Reason |
+| Provider or service | Processing path requiring review | Approval evidence still required |
 |---|---|---|
-| 2026-05-22 | Added Anthropic PBC (Claude API for baseline-candidate scans) | Spec `docs/superpowers/specs/2026-05-22-opus-onboarding-scan-design.md` (D8). Enables premium-depth onboarding scans via Opus 4.7's 1M-context reasoning, which captures architectural gap classes (env-spread-to-subprocess, producer-controlled-argv, IaC capability creep, SSRF via untrusted URL, unbounded resource ingest, bearer-only outbound auth, LLM prompt injection from package fields, no-USER Dockerfile, default-fails-open config) that single-file pattern scanners systematically miss. |
+| AWS | Hosted application, databases, object storage, queues and optional processing infrastructure; repository archives and evidence may be included | Actual accounts, services, regions, processing hosts, encryption settings, backup lifetimes, agreements and access controls |
+| Google / Gemini | Configured external model analysis may receive selected source, findings and analysis context when authorized | Deployed provider/model routes, payload boundaries, account-specific retention and training terms, locations and agreement |
+| Anthropic / Claude | Configured external repository analysis may include broad filtered repository context when authorized | Deployed routes, actual input scope, provider agreement, retention/training terms, locations and notices; no zero-retention claim is made |
+| NVIDIA-hosted model services | Optional configured inference route identified in implementation | Whether enabled, exact service/entity, payload, locations, agreement and account settings |
+| Cloudflare | Configured edge, DNS or access infrastructure can process request and operational metadata | Actual enabled products, traffic visibility, logging, locations and agreement |
+| Brevo | Configured transactional email can process recipients and message contents | Enabled workflows, template minimization, delivery/retention settings, locations and agreement |
+| GitHub | Connected repository and application integration; customer's repository host and integration counterpart | Actual integration permissions and exchanged data; determine contractual role for each flow |
+| Other configured hosting or processing operators, including Hetzner if used | Historical infrastructure references require verification against actual deployment | Confirm current use and actual operator before adding an approved processor entry |
+
+The September 2026 readiness handover records a temporary pre-customer home-box processing topology. Infrastructure files mentioning AWS Stockholm do not prove that every source-processing host is there. Before customer processing, inventory and authorize every actual host and operator, including any temporary host, and record its deletion and access controls.
+
+Local invocation can upload content to remote processing. Source acquisition and external model analysis are separately authorized product actions. Filtered source can still contain customer secrets; a path filter is not a guarantee of secret-free payloads. Prompt capture, external AI analysis, tenant-local evaluation, and any shared learning or intelligence use are distinct purposes.
+
+An external model provider's retention, training exclusion, regional processing, or deletion guarantee must be supported by the agreement and configuration for the actual service account. Application encryption using operator-managed keys does not mean that operators cannot decrypt data or that the customer owns the keys.
+
+Notice periods and objection processes depend on the executed customer agreement. The repository does not establish that a notice was sent or that a customer accepted a provider. Track such evidence in the controlled legal register; do not add customer details or contract secrets to this source repository. This implementation task sends no notices and changes no provider account settings.

@@ -134,13 +134,80 @@ mirrored. Summary:
 | Frontend | 4 | node20 | typecheck, jest, em-dash, npm audit |
 | Ceragon-Intelligence | 7 | node20 + ops | validate plus six Hetzner artifact lints |
 | GithubApp-Bot-Scanner-Worker | 14 | node20 + scanner | Semgrep 1.89.0 and gitleaks 8.18.4 pinned |
-| Sandbox-Worker | 1 | node20 | PARTIAL by design: build+test share a job with the deploy |
-| Static-Worker | 1 | node20 | same shape; pnpm; needs `.git` for its lockfile guard |
-| Installers | 11 | go124 | Go 1.24 + Node 22 in one image |
+| Sandbox-Worker | 2 | node20 | complete PR audit/build/test/policy gate; combined deploy job remains PARTIAL |
+| Static-Worker | 2 | node20 | complete manually selected checks-only job; combined deploy job remains PARTIAL |
+| Installers | 15 | go124 | Go 1.24 + Node 22; includes the separate labeller-governance ratchet |
 
 **Not mirrored, and why** is recorded in `ci/gates.json` under each repo's `cannotMirror`. The two
 categories are cloud identity (deploys, OIDC reads of live AWS state, GitHub App tokens) and
 non-Linux runners (macOS, Windows, WSL, systemd-dependent Linux legs).
+
+The 2026-09-30 coverage reconciliation adds `Sandbox-Worker/pr-checks:checks`
+and `Installers/pr-checks:neutraleval-ratchets` to the mirror. Run them with:
+
+```bash
+node ci/lib/run.mjs Sandbox-Worker pr-checks:checks
+node ci/lib/run.mjs Installers pr-checks:neutraleval-ratchets
+```
+
+The Sandbox job runs dependency audits, the build, the full Jest suite, task
+definition policy and worker-result contract checks. It has no cloud-credential
+or deployment step. The Installers job runs the exact
+`TestEnforcingCasesHaveTwoLabelers` ratchet under Go 1.24. The workflow records an
+unmet independent-human-labelling requirement; an expected red result is still
+a failure, not a reason to skip or relax the check.
+
+Backend's `publish-release-manifest:publish` and Installers'
+`stable-drift-check:drift` are explicitly classified as not mirrored. Both need
+an OIDC role and current production facts before their first substantive step;
+the former also publishes a production S3 object. No offline check is hidden
+behind either classification. `drift.mjs` checks mapping completeness only; a
+green drift result does not mean the newly mapped jobs were executed or passed.
+
+Backend's mandatory `pr-checks:full_test` and `build:build_and_test` also start
+real Minio and DynamoDB fixtures before the ordinary semantic Jest command.
+`RUN_PRIVACY_STORE_TESTS=true` makes the storage deletion spec execute; it is
+not excluded or allowlisted. Their main disposable PostgreSQL fixture is
+`privacy_root` on loopback port 15432, satisfying the privacy tests' safety
+guard. AICP M1/M2 retain separate servers on 55432/55433.
+
+Those two manifest entries set `privacyStoreFixtures`. Only the exact
+`node scripts/privacy-store-fixtures.cjs start|stop` orchestration commands
+execute on the local Docker host, using a copy from the job's actual source
+snapshot and its existing pod network.
+The trusted workspace manifest pins the reviewed helper's SHA-256, checked
+before every host invocation; changed candidate code is refused before it can
+execute. Verification uses raw bytes. Backend pins the helper to LF in
+`.gitattributes`; an isolated Git checkout regression proves the same pin with
+`core.autocrlf=true` and `false`, and modified CRLF bytes are rejected.
+Only Docker/path environment settings pass to that bounded helper,
+not ambient AWS, GitHub, provider credentials or Node preload hooks.
+GitHub runs the same commands directly
+on its runner with loopback-only published ports. MinIO is built from official
+source pinned by commit and archive SHA-256, with pinned Go/Alpine base images;
+the old community image is no longer available upstream. DynamoDB uses its
+pinned emulator image. Empty build context,
+random names, ownership labels and cleanup after failure keep this separate
+from other chats' stacks. All application installation and semantic tests
+remain in the selected Node 24 image. Fixture cleanup runs even when the local
+mirror stops on a failed step; `--keep` does not retain these synthetic stores.
+The first MinIO build can take several minutes; the host bridge allows the
+helper's bounded 15-minute source build plus fixture startup and cleanup.
+`node ci/lib/privacy-fixture-wiring.test.mjs` checks this cross-workspace wiring.
+The mirror still stops ordinary steps at the first failure. Its suite-summary
+assertion executes after a successful Jest step; after failed Jest, GitHub
+executes that diagnostic assertion under `!cancelled()` while the local job
+stays failed without it. The special fixture cleanup still executes in both.
+
+Static's existing workflow supports a boolean `checks_only=true` manual input.
+It selects the contents-read-only validation job and explicitly skips both
+deployment and the downstream Intelligence dispatch. Validation has its own
+cancellation group. The local manifest mirrors that exact job, including
+fresh frozen offline production packaging. `drift.mjs` still audits every
+origin/main job and explicitly reports candidate-only jobs selected by the
+same workflow-source resolver as the runner. A stale unchanged checkout cannot
+resurrect a removed upstream job. The new drift and validation-wiring tests
+run with the other workspace checks.
 
 The eleventh Installers gate, `finding-b-e2e:shim-enforcement`, was added on 2026-08-26 and is the
 only leg of `finding-b-e2e.yml` that mirrors. It is worth knowing what it is: the rest of that
