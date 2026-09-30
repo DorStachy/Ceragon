@@ -332,7 +332,8 @@
         },
         "pr-checks:scoreboard-absolute": {},
         "pr-checks:capture-replay": {},
-        "pr-checks:dd8-browser-bench": {}
+        "pr-checks:dd8-browser-bench": {},
+        "pr-checks:dd3-transform-suite": {}
       },
       "cannotMirror": {
         "pr-checks:cli-entrypoint-tests": "runs-on windows-latest. cmd/devoid's entrypoint tests exercise Windows service control, ACLs and PATH resolution; a Linux container cannot stand in. Run them on this machine with `go test ./cmd/devoid/... -count=1` from a Windows shell.",
