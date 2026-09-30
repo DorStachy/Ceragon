@@ -330,7 +330,8 @@
             "why": "COORD-01 shared ratchet (plan section 10 rule 2): any commit touching a detector path, whoever makes it, needs a passing record of this leg's ratchet gates in Installers/scoreboard/ratchet-ledger.v1.jsonl. ci/lib/ratchet-audit.mjs checks it after the push and --record produces it. The leg measures only the Installers engines, so it is marked for Installers alone; detector commits in the other repos report NOT CHECKED until a leg is marked for them."
           }
         },
-        "pr-checks:scoreboard-absolute": {}
+        "pr-checks:scoreboard-absolute": {},
+        "pr-checks:dd8-browser-bench": {}
       },
       "cannotMirror": {
         "pr-checks:cli-entrypoint-tests": "runs-on windows-latest. cmd/devoid's entrypoint tests exercise Windows service control, ACLs and PATH resolution; a Linux container cannot stand in. Run them on this machine with `go test ./cmd/devoid/... -count=1` from a Windows shell.",
