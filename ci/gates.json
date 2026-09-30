@@ -264,7 +264,9 @@
         "finding-b-e2e:shim-enforcement": {},
         "pr-checks:uninstall-honesty": {},
         "pr-checks:hard-deny-stress": {},
-        "pr-checks:neutraleval-ratchets": {}
+        "pr-checks:neutraleval-ratchets": {},
+        "pr-checks:scoreboard": {},
+        "pr-checks:scoreboard-absolute": {}
       },
       "cannotMirror": {
         "pr-checks:cli-entrypoint-tests": "runs-on windows-latest. cmd/devoid's entrypoint tests exercise Windows service control, ACLs and PATH resolution; a Linux container cannot stand in. Run them on this machine with `go test ./cmd/devoid/... -count=1` from a Windows shell.",
