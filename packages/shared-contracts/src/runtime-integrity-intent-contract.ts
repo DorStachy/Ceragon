@@ -366,6 +366,13 @@ export interface RuntimeIntegrityIntent {
   /** Which Claude authority mode the admin pinned (Claude targets only). */
   claudeAuthorityMode?: ClaudeAuthorityMode | null;
   /**
+   * DD6-PN1. `MANAGED_TIER` puts DeVoid's Claude hooks in the machine
+   * managed-settings.d drop-in WITHOUT `allowManagedHooksOnly`. Issued only for
+   * a claude-code MACHINE_FILE target on a MACHINE scope with no authority mode,
+   * when the signed `claudeHookTier` is the default `managed-when-system`.
+   */
+  claudeHookTier?: 'MANAGED_TIER' | null;
+  /**
    * Signed Claude customization-source policy. Omitted means the tenant did
    * not enable this control; an endpoint must never manufacture a default.
    * Marketplace objects contain vendor source identifiers only, never auth
