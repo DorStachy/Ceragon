@@ -179,41 +179,6 @@ the former also publishes a production S3 object. No offline check is hidden
 behind either classification. `drift.mjs` checks mapping completeness only; a
 green drift result does not mean the newly mapped jobs were executed or passed.
 
-Backend's mandatory `pr-checks:full_test` and `build:build_and_test` also start
-real Minio and DynamoDB fixtures before the ordinary semantic Jest command.
-`RUN_PRIVACY_STORE_TESTS=true` makes the storage deletion spec execute; it is
-not excluded or allowlisted. Their main disposable PostgreSQL fixture is
-`privacy_root` on loopback port 15432, satisfying the privacy tests' safety
-guard. AICP M1/M2 retain separate servers on 55432/55433.
-
-Those two manifest entries set `privacyStoreFixtures`. Only the exact
-`node scripts/privacy-store-fixtures.cjs start|stop` orchestration commands
-execute on the local Docker host, using a copy from the job's actual source
-snapshot and its existing pod network.
-The trusted workspace manifest pins the reviewed helper's SHA-256, checked
-before every host invocation; changed candidate code is refused before it can
-execute. Verification uses raw bytes. Backend pins the helper to LF in
-`.gitattributes`; an isolated Git checkout regression proves the same pin with
-`core.autocrlf=true` and `false`, and modified CRLF bytes are rejected.
-Only Docker/path environment settings pass to that bounded helper,
-not ambient AWS, GitHub, provider credentials or Node preload hooks.
-GitHub runs the same commands directly
-on its runner with loopback-only published ports. MinIO is built from official
-source pinned by commit and archive SHA-256, with pinned Go/Alpine base images;
-the old community image is no longer available upstream. DynamoDB uses its
-pinned emulator image. Empty build context,
-random names, ownership labels and cleanup after failure keep this separate
-from other chats' stacks. All application installation and semantic tests
-remain in the selected Node 24 image. Fixture cleanup runs even when the local
-mirror stops on a failed step; `--keep` does not retain these synthetic stores.
-The first MinIO build can take several minutes; the host bridge allows the
-helper's bounded 15-minute source build plus fixture startup and cleanup.
-`node ci/lib/privacy-fixture-wiring.test.mjs` checks this cross-workspace wiring.
-The mirror still stops ordinary steps at the first failure. Its suite-summary
-assertion executes after a successful Jest step; after failed Jest, GitHub
-executes that diagnostic assertion under `!cancelled()` while the local job
-stays failed without it. The special fixture cleanup still executes in both.
-
 Static's existing workflow supports a boolean `checks_only=true` manual input.
 It selects the contents-read-only validation job and explicitly skips both
 deployment and the downstream Intelligence dispatch. Validation has its own

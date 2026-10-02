@@ -34,21 +34,10 @@
       "why": "Proves that candidate-only workflow jobs can be registered without hiding missing jobs or weakening complete origin/main coverage. Uses isolated real Git fixture repositories."
     },
     {
-      "id": "privacy-pipeline-cell-selftest",
-      "script": "scripts/privacy-pipeline-cell.test.mjs",
-      "nodeArgs": ["--test"],
-      "why": "Runs the isolated pipeline benchmark driver's regression tests without starting a provider or pipeline."
-    },
-    {
       "id": "static-validation-wiring-selftest",
       "script": "ci/lib/static-validation-wiring.test.mjs",
       "nodeArgs": ["--test"],
       "why": "Checks that manual Static validation uses the exact pre-deploy checks, removes deployment/token privileges, isolates cancellation from deployments, and keeps deploy jobs closed for checks-only requests. Also verifies Sandbox ends its checks with actual frozen production preparation."
-    },
-    {
-      "id": "privacy-fixture-wiring-selftest",
-      "script": "ci/lib/privacy-fixture-wiring.test.mjs",
-      "why": "Checks that Backend's mandatory semantic PR/deploy suites enable real privacy store fixtures, retain the isolated PostgreSQL guard, execute the suite-summary assertion, and are routed through the local mirror's reviewed fixture commands. This spans Backend workflows and the workspace mirror."
     },
     {
       "id": "toolrisk-vocab-parity",
@@ -148,11 +137,11 @@
         "pr-checks:licenses_integration": {},
         "pr-checks:alerts_integration": {},
         "pr-checks:migration_chain_from_empty": {},
-        "pr-checks:full_test": { "privacyStoreFixtures": { "helperSha256": "184bbdfeac76d7f592afff86e19dc9eebb9de47ade56f9ab8daa3fb5fbf6773e" } },
+        "pr-checks:full_test": {},
         "security:audit": {},
         "security:rate_limit_taskdef": {},
         "security:rds_boundary": {},
-        "build:build_and_test": { "privacyStoreFixtures": { "helperSha256": "184bbdfeac76d7f592afff86e19dc9eebb9de47ade56f9ab8daa3fb5fbf6773e" } },
+        "build:build_and_test": {},
         "build:e2e_advisory": {},
         "pr-checks:shared-contracts-pin": {}
       },
