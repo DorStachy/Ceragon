@@ -142,7 +142,10 @@ export function parseSemanticInjectionEvidence(value: unknown): SemanticInjectio
     record.disposition === 'evidence' || record.disposition === 'high-precision-cue';
   if (corroborated !== (record.corroboration !== undefined)) return null;
   if (record.disposition === 'evidence') {
-    if (typeof record.corroboration !== 'string' || !SEMANTIC_CLASS_SLUG.test(record.corroboration)) {
+    if (
+      typeof record.corroboration !== 'string' ||
+      !SEMANTIC_CLASS_SLUG.test(record.corroboration)
+    ) {
       return null;
     }
   }
