@@ -36,3 +36,6 @@ export * from './ai-security-v2-contract';
 export * from './ai-security-neutral-evaluation-contract';
 export * from './ai-failure-oracle-contract';
 export * from './generated/ai-security-detector-catalog.generated';
+// SC7-04 — the semantic-injection evidence class (identical in the Backend,
+// Ceragon-Intelligence and workspace-root copies; producer vector semantic-evidence.v1.json).
+export * from './semantic-evidence-contract';

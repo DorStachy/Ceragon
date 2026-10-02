@@ -1,0 +1,66 @@
+{
+  "format": "ceragon.ai-security.semantic-evidence-class",
+  "formatVersion": 1,
+  "producer": "Installers/internal/policyeval (semantic.go)",
+  "note": "SC7-04: the semantic-injection evidence class. A content-free record of one devoid-semantic vote; its standalone ceiling is monitor on every preset. Regenerate with SEMANTIC_EVIDENCE_UPDATE=1 go test ./internal/policyeval/ -run TestSemanticEvidenceCatalogVector and copy the byte-identical file into Backend/packages/shared-contracts/, Ceragon-Intelligence/packages/shared-contracts/ and the workspace-root packages/shared-contracts/.",
+  "class": "semantic-injection",
+  "lane": "promptRisk",
+  "defaultAction": "monitor",
+  "standaloneCeiling": "monitor",
+  "cause": "semantic",
+  "surfaces": [
+    "prompt",
+    "ingest",
+    "mcp_skill"
+  ],
+  "bands": [
+    "mid",
+    "hi"
+  ],
+  "dispositions": [
+    "monitor-record",
+    "evidence",
+    "soft-taint-record",
+    "high-precision-cue",
+    "admin-queue"
+  ],
+  "dispositionBySurface": {
+    "ingest": [
+      "soft-taint-record",
+      "high-precision-cue"
+    ],
+    "mcp_skill": [
+      "admin-queue"
+    ],
+    "prompt": [
+      "monitor-record",
+      "evidence"
+    ]
+  },
+  "ingestCorroborations": [
+    "obfuscation",
+    "hidden-carrier",
+    "lexical"
+  ],
+  "cueReason": "semantic-corroborated",
+  "recordFields": [
+    "class",
+    "surface",
+    "band",
+    "family",
+    "packDigest",
+    "modelVersion",
+    "disposition",
+    "corroboration",
+    "cause"
+  ],
+  "requiredRecordFields": [
+    "class",
+    "surface",
+    "band",
+    "packDigest",
+    "modelVersion",
+    "disposition",
+    "cause"
+  ]
+}
