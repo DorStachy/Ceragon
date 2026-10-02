@@ -38,6 +38,17 @@
       "why": "Mutation proof for the check above: fabricates divergent trios, including the historical interpreter-exec/fetch-then-exec/substitution-exfil incident, and asserts it goes red naming the class and the repos missing it -- plus that a missing checkout reports NOT CHECKED rather than passing. A drift check nobody has made go red has not been run."
     },
     {
+      "id": "dlp-vocab-parity",
+      "script": "ci/lib/vocab-parity.mjs",
+      "args": ["--vocab", "dlp"],
+      "why": "DD3-W3-04. The DLP class catalogue is the same kind of three-copy contract (Installers parity-vectors/dlp-classes.v1.json -> Backend packages/shared-contracts and Frontend types/vendored). A class the endpoint emits that the Backend tuple does not carry has no console control, and the Backend and Frontend parity specs each compare only their own copy. This leg compares the three copies to each other: classes, catalog rows (family, confidence, default action), wire key path and residual bytes; a missing copy is NOT CHECKED."
+    },
+    {
+      "id": "dlp-vocab-parity-selftest",
+      "script": "ci/lib/vocab-parity-dlp.test.mjs",
+      "why": "Mutation proof for the DLP leg: deleting one class from the Frontend copy, adding one in the agent only, or changing a default action in one consumer goes red naming the class and the repos; a missing file or checkout reports NOT CHECKED, never PASS."
+    },
+    {
       "id": "claim-contract",
       "script": "ci/lib/claim-contract.mjs",
       "why": "Fifteen named sentences overstate what this programme can prove -- eight forbidden by the source material, seven by published research about this class of product -- and until this landed the only thing stopping one reaching a customer was a person remembering the list. It greps the plan's goal statement and any release note for them and fails naming the file, the line and the checklist row. It also compares the plan's prose checklist against Wave 8 Task 11's Go renderer, which is the other half of a deliberately-two-artifact design; the renderer does not exist yet and the check reports it ABSENT rather than as zero, because 0 == 0 reading as agreement is the exact defect it exists to prevent."

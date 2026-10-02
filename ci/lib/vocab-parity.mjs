@@ -67,17 +67,32 @@
  * closed set to fall outside of. `vocab-parity.test.mjs` proves that against a
  * fabricated class.
  *
+ * ── The DLP leg (DD3-W3-04) ──────────────────────────────────────────────────
+ *
+ * `--vocab dlp` runs the same comparison over the DLP class catalogue:
+ *
+ *   producer  Installers/parity-vectors/dlp-classes.v1.json
+ *   consumer  Backend/packages/shared-contracts/dlp-classes.v1.json
+ *   consumer  Frontend/types/vendored/dlp-classes.v1.json
+ *
+ * Its per-class grouping is the whole catalog row (family, confidence, default
+ * action) and its digest is Go's `canonicalDlpCatalogDigest`. `--vocab all`
+ * runs both legs and exits with the worst status. With no `--vocab` the script
+ * runs the tool-risk leg alone, as it always has. `vocab-parity-dlp.test.mjs`
+ * is the DLP leg's mutation proof.
+ *
  * ── Usage ───────────────────────────────────────────────────────────────────
  *
  *   node ci/lib/vocab-parity.mjs                 # each repo's best available copy
  *   node ci/lib/vocab-parity.mjs --ref origin/main   # pin all three to one ref
  *   node ci/lib/vocab-parity.mjs --json
  *   node ci/lib/vocab-parity.mjs --root <workspace>
+ *   node ci/lib/vocab-parity.mjs --vocab dlp|toolrisk|all
  *
  * Per-repo source override (path, ref, or path@ref):
- *   TOOLRISK_VOCAB_INSTALLERS=<spec>
- *   TOOLRISK_VOCAB_BACKEND=<spec>
- *   TOOLRISK_VOCAB_FRONTEND=<spec>
+ *   TOOLRISK_VOCAB_INSTALLERS=<spec>   DLP_VOCAB_INSTALLERS=<spec>
+ *   TOOLRISK_VOCAB_BACKEND=<spec>      DLP_VOCAB_BACKEND=<spec>
+ *   TOOLRISK_VOCAB_FRONTEND=<spec>     DLP_VOCAB_FRONTEND=<spec>
  * A bare ref must be written `@<ref>` (e.g. `@HEAD`) so it cannot be confused
  * with a relative path.
  *
@@ -135,6 +150,41 @@ export const COPIES = [
   },
 ];
 
+/**
+ * THE THREE DLP COPIES (DD3-W3-04). The DLP class catalogue is the same kind of
+ * contract: the endpoint emits a class, and the console can only govern it if
+ * the Backend's vendored catalogue (`AI_SECURITY_DLP_CLASSES` is pinned to it)
+ * and the Frontend's (`AI_DLP_CLASSES`, the board copy) carry it too.
+ */
+export const DLP_COPIES = [
+  {
+    key: 'Installers',
+    role: 'producer',
+    repoDir: 'Installers',
+    filePath: 'parity-vectors/dlp-classes.v1.json',
+    env: 'DLP_VOCAB_INSTALLERS',
+    regenerate: 'DLP_CLASSES_UPDATE=1 go test ./internal/dlp/',
+  },
+  {
+    key: 'Backend',
+    role: 'consumer',
+    repoDir: 'Backend',
+    filePath: 'packages/shared-contracts/dlp-classes.v1.json',
+    env: 'DLP_VOCAB_BACKEND',
+    regenerate:
+      'copy the producer file here, then update AI_SECURITY_DLP_CLASSES + ai-class-metadata.ts ' +
+      'and run scripts/generate-ai-event-impact-catalog.cjs',
+  },
+  {
+    key: 'Frontend',
+    role: 'consumer',
+    repoDir: 'Frontend',
+    filePath: 'types/vendored/dlp-classes.v1.json',
+    env: 'DLP_VOCAB_FRONTEND',
+    regenerate: 'copy the producer file here, then update AI_DLP_CLASSES + AI_DLP_CLASS_META',
+  },
+];
+
 /** The schema tag, not part of the vocabulary. A copy that is not this document is not comparable. */
 const EXPECTED_FORMAT = 'ceragon.ai-security.toolrisk-class-catalog';
 /** formatVersion 2 added the `wire` block. Older documents lack fields this compares. */
@@ -176,6 +226,67 @@ export function canonicalCatalogDigest(tiers) {
   }
   return `sha256:${createHash('sha256').update(sb, 'utf8').digest('hex')}`;
 }
+
+/**
+ * Reimplementation of Go's `canonicalDlpCatalogDigest` (internal/dlp
+ * class_catalog_test.go): catalog rows sorted by class in byte order, each
+ * written as the class line plus indented family, confidence and default
+ * action. Computed from the rows in the file being checked, never a literal.
+ */
+export function canonicalDlpCatalogDigest(catalog) {
+  let sb = '';
+  const rows = [...catalog].sort((a, b) => (a.class < b.class ? -1 : a.class > b.class ? 1 : 0));
+  for (const r of rows) {
+    sb += `${r.class}\n  family=${r.family}\n  confidence=${r.confidence}\n  defaultAction=${r.defaultAction}\n`;
+  }
+  return `sha256:${createHash('sha256').update(sb, 'utf8').digest('hex')}`;
+}
+
+/**
+ * THE VOCABULARIES. Each one is three copies plus the shape of its document.
+ * Everything else -- resolving the copies, the cross comparison, the report,
+ * the exit status -- is shared, so the DLP leg fails the same ways the
+ * tool-risk leg does (a missing copy is NOT CHECKED, never a pass).
+ */
+const TOOLRISK = {
+  name: 'toolrisk',
+  title: 'tool-risk vocabulary',
+  noun: 'detector vocabulary',
+  copies: COPIES,
+  format: EXPECTED_FORMAT,
+  minFormatVersion: MIN_FORMAT_VERSION,
+  envPrefix: 'TOOLRISK_VOCAB',
+  readShape: readToolRiskShape,
+  self: {
+    duplicated: 'appear(s) in more than one tier',
+    onlyInClasses: "in 'classes' but in no tier",
+    onlyInGroups: "in a tier but not in 'classes'",
+    digestOf: 'tiers',
+  },
+  groupMismatch: 'has different severity tiers across repos',
+  passGrouping: 'tiers',
+};
+
+const DLP = {
+  name: 'dlp',
+  title: 'DLP class vocabulary',
+  noun: 'DLP class vocabulary',
+  copies: DLP_COPIES,
+  format: 'ceragon.ai-security.dlp-class-catalog',
+  minFormatVersion: 1,
+  envPrefix: 'DLP_VOCAB',
+  readShape: readDlpShape,
+  self: {
+    duplicated: "appear(s) in more than one 'catalog' row",
+    onlyInClasses: "in 'classes' but has no 'catalog' row",
+    onlyInGroups: "has a 'catalog' row but is not in 'classes'",
+    digestOf: 'catalog rows',
+  },
+  groupMismatch: 'has a different catalog row across repos',
+  passGrouping: 'catalog rows (family, confidence, default action)',
+};
+
+export const VOCABS = { toolrisk: TOOLRISK, dlp: DLP };
 
 /** Parse `path`, `@ref`, or `path@ref`. */
 function parseSourceSpec(spec) {
@@ -296,8 +407,59 @@ function resolveCopy(copy, opts) {
   return out;
 }
 
+/**
+ * The tool-risk shape: `tiers` maps a severity to its classes. Returns the
+ * per-class grouping the cross comparison reads, or a problem.
+ */
+function readToolRiskShape(doc, label) {
+  if (doc.tiers === null || typeof doc.tiers !== 'object' || Array.isArray(doc.tiers)) {
+    return { problem: `${label}: 'tiers' is not an object` };
+  }
+  for (const [tier, names] of Object.entries(doc.tiers)) {
+    if (!Array.isArray(names) || names.some((x) => typeof x !== 'string')) {
+      return { problem: `${label}: tier '${tier}' is not an array of strings` };
+    }
+  }
+  const groupOf = new Map();
+  const duplicated = [];
+  for (const [tier, names] of Object.entries(doc.tiers)) {
+    for (const cls of names) {
+      if (groupOf.has(cls) && groupOf.get(cls) !== tier) duplicated.push(cls);
+      groupOf.set(cls, tier);
+    }
+  }
+  return { groupOf, duplicated, computedDigest: canonicalCatalogDigest(doc.tiers) };
+}
+
+/**
+ * The DLP shape: `catalog` is one row per class carrying the producer's family,
+ * confidence and default action. The grouping is the whole row, so a class
+ * whose default action differs in one repo is named with both rows.
+ */
+function readDlpShape(doc, label) {
+  const rowOk = (r) =>
+    r !== null &&
+    typeof r === 'object' &&
+    typeof r.class === 'string' &&
+    typeof r.family === 'string' &&
+    Number.isInteger(r.confidence) &&
+    typeof r.defaultAction === 'string';
+  if (!Array.isArray(doc.catalog) || !doc.catalog.every(rowOk)) {
+    return {
+      problem: `${label}: 'catalog' is not an array of {class, family, confidence, defaultAction} rows`,
+    };
+  }
+  const groupOf = new Map();
+  const duplicated = [];
+  for (const r of doc.catalog) {
+    if (groupOf.has(r.class)) duplicated.push(r.class);
+    groupOf.set(r.class, `family=${r.family} confidence=${r.confidence} defaultAction=${r.defaultAction}`);
+  }
+  return { groupOf, duplicated, computedDigest: canonicalDlpCatalogDigest(doc.catalog) };
+}
+
 /** Structural read of one copy. Everything is taken from the bytes. */
-function interpret(copy) {
+function interpret(copy, vocab = TOOLRISK) {
   const text = normalizeEOL(copy.bytes.toString('utf8'));
   let doc;
   try {
@@ -308,75 +470,60 @@ function interpret(copy) {
   if (doc === null || typeof doc !== 'object' || Array.isArray(doc)) {
     return { problem: `${copy.sourceLabel}: expected a JSON object` };
   }
-  if (doc.format !== EXPECTED_FORMAT) {
+  if (doc.format !== vocab.format) {
     return {
-      problem: `${copy.sourceLabel}: format is ${JSON.stringify(doc.format)}, expected ${JSON.stringify(EXPECTED_FORMAT)}`,
+      problem: `${copy.sourceLabel}: format is ${JSON.stringify(doc.format)}, expected ${JSON.stringify(vocab.format)}`,
     };
   }
-  if (!Number.isInteger(doc.formatVersion) || doc.formatVersion < MIN_FORMAT_VERSION) {
+  if (!Number.isInteger(doc.formatVersion) || doc.formatVersion < vocab.minFormatVersion) {
     return {
-      problem: `${copy.sourceLabel}: formatVersion is ${JSON.stringify(doc.formatVersion)}, expected an integer >= ${MIN_FORMAT_VERSION}`,
+      problem: `${copy.sourceLabel}: formatVersion is ${JSON.stringify(doc.formatVersion)}, expected an integer >= ${vocab.minFormatVersion}`,
     };
   }
   if (!Array.isArray(doc.classes) || doc.classes.some((x) => typeof x !== 'string')) {
     return { problem: `${copy.sourceLabel}: 'classes' is not an array of strings` };
   }
-  if (doc.tiers === null || typeof doc.tiers !== 'object' || Array.isArray(doc.tiers)) {
-    return { problem: `${copy.sourceLabel}: 'tiers' is not an object` };
-  }
-  for (const [tier, names] of Object.entries(doc.tiers)) {
-    if (!Array.isArray(names) || names.some((x) => typeof x !== 'string')) {
-      return { problem: `${copy.sourceLabel}: tier '${tier}' is not an array of strings` };
-    }
-  }
-
-  const tierOf = new Map();
-  const duplicated = [];
-  for (const [tier, names] of Object.entries(doc.tiers)) {
-    for (const cls of names) {
-      if (tierOf.has(cls) && tierOf.get(cls) !== tier) duplicated.push(cls);
-      tierOf.set(cls, tier);
-    }
-  }
+  const shape = vocab.readShape(doc, copy.sourceLabel);
+  if (shape.problem) return shape;
 
   return {
     text,
     doc,
     classes: new Set(doc.classes),
-    tierOf,
-    duplicated,
+    groupOf: shape.groupOf,
+    duplicated: shape.duplicated,
     classCount: doc.classCount,
     recordedDigest: doc.sha256,
-    computedDigest: canonicalCatalogDigest(doc.tiers),
+    computedDigest: shape.computedDigest,
     wire: doc.wire,
   };
 }
 
 /** A copy that disagrees with ITSELF is not usable as a reference for the others. */
-function selfConsistencyProblems(copy, view) {
+function selfConsistencyProblems(copy, view, vocab = TOOLRISK) {
   const out = [];
   const listed = [...view.classes].sort();
-  const grouped = [...view.tierOf.keys()].sort();
+  const grouped = [...view.groupOf.keys()].sort();
   if (view.doc.classes.length !== view.classes.size) {
     out.push(`${copy.key}: 'classes' contains duplicate entries`);
   }
   if (view.duplicated.length) {
-    out.push(`${copy.key}: ${view.duplicated.sort().join(', ')} appear(s) in more than one tier`);
+    out.push(`${copy.key}: ${[...new Set(view.duplicated)].sort().join(', ')} ${vocab.self.duplicated}`);
   }
-  const onlyInClasses = listed.filter((x) => !view.tierOf.has(x));
-  const onlyInTiers = grouped.filter((x) => !view.classes.has(x));
+  const onlyInClasses = listed.filter((x) => !view.groupOf.has(x));
+  const onlyInGroups = grouped.filter((x) => !view.classes.has(x));
   if (onlyInClasses.length) {
-    out.push(`${copy.key}: in 'classes' but in no tier: ${onlyInClasses.join(', ')}`);
+    out.push(`${copy.key}: ${vocab.self.onlyInClasses}: ${onlyInClasses.join(', ')}`);
   }
-  if (onlyInTiers.length) {
-    out.push(`${copy.key}: in a tier but not in 'classes': ${onlyInTiers.join(', ')}`);
+  if (onlyInGroups.length) {
+    out.push(`${copy.key}: ${vocab.self.onlyInGroups}: ${onlyInGroups.join(', ')}`);
   }
   if (view.classCount !== view.classes.size) {
     out.push(`${copy.key}: classCount says ${view.classCount}, 'classes' holds ${view.classes.size}`);
   }
   if (view.recordedDigest !== view.computedDigest) {
     out.push(
-      `${copy.key}: recorded sha256 does not describe this file's own tiers (hand-edited?)\n` +
+      `${copy.key}: recorded sha256 does not describe this file's own ${vocab.self.digestOf} (hand-edited?)\n` +
         `      recorded: ${view.recordedDigest}\n` +
         `      computed: ${view.computedDigest}`,
     );
@@ -401,9 +548,10 @@ function firstDifference(a, b, leftName, rightName) {
 
 /**
  * THE CROSS COMPARISON. Every check below reads two or three different repos.
- * `resolved` is the output of resolveCopy for each entry in COPIES.
+ * `resolved` is the output of resolveCopy for each entry in the vocabulary's
+ * copies; `vocab` says which vocabulary they are (tool-risk by default).
  */
-export function compare(resolved) {
+export function compare(resolved, vocab = TOOLRISK) {
   const blocked = resolved.filter((r) => r.problem);
   if (blocked.length) {
     return {
@@ -416,7 +564,7 @@ export function compare(resolved) {
   const views = new Map();
   const unreadable = [];
   for (const r of resolved) {
-    const v = interpret(r);
+    const v = interpret(r, vocab);
     if (v.problem) unreadable.push(v.problem);
     else views.set(r.key, v);
   }
@@ -428,7 +576,7 @@ export function compare(resolved) {
 
   // A copy that contradicts itself first: comparing against it would be noise.
   for (const r of resolved) {
-    drift.push(...selfConsistencyProblems(r, views.get(r.key)));
+    drift.push(...selfConsistencyProblems(r, views.get(r.key), vocab));
   }
   if (drift.length) return { status: 'DRIFT', reasons: [], drift, views };
 
@@ -454,20 +602,21 @@ export function compare(resolved) {
     );
   }
 
-  // 2. SEVERITY. A class every repo knows, filed under a different tier in one of
-  //    them, means the console offers a control whose default contradicts what
-  //    the endpoint enforces.
+  // 2. PER-CLASS GROUPING. A class every repo knows, filed differently in one
+  //    of them (a different severity tier; a different DLP family, confidence
+  //    or default action), means the console offers a control whose default
+  //    contradicts what the endpoint enforces.
   for (const cls of [...union].sort()) {
-    const tiers = new Map();
+    const groups = new Map();
     for (const r of resolved) {
-      const t = views.get(r.key).tierOf.get(cls);
-      if (t === undefined) continue;
-      if (!tiers.has(t)) tiers.set(t, []);
-      tiers.get(t).push(r.key);
+      const g = views.get(r.key).groupOf.get(cls);
+      if (g === undefined) continue;
+      if (!groups.has(g)) groups.set(g, []);
+      groups.get(g).push(r.key);
     }
-    if (tiers.size > 1) {
-      const parts = [...tiers.entries()].sort().map(([t, keys]) => `${keys.join('+')}=${t}`);
-      drift.push(`class '${cls}' has different severity tiers across repos: ${parts.join(', ')}`);
+    if (groups.size > 1) {
+      const parts = [...groups.entries()].sort().map(([g, keys]) => `${keys.join('+')}=${g}`);
+      drift.push(`class '${cls}' ${vocab.groupMismatch}: ${parts.join(', ')}`);
     }
   }
 
@@ -510,6 +659,10 @@ export function compare(resolved) {
   return { status: drift.length ? 'DRIFT' : 'PASS', reasons: [], drift, views };
 }
 
+/**
+ * Check one vocabulary: `opts.vocab` is 'toolrisk' (the default, and what every
+ * caller got before the DLP leg existed) or 'dlp'.
+ */
 export function check(opts = {}) {
   // `resolve(CI_DIR, '..')` is the checkout this script lives in, which holds
   // the component repos only when that checkout IS the workspace. From a
@@ -517,17 +670,20 @@ export function check(opts = {}) {
   // "checkout not found" about repositories that are on disk one directory
   // away. workspaceRootOr keeps the old answer when there is no workspace to
   // find, so a standalone layout behaves exactly as before.
+  const vocab = VOCABS[opts.vocab || 'toolrisk'];
+  if (!vocab) throw new Error(`unknown vocabulary '${opts.vocab}'`);
   const options = {
     root: opts.root || workspaceRootOr(resolve(CI_DIR, '..')).root,
     ref: opts.ref || null,
   };
-  const resolved = COPIES.map((copy) => resolveCopy(copy, options));
-  const result = compare(resolved);
-  return { ...result, resolved, options };
+  const resolved = vocab.copies.map((copy) => resolveCopy(copy, options));
+  const result = compare(resolved, vocab);
+  return { ...result, resolved, options, vocab: vocab.name };
 }
 
 function report(result, log) {
-  log(`\n${bold('tool-risk vocabulary -- cross-repo parity')}\n`);
+  const vocab = VOCABS[result.vocab];
+  log(`\n${bold(`${vocab.title} -- cross-repo parity`)}\n`);
   for (const r of result.resolved) {
     const where = r.problem ? red('UNAVAILABLE') : dim(r.sourceLabel);
     log(`  ${r.key.padEnd(11)} ${dim(`(${r.role})`)} ${where}\n`);
@@ -544,14 +700,14 @@ function report(result, log) {
       dim(
         '\n  This is NOT a pass. The whole point of this check is comparing the three\n' +
           '  repositories to each other; with a copy missing there is nothing to compare.\n' +
-          '  Point it at the checkouts with --root, --ref, or TOOLRISK_VOCAB_<REPO>.\n',
+          `  Point it at the checkouts with --root, --ref, or ${vocab.envPrefix}_<REPO>.\n`,
       ),
     );
     return;
   }
 
   if (result.status === 'DRIFT') {
-    log(`${red('DRIFT')} -- the detector vocabulary is not the same in all three repos.\n\n`);
+    log(`${red('DRIFT')} -- the ${vocab.noun} is not the same in all three repos.\n\n`);
     for (const d of result.drift) log(`  ${red('x')} ${d}\n`);
     const producer = result.resolved.find((r) => r.role === 'producer');
     log(
@@ -568,7 +724,7 @@ function report(result, log) {
   const anyView = result.views.values().next().value;
   log(
     `${green('PASS')} -- all three repos carry the same ${anyView.classes.size} classes, ` +
-      `the same tiers, and the same wire key path.\n`,
+      `the same ${vocab.passGrouping}, and the same wire key path.\n`,
   );
 }
 
@@ -577,14 +733,17 @@ const EXIT = { PASS: 0, DRIFT: 1, NOT_CHECKED: 2 };
 function main(argv) {
   const opts = {};
   let json = false;
+  let which = 'toolrisk';
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--root') opts.root = resolve(argv[++i]);
     else if (a === '--ref') opts.ref = argv[++i];
     else if (a === '--json') json = true;
+    else if (a === '--vocab') which = argv[++i];
     else if (a === '-h' || a === '--help') {
       process.stdout.write(
-        'usage: node ci/lib/vocab-parity.mjs [--root <workspace>] [--ref <git-ref>|WORKTREE] [--json]\n',
+        'usage: node ci/lib/vocab-parity.mjs [--vocab toolrisk|dlp|all] [--root <workspace>] ' +
+          '[--ref <git-ref>|WORKTREE] [--json]\n',
       );
       return 0;
     } else {
@@ -592,32 +751,36 @@ function main(argv) {
       return 3;
     }
   }
-
-  const result = check(opts);
-  if (json) {
-    process.stdout.write(
-      `${JSON.stringify(
-        {
-          status: result.status,
-          reasons: result.reasons,
-          drift: result.drift,
-          sources: result.resolved.map((r) => ({
-            repo: r.key,
-            role: r.role,
-            file: r.filePath,
-            source: r.sourceLabel,
-            problem: r.problem,
-            notes: r.notes,
-          })),
-        },
-        null,
-        2,
-      )}\n`,
-    );
-  } else {
-    report(result, (s) => process.stdout.write(s));
+  const names = which === 'all' ? Object.keys(VOCABS) : [which];
+  if (!names.every((n) => VOCABS[n])) {
+    process.stderr.write(`unknown vocabulary: ${which} (expected toolrisk, dlp or all)\n`);
+    return 3;
   }
-  return EXIT[result.status];
+
+  const results = names.map((vocab) => check({ ...opts, vocab }));
+  const jsonOf = (result) => ({
+    vocab: result.vocab,
+    status: result.status,
+    reasons: result.reasons,
+    drift: result.drift,
+    sources: result.resolved.map((r) => ({
+      repo: r.key,
+      role: r.role,
+      file: r.filePath,
+      source: r.sourceLabel,
+      problem: r.problem,
+      notes: r.notes,
+    })),
+  });
+  if (json) {
+    const body = results.length === 1 ? jsonOf(results[0]) : { legs: results.map(jsonOf) };
+    process.stdout.write(`${JSON.stringify(body, null, 2)}\n`);
+  } else {
+    for (const result of results) report(result, (s) => process.stdout.write(s));
+  }
+  // The worst leg decides: a leg that could not compare is never hidden behind
+  // another leg's pass.
+  return Math.max(...results.map((result) => EXIT[result.status]));
 }
 
 // Run only when this file IS the entry point. Compared as resolved file URLs
