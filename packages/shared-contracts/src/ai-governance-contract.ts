@@ -636,6 +636,27 @@ export interface AiWebCoverageEndpointShape {
   navBlockUnsupportedProviders?: string[];
   navBlockLastRefreshedAt?: string | null;
   navBlockFailureReason?: string | null;
+  /**
+   * DD8-W2-03 — the missed-send metric per covered site (null = never reported,
+   * NOT MEASURED; never a zero). Two witnesses per site: ledger (DD8-W2-01) and
+   * network (DD8-W2-02); rates are null unless the witness could measure.
+   */
+  missedSend?: {
+    since: string | null;
+    updatedAt: string | null;
+    sites: {
+      provider: string;
+      ledger: { observedRequests: number; inspectedMatches: number; misses: number; coveragePartial: number } | null;
+      network: { observedRequests: number; inspectedMatches: number; misses: number; coveragePartial: number } | null;
+      networkCoverage: 'full' | 'partial' | null;
+      ledgerMissRate: number | null;
+      networkMissRate: number | null;
+      missRate: number | null;
+      leakedNotPrevented: number;
+    }[];
+    leakedNotPrevented: number;
+    alert: boolean;
+  } | null;
 }
 
 /**
@@ -652,6 +673,10 @@ export interface AiWebCoverageResponseShape {
     degraded: number;
     /** F39 — ONLINE endpoints that MEASURED zero nav-block rules. Absence is never counted. */
     navBlockNotArmed?: number;
+    /** DD8-W2-03 — installed endpoints with a leaked-not-prevented send (the alert). */
+    missedSendAlerting?: number;
+    /** DD8-W2-03 — installed endpoints with no missed-send counter (not measured). */
+    missedSendNotReported?: number;
   };
 }
 
@@ -796,6 +821,14 @@ export interface McpServerRowShape {
   capabilities: string[];
   riskFindings: McpRiskFindingShape[];
   staticVerdict: McpStaticVerdict | null;
+  /**
+   * DD5-W1b. The endpoint classifier revision (Installers
+   * `mcprisk.ClassifierRevision`) `staticVerdict` was graded under; 2 is the
+   * secret-env re-tier (a credential in config env is Low hygiene). `null` =
+   * graded by an agent that predates revisions. Optional so a consumer built
+   * against an older Backend still type-checks.
+   */
+  classifierRevision?: number | null;
   approvalStatus: McpApprovalStatus;
   approvedBy: string | null;
   approvedAt: string | null;
