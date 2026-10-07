@@ -455,3 +455,51 @@ export function findUnknownFindingKeys(
   }
   return out;
 }
+
+// ─────────────────────────────────────────────────────────────────────
+// DD6-W1a: AI-artifact envelope facts (`metadata.aiArtifact`)
+// ─────────────────────────────────────────────────────────────────────
+
+/**
+ * The reviewable facts the Static-Worker emits for an AI artifact (agent
+ * skill, MCP server, editor extension, plugin bundle) under
+ * `result.metadata.aiArtifact`. `metadata` is already allowlisted end to
+ * end and persisted verbatim, so this is a TYPE for readers, not a new wire
+ * key: no contract-version bump.
+ *
+ * Every field is optional. A result produced before DD6-W1a, or one where a
+ * stage did not run, still satisfies this type; a reader must treat an
+ * absent field as "not reported", never as zero or "none".
+ */
+export interface AiArtifactEnvelopeFacts {
+  /** The artifact class the worker analysed the bytes as. */
+  artifactClass?: string;
+  escalation?: {
+    boost?: number;
+    postBoostScore?: number;
+    /** Evidence families that contributed any points. */
+    corroboratingFamilyCount?: number;
+    /**
+     * DD6-W1a. The largest set of fired families that stand on pairwise
+     * DIFFERENT evidence; `corroborated` is `independentFamilyCount >= 2`.
+     */
+    independentFamilyCount?: number;
+    corroborated?: boolean;
+    /** True when the single-family ceiling removed points. */
+    clampedByCorroboration?: boolean;
+  };
+  rules?: {
+    score?: number;
+    band?: string;
+    highestSeverity?: string;
+    matchedRuleIds?: string[];
+    /**
+     * DD6-W1a. The subset of `matchedRuleIds` in the Static-Worker's
+     * `HIGH_PRECISION_ARTIFACT_RULE_IDS` tier (tag run decoding to a
+     * directive; decode-and-run; hook or dynamic-context fetch-and-execute).
+     * Present (possibly empty) whenever `rules` is, from DD6-W1a on.
+     */
+    highPrecisionRuleIds?: string[];
+    findings?: unknown[];
+  };
+}
