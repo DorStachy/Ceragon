@@ -843,6 +843,21 @@ export interface McpServerRowShape {
   envValueDigest?: string | null;
   cwdDigest?: string | null;
   descriptionSetDigest?: string | null;
+  /**
+   * V23-A6. A remote server's identity as the endpoint verified it (record
+   * only: a change is a would-reopen audit record, never a reopen).
+   * `identityState` is the last reported state; `remoteIdentity` reads it for
+   * display: `verified`, or `unknown` for partial / unverified, in which case
+   * the three values are null. `null` = never reported (a stdio server or an
+   * older agent). `oauthIssuer` / `oauthResource` may be `none` (the verified
+   * host publishes no protected-resource metadata). Optional so a consumer
+   * built against an older Backend still type-checks.
+   */
+  identityState?: 'verified' | 'partial' | 'unverified' | null;
+  remoteIdentity?: 'verified' | 'unknown' | null;
+  verifiedHost?: string | null;
+  oauthIssuer?: string | null;
+  oauthResource?: string | null;
   approvalStatus: McpApprovalStatus;
   approvedBy: string | null;
   approvedAt: string | null;
