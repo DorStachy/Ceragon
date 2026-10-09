@@ -177,6 +177,12 @@ export interface EndpointInventoryItem {
   mcpClient?: McpClient;
   /** Identity confidence. */
   confidence: InventoryConfidence;
+  /**
+   * DD6-W6c — skills and plugins only: the version's capability manifest, so
+   * the Backend can keep the approved manifest per identity and answer it for
+   * the endpoint's update diff. Never stored on the inventory row.
+   */
+  capabilityManifest?: EndpointCapabilityManifestReport;
 }
 
 /**
@@ -222,6 +228,8 @@ export interface EndpointFinding {
 export interface EndpointInventoryResponse {
   correlationId: string;
   findings: EndpointFinding[];
+  /** DD6-W6c — one entry per item that carried a `capabilityManifest`; absent when none did. */
+  capabilityManifests?: EndpointCapabilityManifestOutcome[];
 }
 
 /**
@@ -553,4 +561,97 @@ export interface InventoryEndpointsResponse {
    * estimated count rather than exact. Optional + additive: absent ⇒ exact.
    */
   totalIsEstimate?: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// DD6-W6c — capability manifest per artifact identity (skills and plugins)
+// ---------------------------------------------------------------------------
+
+/**
+ * How the approved capability manifest of an identity got approved.
+ *   baseline               first sighting of the identity in the org
+ *   admin                  an admin approved a capability change
+ *   auto-same-capabilities a new artifact digest reported the identical manifest
+ */
+export const CAPABILITY_MANIFEST_SOURCES = ['baseline', 'admin', 'auto-same-capabilities'] as const;
+export type CapabilityManifestSource = (typeof CAPABILITY_MANIFEST_SOURCES)[number];
+
+/** What the Backend did with one reported manifest (`capabilityManifests[].status`). */
+export const CAPABILITY_MANIFEST_OUTCOMES = [
+  'baseline',
+  'unchanged',
+  'auto-advanced',
+  'previously-approved',
+  'capabilities-removed',
+  'capability-change',
+  'refused',
+  'unavailable',
+] as const;
+export type CapabilityManifestOutcomeStatus = (typeof CAPABILITY_MANIFEST_OUTCOMES)[number];
+
+/** Why a reported manifest was not stored (`capabilityManifests[].reason`). */
+export const CAPABILITY_MANIFEST_REFUSALS = [
+  'malformed',
+  'unknown-schema',
+  'too-large',
+  'digest-mismatch',
+  'not-an-ai-artifact',
+  'class-mismatch',
+  'identity-mismatch',
+  'unverified-endpoint',
+] as const;
+export type CapabilityManifestRefusal = (typeof CAPABILITY_MANIFEST_REFUSALS)[number];
+
+/**
+ * The endpoint's canonical, content-free capability manifest
+ * (Installers `internal/artifactscan/manifest.go`, schema
+ * `devoid-capability-manifest/v1`): classes, host classes, normalised grants,
+ * the sanitised publisher. Lists are sorted and unique; empty lists are absent.
+ * `manifestDigest` = `sha256:` + hex sha256 of the canonical JSON as Go's
+ * encoding/json writes it.
+ */
+export interface EndpointCapabilityManifest {
+  schema: string;
+  class: 'skill' | 'plugin';
+  publisher?: string;
+  tools?: string[];
+  dynamicContext?: string[];
+  hooks?: Array<{ event: string; class: string }>;
+  mcpServers?: string[];
+  networkSinks?: string[];
+  credentialStores?: string[];
+  dependencies?: Array<{ kind: string; scope?: string; host: string }>;
+  edges?: Array<{ from: string; to: string; host?: string }>;
+  partial?: string[];
+}
+
+/**
+ * `EndpointInventoryItem.capabilityManifest` (ecosystems `agent-skill` and
+ * `plugin`). `identityKey`, when sent, must equal the Backend's
+ * `ecosystem:canonical name` for the item.
+ */
+export interface EndpointCapabilityManifestReport {
+  identityKey?: string;
+  artifactDigest: string;
+  manifestDigest: string;
+  manifest: EndpointCapabilityManifest;
+}
+
+/** One entry of `EndpointInventoryResponse.capabilityManifests`. */
+export interface EndpointCapabilityManifestOutcome {
+  /** Index of the item in the submitted `items[]`. */
+  index: number;
+  identityKey: string;
+  status: CapabilityManifestOutcomeStatus;
+  reason?: CapabilityManifestRefusal;
+  /** The approved manifest to diff against; `manifest` only when it differs from the reported one. */
+  approved?: {
+    artifactDigest: string;
+    manifestDigest: string;
+    manifest?: EndpointCapabilityManifest;
+    source: CapabilityManifestSource;
+    approvedAt: string;
+  };
+  /** The fleet change event (status `capability-change`). */
+  changeId?: string;
 }
