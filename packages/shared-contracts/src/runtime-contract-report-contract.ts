@@ -57,13 +57,17 @@ export interface RuntimeContractReportRequest {
 /** The fleet's answer for the contract at `index`. */
 export interface RuntimeContractFleetAnswer {
   index: number;
-  /** Other versions of the identity any endpoint of the org reported. */
+  /**
+   * Versions of the identity the org's fleet first saw BEFORE this one (its
+   * earliest report): a successor is never a baseline, and versions first
+   * seen together do not judge each other.
+   */
   otherVersions: number;
   /** Of those, the ones with a comparable contract (same key scope, not partial-only). */
   contracts: number;
-  /** The reported host digests some other version touched. */
+  /** The reported host digests some earlier version touched. */
   knownHosts: string[];
-  /** The reported credential-store classes some other version touched. */
+  /** The reported credential-store classes some earlier version touched. */
   knownCreds: string[];
 }
 
