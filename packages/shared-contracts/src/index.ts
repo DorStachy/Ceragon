@@ -39,3 +39,6 @@ export * from './generated/ai-security-detector-catalog.generated';
 // SC7-04 — the semantic-injection evidence class (identical in the Backend,
 // Ceragon-Intelligence and workspace-root copies; producer vector semantic-evidence.v1.json).
 export * from './semantic-evidence-contract';
+// DD6-PN5 — the artifact runtime contract's fleet report wire (identical in the Backend,
+// Ceragon-Intelligence and workspace-root copies; producer Installers internal/core/backend/runtime_contracts.go).
+export * from './runtime-contract-report-contract';
