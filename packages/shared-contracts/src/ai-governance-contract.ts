@@ -829,6 +829,20 @@ export interface McpServerRowShape {
    * against an older Backend still type-checks.
    */
   classifierRevision?: number | null;
+  /**
+   * DD5-W10a. Pinned identity facts `launchIdentityDigest` leaves out. The
+   * first three are keyed by the endpoint (`hmac-sha256:<hex>` under a
+   * per-endpoint key), so they compare across scans of ONE endpoint and are
+   * never a recomputable hash of a value; a change in any of them reopens the
+   * approval. `descriptionSetDigest` is the set digest of the tool descriptions
+   * the wire lane saw served (stored, not compared). `null` = never reported
+   * or unobserved. Optional so a consumer built against an older Backend still
+   * type-checks.
+   */
+  codeLoaderEnvDigest?: string | null;
+  envValueDigest?: string | null;
+  cwdDigest?: string | null;
+  descriptionSetDigest?: string | null;
   approvalStatus: McpApprovalStatus;
   approvedBy: string | null;
   approvedAt: string | null;
