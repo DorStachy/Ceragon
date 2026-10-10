@@ -477,7 +477,7 @@ async function runWorkspaceChecks(list, flags, log) {
     let code;
     let out = '';
     try {
-      out = execFileSync(process.execPath, [join(ROOT, check.script), ...(check.args || [])], {
+      out = execFileSync(process.execPath, [...(check.nodeArgs || []), join(ROOT, check.script), ...(check.args || [])], {
         cwd: ROOT,
         encoding: 'utf8',
         stdio: ['ignore', 'pipe', 'pipe'],

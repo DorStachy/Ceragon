@@ -19,7 +19,7 @@
  */
 
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -142,6 +142,26 @@ testCase('a freshly generated manifest -> PASS (exit 0)', () => {
   const r = run(ws.root);
   assert(r.code === 0, `expected exit 0, got ${r.code}\n${r.out}`);
   assert(/\bPASS\b/.test(r.out), `expected PASS:\n${r.out}`);
+});
+
+testCase('a separate meta-worktree receives the manifest and its actual fetch receipt', () => {
+  const ws = workspace();
+  for (const name of REPOS) git(ws.made[name].dir, ['remote', 'add', 'origin', ws.made[name].dir]);
+  const target = join(ws.root, 'meta-worktree', 'evidence', 'REBASE_MANIFEST.md');
+  mkdirSync(dirname(target), { recursive: true });
+  execFileSync(process.execPath, [SCRIPT, '--root', ws.root, '--manifest', target, '--write'], {
+    encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  const receipt = JSON.parse(readFileSync(join(dirname(target), 'REBASE_FETCH_OBSERVATION.json'), 'utf8'));
+  assert(Object.keys(receipt.repos).length === REPOS.length, 'all seven real fetches must be recorded');
+  for (const name of REPOS) {
+    assert(receipt.repos[name].after === git(ws.made[name].dir, ['rev-parse', 'origin/main']),
+      `receipt must record the fetched ${name} revision`);
+  }
+  assert(!existsSync(join(dirname(manifestPath(ws.root)), 'REBASE_FETCH_OBSERVATION.json')),
+    'the component workspace must not receive the other worktree receipt');
+  const r = run(ws.root, ['--manifest', target]);
+  assert(r.code === 0, `the separated manifest must validate: ${r.out}`);
 });
 
 testCase('THE NAMED DEFEAT: hand-edit one origin/main SHA -> STALE naming repo, edit and actual', () => {

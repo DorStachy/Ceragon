@@ -266,23 +266,30 @@ console.log('\ncase 9: the command exits 2 when the equality cannot be measured'
 {
   const { dir, planPath, rendererPath } = withPlan((text) => text);
 
+  // Run the exact CLI in an isolated repository layout. The real renderer now
+  // exists, so its checkout state cannot be the fixture for an absent renderer.
+  const fixtureScript = join(dir, 'ci', 'lib', 'claim-contract.mjs');
+  const fixturePlan = join(dir, '.plans', 'm47a-20260822', 'M47A_IMPLEMENTATION_PLAN.md');
+  const fixtureRenderer = join(dir, 'Installers', 'internal', 'certificate', 'claim_test.go');
+  mkdirSync(dirname(fixtureScript), { recursive: true });
+  mkdirSync(dirname(fixturePlan), { recursive: true });
+  writeFileSync(fixtureScript, readFileSync(SCRIPT));
+  writeFileSync(join(dirname(fixtureScript), 'workspace-root.mjs'),
+    readFileSync(join(dirname(SCRIPT), 'workspace-root.mjs')));
+  writeFileSync(fixturePlan, readFileSync(planPath));
+
   const run = (args, env) => {
-    const r = spawnSync(process.execPath, [SCRIPT, ...args], {
+    const fixtureEnv = { ...process.env, ...env };
+    delete fixtureEnv.CERAGON_WORKSPACE_ROOT;
+    const r = spawnSync(process.execPath, [fixtureScript, `--renderer=${fixtureRenderer}`, ...args], {
       encoding: 'utf8',
-      env: { ...process.env, ...env },
+      env: fixtureEnv,
     });
     return { code: r.status, out: `${r.stdout}${r.stderr}` };
   };
 
-  // The renderer now EXISTS on Installers origin/main, so `run([])` measures a
-  // real 15 == 15. The branch this case is about — the equality that CANNOT be
-  // measured — is therefore forced with `--renderer=` pointing at a path that is
-  // not there. Asserting it against "whatever renderer this machine happens to
-  // have" is what made this case stop testing anything the day Wave 8 Task 11
-  // landed: it went green, then red, for reasons that had nothing to do with the
-  // behaviour under test.
-  const missingRenderer = join(dir, 'no-such-dir', 'claim_test.go');
-  const absent = run([`--renderer=${missingRenderer}`]);
+  // No renderer exists in the isolated repository yet.
+  const absent = run([]);
   assert(absent.code === 2, `an absent renderer exits 2, not 0 (saw ${absent.code})`);
   assert(
     absent.out.includes('NOT MEASURED'),
@@ -293,7 +300,7 @@ console.log('\ncase 9: the command exits 2 when the equality cannot be measured'
   // A forbidden claim is a different failure and must not be confused with it.
   const notePath = join(dir, 'RELEASE_NOTES.md');
   writeFileSync(notePath, '# 7.11.0\n\nM4.7A is complete.\n', 'utf8');
-  const violation = run([notePath, `--renderer=${missingRenderer}`]);
+  const violation = run([notePath]);
   assert(violation.code === 1, `a forbidden claim exits 1, not 2 (saw ${violation.code})`);
   assert(
     violation.out.includes('m4.7a is complete'),
@@ -304,11 +311,16 @@ console.log('\ncase 9: the command exits 2 when the equality cannot be measured'
   // still 2, because the note being clean says nothing about the equality.
   const cleanNote = join(dir, 'CLEAN_NOTES.md');
   writeFileSync(cleanNote, '# 7.11.0\n\nScanner execution truth is now reported.\n', 'utf8');
-  const cleanButUnmeasured = run([cleanNote, `--renderer=${missingRenderer}`]);
+  const cleanButUnmeasured = run([cleanNote]);
   assert(
     cleanButUnmeasured.code === 2,
     `a clean note with no renderer is still NOT MEASURED (saw ${cleanButUnmeasured.code})`
   );
+
+  writeRenderer(fixtureRenderer, 15);
+  const measured = run([cleanNote]);
+  assert(measured.code === 0, `the CLI exits 0 only for a measured equal pair (saw ${measured.code})`);
+  assert(measured.out.includes('claim-contract: PASS'), 'the measured equal pair explicitly reports PASS');
 
   rmSync(dir, { recursive: true, force: true });
   void planPath;

@@ -53,6 +53,21 @@ other 73 come down only by changing what triggers them.
 The first run of each image takes a few minutes and then never again. Images are named
 `devoid-ci/node20`, `devoid-ci/node24`, `devoid-ci/go124`, `devoid-ci/scanner`, `devoid-ci/ops`.
 
+For an isolated meta-repository worktree, set `CERAGON_WORKSPACE_ROOT` to the
+directory containing the candidate component checkouts. The rebase manifest and
+its fetch receipt are written together in the meta worktree, including when
+`--manifest` selects another output path. A sparse checkout must also include
+the historical files cited by the plan. For the current non-cone checkout:
+
+```bash
+git sparse-checkout add '/.plans/m47a-20260822/M47A_IMPLEMENTATION_PLAN_V1_20260822.md' '/.plans/verify-prod-20260808/fix-specs/CREDS.md' '/.plans/verify-prod-20260808/IMPLEMENTATION_PLAN.md'
+node ci/lib/rebase-manifest.mjs --write
+```
+
+This materializes tracked evidence without editing it. Historical source links
+pinned to a removed component's commit remain historical evidence; they do not
+attest the current component or fall within the current-file citation resolver.
+
 ---
 
 ## Commands
@@ -134,13 +149,45 @@ mirrored. Summary:
 | Frontend | 4 | node20 | typecheck, jest, em-dash, npm audit |
 | Ceragon-Intelligence | 7 | node20 + ops | validate plus six Hetzner artifact lints |
 | GithubApp-Bot-Scanner-Worker | 14 | node20 + scanner | Semgrep 1.89.0 and gitleaks 8.18.4 pinned |
-| Sandbox-Worker | 1 | node20 | PARTIAL by design: build+test share a job with the deploy |
-| Static-Worker | 1 | node20 | same shape; pnpm; needs `.git` for its lockfile guard |
-| Installers | 11 | go124 | Go 1.24 + Node 22 in one image |
+| Sandbox-Worker | 2 | node20 | complete PR audit/build/test/policy gate; combined deploy job remains PARTIAL |
+| Static-Worker | 2 | node20 | complete manually selected checks-only job; combined deploy job remains PARTIAL |
+| Installers | 15 | go124 | Go 1.24 + Node 22; includes the separate labeller-governance ratchet |
 
 **Not mirrored, and why** is recorded in `ci/gates.json` under each repo's `cannotMirror`. The two
 categories are cloud identity (deploys, OIDC reads of live AWS state, GitHub App tokens) and
 non-Linux runners (macOS, Windows, WSL, systemd-dependent Linux legs).
+
+The 2026-09-30 coverage reconciliation adds `Sandbox-Worker/pr-checks:checks`
+and `Installers/pr-checks:neutraleval-ratchets` to the mirror. Run them with:
+
+```bash
+node ci/lib/run.mjs Sandbox-Worker pr-checks:checks
+node ci/lib/run.mjs Installers pr-checks:neutraleval-ratchets
+```
+
+The Sandbox job runs dependency audits, the build, the full Jest suite, task
+definition policy and worker-result contract checks. It has no cloud-credential
+or deployment step. The Installers job runs the exact
+`TestEnforcingCasesHaveTwoLabelers` ratchet under Go 1.24. The workflow records an
+unmet independent-human-labelling requirement; an expected red result is still
+a failure, not a reason to skip or relax the check.
+
+Backend's `publish-release-manifest:publish` and Installers'
+`stable-drift-check:drift` are explicitly classified as not mirrored. Both need
+an OIDC role and current production facts before their first substantive step;
+the former also publishes a production S3 object. No offline check is hidden
+behind either classification. `drift.mjs` checks mapping completeness only; a
+green drift result does not mean the newly mapped jobs were executed or passed.
+
+Static's existing workflow supports a boolean `checks_only=true` manual input.
+It selects the contents-read-only validation job and explicitly skips both
+deployment and the downstream Intelligence dispatch. Validation has its own
+cancellation group. The local manifest mirrors that exact job, including
+fresh frozen offline production packaging. `drift.mjs` still audits every
+origin/main job and explicitly reports candidate-only jobs selected by the
+same workflow-source resolver as the runner. A stale unchanged checkout cannot
+resurrect a removed upstream job. The new drift and validation-wiring tests
+run with the other workspace checks.
 
 The eleventh Installers gate, `finding-b-e2e:shim-enforcement`, was added on 2026-08-26 and is the
 only leg of `finding-b-e2e.yml` that mirrors. It is worth knowing what it is: the rest of that

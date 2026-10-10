@@ -13,10 +13,10 @@ If these bytes changed, the repositories changed.
 
 | Repository | Local branch | Local HEAD | `origin/main` | Behind | Required fetch moved `origin/main`? |
 |---|---|---|---|---:|---|
-| `Backend` | `fix/cxgov-agentid-recovery-handle` | `31985b157bbd1d2f5f088694cfadf98cc9737f3f` | `225dc6e98ab4e4554141730078e3e00d9b68fd70` | 57 | no |
-| `Frontend` | `feat/cxgov-rollout-ring` | `8a4cc8a0cf3217fa461ff71f4f40fb23e8bc5c9e` | `ebe2a241c8de6d2df4d25e0247764a3677c671de` | 41 | no |
-| `Installers` | `main` | `0970b240c34b18d0c90c84a7c3b2d6ad67cbdedd` | `e36cbc52d94e5b3cd2a3bd627650af6ea2ac1d7a` | 38 | no |
-| `Ceragon-Intelligence` | `main` | `264b91492f06c3dabb964dc4c6beac0931a490b6` | `f2c0109f7172c4302288fef551cca7615ff7fa4b` | 4 | no |
-| `Static-Worker` | `main` | `3bcde18caab70e0aae8a917e5f2ebb8fae7adb1c` | `ad1016d1ddb84ff13b30cab7fb39a4a24a754477` | 4 | no |
-| `Sandbox-Worker` | `main` | `6659c47308684d879242545292106a1e5e08b2b6` | `a77d6bbcf4eabdebadbb077ae7e586eccbbe248d` | 2 | no |
-| `GithubApp-Bot-Scanner-Worker` | `main` | `767e959fe858c79b7b2ddaf137c74d85181181c9` | `70837f51659d09182f1a49d26fb4ecfb5a42fe82` | 12 | no |
+| `Backend` | `codex/customer-data-privacy` | `3a3de0568f815aeee53b4b8c7c4a13769daac660` | `fc7834eef50df6469d63f2cd7606f6c4388a574c` | 0 | no |
+| `Frontend` | `codex/customer-data-privacy` | `e2208435e83eb277eaa6a3fab4fca94767e21f45` | `ee94fbb8e11d56b76bd95b9a2dbcca95ec0a1973` | 4 | no |
+| `Installers` | `codex/customer-data-privacy` | `8d53a1d8f61457864358556e3fd1c5126d4b5ebc` | `52b5cb2a0f7c14eb1d7644e60b6fe0c4cb94a1ac` | 0 | no |
+| `Ceragon-Intelligence` | `codex/customer-data-privacy` | `bb84c7571646391e27c5f9d75932ee519e7ee045` | `70786d19878ce18644d8f0c9da5ab4624458f67d` | 0 | no |
+| `Static-Worker` | `codex/customer-data-privacy` | `e27381e85637e529b7dbe7189fe54f619cafd158` | `d9804a8058e71962686d72e13229c553876db720` | 0 | no |
+| `Sandbox-Worker` | `codex/customer-data-privacy` | `395158bfc174975dc53547d80ed8604f7d4f46a5` | `4164a560e400b2b9c6a729a69960647724685b74` | 0 | no |
+| `GithubApp-Bot-Scanner-Worker` | `codex/customer-data-privacy` | `ba660ee81b10a07d4cca852e4b099d465a6a6da6` | `5c642a167f1e14ba50449513ee841629c50c687d` | 0 | no |

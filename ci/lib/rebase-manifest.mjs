@@ -339,7 +339,9 @@ function main(argv) {
   const noFetch = args.includes('--no-fetch');
 
   let observation = null;
-  const obsPath = join(root, OBSERVATION_RELPATH);
+  // Component checkouts and the meta-repo manifest may live in different
+  // worktrees. Keep the fetch receipt with the manifest it describes.
+  const obsPath = join(dirname(manifestPath), 'REBASE_FETCH_OBSERVATION.json');
 
   if (!noFetch) {
     const repos = fetchAll(root);
